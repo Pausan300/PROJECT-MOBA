@@ -55,8 +55,10 @@ public class CharacterController : MonoBehaviour
     Animator m_CharacterAnimator;
     //MOVEMENT
     Vector3 m_DesiredPosition;
+    public Transform m_DesiredEnemy;
     bool m_ReachedDesiredPosition;
     bool m_Moving;
+    bool m_Attacking;
 
 	protected virtual void Start()
 	{
@@ -64,6 +66,7 @@ public class CharacterController : MonoBehaviour
         m_CharacterAnimator=GetComponent<Animator>();
         m_CharacterUI=GetComponent<CharacterUI>();
         m_ReachedDesiredPosition=true;
+        m_DesiredEnemy=null;
 	}
     protected virtual void Update()
     {
@@ -103,10 +106,13 @@ public class CharacterController : MonoBehaviour
         {
             if(Physics.Raycast(m_CharacterCamera.m_Camera.transform.position, MouseDirection, out l_CameraRaycastHit, 1000.0f, m_CharacterCamera.m_CameraLayerMask))
             {
-                Debug.DrawLine(m_CharacterCamera.m_Camera.transform.position, l_CameraRaycastHit.point, Color.red);
+                Debug.DrawLine(m_CharacterCamera.m_Camera.transform.position, l_CameraRaycastHit.point, Color.green);
                 if(l_CameraRaycastHit.transform.CompareTag("Terrain"))
                 {
                     m_DesiredPosition=l_CameraRaycastHit.point;
+                    m_DesiredEnemy=null;
+                    m_Attacking=false;
+                    m_CharacterAnimator.SetBool("IsAAttacking", false);
                     m_ReachedDesiredPosition=false;
                 }
             }
@@ -122,7 +128,12 @@ public class CharacterController : MonoBehaviour
                 m_CharacterAnimator.SetBool("IsMoving", false);
                 return;
             }   
-            if(Vector3.Distance(transform.position, m_DesiredPosition)>0.25f)
+            float l_MinDistance;
+            if(m_DesiredEnemy!=null)
+                l_MinDistance=m_AttackRange;
+            else
+                l_MinDistance=0.25f;
+            if(Vector3.Distance(transform.position, m_DesiredPosition)>l_MinDistance)
             {
                 transform.forward=l_CharacterDirection;
                 transform.position+=l_CharacterDirection*m_Speed*Time.deltaTime;
@@ -132,6 +143,11 @@ public class CharacterController : MonoBehaviour
             {
                 m_ReachedDesiredPosition=true;
                 m_CharacterAnimator.SetBool("IsMoving", false);
+                if(m_DesiredEnemy)
+                {
+                    m_Attacking=true;
+                    m_CharacterAnimator.SetBool("IsAAttacking", true);
+                } 
             }
         }
     }
@@ -143,9 +159,11 @@ public class CharacterController : MonoBehaviour
             if(Physics.Raycast(m_CharacterCamera.m_Camera.transform.position, MouseDirection, out l_CameraRaycastHit, 1000.0f, m_CharacterCamera.m_CameraLayerMask))
             {
                 Debug.DrawLine(m_CharacterCamera.m_Camera.transform.position, l_CameraRaycastHit.point, Color.red);
-                if(l_CameraRaycastHit.transform.CompareTag("Terrain"))
+                if(l_CameraRaycastHit.transform.CompareTag("Enemy"))
                 {
-                    m_DesiredPosition=l_CameraRaycastHit.point;
+                    m_DesiredEnemy=l_CameraRaycastHit.transform;
+                    m_DesiredPosition=m_DesiredEnemy.position;
+                    m_DesiredPosition.y=0.0f;
                     m_ReachedDesiredPosition=false;
                 }
             }
@@ -250,5 +268,9 @@ public class CharacterController : MonoBehaviour
                 m_CurrentHealth=m_MaxHealth;
         }
         m_CharacterUI.UpdateHealthManaBars(m_CurrentHealth, m_MaxHealth, m_CurrentMana, m_MaxMana);
+    }
+    void PerformAutoAttack()
+    {
+        Debug.Log("ATTACKING");
     }
 }

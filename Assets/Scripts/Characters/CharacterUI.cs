@@ -30,9 +30,11 @@ public class CharacterUI : MonoBehaviour
 
     public void UpdateHealthManaBars(float Health, float MaxHealth, float Mana, float MaxMana)
     {
-        m_HealthBar.value=Health/MaxHealth;
-        m_ManaBar.value=Mana/MaxMana;
-        m_HealthText.text=Mathf.Round(Health)+"/"+MaxHealth;
-        m_ManaText.text=Mathf.Round(Mana)+"/"+MaxMana;
+        float l_HealthRounded=Mathf.Round(Health);
+        float l_ManaRounded=Mathf.Round(Mana);
+        m_HealthBar.value=l_HealthRounded/MaxHealth;
+        m_ManaBar.value=l_ManaRounded/MaxMana;
+        m_HealthText.text=l_HealthRounded+"/"+MaxHealth;
+        m_ManaText.text=l_ManaRounded+"/"+MaxMana;
     }
 }

@@ -1305,6 +1305,7 @@ MonoBehaviour:
   m_ESkillMana: 40
   m_RSkillCooldown: 30
   m_RSkillMana: 100
+  m_DesiredEnemy: {fileID: 0}
 --- !u!114 &567617883
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1320,7 +1321,7 @@ MonoBehaviour:
   m_Camera: {fileID: 2054580778}
   m_CameraLayerMask:
     serializedVersion: 2
-    m_Bits: 64
+    m_Bits: 192
   m_FollowCharacterOffset: {x: 1, y: 8, z: -5.5}
   m_CameraSpeed: 25
   m_WidthLimitOffset: 50
@@ -2960,7 +2961,7 @@ Transform:
   m_GameObject: {fileID: 2054580776}
   serializedVersion: 2
   m_LocalRotation: {x: 0.42261827, y: 0, z: 0, w: 0.9063079}
-  m_LocalPosition: {x: 0.9, y: 5.48, z: -4.6}
+  m_LocalPosition: {x: 0.9, y: 5.73, z: -4.82}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
