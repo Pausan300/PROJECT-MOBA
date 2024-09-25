@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CharacterHirasu : CharacterController
+public class HirasuCharacterController : CharacterMaster
 {
     
 

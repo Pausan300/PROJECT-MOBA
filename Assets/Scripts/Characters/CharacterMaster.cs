@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class CharacterController : MonoBehaviour
+public class CharacterMaster : MonoBehaviour
 {
     [Header("STATS")]
     public float m_MaxHealth;
@@ -11,14 +11,14 @@ public class CharacterController : MonoBehaviour
     float m_CurrentHealth;
     float m_CurrentMana;
     public float m_AttackDamage;
-    public float m_HabilityDamage;
+    public float m_AbilityPower;
     public float m_AttackSpeed;
     public float m_CooldownReduction;
     public float m_CriticalChance;
     public float m_CriticalDamage;
     public float m_Armor;
     public float m_MagicResistance;
-    public float m_Speed;
+    public float m_MovementSpeed;
 
     public float m_AttackRange;
     public float m_Tenacity;
@@ -59,24 +59,43 @@ public class CharacterController : MonoBehaviour
     bool m_ReachedDesiredPosition;
     bool m_Moving;
     bool m_Attacking;
+    float m_TimeSinceLastAuto;
+    float m_AttackAnimLength;
 
 	protected virtual void Start()
 	{
         m_CharacterCamera=GetComponent<CameraController>();
         m_CharacterAnimator=GetComponent<Animator>();
         m_CharacterUI=GetComponent<CharacterUI>();
+        m_CurrentHealth=m_MaxHealth;
+        m_CurrentMana=m_MaxMana;
+        m_CharacterUI.UpdateUIStats(m_AttackDamage, m_Armor, m_AttackSpeed, m_CriticalChance, m_AbilityPower, m_MagicResistance, m_CooldownReduction, m_MovementSpeed);
         m_ReachedDesiredPosition=true;
         m_DesiredEnemy=null;
+        AnimationClip[] l_Clips=m_CharacterAnimator.runtimeAnimatorController.animationClips;
+        foreach(AnimationClip clip in l_Clips)
+        {
+            switch(clip.name)
+            {
+                case "AutoAttack":
+                    m_AttackAnimLength=clip.length;
+                    break;
+            }
+        }
 	}
     protected virtual void Update()
     {
         Vector3 l_MousePosition=Input.mousePosition;
         l_MousePosition.z=10.0f;
         Vector3 l_MouseDirection=m_CharacterCamera.m_Camera.ScreenToWorldPoint(l_MousePosition)-m_CharacterCamera.m_Camera.transform.position;
-        CharacterMovement(l_MouseDirection);
-        EnemyTargeting(l_MouseDirection);
+        MouseTargeting(l_MouseDirection);
+        CharacterMovement();
         ResourceRestoring();
 
+#if UNITY_EDITOR
+        if(m_Attacking)
+            m_TimeSinceLastAuto+=Time.deltaTime;
+#endif
         if(Input.GetKeyDown(KeyCode.Q))
             UseQSkill();
         if(Input.GetKeyDown(KeyCode.W))
@@ -95,13 +114,27 @@ public class CharacterController : MonoBehaviour
         if(m_RSkillOnCd)
             SkillsCooldown(ref m_RSkillOnCd, m_CharacterUI.m_RSkillCdImage, ref m_RSkillTimer, m_RSkillCooldown);
     }
-    void CharacterMovement(Vector3 MouseDirection)
+    void MouseTargeting(Vector3 MouseDirection)
     {
         RaycastHit l_CameraRaycastHit;
         if(Input.GetMouseButtonDown(1))
+        {
+            if(Physics.Raycast(m_CharacterCamera.m_Camera.transform.position, MouseDirection, out l_CameraRaycastHit, 1000.0f, m_CharacterCamera.m_CameraLayerMask))
+            {
+                Debug.DrawLine(m_CharacterCamera.m_Camera.transform.position, l_CameraRaycastHit.point, Color.red);
+                if(l_CameraRaycastHit.transform.CompareTag("Enemy"))
+                {
+                    m_DesiredEnemy=l_CameraRaycastHit.transform;
+                    m_DesiredPosition=m_DesiredEnemy.position;
+                    m_DesiredPosition.y=0.0f;
+                    m_ReachedDesiredPosition=false;
+                }
+            }
             m_Moving=true;
+        }
         else if(Input.GetMouseButtonUp(1))
             m_Moving=false;
+
         if(m_Moving)
         {
             if(Physics.Raycast(m_CharacterCamera.m_Camera.transform.position, MouseDirection, out l_CameraRaycastHit, 1000.0f, m_CharacterCamera.m_CameraLayerMask))
@@ -117,6 +150,9 @@ public class CharacterController : MonoBehaviour
                 }
             }
         }
+    }
+    void CharacterMovement()
+    {
         if(!m_ReachedDesiredPosition)
         {
             Vector3 l_CharacterDirection=m_DesiredPosition-transform.position;
@@ -136,7 +172,7 @@ public class CharacterController : MonoBehaviour
             if(Vector3.Distance(transform.position, m_DesiredPosition)>l_MinDistance)
             {
                 transform.forward=l_CharacterDirection;
-                transform.position+=l_CharacterDirection*m_Speed*Time.deltaTime;
+                transform.position+=l_CharacterDirection*m_MovementSpeed*Time.deltaTime;
                 m_CharacterAnimator.SetBool("IsMoving", true);
             } 
             else
@@ -148,24 +184,6 @@ public class CharacterController : MonoBehaviour
                     m_Attacking=true;
                     m_CharacterAnimator.SetBool("IsAAttacking", true);
                 } 
-            }
-        }
-    }
-    void EnemyTargeting(Vector3 MouseDirection)
-    {
-        RaycastHit l_CameraRaycastHit;
-        if(Input.GetMouseButtonDown(0))
-        {
-            if(Physics.Raycast(m_CharacterCamera.m_Camera.transform.position, MouseDirection, out l_CameraRaycastHit, 1000.0f, m_CharacterCamera.m_CameraLayerMask))
-            {
-                Debug.DrawLine(m_CharacterCamera.m_Camera.transform.position, l_CameraRaycastHit.point, Color.red);
-                if(l_CameraRaycastHit.transform.CompareTag("Enemy"))
-                {
-                    m_DesiredEnemy=l_CameraRaycastHit.transform;
-                    m_DesiredPosition=m_DesiredEnemy.position;
-                    m_DesiredPosition.y=0.0f;
-                    m_ReachedDesiredPosition=false;
-                }
             }
         }
     }
@@ -271,6 +289,11 @@ public class CharacterController : MonoBehaviour
     }
     void PerformAutoAttack()
     {
-        Debug.Log("ATTACKING");
+        Debug.Log("ATTACKING - Since last auto: "+m_TimeSinceLastAuto);
+        m_TimeSinceLastAuto=0.0f;
+    }
+    public float GetAttackAnimationLength()
+    {
+        return m_AttackAnimLength;
     }
 }
