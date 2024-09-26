@@ -69,7 +69,6 @@ public class CharacterMaster : MonoBehaviour
         m_CharacterUI=GetComponent<CharacterUI>();
         m_CurrentHealth=m_MaxHealth;
         m_CurrentMana=m_MaxMana;
-        m_CharacterUI.UpdateUIStats(m_AttackDamage, m_Armor, m_AttackSpeed, m_CriticalChance, m_AbilityPower, m_MagicResistance, m_CooldownReduction, m_MovementSpeed);
         m_ReachedDesiredPosition=true;
         m_DesiredEnemy=null;
         AnimationClip[] l_Clips=m_CharacterAnimator.runtimeAnimatorController.animationClips;
@@ -91,11 +90,20 @@ public class CharacterMaster : MonoBehaviour
         MouseTargeting(l_MouseDirection);
         CharacterMovement();
         ResourceRestoring();
+        m_CharacterUI.UpdatePrimStats(m_AttackDamage, m_Armor, m_AttackSpeed, m_CriticalChance, m_AbilityPower, m_MagicResistance, m_CooldownReduction, m_MovementSpeed);
+        m_CharacterUI.UpdateSeconStats(m_HealthRegen, m_ArmorPenetrationFixed, m_ArmorPenetrationPct, m_LifeSteal, m_AttackRange, m_ManaRegen, m_MagicPenetrationFixed, 
+            m_MagicPenetrationPct, m_OmniDrain, m_Tenacity, m_ShieldsAndHealsPower);
 
 #if UNITY_EDITOR
         if(m_Attacking)
             m_TimeSinceLastAuto+=Time.deltaTime;
 #endif
+
+        if(Input.GetKey(KeyCode.C))
+            m_CharacterUI.ShowSeconStatsPanel();
+        else if(Input.GetKeyUp(KeyCode.C))
+            m_CharacterUI.HideSeconStatsPanel();
+
         if(Input.GetKeyDown(KeyCode.Q))
             UseQSkill();
         if(Input.GetKeyDown(KeyCode.W))
@@ -166,13 +174,13 @@ public class CharacterMaster : MonoBehaviour
             }   
             float l_MinDistance;
             if(m_DesiredEnemy!=null)
-                l_MinDistance=m_AttackRange;
+                l_MinDistance=m_AttackRange/100.0f;
             else
                 l_MinDistance=0.25f;
+            transform.forward=l_CharacterDirection;
             if(Vector3.Distance(transform.position, m_DesiredPosition)>l_MinDistance)
             {
-                transform.forward=l_CharacterDirection;
-                transform.position+=l_CharacterDirection*m_MovementSpeed*Time.deltaTime;
+                transform.position+=l_CharacterDirection*(m_MovementSpeed/100.0f)*Time.deltaTime;
                 m_CharacterAnimator.SetBool("IsMoving", true);
             } 
             else
