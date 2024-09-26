@@ -7135,6 +7135,14 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 2054580778}
     - target: {fileID: 8897145909671556001, guid: ce1b7c0bd7344354f99a9206f3d72093, type: 3}
+      propertyPath: m_MaxZoom
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 8897145909671556001, guid: ce1b7c0bd7344354f99a9206f3d72093, type: 3}
+      propertyPath: m_MinZoom
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 8897145909671556001, guid: ce1b7c0bd7344354f99a9206f3d72093, type: 3}
       propertyPath: m_MaxFollowCharacterOffset.x
       value: 1
       objectReference: {fileID: 0}

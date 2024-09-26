@@ -6,8 +6,9 @@ public class CameraController : MonoBehaviour
 {
     public Camera m_Camera;
     public LayerMask m_CameraLayerMask;
-    public Vector3 m_MinFollowCharacterOffset;
     public Vector3 m_MaxFollowCharacterOffset;
+    public float m_MaxZoom;
+    public float m_MinZoom;
     Vector3 m_FollowCharacterOffset;
     float m_CameraLerp;
     public float m_CameraSpeed;
@@ -20,6 +21,7 @@ public class CameraController : MonoBehaviour
 	    m_Locked=true;
         m_CameraLerp=0.0f;
         m_FollowCharacterOffset=m_MaxFollowCharacterOffset;
+        Cursor.lockState=CursorLockMode.Confined;
 	}
 	private void LateUpdate()
 	{
@@ -28,15 +30,22 @@ public class CameraController : MonoBehaviour
     void CameraMovement()
     {
         Vector3 l_CameraPosition=transform.position;
+        Vector3 l_DesiredPosition=transform.position+m_MaxFollowCharacterOffset;
 
         m_CameraLerp+=Input.mouseScrollDelta.y*0.1f;
         m_CameraLerp=Mathf.Clamp(m_CameraLerp, 0.0f, 1.0f);
-        m_FollowCharacterOffset.y=Mathf.Lerp(m_MaxFollowCharacterOffset.y, m_MinFollowCharacterOffset.y, m_CameraLerp);
-        m_FollowCharacterOffset.z=Mathf.Lerp(m_MaxFollowCharacterOffset.z, m_MinFollowCharacterOffset.z, m_CameraLerp);
+
+        //m_FollowCharacterOffset.y=Mathf.Lerp(m_MaxFollowCharacterOffset.y, m_MinFollowCharacterOffset.y, m_CameraLerp);
+        //m_FollowCharacterOffset.z=Mathf.Lerp(m_MaxFollowCharacterOffset.z, m_MinFollowCharacterOffset.z, m_CameraLerp);
+        Vector3 l_CameraOffset=Vector3.one;
+        Vector3 l_CameraDir=l_DesiredPosition-transform.position;
+        l_CameraDir.Normalize();
+        float l_OffsetMultiplier=Mathf.Lerp(m_MaxZoom, m_MinZoom, m_CameraLerp);
+        l_CameraOffset=l_CameraDir*l_OffsetMultiplier;
 
         if(m_Locked || Input.GetKey(KeyCode.Space))
         {
-            l_CameraPosition+=m_FollowCharacterOffset;
+            l_CameraPosition+=l_CameraOffset;//m_FollowCharacterOffset;
         }
         else
         {
