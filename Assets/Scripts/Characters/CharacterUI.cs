@@ -11,6 +11,26 @@ public class CharacterUI : MonoBehaviour
     public Image m_WSkillCdImage;
     public Image m_ESkillCdImage;
     public Image m_RSkillCdImage;
+    public Image m_SumSpell1CdImage;
+    public Image m_SumSpell2CdImage; 
+    public TextMeshProUGUI m_QSkillCdText;
+    public TextMeshProUGUI m_WSkillCdText;
+    public TextMeshProUGUI m_ESkillCdText;
+    public TextMeshProUGUI m_RSkillCdText;
+    public TextMeshProUGUI m_SumSpell1CdText;
+    public TextMeshProUGUI m_SumSpell2CdText;
+    public Transform m_QLevelUpButton;
+    public Transform m_WLevelUpButton;
+    public Transform m_ELevelUpButton;
+    public Transform m_RLevelUpButton;
+    public Slider m_QLevelPoints;
+    public Slider m_WLevelPoints;
+    public Slider m_ELevelPoints;
+    public Slider m_RLevelPoints;
+
+    [Header("EXPERIENCE")]
+    public Slider m_ExpBar;
+    public TextMeshProUGUI m_LevelText;
 
     [Header("HEALTH MANA BARS")]
     public Slider m_HealthBar;
@@ -44,16 +64,17 @@ public class CharacterUI : MonoBehaviour
     public Slider m_RecallBar;
     public TextMeshProUGUI m_RecallTimeText;
 
+    public CharacterMaster m_Character;
+
     void Start()
     {
         HideSeconStatsPanel();
         HideRecallUI();
+        HideCdTexts();
+        HideLevelUpSkillButtons();
+        ResetSkillLevelPoints();
+        m_Character=transform.GetComponent<CharacterMaster>();
     }
-    void Update()
-    {
-        
-    }
-
     public void UpdateHealthManaBars(float Health, float MaxHealth, float Mana, float MaxMana)
     {
         float l_HealthRounded=Mathf.Round(Health);
@@ -86,11 +107,56 @@ public class CharacterUI : MonoBehaviour
         m_OmnidrainText.text=Omnidrain.ToString()+"%";
         m_TenacityText.text=Tenacity.ToString()+"%";
     }
+    public void UpdateExpBar(float CurrentExp, float NeededExp)
+    {
+        m_ExpBar.value=CurrentExp/NeededExp;
+    }
+    public void UpdateCharacterLevel(int Level)
+    {
+        m_LevelText.text=Level.ToString();
+    }
     public void UpdateRecallUI(float CurrentRecallTime, float MaxRecallTime)
     {
         m_RecallBar.value=CurrentRecallTime/MaxRecallTime;
         m_RecallTimeText.text=CurrentRecallTime.ToString("f1");
     }
+    public void LevelUpQSkill()
+    {
+        m_QLevelPoints.value+=1;
+        m_Character.m_SkillPoints-=1;
+        if(m_Character.m_SkillPoints<=0)
+            HideLevelUpSkillButtons();
+    }
+    public void LevelUpWSkill()
+    {
+        m_WLevelPoints.value+=1;
+        m_Character.m_SkillPoints-=1;
+        if(m_Character.m_SkillPoints<=0)
+            HideLevelUpSkillButtons();
+    }
+    public void LevelUpESkill()
+    {
+        m_ELevelPoints.value+=1;
+        m_Character.m_SkillPoints-=1;
+        if(m_Character.m_SkillPoints<=0)
+            HideLevelUpSkillButtons();
+    }
+    public void LevelUpRSkill()
+    {
+        m_RLevelPoints.value+=1;
+        m_Character.m_SkillPoints-=1;
+        if(m_Character.m_SkillPoints<=0)
+            HideLevelUpSkillButtons();
+    }
+    public void ResetSkillLevelPoints()
+    {
+        m_QLevelPoints.value=0;
+        m_WLevelPoints.value=0;
+        m_ELevelPoints.value=0;
+        m_RLevelPoints.value=0;
+    }
+
+    //SHOW & HIDE METHODS
     public void ShowSeconStatsPanel()
     {
         m_SeconStatsPanel.gameObject.SetActive(true);
@@ -106,5 +172,28 @@ public class CharacterUI : MonoBehaviour
     public void HideRecallUI()
     {
         m_RecallUI.gameObject.SetActive(false);
+    }
+    public void HideCdTexts()
+    {
+        m_QSkillCdText.enabled=false;
+        m_WSkillCdText.enabled=false;
+        m_ESkillCdText.enabled=false;
+        m_RSkillCdText.enabled=false;
+        m_SumSpell1CdText.enabled=false;
+        m_SumSpell2CdText.enabled=false;
+    }
+    public void ShowLevelUpSkillButtons()
+    {
+        m_QLevelUpButton.gameObject.SetActive(true);
+        m_WLevelUpButton.gameObject.SetActive(true);
+        m_ELevelUpButton.gameObject.SetActive(true);
+        m_RLevelUpButton.gameObject.SetActive(true);
+    }
+    public void HideLevelUpSkillButtons()
+    {
+        m_QLevelUpButton.gameObject.SetActive(false);
+        m_WLevelUpButton.gameObject.SetActive(false);
+        m_ELevelUpButton.gameObject.SetActive(false);
+        m_RLevelUpButton.gameObject.SetActive(false);
     }
 }

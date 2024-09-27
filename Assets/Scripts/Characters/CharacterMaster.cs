@@ -36,6 +36,12 @@ public class CharacterMaster : MonoBehaviour
     public float m_OmniDrain;
     public float m_ShieldsAndHealsPower;
 
+    [Header("EXPERIENCE")]
+    public int m_CurrentLevel;
+    public int m_SkillPoints;
+    public float m_CurrentExp;
+    public List<float> m_ExpPerLevel;
+
     [Header("SKILLS")]
     public float m_QSkillCooldown;
     public float m_QSkillMana;
@@ -53,6 +59,12 @@ public class CharacterMaster : MonoBehaviour
     public float m_RSkillMana;
     float m_RSkillTimer;
     bool m_RSkillOnCd;
+    public float m_SumSpell1Cooldown;
+    float m_SumSpell1Timer;
+    bool m_SumSpell1OnCd;
+    public float m_SumSpell2Cooldown;
+    float m_SumSpell2Timer;
+    bool m_SumSpell2OnCd;
 
     [Header("RECALL")]
     public float m_RecallTime;
@@ -75,6 +87,7 @@ public class CharacterMaster : MonoBehaviour
         m_CharacterUI=GetComponent<CharacterUI>();
         m_CurrentHealth=m_MaxHealth;
         m_CurrentMana=m_MaxMana;
+        m_SkillPoints=1;
         m_ReachedDesiredPosition=true;
         m_DesiredEnemy=null;
         AnimationClip[] l_Clips=m_CharacterAnimator.runtimeAnimatorController.animationClips;
@@ -87,6 +100,8 @@ public class CharacterMaster : MonoBehaviour
                     break;
             }
         }
+        m_CharacterUI.UpdateCharacterLevel(m_CurrentLevel);
+        m_CharacterUI.ShowLevelUpSkillButtons();
 	}
     protected virtual void Update()
     {
@@ -110,7 +125,18 @@ public class CharacterMaster : MonoBehaviour
 #if UNITY_EDITOR
         if(m_Attacking)
             m_TimeSinceLastAuto+=Time.deltaTime;
+        if(Input.GetKeyDown(KeyCode.P))
+        {
+            m_CurrentExp+=200.0f;
+            if(m_CurrentLevel<18)
+            {
+                if(m_CurrentExp>=m_ExpPerLevel[m_CurrentLevel])
+                    LevelUp();
+            }
+        }
 #endif
+        if(m_CurrentLevel<18)
+            m_CharacterUI.UpdateExpBar(m_CurrentExp, m_ExpPerLevel[m_CurrentLevel]);
 
         if(Input.GetKey(KeyCode.C))
             m_CharacterUI.ShowSeconStatsPanel();
@@ -128,15 +154,23 @@ public class CharacterMaster : MonoBehaviour
             UseESkill();
         if(Input.GetKeyDown(KeyCode.R))
             UseRSkill();
+        if(Input.GetKeyDown(KeyCode.D))
+            UseSummonerSpell1();
+        if(Input.GetKeyDown(KeyCode.F))
+            UseSummonerSpell2();
 
         if(m_QSkillOnCd)
-            SkillsCooldown(ref m_QSkillOnCd, m_CharacterUI.m_QSkillCdImage, ref m_QSkillTimer, m_QSkillCooldown);
+            SkillsCooldown(ref m_QSkillOnCd, m_CharacterUI.m_QSkillCdImage, ref m_QSkillTimer, m_QSkillCooldown, m_CharacterUI.m_QSkillCdText);
         if(m_WSkillOnCd)
-            SkillsCooldown(ref m_WSkillOnCd, m_CharacterUI.m_WSkillCdImage, ref m_WSkillTimer, m_WSkillCooldown);
+            SkillsCooldown(ref m_WSkillOnCd, m_CharacterUI.m_WSkillCdImage, ref m_WSkillTimer, m_WSkillCooldown, m_CharacterUI.m_WSkillCdText);
         if(m_ESkillOnCd)
-            SkillsCooldown(ref m_ESkillOnCd, m_CharacterUI.m_ESkillCdImage, ref m_ESkillTimer, m_ESkillCooldown);
+            SkillsCooldown(ref m_ESkillOnCd, m_CharacterUI.m_ESkillCdImage, ref m_ESkillTimer, m_ESkillCooldown, m_CharacterUI.m_ESkillCdText);
         if(m_RSkillOnCd)
-            SkillsCooldown(ref m_RSkillOnCd, m_CharacterUI.m_RSkillCdImage, ref m_RSkillTimer, m_RSkillCooldown);
+            SkillsCooldown(ref m_RSkillOnCd, m_CharacterUI.m_RSkillCdImage, ref m_RSkillTimer, m_RSkillCooldown, m_CharacterUI.m_RSkillCdText);
+        if(m_SumSpell1OnCd)
+            SkillsCooldown(ref m_SumSpell1OnCd, m_CharacterUI.m_SumSpell1CdImage, ref m_SumSpell1Timer, m_SumSpell1Cooldown, m_CharacterUI.m_SumSpell1CdText);
+        if(m_SumSpell2OnCd)
+            SkillsCooldown(ref m_SumSpell2OnCd, m_CharacterUI.m_SumSpell2CdImage, ref m_SumSpell2Timer, m_SumSpell2Cooldown, m_CharacterUI.m_SumSpell2CdText);
     }
     void MouseTargeting(Vector3 MouseDirection)
     {
@@ -152,6 +186,7 @@ public class CharacterMaster : MonoBehaviour
                     m_DesiredPosition=m_DesiredEnemy.position;
                     m_DesiredPosition.y=0.0f;
                     m_ReachedDesiredPosition=false;
+                    StopRecall();
                 }
             }
             m_Moving=true;
@@ -231,6 +266,7 @@ public class CharacterMaster : MonoBehaviour
             Debug.Log("USE Q SKILL");
             m_QSkillTimer=m_QSkillCooldown;
             m_CharacterUI.m_QSkillCdImage.fillAmount=1.0f;
+            m_CharacterUI.m_QSkillCdText.enabled=true;
             m_CurrentMana-=m_QSkillMana;
             m_QSkillOnCd=true;
             StopRecall();
@@ -251,6 +287,7 @@ public class CharacterMaster : MonoBehaviour
             Debug.Log("USE W SKILL");
             m_WSkillTimer=m_WSkillCooldown;
             m_CharacterUI.m_WSkillCdImage.fillAmount=1.0f;
+            m_CharacterUI.m_WSkillCdText.enabled=true;
             m_CurrentMana-=m_WSkillMana;
             m_WSkillOnCd=true;
             StopRecall();
@@ -271,6 +308,7 @@ public class CharacterMaster : MonoBehaviour
             Debug.Log("USE E SKILL");
             m_ESkillTimer=m_ESkillCooldown;
             m_CharacterUI.m_ESkillCdImage.fillAmount=1.0f;
+            m_CharacterUI.m_ESkillCdText.enabled=true;
             m_CurrentMana-=m_ESkillMana;
             m_ESkillOnCd=true;
             StopRecall();
@@ -291,18 +329,57 @@ public class CharacterMaster : MonoBehaviour
             Debug.Log("USE R SKILL");
             m_RSkillTimer=m_RSkillCooldown;
             m_CharacterUI.m_RSkillCdImage.fillAmount=1.0f;
+            m_CharacterUI.m_RSkillCdText.enabled=true;
             m_CurrentMana-=m_RSkillMana;
             m_RSkillOnCd=true;
             StopRecall();
         }
     }
-    void SkillsCooldown(ref bool IsOnCd, Image SkillImage, ref float SkillTimer, float SkillCd)
+    void UseSummonerSpell1()
     {
-        Debug.Log(SkillTimer);
+        if(m_SumSpell1OnCd)
+        {
+            Debug.Log("SS1 STILL ON COOLDOWN BOBI");
+        }
+        else
+        {
+            Debug.Log("USE SS1");
+            m_SumSpell1Timer=m_SumSpell1Cooldown;
+            m_CharacterUI.m_SumSpell1CdImage.fillAmount=1.0f;
+            m_CharacterUI.m_SumSpell1CdText.enabled=true;
+            m_SumSpell1OnCd=true;
+            StopRecall();
+        }
+    }
+    void UseSummonerSpell2()
+    {
+        if(m_SumSpell2OnCd)
+        {
+            Debug.Log("SS2 STILL ON COOLDOWN BOBI");
+        }
+        else
+        {
+            Debug.Log("USE SS2");
+            m_SumSpell2Timer=m_SumSpell2Cooldown;
+            m_CharacterUI.m_SumSpell2CdImage.fillAmount=1.0f;
+            m_CharacterUI.m_SumSpell2CdText.enabled=true;
+            m_SumSpell2OnCd=true;
+            StopRecall();
+        }
+    }
+    void SkillsCooldown(ref bool IsOnCd, Image SkillImage, ref float SkillTimer, float SkillCd, TMPro.TextMeshProUGUI CdText)
+    {
         SkillTimer-=Time.deltaTime;
+        if(SkillTimer>=1.0f)
+            CdText.text=SkillTimer.ToString("f0");
+        else
+            CdText.text=SkillTimer.ToString("f1");
         SkillImage.fillAmount=SkillTimer/SkillCd;
         if(SkillTimer<=0.0f)
+        {
             IsOnCd=false;
+            CdText.enabled=false;
+        }
     }
     void ResourceRestoring()
     {
@@ -328,6 +405,11 @@ public class CharacterMaster : MonoBehaviour
             m_CurrentRecallTime=m_RecallTime;
             m_Recalling=true;
             StopMovement();
+            if(m_Attacking)
+            {
+                m_Attacking=false;
+                m_CharacterAnimator.SetBool("IsAAttacking", false);
+            }
         }
     }
     void StopRecall()
@@ -343,6 +425,17 @@ public class CharacterMaster : MonoBehaviour
         transform.position=m_RecallTpPoint.position;
         m_Recalling=false;
         m_CharacterUI.HideRecallUI();
+    }
+    void LevelUp()
+    {
+        m_CurrentExp-=m_ExpPerLevel[m_CurrentLevel];
+        if(m_CurrentLevel>=18)
+            m_CharacterUI.UpdateExpBar(1.0f, 1.0f);
+        m_CurrentLevel++;
+        if(m_SkillPoints<=0)
+            m_CharacterUI.ShowLevelUpSkillButtons();
+        m_SkillPoints++;
+        m_CharacterUI.UpdateCharacterLevel(m_CurrentLevel);
     }
 
     //LLAMADA POR EVENTO EN LA ANIMACION DE AUTOATAQUE
