@@ -39,9 +39,15 @@ public class CharacterUI : MonoBehaviour
     public TextMeshProUGUI m_OmnidrainText;
     public TextMeshProUGUI m_TenacityText;
 
+    [Header("RECALL UI")]
+    public RectTransform m_RecallUI;
+    public Slider m_RecallBar;
+    public TextMeshProUGUI m_RecallTimeText;
+
     void Start()
     {
         HideSeconStatsPanel();
+        HideRecallUI();
     }
     void Update()
     {
@@ -73,19 +79,32 @@ public class CharacterUI : MonoBehaviour
     {
         m_HealthManaRegenText.text=HealthRegen.ToString()+"|"+ManaRegen.ToString();
         m_ArmorPenText.text=ArmorPenFix.ToString()+"|"+ArmorPenPct.ToString()+"%";
-        m_LifestealText.text=Lifesteal.ToString();
+        m_LifestealText.text=Lifesteal.ToString()+"%";
         m_AttackRangeText.text=AttackRange.ToString();
-        m_HealsShieldsPowerText.text=HealsShieldsPower.ToString();
+        m_HealsShieldsPowerText.text=HealsShieldsPower.ToString()+"%";
         m_MagicPenText.text=MagicPenFix.ToString()+"|"+MagicPenPct.ToString()+"%";
-        m_OmnidrainText.text=Omnidrain.ToString();
-        m_TenacityText.text=Tenacity.ToString();
+        m_OmnidrainText.text=Omnidrain.ToString()+"%";
+        m_TenacityText.text=Tenacity.ToString()+"%";
+    }
+    public void UpdateRecallUI(float CurrentRecallTime, float MaxRecallTime)
+    {
+        m_RecallBar.value=CurrentRecallTime/MaxRecallTime;
+        m_RecallTimeText.text=CurrentRecallTime.ToString("f1");
+    }
+    public void ShowSeconStatsPanel()
+    {
+        m_SeconStatsPanel.gameObject.SetActive(true);
     }
     public void HideSeconStatsPanel()
     {
         m_SeconStatsPanel.gameObject.SetActive(false);
     }
-    public void ShowSeconStatsPanel()
+    public void ShowRecallUI()
     {
-        m_SeconStatsPanel.gameObject.SetActive(true);
+        m_RecallUI.gameObject.SetActive(true);
+    }
+    public void HideRecallUI()
+    {
+        m_RecallUI.gameObject.SetActive(false);
     }
 }

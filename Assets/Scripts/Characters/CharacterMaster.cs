@@ -5,6 +5,10 @@ using UnityEngine.UI;
 
 public class CharacterMaster : MonoBehaviour
 {
+    CharacterUI m_CharacterUI;
+    CameraController m_CharacterCamera;
+    Animator m_CharacterAnimator;
+
     [Header("STATS")]
     public float m_MaxHealth;
     public float m_MaxMana;
@@ -50,12 +54,14 @@ public class CharacterMaster : MonoBehaviour
     float m_RSkillTimer;
     bool m_RSkillOnCd;
 
-    CharacterUI m_CharacterUI;
-    CameraController m_CharacterCamera;
-    Animator m_CharacterAnimator;
-    //MOVEMENT
+    [Header("RECALL")]
+    public float m_RecallTime;
+    public Transform m_RecallTpPoint;
+    float m_CurrentRecallTime;
+    bool m_Recalling;
+
     Vector3 m_DesiredPosition;
-    public Transform m_DesiredEnemy;
+    Transform m_DesiredEnemy;
     bool m_ReachedDesiredPosition;
     bool m_Moving;
     bool m_Attacking;
@@ -93,6 +99,13 @@ public class CharacterMaster : MonoBehaviour
         m_CharacterUI.UpdatePrimStats(m_AttackDamage, m_Armor, m_AttackSpeed, m_CriticalChance, m_AbilityPower, m_MagicResistance, m_CooldownReduction, m_MovementSpeed);
         m_CharacterUI.UpdateSeconStats(m_HealthRegen, m_ArmorPenetrationFixed, m_ArmorPenetrationPct, m_LifeSteal, m_AttackRange, m_ManaRegen, m_MagicPenetrationFixed, 
             m_MagicPenetrationPct, m_OmniDrain, m_Tenacity, m_ShieldsAndHealsPower);
+        if(m_Recalling)
+        {
+            m_CharacterUI.UpdateRecallUI(m_CurrentRecallTime, m_RecallTime);
+            m_CurrentRecallTime-=Time.deltaTime;
+            if(m_CurrentRecallTime<=0.0f)
+                TeleportToSpawn();
+        }
 
 #if UNITY_EDITOR
         if(m_Attacking)
@@ -103,6 +116,9 @@ public class CharacterMaster : MonoBehaviour
             m_CharacterUI.ShowSeconStatsPanel();
         else if(Input.GetKeyUp(KeyCode.C))
             m_CharacterUI.HideSeconStatsPanel();
+
+        if(Input.GetKeyDown(KeyCode.B))
+            UseRecall();
 
         if(Input.GetKeyDown(KeyCode.Q))
             UseQSkill();
@@ -155,6 +171,7 @@ public class CharacterMaster : MonoBehaviour
                     m_Attacking=false;
                     m_CharacterAnimator.SetBool("IsAAttacking", false);
                     m_ReachedDesiredPosition=false;
+                    StopRecall();
                 }
             }
         }
@@ -167,9 +184,7 @@ public class CharacterMaster : MonoBehaviour
             l_CharacterDirection.Normalize();
             if(Input.GetKeyDown(KeyCode.S))
             {
-                m_ReachedDesiredPosition=true;
-                m_Moving=false;
-                m_CharacterAnimator.SetBool("IsMoving", false);
+                StopMovement();
                 return;
             }   
             float l_MinDistance;
@@ -195,6 +210,12 @@ public class CharacterMaster : MonoBehaviour
             }
         }
     }
+    void StopMovement()
+    {
+        m_ReachedDesiredPosition=true;
+        m_Moving=false;
+        m_CharacterAnimator.SetBool("IsMoving", false);
+    }
 	void UseQSkill()
     {
         if(m_QSkillOnCd)
@@ -212,6 +233,7 @@ public class CharacterMaster : MonoBehaviour
             m_CharacterUI.m_QSkillCdImage.fillAmount=1.0f;
             m_CurrentMana-=m_QSkillMana;
             m_QSkillOnCd=true;
+            StopRecall();
         }
     } 
     void UseWSkill()
@@ -231,6 +253,7 @@ public class CharacterMaster : MonoBehaviour
             m_CharacterUI.m_WSkillCdImage.fillAmount=1.0f;
             m_CurrentMana-=m_WSkillMana;
             m_WSkillOnCd=true;
+            StopRecall();
         }
     }
     void UseESkill()
@@ -250,6 +273,7 @@ public class CharacterMaster : MonoBehaviour
             m_CharacterUI.m_ESkillCdImage.fillAmount=1.0f;
             m_CurrentMana-=m_ESkillMana;
             m_ESkillOnCd=true;
+            StopRecall();
         }
     }
     void UseRSkill()
@@ -269,6 +293,7 @@ public class CharacterMaster : MonoBehaviour
             m_CharacterUI.m_RSkillCdImage.fillAmount=1.0f;
             m_CurrentMana-=m_RSkillMana;
             m_RSkillOnCd=true;
+            StopRecall();
         }
     }
     void SkillsCooldown(ref bool IsOnCd, Image SkillImage, ref float SkillTimer, float SkillCd)
@@ -295,11 +320,38 @@ public class CharacterMaster : MonoBehaviour
         }
         m_CharacterUI.UpdateHealthManaBars(m_CurrentHealth, m_MaxHealth, m_CurrentMana, m_MaxMana);
     }
+    void UseRecall()
+    {
+        if(!m_Recalling)
+        {
+            m_CharacterUI.ShowRecallUI();
+            m_CurrentRecallTime=m_RecallTime;
+            m_Recalling=true;
+            StopMovement();
+        }
+    }
+    void StopRecall()
+    {
+        if(m_Recalling)
+        {
+            m_CharacterUI.HideRecallUI();
+            m_Recalling=false;
+        }
+    }
+    void TeleportToSpawn()
+    {
+        transform.position=m_RecallTpPoint.position;
+        m_Recalling=false;
+        m_CharacterUI.HideRecallUI();
+    }
+
+    //LLAMADA POR EVENTO EN LA ANIMACION DE AUTOATAQUE
     void PerformAutoAttack()
     {
         Debug.Log("ATTACKING - Since last auto: "+m_TimeSinceLastAuto);
         m_TimeSinceLastAuto=0.0f;
     }
+
     public float GetAttackAnimationLength()
     {
         return m_AttackAnimLength;
