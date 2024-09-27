@@ -7642,7 +7642,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
-  m_AnchoredPosition: {x: -0.000015258789, y: 300}
+  m_AnchoredPosition: {x: 35.08, y: 300}
   m_SizeDelta: {x: 600, y: 107.552}
   m_Pivot: {x: 0.5, y: 0}
 --- !u!1 &1745119334
@@ -8647,7 +8647,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
-  m_AnchoredPosition: {x: 0.000015258789, y: 304.6635}
+  m_AnchoredPosition: {x: -67, y: 304.6635}
   m_SizeDelta: {x: 1469.816, y: 609.327}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1980760687
@@ -10094,7 +10094,7 @@ PrefabInstance:
       objectReference: {fileID: 2054580778}
     - target: {fileID: 8897145909671556001, guid: ce1b7c0bd7344354f99a9206f3d72093, type: 3}
       propertyPath: m_MaxZoom
-      value: 8
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 8897145909671556001, guid: ce1b7c0bd7344354f99a9206f3d72093, type: 3}
       propertyPath: m_MinZoom
@@ -10105,12 +10105,20 @@ PrefabInstance:
       value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 8897145909671556001, guid: ce1b7c0bd7344354f99a9206f3d72093, type: 3}
+      propertyPath: m_WidthLimitOffset
+      value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: 8897145909671556001, guid: ce1b7c0bd7344354f99a9206f3d72093, type: 3}
       propertyPath: m_CharacterOffset.x
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8897145909671556001, guid: ce1b7c0bd7344354f99a9206f3d72093, type: 3}
       propertyPath: m_CharacterOffset.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8897145909671556001, guid: ce1b7c0bd7344354f99a9206f3d72093, type: 3}
+      propertyPath: m_HeightLimitOffset
+      value: 15
       objectReference: {fileID: 0}
     - target: {fileID: 8897145909671556001, guid: ce1b7c0bd7344354f99a9206f3d72093, type: 3}
       propertyPath: m_MaxFollowCharacterOffset.x
