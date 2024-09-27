@@ -71,7 +71,6 @@ public class CharacterUI : MonoBehaviour
         HideSeconStatsPanel();
         HideRecallUI();
         HideCdTexts();
-        HideLevelUpSkillButtons();
         ResetSkillLevelPoints();
         m_Character=transform.GetComponent<CharacterMaster>();
     }
