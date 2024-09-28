@@ -11,9 +11,8 @@ public class WorldSpaceCanvasBillboard : MonoBehaviour
     {
         m_RectTransform=transform.GetComponent<RectTransform>();
     }
-
     void LateUpdate()
     {
-        m_RectTransform.LookAt(transform.position+m_Camera.transform.rotation*-Vector3.forward, m_Camera.transform.rotation*Vector3.up);
+        m_RectTransform.LookAt(transform.position+m_Camera.transform.rotation*Vector3.forward, m_Camera.transform.rotation*Vector3.up);
     }
 }

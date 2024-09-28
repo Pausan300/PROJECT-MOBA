@@ -45,18 +45,22 @@ public class CharacterMaster : MonoBehaviour
     [Header("SKILLS")]
     public float m_QSkillCooldown;
     public float m_QSkillMana;
+    public int m_QSkillLevel;
     float m_QSkillTimer;
     bool m_QSkillOnCd;
     public float m_WSkillCooldown;
     public float m_WSkillMana;
+    public int m_WSkillLevel;
     float m_WSkillTimer;
     bool m_WSkillOnCd;
     public float m_ESkillCooldown;
     public float m_ESkillMana;
+    public int m_ESkillLevel;
     float m_ESkillTimer;
     bool m_ESkillOnCd;
     public float m_RSkillCooldown;
     public float m_RSkillMana;
+    public int m_RSkillLevel;
     float m_RSkillTimer;
     bool m_RSkillOnCd;
     public float m_SumSpell1Cooldown;
@@ -100,7 +104,9 @@ public class CharacterMaster : MonoBehaviour
                     break;
             }
         }
+        m_CharacterUI.m_Character=this;
         m_CharacterUI.UpdateCharacterLevel(m_CurrentLevel);
+        m_CharacterUI.HideLevelUpSkillButtons();
         m_CharacterUI.ShowLevelUpSkillButtons();
 	}
     protected virtual void Update()
@@ -253,7 +259,11 @@ public class CharacterMaster : MonoBehaviour
     }
 	void UseQSkill()
     {
-        if(m_QSkillOnCd)
+        if(m_QSkillLevel<=0)
+        {
+            Debug.Log("Q STILL LOCKED BOBI");
+        }
+        else if(m_QSkillOnCd)
         {
             Debug.Log("Q STILL ON COOLDOWN BOBI");
         }
@@ -274,7 +284,11 @@ public class CharacterMaster : MonoBehaviour
     } 
     void UseWSkill()
     {
-        if(m_WSkillOnCd)
+        if(m_WSkillLevel<=0)
+        {
+            Debug.Log("W STILL LOCKED BOBI");
+        }
+        else if(m_WSkillOnCd)
         {
             Debug.Log("W STILL ON COOLDOWN BOBI");
         }
@@ -295,7 +309,11 @@ public class CharacterMaster : MonoBehaviour
     }
     void UseESkill()
     {
-        if(m_ESkillOnCd)
+        if(m_ESkillLevel<=0)
+        {
+            Debug.Log("E STILL LOCKED BOBI");
+        }
+        else if(m_ESkillOnCd)
         {
             Debug.Log("E STILL ON COOLDOWN BOBI");
         }
@@ -316,7 +334,11 @@ public class CharacterMaster : MonoBehaviour
     }
     void UseRSkill()
     {
-        if(m_RSkillOnCd)
+        if(m_RSkillLevel<=0)
+        {
+            Debug.Log("R STILL LOCKED BOBI");
+        }
+        else if(m_RSkillOnCd)
         {
             Debug.Log("R STILL ON COOLDOWN BOBI");
         }
@@ -429,11 +451,10 @@ public class CharacterMaster : MonoBehaviour
     void LevelUp()
     {
         m_CurrentExp-=m_ExpPerLevel[m_CurrentLevel];
+        m_CurrentLevel++;
         if(m_CurrentLevel>=18)
             m_CharacterUI.UpdateExpBar(1.0f, 1.0f);
-        m_CurrentLevel++;
-        if(m_SkillPoints<=0)
-            m_CharacterUI.ShowLevelUpSkillButtons();
+        m_CharacterUI.ShowLevelUpSkillButtons();
         m_SkillPoints++;
         m_CharacterUI.UpdateCharacterLevel(m_CurrentLevel);
     }

@@ -72,7 +72,6 @@ public class CharacterUI : MonoBehaviour
         HideRecallUI();
         HideCdTexts();
         ResetSkillLevelPoints();
-        m_Character=transform.GetComponent<CharacterMaster>();
     }
     public void UpdateHealthManaBars(float Health, float MaxHealth, float Mana, float MaxMana)
     {
@@ -123,6 +122,9 @@ public class CharacterUI : MonoBehaviour
     {
         m_QLevelPoints.value+=1;
         m_Character.m_SkillPoints-=1;
+        m_Character.m_QSkillLevel++;
+        if(m_Character.m_QSkillLevel>=5)
+            m_QLevelUpButton.gameObject.SetActive(false);
         if(m_Character.m_SkillPoints<=0)
             HideLevelUpSkillButtons();
     }
@@ -130,6 +132,9 @@ public class CharacterUI : MonoBehaviour
     {
         m_WLevelPoints.value+=1;
         m_Character.m_SkillPoints-=1;
+        m_Character.m_WSkillLevel++;
+        if(m_Character.m_WSkillLevel>=5)
+            m_WLevelUpButton.gameObject.SetActive(false);
         if(m_Character.m_SkillPoints<=0)
             HideLevelUpSkillButtons();
     }
@@ -137,6 +142,9 @@ public class CharacterUI : MonoBehaviour
     {
         m_ELevelPoints.value+=1;
         m_Character.m_SkillPoints-=1;
+        m_Character.m_ESkillLevel++;
+        if(m_Character.m_ESkillLevel>=5)
+            m_ELevelUpButton.gameObject.SetActive(false);
         if(m_Character.m_SkillPoints<=0)
             HideLevelUpSkillButtons();
     }
@@ -144,6 +152,9 @@ public class CharacterUI : MonoBehaviour
     {
         m_RLevelPoints.value+=1;
         m_Character.m_SkillPoints-=1;
+        m_Character.m_RSkillLevel++;
+        if(m_Character.m_RSkillLevel>=3 || (m_Character.m_CurrentLevel<11 && m_Character.m_RSkillLevel>=1) || (m_Character.m_CurrentLevel<16 && m_Character.m_RSkillLevel>=2))
+            m_RLevelUpButton.gameObject.SetActive(false);
         if(m_Character.m_SkillPoints<=0)
             HideLevelUpSkillButtons();
     }
@@ -183,10 +194,15 @@ public class CharacterUI : MonoBehaviour
     }
     public void ShowLevelUpSkillButtons()
     {
-        m_QLevelUpButton.gameObject.SetActive(true);
-        m_WLevelUpButton.gameObject.SetActive(true);
-        m_ELevelUpButton.gameObject.SetActive(true);
-        m_RLevelUpButton.gameObject.SetActive(true);
+        if(m_Character.m_QSkillLevel<5)
+            m_QLevelUpButton.gameObject.SetActive(true);
+        if(m_Character.m_WSkillLevel<5)
+            m_WLevelUpButton.gameObject.SetActive(true);
+        if(m_Character.m_ESkillLevel<5)
+            m_ELevelUpButton.gameObject.SetActive(true);
+        if((m_Character.m_CurrentLevel>=6 && m_Character.m_RSkillLevel<1) || (m_Character.m_CurrentLevel>=11 && m_Character.m_RSkillLevel<2) || 
+            (m_Character.m_CurrentLevel>=16 && m_Character.m_RSkillLevel<3))    
+            m_RLevelUpButton.gameObject.SetActive(true);
     }
     public void HideLevelUpSkillButtons()
     {
