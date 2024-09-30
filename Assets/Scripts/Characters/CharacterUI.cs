@@ -6,6 +6,8 @@ using UnityEngine.UI;
 
 public class CharacterUI : MonoBehaviour
 {
+    CharacterMaster m_Character;
+
     [Header("SKILLS")]
     public Image m_QSkillCdImage;
     public Image m_WSkillCdImage;
@@ -38,6 +40,12 @@ public class CharacterUI : MonoBehaviour
     public TextMeshProUGUI m_HealthText;
     public TextMeshProUGUI m_ManaText;
 
+    [Header("INGAME PLAYER INFO")]
+    public Slider m_IngameHealthBar;
+    public Slider m_IngameManaBar;
+    public TextMeshProUGUI m_IngameLevelText;
+    public TextMeshProUGUI m_PlayerNameText;
+
     [Header("STATS")]
     public RectTransform m_PrimStatsPanel;
     public RectTransform m_SeconStatsPanel;
@@ -64,8 +72,6 @@ public class CharacterUI : MonoBehaviour
     public Slider m_RecallBar;
     public TextMeshProUGUI m_RecallTimeText;
 
-    public CharacterMaster m_Character;
-
     void Start()
     {
         HideSeconStatsPanel();
@@ -79,24 +85,26 @@ public class CharacterUI : MonoBehaviour
         float l_ManaRounded=Mathf.Round(Mana);
         m_HealthBar.value=l_HealthRounded/MaxHealth;
         m_ManaBar.value=l_ManaRounded/MaxMana;
-        m_HealthText.text=l_HealthRounded+"/"+MaxHealth;
-        m_ManaText.text=l_ManaRounded+"/"+MaxMana;
+        m_HealthText.text=l_HealthRounded+"/"+Mathf.Round(MaxHealth);
+        m_ManaText.text=l_ManaRounded+"/"+Mathf.Round(MaxMana);
+        m_IngameHealthBar.value=l_HealthRounded/MaxHealth;
+        m_IngameManaBar.value=l_ManaRounded/MaxMana;
     }
     public void UpdatePrimStats(float AtkDmg, float Armor, float AtkSpd, float CritChance, float AbPower, float MagResist, float Cdr, float MovSpeed)
     {
-        m_AttackDamageText.text=AtkDmg.ToString();
-        m_ArmorText.text=Armor.ToString();
-        m_AttackSpeedText.text=AtkSpd.ToString();
+        m_AttackDamageText.text=Mathf.Round(AtkDmg).ToString();
+        m_ArmorText.text=Mathf.Round(Armor).ToString();
+        m_AttackSpeedText.text=AtkSpd.ToString("f2");
         m_CriticalChanceText.text=CritChance.ToString();
         m_AbilityPowerText.text=AbPower.ToString();
-        m_MagicResistanceText.text=MagResist.ToString();
+        m_MagicResistanceText.text=Mathf.Round(MagResist).ToString();
         m_CooldownReductionText.text=Cdr.ToString();
         m_MovementSpeedText.text=MovSpeed.ToString();
     }
     public void UpdateSeconStats(float HealthRegen, float ArmorPenFix, float ArmorPenPct, float Lifesteal, float AttackRange, float ManaRegen, 
         float MagicPenFix, float MagicPenPct, float Omnidrain, float Tenacity, float HealsShieldsPower)
     {
-        m_HealthManaRegenText.text=HealthRegen.ToString()+"|"+ManaRegen.ToString();
+        m_HealthManaRegenText.text=Mathf.Round(HealthRegen).ToString()+"|"+Mathf.Round(ManaRegen).ToString();
         m_ArmorPenText.text=ArmorPenFix.ToString()+"|"+ArmorPenPct.ToString()+"%";
         m_LifestealText.text=Lifesteal.ToString()+"%";
         m_AttackRangeText.text=AttackRange.ToString();
@@ -112,6 +120,7 @@ public class CharacterUI : MonoBehaviour
     public void UpdateCharacterLevel(int Level)
     {
         m_LevelText.text=Level.ToString();
+        m_IngameLevelText.text=Level.ToString();
     }
     public void UpdateRecallUI(float CurrentRecallTime, float MaxRecallTime)
     {
@@ -165,6 +174,10 @@ public class CharacterUI : MonoBehaviour
         m_ELevelPoints.value=0;
         m_RLevelPoints.value=0;
     }
+    public void SetPlayerName(string Name)
+    {
+        m_PlayerNameText.text=Name;
+    }
 
     //SHOW & HIDE METHODS
     public void ShowSeconStatsPanel()
@@ -210,5 +223,11 @@ public class CharacterUI : MonoBehaviour
         m_WLevelUpButton.gameObject.SetActive(false);
         m_ELevelUpButton.gameObject.SetActive(false);
         m_RLevelUpButton.gameObject.SetActive(false);
+    }
+
+    //GETTERS & SETTERS
+    public void SetPlayer(CharacterMaster Player)
+    {
+        m_Character=Player;
     }
 }

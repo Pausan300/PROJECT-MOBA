@@ -15,7 +15,7 @@ public class AutoAttackSpeedSetter : StateMachineBehaviour
 	override public void OnStateUpdate(Animator animator,AnimatorStateInfo stateInfo,int layerIndex)
 	{
 		float l_AttacksPerSecond=1.0f/m_Character.GetAttackAnimationLength();
-		float l_AnimSpeedIncrease=m_Character.m_AttackSpeed/l_AttacksPerSecond;
+		float l_AnimSpeedIncrease=m_Character.GetAttackSpeed()/l_AttacksPerSecond;
 		if(animator.GetFloat("AAttackSpeed")!=l_AnimSpeedIncrease)
 			animator.SetFloat("AAttackSpeed", l_AnimSpeedIncrease);
 	}

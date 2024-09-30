@@ -9,32 +9,52 @@ public class CharacterMaster : MonoBehaviour
     CameraController m_CharacterCamera;
     Animator m_CharacterAnimator;
 
-    [Header("STATS")]
-    public float m_MaxHealth;
-    public float m_MaxMana;
+    [Header("PLAYER INFO")]
+    public string m_PlayerName;
+
+    [Header("BASE STATS")]
+    public float m_BaseHealth;
+    public float m_BaseMana;
+    public float m_BaseAttackDamage;
+    public float m_BaseAttackSpeed;
+    public float m_BaseArmor;
+    public float m_BaseMagicResist;
+    public float m_BaseHealthRegen;
+    public float m_BaseManaRegen;
+    public float m_AttackRange;
+    public float m_MovementSpeed;
+    float m_MaxHealth;
+    float m_MaxMana;
     float m_CurrentHealth;
     float m_CurrentMana;
-    public float m_AttackDamage;
-    public float m_AbilityPower;
-    public float m_AttackSpeed;
-    public float m_CooldownReduction;
-    public float m_CriticalChance;
-    public float m_CriticalDamage;
-    public float m_Armor;
-    public float m_MagicResistance;
-    public float m_MovementSpeed;
-
-    public float m_AttackRange;
-    public float m_Tenacity;
-    public float m_ArmorPenetrationFixed;
-    public float m_ArmorPenetrationPct;
-    public float m_MagicPenetrationFixed;
-    public float m_MagicPenetrationPct;
-    public float m_HealthRegen;
-    public float m_ManaRegen;
-    public float m_LifeSteal;
-    public float m_OmniDrain;
-    public float m_ShieldsAndHealsPower;
+    float m_AttackDamage;
+    float m_AbilityPower;
+    float m_AttackSpeed;
+    float m_CooldownReduction;
+    float m_CriticalChance;
+    float m_CriticalDamage;
+    float m_Armor;
+    float m_MagicResistance;
+    float m_Tenacity;
+    float m_ArmorPenetrationFixed;
+    float m_ArmorPenetrationPct;
+    float m_MagicPenetrationFixed;
+    float m_MagicPenetrationPct;
+    float m_HealthRegen;
+    float m_ManaRegen;
+    float m_LifeSteal;
+    float m_OmniDrain;
+    float m_ShieldsAndHealsPower;
+    
+    [Header("GROWTH STATS")]
+    public float m_HealthPerLevel;
+    public float m_ManaPerLevel;
+    public float m_AttackDamagePerLevel;
+    public float m_AttackSpeedPerLevel;
+    public float m_ArmorPerLevel;
+    public float m_MagicResistPerLevel;
+    public float m_HealthRegenPerLevel;
+    public float m_ManaRegenPerLevel;
 
     [Header("EXPERIENCE")]
     public int m_CurrentLevel;
@@ -89,11 +109,6 @@ public class CharacterMaster : MonoBehaviour
         m_CharacterCamera=GetComponent<CameraController>();
         m_CharacterAnimator=GetComponent<Animator>();
         m_CharacterUI=GetComponent<CharacterUI>();
-        m_CurrentHealth=m_MaxHealth;
-        m_CurrentMana=m_MaxMana;
-        m_SkillPoints=1;
-        m_ReachedDesiredPosition=true;
-        m_DesiredEnemy=null;
         AnimationClip[] l_Clips=m_CharacterAnimator.runtimeAnimatorController.animationClips;
         foreach(AnimationClip clip in l_Clips)
         {
@@ -104,7 +119,14 @@ public class CharacterMaster : MonoBehaviour
                     break;
             }
         }
-        m_CharacterUI.m_Character=this;
+        SetInitStats();
+        m_CurrentHealth=m_MaxHealth;
+        m_CurrentMana=m_MaxMana;
+        m_SkillPoints=1;
+        m_ReachedDesiredPosition=true;
+        m_DesiredEnemy=null;
+        m_CharacterUI.SetPlayer(this);
+        m_CharacterUI.SetPlayerName(m_PlayerName);
         m_CharacterUI.UpdateCharacterLevel(m_CurrentLevel);
         m_CharacterUI.HideLevelUpSkillButtons();
         m_CharacterUI.ShowLevelUpSkillButtons();
@@ -457,6 +479,36 @@ public class CharacterMaster : MonoBehaviour
         m_CharacterUI.ShowLevelUpSkillButtons();
         m_SkillPoints++;
         m_CharacterUI.UpdateCharacterLevel(m_CurrentLevel);
+        LevelUpStat(m_MaxHealth, out m_MaxHealth, m_CurrentHealth, out m_CurrentHealth, m_BaseHealth, m_HealthPerLevel);
+        LevelUpStat(m_MaxMana, out m_MaxMana, m_CurrentMana, out m_CurrentMana, m_BaseMana, m_ManaPerLevel);
+        LevelUpStat(out m_AttackDamage, m_BaseAttackDamage, m_AttackDamagePerLevel);
+        LevelUpStat(out m_AttackSpeed, m_BaseAttackSpeed, m_AttackSpeedPerLevel);
+        LevelUpStat(out m_Armor, m_BaseArmor, m_ArmorPerLevel);
+        LevelUpStat(out m_MagicResistance, m_BaseMagicResist, m_MagicResistPerLevel);
+        LevelUpStat(out m_HealthRegen, m_BaseHealthRegen, m_HealthRegenPerLevel);
+        LevelUpStat(out m_ManaRegen, m_BaseManaRegen, m_ManaRegenPerLevel);
+    }
+    void LevelUpStat(out float Stat, float BaseStat, float Increase)
+    {
+        Stat=BaseStat+0.0f+Increase*(m_CurrentLevel-1.0f)*(0.7025f+0.0175f*(m_CurrentLevel-1.0f));
+    }
+    void LevelUpStat(float Stat, out float StatIncreased, float Current, out float CurrentIncreased, float BaseStat, float Increase)
+    {
+        float l_InitMaxStat=Stat;
+        StatIncreased=BaseStat+0.0f+Increase*(m_CurrentLevel-1.0f)*(0.7025f+0.0175f*(m_CurrentLevel-1.0f));
+        float l_Difference=StatIncreased-l_InitMaxStat;
+        CurrentIncreased=Current+l_Difference;
+    }
+    void SetInitStats()
+    {
+        m_MaxHealth=m_BaseHealth;
+        m_MaxMana=m_BaseMana;
+        m_AttackDamage=m_BaseAttackDamage;
+        m_AttackSpeed=m_BaseAttackSpeed;
+        m_Armor=m_BaseArmor;
+        m_MagicResistance=m_BaseMagicResist;
+        m_HealthRegen=m_BaseHealthRegen;
+        m_ManaRegen=m_BaseManaRegen;
     }
 
     //LLAMADA POR EVENTO EN LA ANIMACION DE AUTOATAQUE
@@ -466,8 +518,13 @@ public class CharacterMaster : MonoBehaviour
         m_TimeSinceLastAuto=0.0f;
     }
 
+    //GETTERS & SETTERS
     public float GetAttackAnimationLength()
     {
         return m_AttackAnimLength;
+    }
+    public float GetAttackSpeed()
+    {
+        return m_AttackSpeed;
     }
 }
