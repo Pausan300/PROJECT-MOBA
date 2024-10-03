@@ -77,7 +77,6 @@ public class CharacterUI : MonoBehaviour
         HideSeconStatsPanel();
         HideRecallUI();
         HideCdTexts();
-        ResetSkillLevelPoints();
     }
     public void UpdateHealthManaBars(float Health, float MaxHealth, float Mana, float MaxMana)
     {

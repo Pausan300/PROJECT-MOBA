@@ -457,7 +457,7 @@ GameObject:
   - component: {fileID: 3300794281903306952}
   - component: {fileID: 8858783642649196875}
   - component: {fileID: 583624771981924612}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: LevelContainer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -548,7 +548,7 @@ GameObject:
   - component: {fileID: 365199716385337636}
   - component: {fileID: 4252032273547977382}
   - component: {fileID: 1789252326568464429}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: Level
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -844,7 +844,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 532213498984557331}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: IngameCharacterBars
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -887,7 +887,7 @@ GameObject:
   - component: {fileID: 2053709390817316389}
   - component: {fileID: 3956343800707361108}
   - component: {fileID: 4577933833487518371}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: Canvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1764,6 +1764,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 70d8c0e6a3fab214ba722d726cf962f7, type: 3}
       insertIndex: -1
       addedObject: {fileID: 7635419542250428407}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 70d8c0e6a3fab214ba722d726cf962f7, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 4279021379374391962}
   m_SourcePrefab: {fileID: 100100000, guid: 70d8c0e6a3fab214ba722d726cf962f7, type: 3}
 --- !u!1 &8207142013517453575 stripped
 GameObject:
@@ -1804,28 +1807,24 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_PlayerName: TOASTED
-  m_MaxHealth: 670
-  m_MaxMana: 250
-  m_AttackDamage: 65
-  m_AbilityPower: 0
-  m_AttackSpeed: 0.68
-  m_CooldownReduction: 0
-  m_CriticalChance: 0
-  m_CriticalDamage: 75
-  m_Armor: 33
-  m_MagicResistance: 32
-  m_MovementSpeed: 350
+  m_BaseHealth: 670
+  m_BaseMana: 250
+  m_BaseAttackDamage: 65
+  m_BaseAttackSpeed: 0.68
+  m_BaseArmor: 33
+  m_BaseMagicResist: 32
+  m_BaseHealthRegen: 8
+  m_BaseManaRegen: 7
   m_AttackRange: 175
-  m_Tenacity: 0
-  m_ArmorPenetrationFixed: 0
-  m_ArmorPenetrationPct: 0
-  m_MagicPenetrationFixed: 0
-  m_MagicPenetrationPct: 0
-  m_HealthRegen: 8
-  m_ManaRegen: 7
-  m_LifeSteal: 0
-  m_OmniDrain: 0
-  m_ShieldsAndHealsPower: 0
+  m_MovementSpeed: 350
+  m_HealthPerLevel: 100
+  m_ManaPerLevel: 52
+  m_AttackDamagePerLevel: 4
+  m_AttackSpeedPerLevel: 0.022
+  m_ArmorPerLevel: 5
+  m_MagicResistPerLevel: 2
+  m_HealthRegenPerLevel: 0.45
+  m_ManaRegenPerLevel: 0.5
   m_CurrentLevel: 1
   m_SkillPoints: 0
   m_CurrentExp: 0
@@ -1879,7 +1878,7 @@ MonoBehaviour:
   m_Camera: {fileID: 0}
   m_CameraLayerMask:
     serializedVersion: 2
-    m_Bits: 192
+    m_Bits: 224
   m_CharacterOffset: {x: 1, y: 0, z: 0}
   m_MaxZoom: 9
   m_MinZoom: 4
@@ -1950,6 +1949,29 @@ MonoBehaviour:
   m_RecallUI: {fileID: 0}
   m_RecallBar: {fileID: 0}
   m_RecallTimeText: {fileID: 0}
+--- !u!136 &4279021379374391962
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8207142013517453575}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.5
+  m_Height: 2.1413975
+  m_Direction: 1
+  m_Center: {x: 0, y: 0.89784837, z: 0}
 --- !u!4 &8840126818101232573 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 70d8c0e6a3fab214ba722d726cf962f7, type: 3}

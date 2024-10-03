@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class CharacterMaster : MonoBehaviour
+public class CharacterMaster : MonoBehaviour, ITakeDamage
 {
     CharacterUI m_CharacterUI;
     CameraController m_CharacterCamera;
@@ -55,6 +55,14 @@ public class CharacterMaster : MonoBehaviour
     public float m_MagicResistPerLevel;
     public float m_HealthRegenPerLevel;
     public float m_ManaRegenPerLevel;
+    float m_HealthBonus;
+    float m_ManaBonus;
+    float m_AttackDamageBonus;
+    float m_AttackSpeedBonus;
+    float m_ArmorBonus;
+    float m_MagicResistBonus;
+    float m_HealthRegenBonus;
+    float m_ManaRegenBonus;
 
     [Header("EXPERIENCE")]
     public int m_CurrentLevel;
@@ -89,6 +97,7 @@ public class CharacterMaster : MonoBehaviour
     public float m_SumSpell2Cooldown;
     float m_SumSpell2Timer;
     bool m_SumSpell2OnCd;
+    bool m_ZeroCooldown;
 
     [Header("RECALL")]
     public float m_RecallTime;
@@ -119,17 +128,11 @@ public class CharacterMaster : MonoBehaviour
                     break;
             }
         }
-        SetInitStats();
-        m_CurrentHealth=m_MaxHealth;
-        m_CurrentMana=m_MaxMana;
-        m_SkillPoints=1;
         m_ReachedDesiredPosition=true;
         m_DesiredEnemy=null;
         m_CharacterUI.SetPlayer(this);
         m_CharacterUI.SetPlayerName(m_PlayerName);
-        m_CharacterUI.UpdateCharacterLevel(m_CurrentLevel);
-        m_CharacterUI.HideLevelUpSkillButtons();
-        m_CharacterUI.ShowLevelUpSkillButtons();
+        SetInitStats();
 	}
     protected virtual void Update()
     {
@@ -296,14 +299,18 @@ public class CharacterMaster : MonoBehaviour
         else
         {
             Debug.Log("USE Q SKILL");
-            m_QSkillTimer=m_QSkillCooldown;
-            m_CharacterUI.m_QSkillCdImage.fillAmount=1.0f;
-            m_CharacterUI.m_QSkillCdText.enabled=true;
-            m_CurrentMana-=m_QSkillMana;
-            m_QSkillOnCd=true;
-            StopRecall();
+            QSkill();
         }
-    } 
+    }
+    protected virtual void QSkill()
+    {
+        m_QSkillTimer=m_QSkillCooldown;
+        m_CharacterUI.m_QSkillCdImage.fillAmount=1.0f;
+        m_CharacterUI.m_QSkillCdText.enabled=true;
+        m_CurrentMana-=m_QSkillMana;
+        m_QSkillOnCd=true;
+        StopRecall();
+    }
     void UseWSkill()
     {
         if(m_WSkillLevel<=0)
@@ -321,13 +328,17 @@ public class CharacterMaster : MonoBehaviour
         else
         {
             Debug.Log("USE W SKILL");
-            m_WSkillTimer=m_WSkillCooldown;
-            m_CharacterUI.m_WSkillCdImage.fillAmount=1.0f;
-            m_CharacterUI.m_WSkillCdText.enabled=true;
-            m_CurrentMana-=m_WSkillMana;
-            m_WSkillOnCd=true;
-            StopRecall();
+            WSkill();
         }
+    }
+    protected virtual void WSkill()
+    {
+        m_WSkillTimer=m_WSkillCooldown;
+        m_CharacterUI.m_WSkillCdImage.fillAmount=1.0f;
+        m_CharacterUI.m_WSkillCdText.enabled=true;
+        m_CurrentMana-=m_WSkillMana;
+        m_WSkillOnCd=true;
+        StopRecall();
     }
     void UseESkill()
     {
@@ -346,13 +357,17 @@ public class CharacterMaster : MonoBehaviour
         else
         {
             Debug.Log("USE E SKILL");
-            m_ESkillTimer=m_ESkillCooldown;
-            m_CharacterUI.m_ESkillCdImage.fillAmount=1.0f;
-            m_CharacterUI.m_ESkillCdText.enabled=true;
-            m_CurrentMana-=m_ESkillMana;
-            m_ESkillOnCd=true;
-            StopRecall();
+            ESkill();
         }
+    }
+    protected virtual void ESkill()
+    {
+        m_ESkillTimer=m_ESkillCooldown;
+        m_CharacterUI.m_ESkillCdImage.fillAmount=1.0f;
+        m_CharacterUI.m_ESkillCdText.enabled=true;
+        m_CurrentMana-=m_ESkillMana;
+        m_ESkillOnCd=true;
+        StopRecall();
     }
     void UseRSkill()
     {
@@ -371,13 +386,17 @@ public class CharacterMaster : MonoBehaviour
         else
         {
             Debug.Log("USE R SKILL");
-            m_RSkillTimer=m_RSkillCooldown;
-            m_CharacterUI.m_RSkillCdImage.fillAmount=1.0f;
-            m_CharacterUI.m_RSkillCdText.enabled=true;
-            m_CurrentMana-=m_RSkillMana;
-            m_RSkillOnCd=true;
-            StopRecall();
+            RSkill();
         }
+    }
+    protected virtual void RSkill()
+    {
+        m_RSkillTimer=m_RSkillCooldown;
+        m_CharacterUI.m_RSkillCdImage.fillAmount=1.0f;
+        m_CharacterUI.m_RSkillCdText.enabled=true;
+        m_CurrentMana-=m_RSkillMana;
+        m_RSkillOnCd=true;
+        StopRecall();
     }
     void UseSummonerSpell1()
     {
@@ -413,14 +432,24 @@ public class CharacterMaster : MonoBehaviour
     }
     void SkillsCooldown(ref bool IsOnCd, Image SkillImage, ref float SkillTimer, float SkillCd, TMPro.TextMeshProUGUI CdText)
     {
-        SkillTimer-=Time.deltaTime;
-        if(SkillTimer>=1.0f)
-            CdText.text=SkillTimer.ToString("f0");
-        else
-            CdText.text=SkillTimer.ToString("f1");
-        SkillImage.fillAmount=SkillTimer/SkillCd;
-        if(SkillTimer<=0.0f)
+        if(!m_ZeroCooldown)
         {
+            SkillTimer-=Time.deltaTime;
+            if(SkillTimer>=1.0f)
+                CdText.text=SkillTimer.ToString("f0");
+            else
+                CdText.text=SkillTimer.ToString("f1");
+            SkillImage.fillAmount=SkillTimer/SkillCd;
+            if(SkillTimer<=0.0f)
+            {
+                IsOnCd=false;
+                CdText.enabled=false;
+            }
+        } 
+        else
+        {
+            SkillImage.fillAmount=0.0f;
+            SkillTimer=0.0f;
             IsOnCd=false;
             CdText.enabled=false;
         }
@@ -470,36 +499,38 @@ public class CharacterMaster : MonoBehaviour
         m_Recalling=false;
         m_CharacterUI.HideRecallUI();
     }
-    void LevelUp()
+    public void LevelUp()
     {
         m_CurrentExp-=m_ExpPerLevel[m_CurrentLevel];
+        if(m_CurrentExp<0.0f)
+            m_CurrentExp=0.0f;
         m_CurrentLevel++;
         if(m_CurrentLevel>=18)
             m_CharacterUI.UpdateExpBar(1.0f, 1.0f);
         m_CharacterUI.ShowLevelUpSkillButtons();
         m_SkillPoints++;
         m_CharacterUI.UpdateCharacterLevel(m_CurrentLevel);
-        LevelUpStat(m_MaxHealth, out m_MaxHealth, m_CurrentHealth, out m_CurrentHealth, m_BaseHealth, m_HealthPerLevel);
-        LevelUpStat(m_MaxMana, out m_MaxMana, m_CurrentMana, out m_CurrentMana, m_BaseMana, m_ManaPerLevel);
-        LevelUpStat(out m_AttackDamage, m_BaseAttackDamage, m_AttackDamagePerLevel);
-        LevelUpStat(out m_AttackSpeed, m_BaseAttackSpeed, m_AttackSpeedPerLevel);
-        LevelUpStat(out m_Armor, m_BaseArmor, m_ArmorPerLevel);
-        LevelUpStat(out m_MagicResistance, m_BaseMagicResist, m_MagicResistPerLevel);
-        LevelUpStat(out m_HealthRegen, m_BaseHealthRegen, m_HealthRegenPerLevel);
-        LevelUpStat(out m_ManaRegen, m_BaseManaRegen, m_ManaRegenPerLevel);
+        RecalculateStat(m_MaxHealth, out m_MaxHealth, m_CurrentHealth, out m_CurrentHealth, m_BaseHealth, m_HealthPerLevel, m_HealthBonus);
+        RecalculateStat(m_MaxMana, out m_MaxMana, m_CurrentMana, out m_CurrentMana, m_BaseMana, m_ManaPerLevel, m_ManaBonus);
+        RecalculateStat(out m_AttackDamage, m_BaseAttackDamage, m_AttackDamagePerLevel, m_AttackDamageBonus);
+        RecalculateStat(out m_AttackSpeed, m_BaseAttackSpeed, m_AttackSpeedPerLevel, m_AttackSpeedBonus);
+        RecalculateStat(out m_Armor, m_BaseArmor, m_ArmorPerLevel, m_ArmorBonus);
+        RecalculateStat(out m_MagicResistance, m_BaseMagicResist, m_MagicResistPerLevel, m_MagicResistBonus);
+        RecalculateStat(out m_HealthRegen, m_BaseHealthRegen, m_HealthRegenPerLevel, m_HealthRegenBonus);
+        RecalculateStat(out m_ManaRegen, m_BaseManaRegen, m_ManaRegenPerLevel, m_ManaRegenBonus);
     }
-    void LevelUpStat(out float Stat, float BaseStat, float Increase)
-    {
-        Stat=BaseStat+0.0f+Increase*(m_CurrentLevel-1.0f)*(0.7025f+0.0175f*(m_CurrentLevel-1.0f));
-    }
-    void LevelUpStat(float Stat, out float StatIncreased, float Current, out float CurrentIncreased, float BaseStat, float Increase)
+    void RecalculateStat(float Stat, out float StatRef, float Current, out float CurrentRef, float BaseStat, float LevelIncr, float Bonus)
     {
         float l_InitMaxStat=Stat;
-        StatIncreased=BaseStat+0.0f+Increase*(m_CurrentLevel-1.0f)*(0.7025f+0.0175f*(m_CurrentLevel-1.0f));
-        float l_Difference=StatIncreased-l_InitMaxStat;
-        CurrentIncreased=Current+l_Difference;
+        StatRef=BaseStat+Bonus+LevelIncr*(m_CurrentLevel-1.0f)*(0.7025f+0.0175f*(m_CurrentLevel-1.0f));
+        float l_Difference=StatRef-l_InitMaxStat;
+        CurrentRef=Current+l_Difference;
     }
-    void SetInitStats()
+    void RecalculateStat(out float StatRef, float BaseStat, float LevelIncr, float Bonus)
+    {
+        StatRef=BaseStat+Bonus+LevelIncr*(m_CurrentLevel-1.0f)*(0.7025f+0.0175f*(m_CurrentLevel-1.0f));
+    }
+    public void SetInitStats()
     {
         m_MaxHealth=m_BaseHealth;
         m_MaxMana=m_BaseMana;
@@ -509,13 +540,55 @@ public class CharacterMaster : MonoBehaviour
         m_MagicResistance=m_BaseMagicResist;
         m_HealthRegen=m_BaseHealthRegen;
         m_ManaRegen=m_BaseManaRegen;
+
+        m_HealthBonus=0.0f;
+        m_ManaBonus=0.0f;
+        m_AttackDamageBonus=0.0f;
+        m_AttackSpeedBonus=0.0f;
+        m_ArmorBonus=0.0f;
+        m_MagicResistBonus=0.0f;
+        m_ManaRegenBonus=0.0f;
+        m_HealthRegenBonus=0.0f;
+
+        m_CurrentHealth=m_MaxHealth;
+        m_CurrentMana=m_MaxMana;
+        m_CurrentLevel=1;
+        m_SkillPoints=1;
+        m_QSkillLevel=0;
+        m_WSkillLevel=0;
+        m_ESkillLevel=0;
+        m_RSkillLevel=0;
+
+        m_CharacterUI.UpdateCharacterLevel(m_CurrentLevel);
+        m_CharacterUI.ResetSkillLevelPoints();
+        m_CharacterUI.HideLevelUpSkillButtons();
+        m_CharacterUI.ShowLevelUpSkillButtons();
     }
+    public void AddHealthBonus(float Bonus)
+    {
+        m_HealthBonus+=Bonus;
+        RecalculateStat(m_MaxHealth, out m_MaxHealth, m_CurrentHealth, out m_CurrentHealth, m_BaseHealth, m_HealthPerLevel, m_HealthBonus);
+    }
+	public void TakeDamage(float PhysDamage, float MagicDamage)
+    {
+        if(PhysDamage>0.0f)
+        {
+            m_CurrentHealth-=PhysDamage/(1.0f+m_Armor/100.0f);
+            Debug.Log("Taking "+PhysDamage+" physical damage, reduced to "+(PhysDamage/(1.0f+m_Armor/100.0f))+" damage");
+        }
+        if(MagicDamage>0.0f)
+        {
+            m_CurrentHealth-=MagicDamage/(1.0f+m_MagicResistance/100.0f);
+            Debug.Log("Taking "+MagicDamage+" magical damage, reduced to "+(MagicDamage/(1.0f+m_Armor/100.0f))+" damage");
+        }
+	}
 
     //LLAMADA POR EVENTO EN LA ANIMACION DE AUTOATAQUE
     void PerformAutoAttack()
     {
-        Debug.Log("ATTACKING - Since last auto: "+m_TimeSinceLastAuto);
+        //Debug.Log("ATTACKING - Since last auto: "+m_TimeSinceLastAuto);
         m_TimeSinceLastAuto=0.0f;
+        m_DesiredEnemy.GetComponent<ITakeDamage>().TakeDamage(m_AttackDamage, m_AbilityPower);
     }
 
     //GETTERS & SETTERS
@@ -526,5 +599,38 @@ public class CharacterMaster : MonoBehaviour
     public float GetAttackSpeed()
     {
         return m_AttackSpeed;
+    }
+    public float GetMaxHealth()
+    {
+        return m_MaxHealth;
+    }
+    public void SetMaxHealth(float Health)
+    {
+        m_MaxHealth=Health;
+    }
+    public float GetCurrentHealth()
+    {
+        return m_CurrentHealth;
+    }
+    public void SetCurrentHealth(float Health)
+    {
+        m_CurrentHealth=Health;
+        Debug.Log("Set health: "+Health);
+    }
+    public float GetMaxMana()
+    {
+        return m_MaxMana;
+    }
+    public void SetCurrentMana(float Mana)
+    {
+        m_CurrentMana=Mana;
+    }
+    public void SetZeroCooldown(bool Active)
+    {
+        m_ZeroCooldown=Active;
+    }
+    public CameraController GetCameraController()
+    {
+        return m_CharacterCamera;
     }
 }
