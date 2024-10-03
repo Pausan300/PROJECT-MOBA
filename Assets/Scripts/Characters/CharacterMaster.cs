@@ -110,6 +110,7 @@ public class CharacterMaster : MonoBehaviour, ITakeDamage
     bool m_ReachedDesiredPosition;
     bool m_Moving;
     bool m_Attacking;
+    bool m_Disabled;
     float m_TimeSinceLastAuto;
     float m_AttackAnimLength;
 
@@ -139,8 +140,11 @@ public class CharacterMaster : MonoBehaviour, ITakeDamage
         Vector3 l_MousePosition=Input.mousePosition;
         l_MousePosition.z=10.0f;
         Vector3 l_MouseDirection=m_CharacterCamera.m_Camera.ScreenToWorldPoint(l_MousePosition)-m_CharacterCamera.m_Camera.transform.position;
-        MouseTargeting(l_MouseDirection);
-        CharacterMovement();
+        if(!m_Disabled)
+        {
+            MouseTargeting(l_MouseDirection);
+            CharacterMovement();
+        }
         ResourceRestoring();
         m_CharacterUI.UpdatePrimStats(m_AttackDamage, m_Armor, m_AttackSpeed, m_CriticalChance, m_AbilityPower, m_MagicResistance, m_CooldownReduction, m_MovementSpeed);
         m_CharacterUI.UpdateSeconStats(m_HealthRegen, m_ArmorPenetrationFixed, m_ArmorPenetrationPct, m_LifeSteal, m_AttackRange, m_ManaRegen, m_MagicPenetrationFixed, 
@@ -174,21 +178,24 @@ public class CharacterMaster : MonoBehaviour, ITakeDamage
         else if(Input.GetKeyUp(KeyCode.C))
             m_CharacterUI.HideSeconStatsPanel();
 
-        if(Input.GetKeyDown(KeyCode.B))
-            UseRecall();
+        if(!m_Disabled)
+        {
+            if(Input.GetKeyDown(KeyCode.B))
+                UseRecall();
 
-        if(Input.GetKeyDown(KeyCode.Q))
-            UseQSkill();
-        if(Input.GetKeyDown(KeyCode.W))
-            UseWSkill();
-        if(Input.GetKeyDown(KeyCode.E))
-            UseESkill();
-        if(Input.GetKeyDown(KeyCode.R))
-            UseRSkill();
-        if(Input.GetKeyDown(KeyCode.D))
-            UseSummonerSpell1();
-        if(Input.GetKeyDown(KeyCode.F))
-            UseSummonerSpell2();
+            if(Input.GetKeyDown(KeyCode.Q))
+                UseQSkill();
+            if(Input.GetKeyDown(KeyCode.W))
+                UseWSkill();
+            if(Input.GetKeyDown(KeyCode.E))
+                UseESkill();
+            if(Input.GetKeyDown(KeyCode.R))
+                UseRSkill();
+            if(Input.GetKeyDown(KeyCode.D))
+                UseSummonerSpell1();
+            if(Input.GetKeyDown(KeyCode.F))
+                UseSummonerSpell2();
+        }
 
         if(m_QSkillOnCd)
             SkillsCooldown(ref m_QSkillOnCd, m_CharacterUI.m_QSkillCdImage, ref m_QSkillTimer, m_QSkillCooldown, m_CharacterUI.m_QSkillCdText);
@@ -234,13 +241,20 @@ public class CharacterMaster : MonoBehaviour, ITakeDamage
                 {
                     m_DesiredPosition=l_CameraRaycastHit.point;
                     m_DesiredEnemy=null;
-                    m_Attacking=false;
-                    m_CharacterAnimator.SetBool("IsAAttacking", false);
                     m_ReachedDesiredPosition=false;
+                    StopAttacking();
                     StopRecall();
                 }
             }
         }
+    }
+    public Vector3 GetMouseDirection()
+    {
+        Vector3 l_MousePosition=Input.mousePosition;
+        l_MousePosition.z=10.0f;
+        Vector3 l_MouseDirection=m_CharacterCamera.m_Camera.ScreenToWorldPoint(l_MousePosition)-transform.position;
+        l_MouseDirection.y=0.0f;
+        return l_MouseDirection;
     }
     void CharacterMovement()
     {
@@ -276,11 +290,19 @@ public class CharacterMaster : MonoBehaviour, ITakeDamage
             }
         }
     }
-    void StopMovement()
+    public void StopMovement()
     {
         m_ReachedDesiredPosition=true;
         m_Moving=false;
         m_CharacterAnimator.SetBool("IsMoving", false);
+    }
+    public void StopAttacking()
+    {
+        if(m_Attacking)
+        {
+            m_Attacking=false;
+            m_CharacterAnimator.SetBool("IsAAttacking", false);
+        }
     }
 	void UseQSkill()
     {
@@ -478,14 +500,10 @@ public class CharacterMaster : MonoBehaviour, ITakeDamage
             m_CurrentRecallTime=m_RecallTime;
             m_Recalling=true;
             StopMovement();
-            if(m_Attacking)
-            {
-                m_Attacking=false;
-                m_CharacterAnimator.SetBool("IsAAttacking", false);
-            }
+            StopAttacking();
         }
     }
-    void StopRecall()
+    public void StopRecall()
     {
         if(m_Recalling)
         {
@@ -581,6 +599,7 @@ public class CharacterMaster : MonoBehaviour, ITakeDamage
             m_CurrentHealth-=MagicDamage/(1.0f+m_MagicResistance/100.0f);
             Debug.Log("Taking "+MagicDamage+" magical damage, reduced to "+(MagicDamage/(1.0f+m_Armor/100.0f))+" damage");
         }
+        StopRecall();
 	}
 
     //LLAMADA POR EVENTO EN LA ANIMACION DE AUTOATAQUE
@@ -595,6 +614,14 @@ public class CharacterMaster : MonoBehaviour, ITakeDamage
     public float GetAttackAnimationLength()
     {
         return m_AttackAnimLength;
+    }
+    public bool GetIsMoving()
+    {
+        return m_Moving;
+    }
+    public void SetDisabled(bool Disabled)
+    {
+        m_Disabled=Disabled;
     }
     public float GetAttackSpeed()
     {
