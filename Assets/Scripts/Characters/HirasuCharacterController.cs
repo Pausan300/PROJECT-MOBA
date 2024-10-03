@@ -29,7 +29,7 @@ public class HirasuCharacterController : CharacterMaster
 	}
 	protected override void RSkill()
 	{
-		if(GetCurrentHealth()>5000.0f)
+		//if(GetCurrentHealth()>5000.0f)
 			base.RSkill();
 	}
 }

@@ -183,7 +183,8 @@ public class PracticeModeUI : MonoBehaviour
     }
     public void HealthUpButton()
     {
-        m_Character.AddHealthBonus(100.0f);
+        foreach(EnemyDummy Enemy in m_EnemiesList)
+            Enemy.AddHealth(100.0f);
     }
     public void EnemyAttackButton()
     {

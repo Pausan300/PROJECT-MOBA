@@ -75,4 +75,11 @@ public class EnemyDummy : MonoBehaviour, ITakeDamage
     {
         m_Canvas.m_Camera=CanvasCamera;
     }
+    public void AddHealth(float Health)
+    {
+        m_MaxHealth+=Health;
+        m_CurrentHealth+=Health;
+        if(m_CurrentHealth>m_MaxHealth)
+            m_CurrentHealth=m_MaxHealth;
+    }
 }
