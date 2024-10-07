@@ -3,11 +3,23 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+public struct MovSpeedMultiplicative
+{
+    public float m_Amount;
+    public string m_Name;
+    public MovSpeedMultiplicative(float Amount, string Name)
+    {
+        m_Amount=Amount;
+        m_Name=Name;
+    }
+}
+
 public class CharacterMaster : MonoBehaviour, ITakeDamage
 {
     CharacterUI m_CharacterUI;
     CameraController m_CharacterCamera;
     Animator m_CharacterAnimator;
+    AudioSource m_AudioSource;
 
     [Header("PLAYER INFO")]
     public string m_PlayerName;
@@ -22,7 +34,7 @@ public class CharacterMaster : MonoBehaviour, ITakeDamage
     public float m_BaseHealthRegen;
     public float m_BaseManaRegen;
     public float m_AttackRange;
-    public float m_MovementSpeed;
+    public float m_BaseMovementSpeed;
     float m_MaxHealth;
     float m_MaxMana;
     float m_CurrentHealth;
@@ -45,6 +57,7 @@ public class CharacterMaster : MonoBehaviour, ITakeDamage
     float m_LifeSteal;
     float m_OmniDrain;
     float m_ShieldsAndHealsPower;
+    float m_MovementSpeed;
     
     [Header("GROWTH STATS")]
     public float m_HealthPerLevel;
@@ -63,6 +76,9 @@ public class CharacterMaster : MonoBehaviour, ITakeDamage
     float m_MagicResistBonus;
     float m_HealthRegenBonus;
     float m_ManaRegenBonus;
+    float m_MoveSpeedBonusFlat;
+    float m_MoveSpeedBonusAddi;
+    List<MovSpeedMultiplicative> m_MoveSpeedBonusMult=new List<MovSpeedMultiplicative>();
 
     [Header("EXPERIENCE")]
     public int m_CurrentLevel;
@@ -98,6 +114,7 @@ public class CharacterMaster : MonoBehaviour, ITakeDamage
     float m_SumSpell2Timer;
     bool m_SumSpell2OnCd;
     bool m_ZeroCooldown;
+    public LayerMask m_DamageLayerMask;
 
     [Header("RECALL")]
     public float m_RecallTime;
@@ -106,12 +123,12 @@ public class CharacterMaster : MonoBehaviour, ITakeDamage
     bool m_Recalling;
 
     Vector3 m_DesiredPosition;
-    Transform m_DesiredEnemy;
-    bool m_ReachedDesiredPosition;
-    bool m_Moving;
+    public Transform m_DesiredEnemy;
+    bool m_GoingToDesiredPosition;
+    bool m_LookingForNextPosition;
     bool m_Attacking;
     bool m_Disabled;
-    float m_TimeSinceLastAuto;
+    public float m_TimeSinceLastAuto;
     float m_AttackAnimLength;
 
 	protected virtual void Start()
@@ -119,6 +136,7 @@ public class CharacterMaster : MonoBehaviour, ITakeDamage
         m_CharacterCamera=GetComponent<CameraController>();
         m_CharacterAnimator=GetComponent<Animator>();
         m_CharacterUI=GetComponent<CharacterUI>();
+        m_AudioSource=GetComponent<AudioSource>();
         AnimationClip[] l_Clips=m_CharacterAnimator.runtimeAnimatorController.animationClips;
         foreach(AnimationClip clip in l_Clips)
         {
@@ -129,7 +147,7 @@ public class CharacterMaster : MonoBehaviour, ITakeDamage
                     break;
             }
         }
-        m_ReachedDesiredPosition=true;
+        m_GoingToDesiredPosition=false;
         m_DesiredEnemy=null;
         m_CharacterUI.SetPlayer(this);
         m_CharacterUI.SetPlayerName(m_PlayerName);
@@ -140,13 +158,13 @@ public class CharacterMaster : MonoBehaviour, ITakeDamage
         Vector3 l_MousePosition=Input.mousePosition;
         l_MousePosition.z=10.0f;
         Vector3 l_MouseDirection=m_CharacterCamera.m_Camera.ScreenToWorldPoint(l_MousePosition)-m_CharacterCamera.m_Camera.transform.position;
+        MouseTargeting(l_MouseDirection);
         if(!m_Disabled)
         {
-            MouseTargeting(l_MouseDirection);
             CharacterMovement();
         }
         ResourceRestoring();
-        m_CharacterUI.UpdatePrimStats(m_AttackDamage, m_Armor, m_AttackSpeed, m_CriticalChance, m_AbilityPower, m_MagicResistance, m_CooldownReduction, m_MovementSpeed);
+        m_CharacterUI.UpdatePrimStats(m_AttackDamage, m_Armor, m_AttackSpeed, m_CriticalChance, m_AbilityPower, m_MagicResistance, m_CooldownReduction, m_BaseMovementSpeed);
         m_CharacterUI.UpdateSeconStats(m_HealthRegen, m_ArmorPenetrationFixed, m_ArmorPenetrationPct, m_LifeSteal, m_AttackRange, m_ManaRegen, m_MagicPenetrationFixed, 
             m_MagicPenetrationPct, m_OmniDrain, m_Tenacity, m_ShieldsAndHealsPower);
         if(m_Recalling)
@@ -157,9 +175,15 @@ public class CharacterMaster : MonoBehaviour, ITakeDamage
                 TeleportToSpawn();
         }
 
-#if UNITY_EDITOR
         if(m_Attacking)
+        { 
+            if(Input.GetKeyDown(KeyCode.S))
+                StopAttacking();
+#if UNITY_EDITOR
             m_TimeSinceLastAuto+=Time.deltaTime;
+#endif
+        }
+#if UNITY_EDITOR
         if(Input.GetKeyDown(KeyCode.P))
         {
             m_CurrentExp+=200.0f;
@@ -209,6 +233,11 @@ public class CharacterMaster : MonoBehaviour, ITakeDamage
             SkillsCooldown(ref m_SumSpell1OnCd, m_CharacterUI.m_SumSpell1CdImage, ref m_SumSpell1Timer, m_SumSpell1Cooldown, m_CharacterUI.m_SumSpell1CdText);
         if(m_SumSpell2OnCd)
             SkillsCooldown(ref m_SumSpell2OnCd, m_CharacterUI.m_SumSpell2CdImage, ref m_SumSpell2Timer, m_SumSpell2Cooldown, m_CharacterUI.m_SumSpell2CdText);
+
+        m_MovementSpeed=m_BaseMovementSpeed+m_MoveSpeedBonusFlat;
+        m_MovementSpeed*=1.0f+(m_MoveSpeedBonusAddi/100.0f);
+        for(int i=0; i<m_MoveSpeedBonusMult.Count; i++)
+            m_MovementSpeed*=1.0f+(m_MoveSpeedBonusMult[i].m_Amount/100.0f);
     }
     void MouseTargeting(Vector3 MouseDirection)
     {
@@ -217,22 +246,21 @@ public class CharacterMaster : MonoBehaviour, ITakeDamage
         {
             if(Physics.Raycast(m_CharacterCamera.m_Camera.transform.position, MouseDirection, out l_CameraRaycastHit, 1000.0f, m_CharacterCamera.m_CameraLayerMask))
             {
-                Debug.DrawLine(m_CharacterCamera.m_Camera.transform.position, l_CameraRaycastHit.point, Color.red);
                 if(l_CameraRaycastHit.transform.CompareTag("Enemy"))
                 {
                     m_DesiredEnemy=l_CameraRaycastHit.transform;
                     m_DesiredPosition=m_DesiredEnemy.position;
                     m_DesiredPosition.y=0.0f;
-                    m_ReachedDesiredPosition=false;
+                    m_GoingToDesiredPosition=true;
                     StopRecall();
                 }
             }
-            m_Moving=true;
+            m_LookingForNextPosition=true;
         }
         else if(Input.GetMouseButtonUp(1))
-            m_Moving=false;
+            m_LookingForNextPosition=false;
 
-        if(m_Moving)
+        if(m_LookingForNextPosition)
         {
             if(Physics.Raycast(m_CharacterCamera.m_Camera.transform.position, MouseDirection, out l_CameraRaycastHit, 1000.0f, m_CharacterCamera.m_CameraLayerMask))
             {
@@ -240,25 +268,18 @@ public class CharacterMaster : MonoBehaviour, ITakeDamage
                 if(l_CameraRaycastHit.transform.CompareTag("Terrain"))
                 {
                     m_DesiredPosition=l_CameraRaycastHit.point;
+                    m_DesiredPosition.y=0.0f;
                     m_DesiredEnemy=null;
-                    m_ReachedDesiredPosition=false;
+                    m_GoingToDesiredPosition=true;
                     StopAttacking();
                     StopRecall();
                 }
             }
         }
     }
-    public Vector3 GetMouseDirection()
-    {
-        Vector3 l_MousePosition=Input.mousePosition;
-        l_MousePosition.z=10.0f;
-        Vector3 l_MouseDirection=m_CharacterCamera.m_Camera.ScreenToWorldPoint(l_MousePosition)-transform.position;
-        l_MouseDirection.y=0.0f;
-        return l_MouseDirection;
-    }
     void CharacterMovement()
     {
-        if(!m_ReachedDesiredPosition)
+        if(m_GoingToDesiredPosition)
         {
             Vector3 l_CharacterDirection=m_DesiredPosition-transform.position;
             l_CharacterDirection.Normalize();
@@ -280,23 +301,55 @@ public class CharacterMaster : MonoBehaviour, ITakeDamage
             } 
             else
             {
-                m_ReachedDesiredPosition=true;
+                m_GoingToDesiredPosition=false;
                 m_CharacterAnimator.SetBool("IsMoving", false);
-                if(m_DesiredEnemy)
-                {
-                    m_Attacking=true;
-                    m_CharacterAnimator.SetBool("IsAAttacking", true);
-                } 
+                StartAttacking();
             }
         }
     }
+    public bool GetEnemyWithMouse()
+    {
+        Vector3 l_MousePosition=Input.mousePosition;
+        l_MousePosition.z=10.0f;
+        Vector3 l_MouseDirection=m_CharacterCamera.m_Camera.ScreenToWorldPoint(l_MousePosition)-m_CharacterCamera.m_Camera.transform.position;
+        RaycastHit l_CameraRaycastHit;
+        if(Physics.Raycast(m_CharacterCamera.m_Camera.transform.position, l_MouseDirection, out l_CameraRaycastHit, 1000.0f, m_CharacterCamera.m_CameraLayerMask))
+        {
+            if(l_CameraRaycastHit.transform.CompareTag("Enemy"))
+            {
+                m_DesiredEnemy=l_CameraRaycastHit.transform;
+                m_DesiredPosition=m_DesiredEnemy.position;
+                m_DesiredPosition.y=0.0f;
+                m_GoingToDesiredPosition=true;
+                StopRecall();
+                return true;
+            }
+        }
+        return false;
+    }
+    public Vector3 GetDirectionWithMouse()
+    {
+        Vector3 l_MousePosition=Input.mousePosition;
+        l_MousePosition.z=10.0f;
+        Vector3 l_MouseDirection=m_CharacterCamera.m_Camera.ScreenToWorldPoint(l_MousePosition)-transform.position;
+        l_MouseDirection.y=0.0f;
+        return l_MouseDirection;
+    }
     public void StopMovement()
     {
-        m_ReachedDesiredPosition=true;
-        m_Moving=false;
+        m_GoingToDesiredPosition=false;
+        m_LookingForNextPosition=false;
         m_CharacterAnimator.SetBool("IsMoving", false);
     }
-    public void StopAttacking()
+    protected virtual void StartAttacking()
+    {
+        if(m_DesiredEnemy)
+        {
+            m_Attacking=true;
+            m_CharacterAnimator.SetBool("IsAAttacking", true);
+        } 
+    }
+    protected virtual void StopAttacking()
     {
         if(m_Attacking)
         {
@@ -517,7 +570,7 @@ public class CharacterMaster : MonoBehaviour, ITakeDamage
         m_Recalling=false;
         m_CharacterUI.HideRecallUI();
     }
-    public void LevelUp()
+    public virtual void LevelUp()
     {
         m_CurrentExp-=m_ExpPerLevel[m_CurrentLevel];
         if(m_CurrentExp<0.0f)
@@ -558,6 +611,7 @@ public class CharacterMaster : MonoBehaviour, ITakeDamage
         m_MagicResistance=m_BaseMagicResist;
         m_HealthRegen=m_BaseHealthRegen;
         m_ManaRegen=m_BaseManaRegen;
+        m_MovementSpeed=m_BaseMovementSpeed;
 
         m_HealthBonus=0.0f;
         m_ManaBonus=0.0f;
@@ -582,10 +636,31 @@ public class CharacterMaster : MonoBehaviour, ITakeDamage
         m_CharacterUI.HideLevelUpSkillButtons();
         m_CharacterUI.ShowLevelUpSkillButtons();
     }
-    public void AddHealthBonus(float Bonus)
+    public void SetHealthBonus(float Bonus)
     {
         m_HealthBonus+=Bonus;
         RecalculateStat(m_MaxHealth, out m_MaxHealth, m_CurrentHealth, out m_CurrentHealth, m_BaseHealth, m_HealthPerLevel, m_HealthBonus);
+    }
+    public void SetMovementSpeedBonus(float FlatBonus, float AddiBonus, MovSpeedMultiplicative MultBonus)
+    {
+        if(FlatBonus!=0.0f)
+            m_MoveSpeedBonusFlat+=FlatBonus;
+        if(AddiBonus!=0.0f)
+            m_MoveSpeedBonusAddi+=AddiBonus;
+        if(MultBonus.m_Amount>0.0f)
+            m_MoveSpeedBonusMult.Add(MultBonus);
+    }
+    public IEnumerator RemoveMovementSpeedBonus(float Time, string Name)
+    {
+        yield return new WaitForSeconds(Time);
+        foreach(MovSpeedMultiplicative Bonus in m_MoveSpeedBonusMult)
+        {
+            if(Bonus.m_Name==Name)
+            {
+                m_MoveSpeedBonusMult.Remove(Bonus);
+                break;
+            }
+        }
     }
 	public void TakeDamage(float PhysDamage, float MagicDamage)
     {
@@ -599,14 +674,17 @@ public class CharacterMaster : MonoBehaviour, ITakeDamage
             m_CurrentHealth-=MagicDamage/(1.0f+m_MagicResistance/100.0f);
             Debug.Log("Taking "+MagicDamage+" magical damage, reduced to "+(MagicDamage/(1.0f+m_Armor/100.0f))+" damage");
         }
-        StopRecall();
+        if(m_CurrentRecallTime>0.2f)
+            StopRecall();
 	}
 
     //LLAMADA POR EVENTO EN LA ANIMACION DE AUTOATAQUE
-    void PerformAutoAttack()
+    protected virtual void PerformAutoAttack()
     {
-        //Debug.Log("ATTACKING - Since last auto: "+m_TimeSinceLastAuto);
+#if UNITY_EDITOR
+        Debug.Log("ATTACKING - Since last auto: "+m_TimeSinceLastAuto);
         m_TimeSinceLastAuto=0.0f;
+#endif
         m_DesiredEnemy.GetComponent<ITakeDamage>().TakeDamage(m_AttackDamage, m_AbilityPower);
     }
 
@@ -615,13 +693,37 @@ public class CharacterMaster : MonoBehaviour, ITakeDamage
     {
         return m_AttackAnimLength;
     }
-    public bool GetIsMoving()
+    public void SetAnimatorBool(string Name, bool True)
     {
-        return m_Moving;
+        m_CharacterAnimator.SetBool(Name, True);
+    }
+    public bool GetAnimatorBool(string Name)
+    {
+        return m_CharacterAnimator.GetBool(Name);
+    }
+    public bool GetIsLookingForPosition()
+    {
+        return m_LookingForNextPosition;
+    }
+    public bool GetIsAttacking()
+    {
+        return m_Attacking;
+    }
+    public void SetIsAttacking(bool Attacking)
+    {
+        m_Attacking=Attacking;
     }
     public void SetDisabled(bool Disabled)
     {
         m_Disabled=Disabled;
+    }
+    public float GetAttackDamage()
+    {
+        return m_AttackDamage;
+    }
+    public float GetAbilityDamage()
+    {
+        return m_AbilityPower;
     }
     public float GetAttackSpeed()
     {
@@ -659,5 +761,13 @@ public class CharacterMaster : MonoBehaviour, ITakeDamage
     public CameraController GetCameraController()
     {
         return m_CharacterCamera;
+    }
+    public AudioSource GetAudioSource()
+    {
+        return m_AudioSource;
+    }
+    public Animator GetAnimator()
+    {
+        return m_CharacterAnimator;
     }
 }
