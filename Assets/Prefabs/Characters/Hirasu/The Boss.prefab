@@ -10663,7 +10663,6 @@ GameObject:
   m_Component:
   - component: {fileID: 448230636209163414}
   - component: {fileID: 5926831016879641919}
-  - component: {fileID: 4172284575612223585}
   - component: {fileID: 8002538073780764681}
   m_Layer: 0
   m_Name: mesh
@@ -10696,29 +10695,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8175576814537329803}
   m_Mesh: {fileID: 10206, guid: 0000000000000000e000000000000000, type: 0}
---- !u!136 &4172284575612223585
-CapsuleCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8175576814537329803}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 0.5
-  m_Height: 2
-  m_Direction: 1
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!23 &8002538073780764681
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -16511,6 +16487,9 @@ MonoBehaviour:
   m_RSkillLevel: 0
   m_SumSpell1Cooldown: 120
   m_SumSpell2Cooldown: 120
+  m_DamageLayerMask:
+    serializedVersion: 2
+    m_Bits: 128
   m_RecallTime: 8
   m_RecallTpPoint: {fileID: 0}
   m_DesiredEnemy: {fileID: 0}
@@ -16525,10 +16504,17 @@ MonoBehaviour:
   m_ERange: 350
   m_EDuration: 0.2
   m_RExplosion: {fileID: 8270496605563521561, guid: cfc56e7e881192d4ba33aed8b187e431, type: 3}
-  m_RExplosionRadius: 250
-  m_RUpgradedExplosionRadius: 350
+  m_RExplosionBlueMaterial: {fileID: 2100000, guid: 06c9c633225fbe24883ab0cfb6a958f0, type: 2}
   m_RTimeToExpand: 0.5
-  m_RDamagePerLevel: 0
+  m_RExplosionRadius:
+  - 250
+  - 350
+  m_RDamagePerLevel:
+  - 250
+  - 300
+  - 350
+  m_RAdditionalDamage: 120
+  m_RSecondExplosionDelay: 0.5
   m_RSound: {fileID: 8300000, guid: 88786828affe0e3458607bb0417fecee, type: 3}
 --- !u!114 &8897145909671556001
 MonoBehaviour:
@@ -16651,7 +16637,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 0}
   m_PlayOnAwake: 0
-  m_Volume: 1
+  m_Volume: 0.294
   m_Pitch: 1
   Loop: 0
   Mute: 0

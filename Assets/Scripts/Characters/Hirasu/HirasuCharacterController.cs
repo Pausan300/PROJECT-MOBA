@@ -16,18 +16,27 @@ public class HirasuCharacterController : CharacterMaster
 	bool m_SecondAttack;
 	float m_SecondAttackTimer;
     [Header("Q SKILL")]
+	public GameObject m_QProjectile;
+	public float m_QMaxHoldTime;
+	public float m_QDuration;
+	public float m_QTapRange;
+	public float m_QHoldRange;
+	public float m_QSplintersDuration;
+	float m_QCurrentHoldTime;
     [Header("W SKILL")]
     [Header("E SKILL")]
 	public float m_ERange;
 	public float m_EDuration;
     [Header("R SKILL")]
 	public GameObject m_RExplosion;
+	public Material m_RExplosionBlueMaterial;
 	public float m_RTimeToExpand;
 	public float[] m_RExplosionRadius;
 	public float[] m_RDamagePerLevel;
 	public float m_RAdditionalDamage;
 	public float m_RSecondExplosionDelay;
 	public AudioClip m_RSound;
+	bool m_UsingR;
 
     protected override void Start()
     {
@@ -52,10 +61,22 @@ public class HirasuCharacterController : CharacterMaster
 				m_SecondAttack=false;
 			}
 		}
+		if(m_UsingR)
+		{
+			if(GetIsAttacking())
+			{
+				StartCoroutine(RAttack());
+				m_UsingR=false;
+			}
+		}
+
     }
 
 	protected override void QSkill()
 	{
+		Vector3 l_Direction=GetDirectionWithMouse();
+		l_Direction.Normalize();
+		SetAnimatorTrigger("IsUsingQ");
 		base.QSkill();
 	}
 	protected override void WSkill()
@@ -76,7 +97,7 @@ public class HirasuCharacterController : CharacterMaster
 		StopAttacking();
 		if(!GetIsLookingForPosition())
 			StopMovement();
-        SetAnimatorBool("IsDashing", true);
+        SetAnimatorBool("IsUsingE", true);
 		transform.forward=Direction;
 		Vector3 l_StartPos=transform.position;
 		float l_Range=m_ERange/100.0f;
@@ -102,21 +123,22 @@ public class HirasuCharacterController : CharacterMaster
 			SetMovementSpeedBonus(0.0f, 0.0f, new MovSpeedMultiplicative(20.0f, "HirasuESkill"));
 			StartCoroutine(RemoveMovementSpeedBonus(1.0f, "HirasuESkill"));
 		}
-        SetAnimatorBool("IsDashing", false);
+        SetAnimatorBool("IsUsingE", false);
 		SetDisabled(false);
 	}
 	protected override void RSkill()
 	{
-		if(GetEnemyWithMouse())
-			StartCoroutine(RAttack());
+		GetEnemyWithMouse();
+		m_UsingR=true;
 	}
 	IEnumerator RAttack()
 	{
-		while(!GetIsAttacking())
-			yield return null;
 		base.RSkill();
+		SetDisabled(true);
 		float l_Damage=m_RDamagePerLevel[m_RSkillLevel-1]+(GetAttackDamage()*(m_RAdditionalDamage/100.0f));
 		SetAnimatorBool("IsUsingR", true);
+		SetAnimatorBool("IsAAttacking", false);
+		SetAnimatorBool("IsAAttacking2", false);
 		GetAudioSource().clip=m_RSound;
 		GetAudioSource().Play();
 		Vector3 l_EnemyPos=m_DesiredEnemy.position;
@@ -130,10 +152,17 @@ public class HirasuCharacterController : CharacterMaster
 			StartCoroutine(RSpawnExplosion(l_EnemyPos, l_DesiredPos, l_ExplosionRadius, l_Scale, l_Damage, true));
 		else
 			StartCoroutine(RSpawnExplosion(l_EnemyPos, l_DesiredPos, l_ExplosionRadius, l_Scale, l_Damage, false));
+		yield return new WaitForSeconds(0.5f);
+		SetDisabled(false);
+		m_UsingR=false;
+		SetAnimatorBool("IsUsingR", false);
+		SetIsAttacking(false);
 	}
 	IEnumerator RSpawnExplosion(Vector3 EnemyPos, Vector3 DesiredPos, float Radius, float Scale, float Damage, bool SecondExplosion)
 	{
 		GameObject l_Explosion=Instantiate(m_RExplosion, EnemyPos, m_RExplosion.transform.rotation);
+		if(SecondExplosion)
+			l_Explosion.GetComponent<MeshRenderer>().material=m_RExplosionBlueMaterial;
 		Vector3 l_DesiredPos=DesiredPos*Radius;
 		float l_Timer=0.0f;
 		List<Collider> l_CollidersHit=new List<Collider>();
@@ -171,10 +200,13 @@ public class HirasuCharacterController : CharacterMaster
         if(m_DesiredEnemy)
         {
             SetIsAttacking(true);
-			if(m_SecondAttack)
-				SetAnimatorBool("IsAAttacking2", true);
-			else
-				SetAnimatorBool("IsAAttacking", true);
+			if(!m_UsingR)
+			{
+				if(m_SecondAttack)
+					SetAnimatorBool("IsAAttacking2", true);
+				else
+					SetAnimatorBool("IsAAttacking", true);
+			}
         } 
 	}
 	protected override void StopAttacking()

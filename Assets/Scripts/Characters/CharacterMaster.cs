@@ -164,7 +164,7 @@ public class CharacterMaster : MonoBehaviour, ITakeDamage
             CharacterMovement();
         }
         ResourceRestoring();
-        m_CharacterUI.UpdatePrimStats(m_AttackDamage, m_Armor, m_AttackSpeed, m_CriticalChance, m_AbilityPower, m_MagicResistance, m_CooldownReduction, m_BaseMovementSpeed);
+        m_CharacterUI.UpdatePrimStats(m_AttackDamage, m_Armor, m_AttackSpeed, m_CriticalChance, m_AbilityPower, m_MagicResistance, m_CooldownReduction, m_MovementSpeed);
         m_CharacterUI.UpdateSeconStats(m_HealthRegen, m_ArmorPenetrationFixed, m_ArmorPenetrationPct, m_LifeSteal, m_AttackRange, m_ManaRegen, m_MagicPenetrationFixed, 
             m_MagicPenetrationPct, m_OmniDrain, m_Tenacity, m_ShieldsAndHealsPower);
         if(m_Recalling)
@@ -292,7 +292,7 @@ public class CharacterMaster : MonoBehaviour, ITakeDamage
             if(m_DesiredEnemy!=null)
                 l_MinDistance=m_AttackRange/100.0f;
             else
-                l_MinDistance=0.25f;
+                l_MinDistance=0.1f;
             transform.forward=l_CharacterDirection;
             if(Vector3.Distance(transform.position, m_DesiredPosition)>l_MinDistance)
             {
@@ -307,7 +307,7 @@ public class CharacterMaster : MonoBehaviour, ITakeDamage
             }
         }
     }
-    public bool GetEnemyWithMouse()
+    public void GetEnemyWithMouse()
     {
         Vector3 l_MousePosition=Input.mousePosition;
         l_MousePosition.z=10.0f;
@@ -322,10 +322,8 @@ public class CharacterMaster : MonoBehaviour, ITakeDamage
                 m_DesiredPosition.y=0.0f;
                 m_GoingToDesiredPosition=true;
                 StopRecall();
-                return true;
             }
         }
-        return false;
     }
     public Vector3 GetDirectionWithMouse()
     {
@@ -696,6 +694,10 @@ public class CharacterMaster : MonoBehaviour, ITakeDamage
     public void SetAnimatorBool(string Name, bool True)
     {
         m_CharacterAnimator.SetBool(Name, True);
+    }
+    public void SetAnimatorTrigger(string Name)
+    {
+        m_CharacterAnimator.SetTrigger(Name);
     }
     public bool GetAnimatorBool(string Name)
     {

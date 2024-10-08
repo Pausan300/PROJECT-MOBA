@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 3033052227420075030}
   - component: {fileID: 6173527170811624058}
   m_Layer: 0
-  m_Name: RExplosion
+  m_Name: HirasuRExplosion
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
