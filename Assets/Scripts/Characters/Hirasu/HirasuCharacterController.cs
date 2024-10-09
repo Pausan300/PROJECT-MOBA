@@ -16,24 +16,28 @@ public class HirasuCharacterController : CharacterMaster
 	bool m_SecondAttack;
 	float m_SecondAttackTimer;
     [Header("Q SKILL")]
+	public float[] m_QDamagePerLevel;
+	public float m_QAdditionalDamage;
 	public GameObject m_QProjectile;
 	public float m_QMaxHoldTime;
+	public float m_QMinHoldTime;
 	public float m_QDuration;
 	public float m_QTapRange;
 	public float m_QHoldRange;
 	public float m_QSplintersDuration;
 	float m_QCurrentHoldTime;
+	bool m_UsingQ;
     [Header("W SKILL")]
     [Header("E SKILL")]
 	public float m_ERange;
 	public float m_EDuration;
     [Header("R SKILL")]
+	public float[] m_RDamagePerLevel;
+	public float m_RAdditionalDamage;
 	public GameObject m_RExplosion;
 	public Material m_RExplosionBlueMaterial;
 	public float m_RTimeToExpand;
 	public float[] m_RExplosionRadius;
-	public float[] m_RDamagePerLevel;
-	public float m_RAdditionalDamage;
 	public float m_RSecondExplosionDelay;
 	public AudioClip m_RSound;
 	bool m_UsingR;
@@ -61,6 +65,10 @@ public class HirasuCharacterController : CharacterMaster
 				m_SecondAttack=false;
 			}
 		}
+		if(m_UsingQ)
+		{
+			QHoldTimeCheck();
+		}
 		if(m_UsingR)
 		{
 			if(GetIsAttacking())
@@ -69,15 +77,47 @@ public class HirasuCharacterController : CharacterMaster
 				m_UsingR=false;
 			}
 		}
-
     }
 
 	protected override void QSkill()
 	{
-		Vector3 l_Direction=GetDirectionWithMouse();
-		l_Direction.Normalize();
-		SetAnimatorTrigger("IsUsingQ");
-		base.QSkill();
+		m_QCurrentHoldTime=0.0f;
+		m_UsingQ=true;
+		GetCharacterUI().ShowRecallUI();
+	}
+	void QHoldTimeCheck()
+	{
+		if(Input.GetKey(KeyCode.Q))
+		{
+			m_QCurrentHoldTime+=Time.deltaTime;
+			GetCharacterUI().UpdateRecallUI(m_QCurrentHoldTime, m_QMaxHoldTime);
+		}
+		else if(Input.GetKeyUp(KeyCode.Q) || m_QCurrentHoldTime>m_QMaxHoldTime)
+		{
+			Vector3 l_Direction=GetDirectionWithMouse();
+			l_Direction.y=0.0f;
+			l_Direction.Normalize();
+			if(m_QCurrentHoldTime<=m_QMinHoldTime)
+			{
+				SetAnimatorTrigger("IsUsingQ");
+				Debug.Log("NORMAL Q");
+			}
+			else if(m_QCurrentHoldTime>m_QMaxHoldTime)
+			{
+				Debug.Log("CAGASTE");
+			}
+			else
+			{
+				SetAnimatorTrigger("IsUsingQ");
+				float l_Range=m_QHoldRange/100.0f;
+				GameObject l_Projectile=Instantiate(m_QProjectile, transform.position, m_QProjectile.transform.rotation);
+				HirasuQProjectile l_ProjectileScript=l_Projectile.GetComponent<HirasuQProjectile>();
+				l_ProjectileScript.SetStats(l_Range, m_QDuration, l_Direction, m_QDamagePerLevel[m_QSkillLevel-1]+(m_QAdditionalDamage/100.0f*GetAttackDamage()));
+			}
+			m_UsingQ=false;
+			base.QSkill();
+			GetCharacterUI().HideRecallUI();
+		}
 	}
 	protected override void WSkill()
 	{

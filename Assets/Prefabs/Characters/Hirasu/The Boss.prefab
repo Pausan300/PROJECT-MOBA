@@ -10665,7 +10665,7 @@ GameObject:
   - component: {fileID: 5926831016879641919}
   - component: {fileID: 8002538073780764681}
   m_Layer: 0
-  m_Name: mesh
+  m_Name: Mesh
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -15698,7 +15698,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 70d8c0e6a3fab214ba722d726cf962f7, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -2.08
+      value: -1.88
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 70d8c0e6a3fab214ba722d726cf962f7, type: 3}
       propertyPath: m_LocalRotation.w
@@ -16432,7 +16432,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2d0e77b5825c8044facb1ff52fb6e5a0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_PlayerName: TOASTED
+  m_PlayerName: HIRASU
   m_BaseHealth: 670
   m_BaseMana: 250
   m_BaseAttackDamage: 65
@@ -16501,6 +16501,13 @@ MonoBehaviour:
   m_Staff: {fileID: 8175576814537329803}
   m_StaffFlames: {fileID: 4195194976546961208}
   m_MaxSecondAttackTime: 2
+  m_QProjectile: {fileID: 8930208601889411723, guid: 9699a90c977bc09448beef67ba2c9b65, type: 3}
+  m_QMaxHoldTime: 3.5
+  m_QMinHoldTime: 0.5
+  m_QDuration: 0.25
+  m_QTapRange: 200
+  m_QHoldRange: 500
+  m_QSplintersDuration: 4
   m_ERange: 350
   m_EDuration: 0.2
   m_RExplosion: {fileID: 8270496605563521561, guid: cfc56e7e881192d4ba33aed8b187e431, type: 3}
@@ -16533,7 +16540,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 224
   m_CharacterOffset: {x: 1, y: 0, z: 0}
-  m_MaxZoom: 9
+  m_MaxZoom: 10
   m_MinZoom: 4
   m_ZoomSpeed: 4
   m_CameraSpeed: 25

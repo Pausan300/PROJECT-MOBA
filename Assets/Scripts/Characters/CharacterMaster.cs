@@ -371,7 +371,6 @@ public class CharacterMaster : MonoBehaviour, ITakeDamage
         }
         else
         {
-            Debug.Log("USE Q SKILL");
             QSkill();
         }
     }
@@ -400,7 +399,6 @@ public class CharacterMaster : MonoBehaviour, ITakeDamage
         }
         else
         {
-            Debug.Log("USE W SKILL");
             WSkill();
         }
     }
@@ -429,7 +427,6 @@ public class CharacterMaster : MonoBehaviour, ITakeDamage
         }
         else
         {
-            Debug.Log("USE E SKILL");
             ESkill();
         }
     }
@@ -458,7 +455,6 @@ public class CharacterMaster : MonoBehaviour, ITakeDamage
         }
         else
         {
-            Debug.Log("USE R SKILL");
             RSkill();
         }
     }
@@ -479,7 +475,6 @@ public class CharacterMaster : MonoBehaviour, ITakeDamage
         }
         else
         {
-            Debug.Log("USE SS1");
             m_SumSpell1Timer=m_SumSpell1Cooldown;
             m_CharacterUI.m_SumSpell1CdImage.fillAmount=1.0f;
             m_CharacterUI.m_SumSpell1CdText.enabled=true;
@@ -495,7 +490,6 @@ public class CharacterMaster : MonoBehaviour, ITakeDamage
         }
         else
         {
-            Debug.Log("USE SS2");
             m_SumSpell2Timer=m_SumSpell2Cooldown;
             m_CharacterUI.m_SumSpell2CdImage.fillAmount=1.0f;
             m_CharacterUI.m_SumSpell2CdText.enabled=true;
@@ -646,7 +640,11 @@ public class CharacterMaster : MonoBehaviour, ITakeDamage
         if(AddiBonus!=0.0f)
             m_MoveSpeedBonusAddi+=AddiBonus;
         if(MultBonus.m_Amount>0.0f)
+        {
+            if(m_MoveSpeedBonusMult.Contains(MultBonus))
+                m_MoveSpeedBonusMult.Remove(MultBonus);
             m_MoveSpeedBonusMult.Add(MultBonus);
+        }
     }
     public IEnumerator RemoveMovementSpeedBonus(float Time, string Name)
     {
@@ -771,5 +769,9 @@ public class CharacterMaster : MonoBehaviour, ITakeDamage
     public Animator GetAnimator()
     {
         return m_CharacterAnimator;
+    }
+    public CharacterUI GetCharacterUI()
+    {
+        return m_CharacterUI;
     }
 }

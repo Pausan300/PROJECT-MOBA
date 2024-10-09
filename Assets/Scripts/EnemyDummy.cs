@@ -62,12 +62,12 @@ public class EnemyDummy : MonoBehaviour, ITakeDamage
         if(PhysDamage>0.0f)
         {
             m_CurrentHealth-=PhysDamage/(1.0f+m_Armor/100.0f);
-            //Debug.Log("Taking "+PhysDamage+" physical damage, reduced to "+(PhysDamage/(1.0f+m_Armor/100.0f))+" damage");
+            Debug.Log("Taking "+PhysDamage+" physical damage, reduced to "+(PhysDamage/(1.0f+m_Armor/100.0f))+" damage");
         }
         if(MagicDamage>0.0f)
         {
             m_CurrentHealth-=MagicDamage/(1.0f+m_MagicResistance/100.0f);
-            //Debug.Log("Taking "+MagicDamage+" magical damage, reduced to "+(MagicDamage/(1.0f+m_Armor/100.0f))+" damage");
+            Debug.Log("Taking "+MagicDamage+" magical damage, reduced to "+(MagicDamage/(1.0f+m_Armor/100.0f))+" damage");
         }
         m_TimerSinceLastDamageTaken=0.0f;
     }
