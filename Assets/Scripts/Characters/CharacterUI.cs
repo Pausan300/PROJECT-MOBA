@@ -67,15 +67,16 @@ public class CharacterUI : MonoBehaviour
     public TextMeshProUGUI m_OmnidrainText;
     public TextMeshProUGUI m_TenacityText;
 
-    [Header("RECALL UI")]
-    public RectTransform m_RecallUI;
-    public Slider m_RecallBar;
-    public TextMeshProUGUI m_RecallTimeText;
+    [Header("CASTING UI")]
+    public RectTransform m_CastingUI;
+    public Slider m_CastingBar;
+    public TextMeshProUGUI m_CastingAbilityText;
+    public TextMeshProUGUI m_CastingTimeText;
 
     void Start()
     {
         HideSeconStatsPanel();
-        HideRecallUI();
+        HideCastingUI();
         HideCdTexts();
     }
     public void UpdateHealthManaBars(float Health, float MaxHealth, float Mana, float MaxMana)
@@ -121,10 +122,10 @@ public class CharacterUI : MonoBehaviour
         m_LevelText.text=Level.ToString();
         m_IngameLevelText.text=Level.ToString();
     }
-    public void UpdateRecallUI(float CurrentRecallTime, float MaxRecallTime)
+    public void UpdateCastingUI(float CurrentRecallTime, float MaxRecallTime)
     {
-        m_RecallBar.value=CurrentRecallTime/MaxRecallTime;
-        m_RecallTimeText.text=CurrentRecallTime.ToString("f1");
+        m_CastingBar.value=CurrentRecallTime/MaxRecallTime;
+        m_CastingTimeText.text=CurrentRecallTime.ToString("f1");
     }
     public void LevelUpQSkill()
     {
@@ -187,13 +188,21 @@ public class CharacterUI : MonoBehaviour
     {
         m_SeconStatsPanel.gameObject.SetActive(false);
     }
-    public void ShowRecallUI()
+    public void ShowCastingUI()
     {
-        m_RecallUI.gameObject.SetActive(true);
+        m_CastingUI.gameObject.SetActive(true);
     }
-    public void HideRecallUI()
+    public void HideCastingUI()
     {
-        m_RecallUI.gameObject.SetActive(false);
+        m_CastingUI.gameObject.SetActive(false);
+    }
+    public void ShowCastingTime()
+    {
+        m_CastingTimeText.gameObject.SetActive(true);
+    }
+    public void HideCastingTime()
+    {
+        m_CastingTimeText.gameObject.SetActive(false);
     }
     public void HideCdTexts()
     {
@@ -228,5 +237,9 @@ public class CharacterUI : MonoBehaviour
     public void SetPlayer(CharacterMaster Player)
     {
         m_Character=Player;
+    }
+    public void SetCastingUIAbilityText(string Text)
+    {
+        m_CastingAbilityText.text=Text;
     }
 }

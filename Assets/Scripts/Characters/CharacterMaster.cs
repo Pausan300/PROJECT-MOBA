@@ -169,7 +169,7 @@ public class CharacterMaster : MonoBehaviour, ITakeDamage
             m_MagicPenetrationPct, m_OmniDrain, m_Tenacity, m_ShieldsAndHealsPower);
         if(m_Recalling)
         {
-            m_CharacterUI.UpdateRecallUI(m_CurrentRecallTime, m_RecallTime);
+            m_CharacterUI.UpdateCastingUI(m_CurrentRecallTime, m_RecallTime);
             m_CurrentRecallTime-=Time.deltaTime;
             if(m_CurrentRecallTime<=0.0f)
                 TeleportToSpawn();
@@ -329,9 +329,18 @@ public class CharacterMaster : MonoBehaviour, ITakeDamage
     {
         Vector3 l_MousePosition=Input.mousePosition;
         l_MousePosition.z=10.0f;
-        Vector3 l_MouseDirection=m_CharacterCamera.m_Camera.ScreenToWorldPoint(l_MousePosition)-transform.position;
-        l_MouseDirection.y=0.0f;
-        return l_MouseDirection;
+        Vector3 l_MouseDirection=m_CharacterCamera.m_Camera.ScreenToWorldPoint(l_MousePosition)-m_CharacterCamera.m_Camera.transform.position;
+        RaycastHit l_CameraRaycastHit;
+        if(Physics.Raycast(m_CharacterCamera.m_Camera.transform.position, l_MouseDirection, out l_CameraRaycastHit, 1000.0f, m_CharacterCamera.m_CameraLayerMask))
+        {
+            if(l_CameraRaycastHit.transform.CompareTag("Enemy") || l_CameraRaycastHit.transform.CompareTag("Terrain"))
+            {
+                Vector3 l_Direction=l_CameraRaycastHit.point-transform.position;
+                l_Direction.y=0.0f;
+                return l_Direction;
+            }
+        }
+        return m_CharacterCamera.m_Camera.ScreenToWorldPoint(l_MousePosition)-transform.position;
     }
     public void StopMovement()
     {
@@ -541,7 +550,9 @@ public class CharacterMaster : MonoBehaviour, ITakeDamage
     {
         if(!m_Recalling)
         {
-            m_CharacterUI.ShowRecallUI();
+            m_CharacterUI.SetCastingUIAbilityText("Recall");
+            m_CharacterUI.ShowCastingTime();
+            m_CharacterUI.ShowCastingUI();
             m_CurrentRecallTime=m_RecallTime;
             m_Recalling=true;
             StopMovement();
@@ -552,7 +563,7 @@ public class CharacterMaster : MonoBehaviour, ITakeDamage
     {
         if(m_Recalling)
         {
-            m_CharacterUI.HideRecallUI();
+            m_CharacterUI.HideCastingUI();
             m_Recalling=false;
         }
     }
@@ -560,7 +571,7 @@ public class CharacterMaster : MonoBehaviour, ITakeDamage
     {
         transform.position=m_RecallTpPoint.position;
         m_Recalling=false;
-        m_CharacterUI.HideRecallUI();
+        m_CharacterUI.HideCastingUI();
     }
     public virtual void LevelUp()
     {

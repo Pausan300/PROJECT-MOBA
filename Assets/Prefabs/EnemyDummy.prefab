@@ -328,6 +328,7 @@ GameObject:
   - component: {fileID: 3095288516329178830}
   - component: {fileID: 5205871527970264931}
   - component: {fileID: 3306758240520443805}
+  - component: {fileID: 8163902907407443686}
   - component: {fileID: 3716759342269532723}
   m_Layer: 7
   m_Name: EnemyDummy
@@ -425,6 +426,33 @@ CapsuleCollider:
   m_Height: 2
   m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!54 &8163902907407443686
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6438156489008617800}
+  serializedVersion: 4
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 0
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 126
+  m_CollisionDetection: 0
 --- !u!114 &3716759342269532723
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -437,7 +465,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 181b61b6a2696f84ea42a5f3c8678dcf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_MaxHealth: 100
+  m_MaxHealth: 500
   m_Canvas: {fileID: 2283608347897315017}
   m_HealthBar: {fileID: 8118942208049473921}
   m_Armor: 25

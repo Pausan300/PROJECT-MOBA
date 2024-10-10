@@ -16449,8 +16449,8 @@ MonoBehaviour:
   m_AttackSpeedPerLevel: 0.022
   m_ArmorPerLevel: 5
   m_MagicResistPerLevel: 2
-  m_HealthRegenPerLevel: 0.45
-  m_ManaRegenPerLevel: 0.5
+  m_HealthRegenPerLevel: 0.55
+  m_ManaRegenPerLevel: 0.68
   m_CurrentLevel: 1
   m_SkillPoints: 0
   m_CurrentExp: 0
@@ -16501,26 +16501,42 @@ MonoBehaviour:
   m_Staff: {fileID: 8175576814537329803}
   m_StaffFlames: {fileID: 4195194976546961208}
   m_MaxSecondAttackTime: 2
+  m_QDamagePerLevel:
+  - 70
+  - 100
+  - 150
+  - 180
+  - 200
+  m_QAdditionalDamage: 80
   m_QProjectile: {fileID: 8930208601889411723, guid: 9699a90c977bc09448beef67ba2c9b65, type: 3}
+  m_QSplinter: {fileID: 7129751519554170862, guid: 1b5cdeb9bd2853d4ca4f5c91d8fe8c95, type: 3}
   m_QMaxHoldTime: 3.5
   m_QMinHoldTime: 0.5
   m_QDuration: 0.25
   m_QTapRange: 200
-  m_QHoldRange: 500
+  m_QHoldRange: 1200
   m_QSplintersDuration: 4
+  m_WDamagePerLevel:
+  - 50
+  - 80
+  - 115
+  - 150
+  - 180
+  m_WExplosionRadius: 100
+  m_WTimeToExpand: 0.5
   m_ERange: 350
   m_EDuration: 0.2
+  m_RDamagePerLevel:
+  - 250
+  - 300
+  - 350
+  m_RAdditionalDamage: 120
   m_RExplosion: {fileID: 8270496605563521561, guid: cfc56e7e881192d4ba33aed8b187e431, type: 3}
   m_RExplosionBlueMaterial: {fileID: 2100000, guid: 06c9c633225fbe24883ab0cfb6a958f0, type: 2}
   m_RTimeToExpand: 0.5
   m_RExplosionRadius:
   - 250
   - 350
-  m_RDamagePerLevel:
-  - 250
-  - 300
-  - 350
-  m_RAdditionalDamage: 120
   m_RSecondExplosionDelay: 0.5
   m_RSound: {fileID: 8300000, guid: 88786828affe0e3458607bb0417fecee, type: 3}
 --- !u!114 &8897145909671556001
@@ -16606,9 +16622,9 @@ MonoBehaviour:
   m_MagicPenText: {fileID: 0}
   m_OmnidrainText: {fileID: 0}
   m_TenacityText: {fileID: 0}
-  m_RecallUI: {fileID: 0}
-  m_RecallBar: {fileID: 0}
-  m_RecallTimeText: {fileID: 0}
+  m_CastingUI: {fileID: 0}
+  m_CastingBar: {fileID: 0}
+  m_CastingTimeText: {fileID: 0}
 --- !u!136 &4279021379374391962
 CapsuleCollider:
   m_ObjectHideFlags: 0

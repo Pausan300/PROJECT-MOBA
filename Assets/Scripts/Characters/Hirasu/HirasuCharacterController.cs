@@ -19,15 +19,20 @@ public class HirasuCharacterController : CharacterMaster
 	public float[] m_QDamagePerLevel;
 	public float m_QAdditionalDamage;
 	public GameObject m_QProjectile;
+	public GameObject m_QSplinter;
 	public float m_QMaxHoldTime;
 	public float m_QMinHoldTime;
 	public float m_QDuration;
 	public float m_QTapRange;
 	public float m_QHoldRange;
 	public float m_QSplintersDuration;
+	List<HirasuQSplinter> m_ActiveSplinters=new List<HirasuQSplinter>();
 	float m_QCurrentHoldTime;
 	bool m_UsingQ;
     [Header("W SKILL")]
+	public float[] m_WDamagePerLevel;
+	public float m_WExplosionRadius;
+	public float m_WTimeToExpand;
     [Header("E SKILL")]
 	public float m_ERange;
 	public float m_EDuration;
@@ -78,49 +83,68 @@ public class HirasuCharacterController : CharacterMaster
 			}
 		}
     }
-
 	protected override void QSkill()
 	{
 		m_QCurrentHoldTime=0.0f;
+		StopAttacking();
+		if(m_UsingR)
+			m_UsingR=false;
 		m_UsingQ=true;
-		GetCharacterUI().ShowRecallUI();
+		GetCharacterUI().SetCastingUIAbilityText("Marcaje");
+		GetCharacterUI().HideCastingTime();
+		GetCharacterUI().ShowCastingUI();
 	}
 	void QHoldTimeCheck()
 	{
-		if(Input.GetKey(KeyCode.Q))
+		if(Input.GetKey(KeyCode.Q) && m_QCurrentHoldTime<=m_QMaxHoldTime)
 		{
 			m_QCurrentHoldTime+=Time.deltaTime;
-			GetCharacterUI().UpdateRecallUI(m_QCurrentHoldTime, m_QMaxHoldTime);
+			GetCharacterUI().UpdateCastingUI(m_QCurrentHoldTime, m_QMaxHoldTime);
 		}
 		else if(Input.GetKeyUp(KeyCode.Q) || m_QCurrentHoldTime>m_QMaxHoldTime)
 		{
 			Vector3 l_Direction=GetDirectionWithMouse();
-			l_Direction.y=0.0f;
 			l_Direction.Normalize();
+			transform.forward=l_Direction;
 			if(m_QCurrentHoldTime<=m_QMinHoldTime)
 			{
 				SetAnimatorTrigger("IsUsingQ");
 				Debug.Log("NORMAL Q");
+				StartCoroutine(EnableInTime(0.5f));
 			}
-			else if(m_QCurrentHoldTime>m_QMaxHoldTime)
-			{
-				Debug.Log("CAGASTE");
-			}
-			else
+			else if(m_QCurrentHoldTime<m_QMaxHoldTime)
 			{
 				SetAnimatorTrigger("IsUsingQ");
 				float l_Range=m_QHoldRange/100.0f;
 				GameObject l_Projectile=Instantiate(m_QProjectile, transform.position, m_QProjectile.transform.rotation);
 				HirasuQProjectile l_ProjectileScript=l_Projectile.GetComponent<HirasuQProjectile>();
-				l_ProjectileScript.SetStats(l_Range, m_QDuration, l_Direction, m_QDamagePerLevel[m_QSkillLevel-1]+(m_QAdditionalDamage/100.0f*GetAttackDamage()));
+				l_ProjectileScript.SetStats(this, l_Range, m_QDuration, l_Direction, m_QDamagePerLevel[m_QSkillLevel-1]+(m_QAdditionalDamage/100.0f*GetAttackDamage()), 
+					m_QSkillLevel, m_QSplinter, m_QSplintersDuration);
+				StartCoroutine(EnableInTime(0.5f));
 			}
 			m_UsingQ=false;
 			base.QSkill();
-			GetCharacterUI().HideRecallUI();
+			GetCharacterUI().HideCastingUI();
 		}
+	}
+	public void AddSplinterToList(HirasuQSplinter Splinter)
+	{
+		m_ActiveSplinters.Add(Splinter);
+	}
+	public void DeleteSplintersFromList(HirasuQSplinter Splinter)
+	{
+		m_ActiveSplinters.Remove(Splinter);
 	}
 	protected override void WSkill()
 	{
+		foreach(HirasuQSplinter Splinter in m_ActiveSplinters)
+		{
+			if(!Splinter.GetAlreadyExploded())
+			{
+				StartCoroutine(Splinter.WSpawnExplosion(m_RExplosion, Splinter.transform.position, m_WExplosionRadius, m_WExplosionRadius*2.0f/100.0f, m_WTimeToExpand, 
+					m_WDamagePerLevel[m_WSkillLevel-1], m_DamageLayerMask));
+			}
+		}
 		base.WSkill();
 	}
 	protected override void ESkill()
@@ -174,7 +198,7 @@ public class HirasuCharacterController : CharacterMaster
 	IEnumerator RAttack()
 	{
 		base.RSkill();
-		SetDisabled(true);
+		EnableInTime(0.5f);
 		float l_Damage=m_RDamagePerLevel[m_RSkillLevel-1]+(GetAttackDamage()*(m_RAdditionalDamage/100.0f));
 		SetAnimatorBool("IsUsingR", true);
 		SetAnimatorBool("IsAAttacking", false);
@@ -193,7 +217,6 @@ public class HirasuCharacterController : CharacterMaster
 		else
 			StartCoroutine(RSpawnExplosion(l_EnemyPos, l_DesiredPos, l_ExplosionRadius, l_Scale, l_Damage, false));
 		yield return new WaitForSeconds(0.5f);
-		SetDisabled(false);
 		m_UsingR=false;
 		SetAnimatorBool("IsUsingR", false);
 		SetIsAttacking(false);
@@ -257,6 +280,12 @@ public class HirasuCharacterController : CharacterMaster
             SetAnimatorBool("IsAAttacking", false);
             SetAnimatorBool("IsAAttacking2", false);
         }
+	}
+	IEnumerator EnableInTime(float Time)
+	{
+		SetDisabled(true);
+		yield return new WaitForSeconds(Time);
+		SetDisabled(false);
 	}
 	protected override void PerformAutoAttack()
 	{
