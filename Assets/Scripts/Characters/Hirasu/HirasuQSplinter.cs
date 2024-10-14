@@ -10,7 +10,7 @@ public class HirasuQSplinter : MonoBehaviour
 
     void Update()
     {
-        if(m_LifeTimer>0.0f)
+        if(m_LifeTimer>0.0f && !m_AlreadyExploded)
         {
             m_LifeTimer-=Time.deltaTime;
             if(m_LifeTimer<=0.0f)

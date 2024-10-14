@@ -24,6 +24,7 @@ public class HirasuCharacterController : CharacterMaster
 	public float m_QMinHoldTime;
 	public float m_QDuration;
 	public float m_QTapRange;
+	public float m_QTapWidth;
 	public float m_QHoldRange;
 	public float m_QSplintersDuration;
 	List<HirasuQSplinter> m_ActiveSplinters=new List<HirasuQSplinter>();
@@ -33,6 +34,9 @@ public class HirasuCharacterController : CharacterMaster
 	public float[] m_WDamagePerLevel;
 	public float m_WExplosionRadius;
 	public float m_WTimeToExpand;
+	public GameObject m_WMarks;
+	public float m_WMarksExtraDamage;
+	public float m_WMarksDuration;
     [Header("E SKILL")]
 	public float m_ERange;
 	public float m_EDuration;
@@ -83,6 +87,20 @@ public class HirasuCharacterController : CharacterMaster
 			}
 		}
     }
+#if UNITY_EDITOR
+	private void OnDrawGizmos()
+	{
+		if(m_UsingQ)
+		{
+			Gizmos.color=Color.red;
+			Vector3 l_Direction=GetDirectionWithMouse();
+			l_Direction.Normalize();
+			Vector3 l_DesiredPos=transform.position+l_Direction*(m_QTapRange/100.0f/2.0f);
+			Gizmos.matrix=Matrix4x4.TRS(l_DesiredPos, Quaternion.LookRotation(l_Direction, transform.up), new Vector3(m_QTapWidth/100.0f, 2.0f, m_QTapRange/100.0f));
+			Gizmos.DrawCube(Vector3.zero, Vector3.one);
+		}
+	}
+#endif
 	protected override void QSkill()
 	{
 		m_QCurrentHoldTime=0.0f;
@@ -108,25 +126,45 @@ public class HirasuCharacterController : CharacterMaster
 			transform.forward=l_Direction;
 			if(m_QCurrentHoldTime<=m_QMinHoldTime)
 			{
-				SetAnimatorTrigger("IsUsingQ");
-				Debug.Log("NORMAL Q");
-				StartCoroutine(EnableInTime(0.5f));
+				SetAnimatorTrigger("IsUsingQTap");
+				Vector3 l_DesiredPos=transform.position+l_Direction*(m_QTapRange/100.0f/2.0f);
+				Collider[] l_HitColliders=Physics.OverlapBox(l_DesiredPos, new Vector3(m_QTapWidth/100.0f/2.0f, 2.0f, m_QTapRange/100.0f/2.0f), transform.rotation, m_DamageLayerMask);
+				foreach(Collider Entity in l_HitColliders)
+				{
+					if(Entity.TryGetComponent(out ITakeDamage Enemy))
+					{
+						Enemy.TakeDamage(m_QDamagePerLevel[m_QSkillLevel-1], 0.0f);
+						for(int i=0; i<2; i++)
+						{
+							SpawnSplinter(Entity.transform.position, transform.forward, Entity.transform);
+							if(m_QSkillLevel<=1)
+								break;
+						}
+						break;
+					}
+				}
 			}
 			else if(m_QCurrentHoldTime<m_QMaxHoldTime)
 			{
-				SetAnimatorTrigger("IsUsingQ");
+				SetAnimatorTrigger("IsUsingQHold");
 				float l_Range=m_QHoldRange/100.0f;
 				GameObject l_Projectile=Instantiate(m_QProjectile, transform.position, m_QProjectile.transform.rotation);
 				HirasuQProjectile l_ProjectileScript=l_Projectile.GetComponent<HirasuQProjectile>();
-				l_ProjectileScript.SetStats(this, l_Range, m_QDuration, l_Direction, m_QDamagePerLevel[m_QSkillLevel-1]+(m_QAdditionalDamage/100.0f*GetAttackDamage()), 
+				l_ProjectileScript.SetStats(this, l_Range, m_QDuration, l_Direction, m_QDamagePerLevel[m_QSkillLevel-1]+(m_QAdditionalDamage/100.0f*GetBonusAttackDamage()), 
 					m_QSkillLevel, m_QSplinter, m_QSplintersDuration);
-				StartCoroutine(EnableInTime(0.5f));
 			}
+			StartCoroutine(DisableForDuration(0.5f));
 			m_UsingQ=false;
 			base.QSkill();
 			GetCharacterUI().HideCastingUI();
 		}
 	}
+    void SpawnSplinter(Vector3 Position, Vector3 Forward, Transform Parent)
+    {   
+        GameObject l_Splinter=Instantiate(m_QSplinter, Position, m_QSplinter.transform.rotation, Parent);
+        l_Splinter.transform.forward=Forward;
+        l_Splinter.GetComponent<HirasuQSplinter>().SetStats(this, m_QSplintersDuration);
+    }
 	public void AddSplinterToList(HirasuQSplinter Splinter)
 	{
 		m_ActiveSplinters.Add(Splinter);
@@ -137,21 +175,32 @@ public class HirasuCharacterController : CharacterMaster
 	}
 	protected override void WSkill()
 	{
-		foreach(HirasuQSplinter Splinter in m_ActiveSplinters)
+		if(!m_UsingQ)
 		{
-			if(!Splinter.GetAlreadyExploded())
+			if(m_ActiveSplinters.Count>0)
 			{
-				StartCoroutine(Splinter.WSpawnExplosion(m_RExplosion, Splinter.transform.position, m_WExplosionRadius, m_WExplosionRadius*2.0f/100.0f, m_WTimeToExpand, 
-					m_WDamagePerLevel[m_WSkillLevel-1], m_DamageLayerMask));
+				StartCoroutine(DisableForDuration(0.5f));
+				SetAnimatorTrigger("IsUsingW");
+				foreach(HirasuQSplinter Splinter in m_ActiveSplinters)
+				{
+					if(!Splinter.GetAlreadyExploded())
+					{
+						StartCoroutine(Splinter.WSpawnExplosion(m_RExplosion, Splinter.transform.position, m_WExplosionRadius, m_WExplosionRadius*2.0f/100.0f, m_WTimeToExpand, 
+							m_WDamagePerLevel[m_WSkillLevel-1], m_DamageLayerMask));
+					}
+				}
+				base.WSkill();
 			}
 		}
-		base.WSkill();
 	}
 	protected override void ESkill()
 	{
-		Vector3 l_Direction=GetDirectionWithMouse();
-		l_Direction.Normalize();
-		StartCoroutine(EDash(l_Direction));
+		if(!m_UsingQ)
+		{
+			Vector3 l_Direction=GetDirectionWithMouse();
+			l_Direction.Normalize();
+			StartCoroutine(EDash(l_Direction));
+		}
 	}
 	IEnumerator EDash(Vector3 Direction)
 	{
@@ -161,7 +210,7 @@ public class HirasuCharacterController : CharacterMaster
 		StopAttacking();
 		if(!GetIsLookingForPosition())
 			StopMovement();
-        SetAnimatorBool("IsUsingE", true);
+        SetAnimatorTrigger("IsUsingE");
 		transform.forward=Direction;
 		Vector3 l_StartPos=transform.position;
 		float l_Range=m_ERange/100.0f;
@@ -187,20 +236,22 @@ public class HirasuCharacterController : CharacterMaster
 			SetMovementSpeedBonus(0.0f, 0.0f, new MovSpeedMultiplicative(20.0f, "HirasuESkill"));
 			StartCoroutine(RemoveMovementSpeedBonus(1.0f, "HirasuESkill"));
 		}
-        SetAnimatorBool("IsUsingE", false);
 		SetDisabled(false);
 	}
 	protected override void RSkill()
 	{
-		GetEnemyWithMouse();
-		m_UsingR=true;
+		if(!m_UsingQ)
+		{
+			GetEnemyWithMouse();
+			m_UsingR=true;
+		}
 	}
 	IEnumerator RAttack()
 	{
 		base.RSkill();
-		EnableInTime(0.5f);
+		StartCoroutine(DisableForDuration(0.5f));
 		float l_Damage=m_RDamagePerLevel[m_RSkillLevel-1]+(GetAttackDamage()*(m_RAdditionalDamage/100.0f));
-		SetAnimatorBool("IsUsingR", true);
+		SetAnimatorTrigger("IsUsingR");
 		SetAnimatorBool("IsAAttacking", false);
 		SetAnimatorBool("IsAAttacking2", false);
 		GetAudioSource().clip=m_RSound;
@@ -209,7 +260,6 @@ public class HirasuCharacterController : CharacterMaster
 		l_EnemyPos.y=0.0f;
 		Vector3 l_DesiredPos=l_EnemyPos-transform.position;
 		l_DesiredPos.Normalize();
-		Debug.Log(l_EnemyPos+"  "+l_DesiredPos+"  "+m_DesiredEnemy);
 		float l_ExplosionRadius=m_CurrentLevel>=11 ? m_RExplosionRadius[1]/100.0f : m_RExplosionRadius[0]/100.0f;
 		float l_Scale=l_ExplosionRadius*2.0f;
 		if(m_RSkillLevel>=3)
@@ -218,7 +268,6 @@ public class HirasuCharacterController : CharacterMaster
 			StartCoroutine(RSpawnExplosion(l_EnemyPos, l_DesiredPos, l_ExplosionRadius, l_Scale, l_Damage, false));
 		yield return new WaitForSeconds(0.5f);
 		m_UsingR=false;
-		SetAnimatorBool("IsUsingR", false);
 		SetIsAttacking(false);
 	}
 	IEnumerator RSpawnExplosion(Vector3 EnemyPos, Vector3 DesiredPos, float Radius, float Scale, float Damage, bool SecondExplosion)
@@ -229,7 +278,6 @@ public class HirasuCharacterController : CharacterMaster
 		Vector3 l_DesiredPos=DesiredPos*Radius;
 		float l_Timer=0.0f;
 		List<Collider> l_CollidersHit=new List<Collider>();
-		Debug.Log(l_DesiredPos);
 		while(l_Explosion.transform.localScale.x<Scale)
 		{
 			l_Explosion.transform.localScale=Vector3.Lerp(Vector3.zero, Vector3.one*Scale, l_Timer/m_RTimeToExpand);
@@ -240,7 +288,8 @@ public class HirasuCharacterController : CharacterMaster
 			{
 				if(!l_CollidersHit.Contains(Entity) && Entity.TryGetComponent(out ITakeDamage Enemy))
 				{
-					Enemy.TakeDamage(Damage, 0.0f);
+					float l_ExtraDamage=0.0f;
+					Enemy.TakeDamage(Damage+l_ExtraDamage, 0.0f);
 					l_CollidersHit.Add(Entity);
 				}
 			}
@@ -281,10 +330,10 @@ public class HirasuCharacterController : CharacterMaster
             SetAnimatorBool("IsAAttacking2", false);
         }
 	}
-	IEnumerator EnableInTime(float Time)
+	IEnumerator DisableForDuration(float Duration)
 	{
 		SetDisabled(true);
-		yield return new WaitForSeconds(Time);
+		yield return new WaitForSeconds(Duration);
 		SetDisabled(false);
 	}
 	protected override void PerformAutoAttack()
@@ -294,6 +343,10 @@ public class HirasuCharacterController : CharacterMaster
         m_TimeSinceLastAuto=0.0f;
 #endif
 		float l_PassiveExtraDamage=0.0f;
+		if(m_RSkillLevel>=1)
+		{
+			//APLICAR MARCAS
+		}
 		if(m_RSkillLevel>=3)
 		{
 			l_PassiveExtraDamage=(m_CurrentLevel-1)*(m_MaxPhysicDamage-m_MinPhysicDamage)/(18-1)+m_MinPhysicDamage;

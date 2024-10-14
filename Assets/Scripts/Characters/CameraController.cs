@@ -6,6 +6,7 @@ public class CameraController : MonoBehaviour
 {
     public Camera m_Camera;
     public LayerMask m_CameraLayerMask;
+    public LayerMask m_TerrainLayerMask;
     public Vector3 m_CharacterOffset;
     public float m_MaxZoom;
     public float m_MinZoom;

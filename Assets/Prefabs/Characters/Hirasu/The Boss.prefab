@@ -16514,6 +16514,7 @@ MonoBehaviour:
   m_QMinHoldTime: 0.5
   m_QDuration: 0.25
   m_QTapRange: 200
+  m_QTapWidth: 80
   m_QHoldRange: 1200
   m_QSplintersDuration: 4
   m_WDamagePerLevel:
@@ -16524,6 +16525,9 @@ MonoBehaviour:
   - 180
   m_WExplosionRadius: 100
   m_WTimeToExpand: 0.5
+  m_WMarks: {fileID: 0}
+  m_WMarksExtraDamage: 0
+  m_WMarksDuration: 0
   m_ERange: 350
   m_EDuration: 0.2
   m_RDamagePerLevel:
@@ -16554,7 +16558,10 @@ MonoBehaviour:
   m_Camera: {fileID: 0}
   m_CameraLayerMask:
     serializedVersion: 2
-    m_Bits: 224
+    m_Bits: 192
+  m_TerrainLayerMask:
+    serializedVersion: 2
+    m_Bits: 64
   m_CharacterOffset: {x: 1, y: 0, z: 0}
   m_MaxZoom: 10
   m_MinZoom: 4
@@ -16624,6 +16631,7 @@ MonoBehaviour:
   m_TenacityText: {fileID: 0}
   m_CastingUI: {fileID: 0}
   m_CastingBar: {fileID: 0}
+  m_CastingAbilityText: {fileID: 0}
   m_CastingTimeText: {fileID: 0}
 --- !u!136 &4279021379374391962
 CapsuleCollider:

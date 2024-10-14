@@ -331,9 +331,9 @@ public class CharacterMaster : MonoBehaviour, ITakeDamage
         l_MousePosition.z=10.0f;
         Vector3 l_MouseDirection=m_CharacterCamera.m_Camera.ScreenToWorldPoint(l_MousePosition)-m_CharacterCamera.m_Camera.transform.position;
         RaycastHit l_CameraRaycastHit;
-        if(Physics.Raycast(m_CharacterCamera.m_Camera.transform.position, l_MouseDirection, out l_CameraRaycastHit, 1000.0f, m_CharacterCamera.m_CameraLayerMask))
+        if(Physics.Raycast(m_CharacterCamera.m_Camera.transform.position, l_MouseDirection, out l_CameraRaycastHit, 1000.0f, m_CharacterCamera.m_TerrainLayerMask))
         {
-            if(l_CameraRaycastHit.transform.CompareTag("Enemy") || l_CameraRaycastHit.transform.CompareTag("Terrain"))
+            if(l_CameraRaycastHit.transform.CompareTag("Terrain"))
             {
                 Vector3 l_Direction=l_CameraRaycastHit.point-transform.position;
                 l_Direction.y=0.0f;
@@ -731,6 +731,10 @@ public class CharacterMaster : MonoBehaviour, ITakeDamage
     public float GetAttackDamage()
     {
         return m_AttackDamage;
+    }
+    public float GetBonusAttackDamage()
+    {
+        return m_AttackDamageBonus;
     }
     public float GetAbilityDamage()
     {
