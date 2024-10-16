@@ -6,10 +6,9 @@ public class HirasuCharacterController : CharacterMaster
 {
     [Header("--- HIRASU ---")]
     [Header("PASSIVE SKILL")]
-	public float m_MinPhysicDamage;
-	public float m_MaxPhysicDamage;
-	public float m_MinMagicDamage;
-	public float m_MaxMagicDamage;
+	public float m_MinExtraDamage;
+	public float m_MaxExtraDamage;
+	float m_PassiveExtraDamage;
 	public GameObject m_Staff;
 	public GameObject m_StaffFlames;
 	public float m_MaxSecondAttackTime;
@@ -87,6 +86,7 @@ public class HirasuCharacterController : CharacterMaster
 			}
 		}
     }
+
 #if UNITY_EDITOR
 	private void OnDrawGizmos()
 	{
@@ -101,6 +101,7 @@ public class HirasuCharacterController : CharacterMaster
 		}
 	}
 #endif
+
 	protected override void QSkill()
 	{
 		m_QCurrentHoldTime=0.0f;
@@ -124,6 +125,16 @@ public class HirasuCharacterController : CharacterMaster
 			Vector3 l_Direction=GetDirectionWithMouse();
 			l_Direction.Normalize();
 			transform.forward=l_Direction;
+			float l_ExtraPhysDamage=0.0f;
+			float l_ExtraMagicDamage=0.0f;
+			if(m_RSkillLevel>=2)
+			{
+				l_ExtraPhysDamage=m_PassiveExtraDamage;
+				l_ExtraMagicDamage=m_PassiveExtraDamage;
+			}
+			else if(m_RSkillLevel>=1)
+				l_ExtraPhysDamage=m_PassiveExtraDamage;
+
 			if(m_QCurrentHoldTime<=m_QMinHoldTime)
 			{
 				SetAnimatorTrigger("IsUsingQTap");
@@ -133,7 +144,7 @@ public class HirasuCharacterController : CharacterMaster
 				{
 					if(Entity.TryGetComponent(out ITakeDamage Enemy))
 					{
-						Enemy.TakeDamage(m_QDamagePerLevel[m_QSkillLevel-1], 0.0f);
+						Enemy.TakeDamage(m_QDamagePerLevel[m_QSkillLevel-1]+l_ExtraPhysDamage, l_ExtraMagicDamage);
 						for(int i=0; i<2; i++)
 						{
 							SpawnSplinter(Entity.transform.position, transform.forward, Entity.transform);
@@ -151,7 +162,7 @@ public class HirasuCharacterController : CharacterMaster
 				GameObject l_Projectile=Instantiate(m_QProjectile, transform.position, m_QProjectile.transform.rotation);
 				HirasuQProjectile l_ProjectileScript=l_Projectile.GetComponent<HirasuQProjectile>();
 				l_ProjectileScript.SetStats(this, l_Range, m_QDuration, l_Direction, m_QDamagePerLevel[m_QSkillLevel-1]+(m_QAdditionalDamage/100.0f*GetBonusAttackDamage()), 
-					m_QSkillLevel, m_QSplinter, m_QSplintersDuration);
+					l_ExtraPhysDamage, l_ExtraMagicDamage, m_QSkillLevel, m_QSplinter, m_QSplintersDuration);
 			}
 			StartCoroutine(DisableForDuration(0.5f));
 			m_UsingQ=false;
@@ -173,6 +184,7 @@ public class HirasuCharacterController : CharacterMaster
 	{
 		m_ActiveSplinters.Remove(Splinter);
 	}
+
 	protected override void WSkill()
 	{
 		if(!m_UsingQ)
@@ -193,6 +205,7 @@ public class HirasuCharacterController : CharacterMaster
 			}
 		}
 	}
+
 	protected override void ESkill()
 	{
 		if(!m_UsingQ)
@@ -238,6 +251,7 @@ public class HirasuCharacterController : CharacterMaster
 		}
 		SetDisabled(false);
 	}
+
 	protected override void RSkill()
 	{
 		if(!m_UsingQ)
@@ -306,6 +320,7 @@ public class HirasuCharacterController : CharacterMaster
 	public override void LevelUp()
 	{
 		base.LevelUp();
+		m_PassiveExtraDamage=(m_CurrentLevel-1)*(m_MaxExtraDamage-m_MinExtraDamage)/(18-1)+m_MinExtraDamage;
 	}
 	protected override void StartAttacking()
 	{
@@ -342,15 +357,22 @@ public class HirasuCharacterController : CharacterMaster
         Debug.Log("ATTACKING - Since last auto: "+m_TimeSinceLastAuto);
         m_TimeSinceLastAuto=0.0f;
 #endif
-		float l_PassiveExtraDamage=0.0f;
+		float l_ExtraPhysDamage=0.0f;
+		float l_ExtraMagicDamage=0.0f;
+		if(m_RSkillLevel>=2)
+		{
+			l_ExtraPhysDamage=m_PassiveExtraDamage;
+			l_ExtraMagicDamage=m_PassiveExtraDamage;
+		}
+		else if(m_RSkillLevel>=1)
+			l_ExtraPhysDamage=m_PassiveExtraDamage;
+
 		if(m_RSkillLevel>=1)
 		{
 			//APLICAR MARCAS
 		}
 		if(m_RSkillLevel>=3)
 		{
-			l_PassiveExtraDamage=(m_CurrentLevel-1)*(m_MaxPhysicDamage-m_MinPhysicDamage)/(18-1)+m_MinPhysicDamage;
-			m_DesiredEnemy.GetComponent<ITakeDamage>().TakeDamage(GetAttackDamage()+l_PassiveExtraDamage, l_PassiveExtraDamage);
 			if(!m_SecondAttack)
 			{
 				SetAnimatorBool("IsAAttacking", false);
@@ -365,17 +387,13 @@ public class HirasuCharacterController : CharacterMaster
 				m_SecondAttack=false;
 			}
 		}
-		else if(m_RSkillLevel>=2)
-		{
-			l_PassiveExtraDamage=(m_CurrentLevel-1)*(m_MaxPhysicDamage-m_MinPhysicDamage)/(18-1)+m_MinPhysicDamage;
-			m_DesiredEnemy.GetComponent<ITakeDamage>().TakeDamage(GetAttackDamage()+l_PassiveExtraDamage, l_PassiveExtraDamage);
-		}
-		else if(m_RSkillLevel>=1)
-		{
-			l_PassiveExtraDamage=(m_CurrentLevel-1)*(m_MaxPhysicDamage-m_MinPhysicDamage)/(18-1)+m_MinPhysicDamage;
-			m_DesiredEnemy.GetComponent<ITakeDamage>().TakeDamage(GetAttackDamage()+l_PassiveExtraDamage, 0.0f);
-		}
-		else
-			m_DesiredEnemy.GetComponent<ITakeDamage>().TakeDamage(GetAttackDamage(), 0.0f);
+		m_DesiredEnemy.GetComponent<ITakeDamage>().TakeDamage(GetAttackDamage()+l_ExtraPhysDamage, l_ExtraMagicDamage);
+	}
+	public override void SetInitStats()
+	{
+		base.SetInitStats();
+		m_Staff.SetActive(false);
+		m_StaffFlames.SetActive(false);
+		m_PassiveExtraDamage=(m_CurrentLevel-1)*(m_MaxExtraDamage-m_MinExtraDamage)/(18-1)+m_MinExtraDamage;
 	}
 }

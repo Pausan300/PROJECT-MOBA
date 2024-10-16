@@ -16494,10 +16494,8 @@ MonoBehaviour:
   m_RecallTpPoint: {fileID: 0}
   m_DesiredEnemy: {fileID: 0}
   m_TimeSinceLastAuto: 0
-  m_MinPhysicDamage: 30
-  m_MaxPhysicDamage: 180
-  m_MinMagicDamage: 30
-  m_MaxMagicDamage: 180
+  m_MinExtraDamage: 30
+  m_MaxExtraDamage: 180
   m_Staff: {fileID: 8175576814537329803}
   m_StaffFlames: {fileID: 4195194976546961208}
   m_MaxSecondAttackTime: 2

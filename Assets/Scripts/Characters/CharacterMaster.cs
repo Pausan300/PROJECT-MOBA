@@ -604,7 +604,7 @@ public class CharacterMaster : MonoBehaviour, ITakeDamage
     {
         StatRef=BaseStat+Bonus+LevelIncr*(m_CurrentLevel-1.0f)*(0.7025f+0.0175f*(m_CurrentLevel-1.0f));
     }
-    public void SetInitStats()
+    public virtual void SetInitStats()
     {
         m_MaxHealth=m_BaseHealth;
         m_MaxMana=m_BaseMana;

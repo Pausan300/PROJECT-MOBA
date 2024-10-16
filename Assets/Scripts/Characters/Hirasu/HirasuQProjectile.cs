@@ -11,6 +11,8 @@ public class HirasuQProjectile : MonoBehaviour
     float m_Range;
     float m_Speed;
     float m_Damage;
+    float m_ExtraPhysDamage;
+    float m_ExtraMagicDamage;
     float m_SplintersLeft;
     float m_TravelTimer;
     float m_SplintersDuration;
@@ -43,8 +45,8 @@ public class HirasuQProjectile : MonoBehaviour
             }
         }
     }
-    public void SetStats(HirasuCharacterController Player, float Range, float Duration, Vector3 Direction, float Damage, int TotalSplinters, 
-        GameObject SplinterObject, float SplintersDuration)
+    public void SetStats(HirasuCharacterController Player, float Range, float Duration, Vector3 Direction, float Damage, float ExtraPhysDamage, float ExtraMagicDamage,
+        int TotalSplinters, GameObject SplinterObject, float SplintersDuration)
     {
         m_Player=Player;
         m_Direction=Direction;
@@ -52,6 +54,8 @@ public class HirasuQProjectile : MonoBehaviour
         m_Range=Range;
         m_Speed=m_Range/m_Duration;
         m_Damage=Damage;
+        m_ExtraPhysDamage=ExtraPhysDamage;
+        m_ExtraMagicDamage=ExtraMagicDamage;
         m_SplintersLeft=TotalSplinters;
         m_Splinter=SplinterObject;
         m_SplintersDuration=SplintersDuration;
@@ -59,6 +63,7 @@ public class HirasuQProjectile : MonoBehaviour
         m_EnemyHit=false;
         m_DropSplinters=false;
         m_Traveling=true;
+
     }
 	private void OnTriggerEnter(Collider other)
 	{
@@ -66,7 +71,7 @@ public class HirasuQProjectile : MonoBehaviour
         {
             if(other.TryGetComponent(out ITakeDamage Enemy))
 			{
-				Enemy.TakeDamage(m_Damage, 0.0f);
+				Enemy.TakeDamage(m_Damage+m_ExtraPhysDamage, m_ExtraMagicDamage);
                 for(int i=0; i<2; i++)
                 {
                     if(m_SplintersLeft<=0)
