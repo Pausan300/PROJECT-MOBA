@@ -32,7 +32,7 @@ public class HirasuQProjectile : MonoBehaviour
                 m_DistancePerSplinterTraveled+=m_Speed*Time.deltaTime;
                 if(m_DistancePerSplinterTraveled>=m_DistancePerSplinter)
                 {
-                    SpawnSplinter(transform.position, transform.up, null);
+                    SpawnSplinter(transform.position, transform.up, null, null);
                     m_DistancePerSplinterTraveled=0.0f;
                 }
             }
@@ -40,7 +40,7 @@ public class HirasuQProjectile : MonoBehaviour
             if(m_TravelTimer>=m_Duration)
             {
                 if(m_SplintersLeft>0 && m_EnemyHit)
-                    SpawnSplinter(transform.position, transform.up, null);
+                    SpawnSplinter(transform.position, transform.up, null, null);
                 Destroy(gameObject);
             }
         }
@@ -76,7 +76,7 @@ public class HirasuQProjectile : MonoBehaviour
                 {
                     if(m_SplintersLeft<=0)
                         break;
-                    SpawnSplinter(other.transform.position, transform.forward, other.transform);
+                    SpawnSplinter(other.transform.position, transform.forward, other.transform, Enemy);
                 }
                 if(m_SplintersLeft>0)
                     CalcDistancePerSplinter();
@@ -84,11 +84,11 @@ public class HirasuQProjectile : MonoBehaviour
             }
         }
 	}
-    void SpawnSplinter(Vector3 Position, Vector3 Forward, Transform Parent)
+    void SpawnSplinter(Vector3 Position, Vector3 Forward, Transform Parent, ITakeDamage AttachedEnemy)
     {   
         GameObject l_Splinter=Instantiate(m_Splinter, Position, m_Splinter.transform.rotation, Parent);
         l_Splinter.transform.forward=Forward;
-        l_Splinter.GetComponent<HirasuQSplinter>().SetStats(m_Player, m_SplintersDuration);
+        l_Splinter.GetComponent<HirasuQSplinter>().SetStats(m_Player, AttachedEnemy, m_SplintersDuration);
         m_SplintersLeft--;
     }
     void CalcDistancePerSplinter()

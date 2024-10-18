@@ -41,10 +41,15 @@ public class CharacterUI : MonoBehaviour
     public TextMeshProUGUI m_ManaText;
 
     [Header("INGAME PLAYER INFO")]
+    public GameObject m_WorldCanvas;
     public Slider m_IngameHealthBar;
     public Slider m_IngameManaBar;
     public TextMeshProUGUI m_IngameLevelText;
     public TextMeshProUGUI m_PlayerNameText;
+    public GameObject m_DamageNumbers;
+    public Vector3 m_DamageNumbersPosOffset;
+    public TMP_FontAsset m_PhysDamageFont;
+    public TMP_FontAsset m_MagicDamageFont;
 
     [Header("STATS")]
     public RectTransform m_PrimStatsPanel;
@@ -177,6 +182,27 @@ public class CharacterUI : MonoBehaviour
     public void SetPlayerName(string Name)
     {
         m_PlayerNameText.text=Name;
+    }
+    public void SpawnDamageNumbers(float PhysDamage, float MagicDamage)
+    {
+        Vector3 l_PosOffset=m_DamageNumbersPosOffset;
+        if(PhysDamage>0.0f)
+        {
+            GameObject l_PhysDamageText=Instantiate(m_DamageNumbers, m_WorldCanvas.transform);
+            l_PhysDamageText.GetComponent<RectTransform>().localPosition=Vector3.zero+l_PosOffset;
+            l_PosOffset.y-=0.5f;
+            TextMeshProUGUI l_TextMesh=l_PhysDamageText.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
+            l_TextMesh.font=m_PhysDamageFont;
+            l_TextMesh.text=PhysDamage.ToString("f0");
+        }
+        if(MagicDamage>0.0f)
+        {
+            GameObject l_MagicDamageText=Instantiate(m_DamageNumbers, m_WorldCanvas.transform);
+            l_MagicDamageText.GetComponent<RectTransform>().localPosition=Vector3.zero+l_PosOffset;
+            TextMeshProUGUI l_TextMesh=l_MagicDamageText.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
+            l_TextMesh.font=m_MagicDamageFont;
+            l_TextMesh.text=MagicDamage.ToString("f0");
+        }
     }
 
     //SHOW & HIDE METHODS

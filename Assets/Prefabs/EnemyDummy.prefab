@@ -478,6 +478,10 @@ MonoBehaviour:
   m_LayerMask:
     serializedVersion: 2
     m_Bits: 1
+  m_DamageNumbers: {fileID: 5019070121339474210, guid: c4ed669be551f9b49be5d414022b5593, type: 3}
+  m_DamageNumbersPosOffset: {x: 0, y: -1, z: 0}
+  m_PhysDamageFont: {fileID: 11400000, guid: e3d0864645595034488de38b50201788, type: 2}
+  m_MagicDamageFont: {fileID: 11400000, guid: aa836847ff1cd414298bd3382ba63fb0, type: 2}
 --- !u!1 &6503053928192222508
 GameObject:
   m_ObjectHideFlags: 0

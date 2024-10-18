@@ -4874,6 +4874,26 @@ PrefabInstance:
       propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3455881554961217688, guid: 238cbe48cfd1f4c468c2c83bef64960b, type: 3}
+      propertyPath: m_AdditionalShaderChannelsFlag
+      value: 25
+      objectReference: {fileID: 0}
+    - target: {fileID: 3716759342269532723, guid: 238cbe48cfd1f4c468c2c83bef64960b, type: 3}
+      propertyPath: m_TextMaterial
+      value: 
+      objectReference: {fileID: 2180264, guid: aa836847ff1cd414298bd3382ba63fb0, type: 2}
+    - target: {fileID: 3716759342269532723, guid: 238cbe48cfd1f4c468c2c83bef64960b, type: 3}
+      propertyPath: m_PhysDamageMaterial
+      value: 
+      objectReference: {fileID: 2180264, guid: e3d0864645595034488de38b50201788, type: 2}
+    - target: {fileID: 3716759342269532723, guid: 238cbe48cfd1f4c468c2c83bef64960b, type: 3}
+      propertyPath: m_MagicDamageMaterial
+      value: 
+      objectReference: {fileID: 2180264, guid: aa836847ff1cd414298bd3382ba63fb0, type: 2}
+    - target: {fileID: 3716759342269532723, guid: 238cbe48cfd1f4c468c2c83bef64960b, type: 3}
+      propertyPath: m_DamageNumbersPosOffset.y
+      value: -2
+      objectReference: {fileID: 0}
     - target: {fileID: 5084697886522596968, guid: 238cbe48cfd1f4c468c2c83bef64960b, type: 3}
       propertyPath: m_LocalPosition.x
       value: -1.8
@@ -4914,9 +4934,37 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6211498567819518830, guid: 238cbe48cfd1f4c468c2c83bef64960b, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.01
+      objectReference: {fileID: 0}
+    - target: {fileID: 6211498567819518830, guid: 238cbe48cfd1f4c468c2c83bef64960b, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0.01
+      objectReference: {fileID: 0}
+    - target: {fileID: 6211498567819518830, guid: 238cbe48cfd1f4c468c2c83bef64960b, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0.01
+      objectReference: {fileID: 0}
     - target: {fileID: 6438156489008617800, guid: 238cbe48cfd1f4c468c2c83bef64960b, type: 3}
       propertyPath: m_Name
       value: EnemyDummy
+      objectReference: {fileID: 0}
+    - target: {fileID: 6845147317817232215, guid: 238cbe48cfd1f4c468c2c83bef64960b, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6845147317817232215, guid: 238cbe48cfd1f4c468c2c83bef64960b, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6845147317817232215, guid: 238cbe48cfd1f4c468c2c83bef64960b, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6845147317817232215, guid: 238cbe48cfd1f4c468c2c83bef64960b, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 20
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -6896,6 +6944,11 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 952080409}
   m_CullTransparentMesh: 1
+--- !u!1 &988563901 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8729863787317978199, guid: ce1b7c0bd7344354f99a9206f3d72093, type: 3}
+  m_PrefabInstance: {fileID: 6078281860947426483}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &989830959
 GameObject:
   m_ObjectHideFlags: 0
@@ -15637,6 +15690,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 2125492669}
     - target: {fileID: 7635419542250428407, guid: ce1b7c0bd7344354f99a9206f3d72093, type: 3}
+      propertyPath: m_WorldCanvas
+      value: 
+      objectReference: {fileID: 988563901}
+    - target: {fileID: 7635419542250428407, guid: ce1b7c0bd7344354f99a9206f3d72093, type: 3}
       propertyPath: m_ArmorPenText
       value: 
       objectReference: {fileID: 592863809}
@@ -15681,6 +15738,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1041891161}
     - target: {fileID: 7635419542250428407, guid: ce1b7c0bd7344354f99a9206f3d72093, type: 3}
+      propertyPath: m_DamageNumbers
+      value: 
+      objectReference: {fileID: 5019070121339474210, guid: c4ed669be551f9b49be5d414022b5593, type: 3}
+    - target: {fileID: 7635419542250428407, guid: ce1b7c0bd7344354f99a9206f3d72093, type: 3}
       propertyPath: m_ESkillCdImage
       value: 
       objectReference: {fileID: 1622066036}
@@ -15709,6 +15770,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1275448400}
     - target: {fileID: 7635419542250428407, guid: ce1b7c0bd7344354f99a9206f3d72093, type: 3}
+      propertyPath: m_PhysDamageFont
+      value: 
+      objectReference: {fileID: 11400000, guid: e3d0864645595034488de38b50201788, type: 2}
+    - target: {fileID: 7635419542250428407, guid: ce1b7c0bd7344354f99a9206f3d72093, type: 3}
       propertyPath: m_PrimStatsPanel
       value: 
       objectReference: {fileID: 1147882972}
@@ -15736,6 +15801,10 @@ PrefabInstance:
       propertyPath: m_CastingTimeText
       value: 
       objectReference: {fileID: 989830961}
+    - target: {fileID: 7635419542250428407, guid: ce1b7c0bd7344354f99a9206f3d72093, type: 3}
+      propertyPath: m_MagicDamageFont
+      value: 
+      objectReference: {fileID: 11400000, guid: aa836847ff1cd414298bd3382ba63fb0, type: 2}
     - target: {fileID: 7635419542250428407, guid: ce1b7c0bd7344354f99a9206f3d72093, type: 3}
       propertyPath: m_SeconStatsPanel
       value: 
@@ -15792,6 +15861,10 @@ PrefabInstance:
       propertyPath: m_HealsShieldsPowerText
       value: 
       objectReference: {fileID: 1507144248}
+    - target: {fileID: 7635419542250428407, guid: ce1b7c0bd7344354f99a9206f3d72093, type: 3}
+      propertyPath: m_DamageNumbersPosOffset.y
+      value: -1
+      objectReference: {fileID: 0}
     - target: {fileID: 8207142013517453575, guid: ce1b7c0bd7344354f99a9206f3d72093, type: 3}
       propertyPath: m_Name
       value: The Boss

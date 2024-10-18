@@ -5,6 +5,7 @@ using UnityEngine;
 public class HirasuQSplinter : MonoBehaviour
 {
     HirasuCharacterController m_Player;
+    ITakeDamage m_AttachedEnemy;
     float m_LifeTimer;
     bool m_AlreadyExploded;
 
@@ -20,17 +21,21 @@ public class HirasuQSplinter : MonoBehaviour
             }
         }
     }
-    public void SetStats(HirasuCharacterController Player, float LifeTime)
+    public void SetStats(HirasuCharacterController Player, ITakeDamage AttachedEnemy, float LifeTime)
     {
         m_Player=Player;
+        if(AttachedEnemy!=null)
+            m_AttachedEnemy=AttachedEnemy;
         m_LifeTimer=LifeTime;
         m_Player.AddSplinterToList(this);
     }
-    public IEnumerator WSpawnExplosion(GameObject Explosion, Vector3 EnemyPos, float Radius, float Scale, float TimeToExpand, float Damage, LayerMask DamageLayerMask)
+    public IEnumerator WSpawnExplosion(GameObject Explosion, Vector3 EnemyPos, float Radius, float Scale, float TimeToExpand, float AttachedDamage, float Damage, LayerMask DamageLayerMask)
 	{
         m_AlreadyExploded=true;
 		GameObject l_Explosion=Instantiate(Explosion, EnemyPos, Explosion.transform.rotation);
 		float l_Timer=0.0f;
+        if(m_AttachedEnemy!=null)
+            m_AttachedEnemy.TakeDamage(AttachedDamage, 0.0f);
 		List<Collider> l_CollidersHit=new List<Collider>();
 		while(l_Explosion.transform.localScale.x<Scale)
 		{
@@ -39,7 +44,7 @@ public class HirasuQSplinter : MonoBehaviour
 			Collider[] l_HitColliders=Physics.OverlapSphere(l_Explosion.transform.position, l_Explosion.transform.localScale.x/2.0f, DamageLayerMask);
 			foreach(Collider Entity in l_HitColliders)
 			{
-				if(!l_CollidersHit.Contains(Entity) && Entity.TryGetComponent(out ITakeDamage Enemy))
+				if(!l_CollidersHit.Contains(Entity) && Entity.TryGetComponent(out ITakeDamage Enemy) && Enemy!=m_AttachedEnemy)
 				{
 					Enemy.TakeDamage(Damage, 0.0f);
 					l_CollidersHit.Add(Entity);

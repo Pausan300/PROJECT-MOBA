@@ -671,18 +671,21 @@ public class CharacterMaster : MonoBehaviour, ITakeDamage
     }
 	public void TakeDamage(float PhysDamage, float MagicDamage)
     {
+        float l_TotalPhysDamage=PhysDamage/(1.0f+m_Armor/100.0f);
+        float l_TotalMagicDamage=MagicDamage/(1.0f+m_MagicResistance/100.0f);
         if(PhysDamage>0.0f)
         {
-            m_CurrentHealth-=PhysDamage/(1.0f+m_Armor/100.0f);
+            m_CurrentHealth-=l_TotalPhysDamage;
             Debug.Log("Taking "+PhysDamage+" physical damage, reduced to "+(PhysDamage/(1.0f+m_Armor/100.0f))+" damage");
         }
         if(MagicDamage>0.0f)
         {
-            m_CurrentHealth-=MagicDamage/(1.0f+m_MagicResistance/100.0f);
+            m_CurrentHealth-=l_TotalMagicDamage;
             Debug.Log("Taking "+MagicDamage+" magical damage, reduced to "+(MagicDamage/(1.0f+m_Armor/100.0f))+" damage");
         }
         if(m_CurrentRecallTime>0.2f)
             StopRecall();
+        m_CharacterUI.SpawnDamageNumbers(l_TotalPhysDamage, l_TotalMagicDamage);
 	}
 
     //LLAMADA POR EVENTO EN LA ANIMACION DE AUTOATAQUE

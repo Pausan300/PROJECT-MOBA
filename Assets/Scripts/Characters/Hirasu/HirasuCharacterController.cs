@@ -31,6 +31,8 @@ public class HirasuCharacterController : CharacterMaster
 	bool m_UsingQ;
     [Header("W SKILL")]
 	public float[] m_WDamagePerLevel;
+	public float m_WAdditionalDamageSplinter;
+	public float m_WAdditionalDamageExplosion;
 	public float m_WExplosionRadius;
 	public float m_WTimeToExpand;
 	public GameObject m_WMarks;
@@ -144,10 +146,10 @@ public class HirasuCharacterController : CharacterMaster
 				{
 					if(Entity.TryGetComponent(out ITakeDamage Enemy))
 					{
-						Enemy.TakeDamage(m_QDamagePerLevel[m_QSkillLevel-1]+l_ExtraPhysDamage, l_ExtraMagicDamage);
+						Enemy.TakeDamage(m_QDamagePerLevel[m_QSkillLevel-1]+(m_QAdditionalDamage/100.0f*GetBonusAttackDamage())+l_ExtraPhysDamage, l_ExtraMagicDamage);
 						for(int i=0; i<2; i++)
 						{
-							SpawnSplinter(Entity.transform.position, transform.forward, Entity.transform);
+							SpawnSplinter(Entity.transform.position, transform.forward, Entity.transform, Enemy);
 							if(m_QSkillLevel<=1)
 								break;
 						}
@@ -170,11 +172,11 @@ public class HirasuCharacterController : CharacterMaster
 			GetCharacterUI().HideCastingUI();
 		}
 	}
-    void SpawnSplinter(Vector3 Position, Vector3 Forward, Transform Parent)
+    void SpawnSplinter(Vector3 Position, Vector3 Forward, Transform Parent, ITakeDamage Enemy)
     {   
         GameObject l_Splinter=Instantiate(m_QSplinter, Position, m_QSplinter.transform.rotation, Parent);
         l_Splinter.transform.forward=Forward;
-        l_Splinter.GetComponent<HirasuQSplinter>().SetStats(this, m_QSplintersDuration);
+        l_Splinter.GetComponent<HirasuQSplinter>().SetStats(this, Enemy, m_QSplintersDuration);
     }
 	public void AddSplinterToList(HirasuQSplinter Splinter)
 	{
@@ -197,8 +199,9 @@ public class HirasuCharacterController : CharacterMaster
 				{
 					if(!Splinter.GetAlreadyExploded())
 					{
-						StartCoroutine(Splinter.WSpawnExplosion(m_RExplosion, Splinter.transform.position, m_WExplosionRadius, m_WExplosionRadius*2.0f/100.0f, m_WTimeToExpand, 
-							m_WDamagePerLevel[m_WSkillLevel-1], m_DamageLayerMask));
+						StartCoroutine(Splinter.WSpawnExplosion(m_RExplosion, Splinter.transform.position, m_WExplosionRadius, m_WExplosionRadius*2.0f/100.0f, m_WTimeToExpand,
+							m_WDamagePerLevel[m_WSkillLevel-1]+(m_WAdditionalDamageSplinter/100.0f*GetBonusAttackDamage()), 
+							m_WDamagePerLevel[m_WSkillLevel-1]+(m_WAdditionalDamageExplosion/100.0f*GetBonusAttackDamage()), m_DamageLayerMask));
 					}
 				}
 				base.WSkill();
@@ -264,7 +267,7 @@ public class HirasuCharacterController : CharacterMaster
 	{
 		base.RSkill();
 		StartCoroutine(DisableForDuration(0.5f));
-		float l_Damage=m_RDamagePerLevel[m_RSkillLevel-1]+(GetAttackDamage()*(m_RAdditionalDamage/100.0f));
+		float l_Damage=m_RDamagePerLevel[m_RSkillLevel-1]+(m_RAdditionalDamage/100.0f*GetBonusAttackDamage());
 		SetAnimatorTrigger("IsUsingR");
 		SetAnimatorBool("IsAAttacking", false);
 		SetAnimatorBool("IsAAttacking2", false);

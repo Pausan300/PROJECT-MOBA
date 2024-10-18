@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -22,6 +23,12 @@ public class EnemyDummy : MonoBehaviour, ITakeDamage
     public float m_AttackRadius;
     public LayerMask m_LayerMask;
     bool m_ShowGizmos;
+
+    [Header("UI")]
+    public GameObject m_DamageNumbers;
+    public Vector3 m_DamageNumbersPosOffset;
+    public TMP_FontAsset m_PhysDamageFont;
+    public TMP_FontAsset m_MagicDamageFont;
 
     void Start()
     {
@@ -59,17 +66,33 @@ public class EnemyDummy : MonoBehaviour, ITakeDamage
     }
     public void TakeDamage(float PhysDamage, float MagicDamage)
     {
+        float l_TotalPhysDamage=PhysDamage/(1.0f+m_Armor/100.0f);
+        float l_TotalMagicDamage=MagicDamage/(1.0f+m_MagicResistance/100.0f);
         if(PhysDamage>0.0f)
-        {
-            m_CurrentHealth-=PhysDamage/(1.0f+m_Armor/100.0f);
-            //Debug.Log("Taking "+PhysDamage+" physical damage, reduced to "+(PhysDamage/(1.0f+m_Armor/100.0f))+" damage");
-        }
+            m_CurrentHealth-=l_TotalPhysDamage;
         if(MagicDamage>0.0f)
-        {
-            m_CurrentHealth-=MagicDamage/(1.0f+m_MagicResistance/100.0f);
-            //Debug.Log("Taking "+MagicDamage+" magical damage, reduced to "+(MagicDamage/(1.0f+m_Armor/100.0f))+" damage");
-        }
+            m_CurrentHealth-=l_TotalMagicDamage;
         m_TimerSinceLastDamageTaken=0.0f;
+
+        //UI Display
+        Vector3 l_PosOffset=m_DamageNumbersPosOffset;
+        if(l_TotalPhysDamage>0.0f)
+        {
+            GameObject l_PhysDamageText=Instantiate(m_DamageNumbers, m_Canvas.transform);
+            l_PhysDamageText.GetComponent<RectTransform>().localPosition=Vector3.zero+l_PosOffset;
+            l_PosOffset.y-=l_PhysDamageText.GetComponent<RectTransform>().sizeDelta.y;
+            TextMeshProUGUI l_TextMesh=l_PhysDamageText.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
+            l_TextMesh.font=m_PhysDamageFont;
+            l_TextMesh.text=l_TotalPhysDamage.ToString("f0");
+        }
+        if(l_TotalMagicDamage>0.0f)
+        {
+            GameObject l_MagicDamageText=Instantiate(m_DamageNumbers, m_Canvas.transform);
+            l_MagicDamageText.GetComponent<RectTransform>().localPosition=Vector3.zero+l_PosOffset;
+            TextMeshProUGUI l_TextMesh=l_MagicDamageText.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
+            l_TextMesh.font=m_MagicDamageFont;
+            l_TextMesh.text=l_TotalMagicDamage.ToString("f0");
+        }
     }
     public void SetCanvasCamera(Camera CanvasCamera)
     {
