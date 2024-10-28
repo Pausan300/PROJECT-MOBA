@@ -11,6 +11,7 @@ public class HirasuCharacterController : CharacterMaster
 	float m_PassiveExtraDamage;
 	public GameObject m_Staff;
 	public GameObject m_StaffFlames;
+	public GameObject m_StaffFlames2;
 	public float m_MaxSecondAttackTime;
 	bool m_SecondAttack;
 	float m_SecondAttackTimer;
@@ -66,14 +67,14 @@ public class HirasuCharacterController : CharacterMaster
 			m_Staff.SetActive(true);
 		if(m_RSkillLevel>=2 && !m_StaffFlames.activeSelf)
 			m_StaffFlames.SetActive(true);
+		if(m_RSkillLevel>=3 && !m_StaffFlames2.activeSelf)
+			m_StaffFlames2.SetActive(true);
 
 		if(m_SecondAttackTimer>0.0f)
 		{
 			m_SecondAttackTimer-=Time.deltaTime;
 			if(m_SecondAttackTimer<=0.0f)
-			{
 				m_SecondAttack=false;
-			}
 		}
 		if(m_UsingQ)
 		{
@@ -397,6 +398,7 @@ public class HirasuCharacterController : CharacterMaster
 		base.SetInitStats();
 		m_Staff.SetActive(false);
 		m_StaffFlames.SetActive(false);
+		m_StaffFlames2.SetActive(false);
 		m_PassiveExtraDamage=(m_CurrentLevel-1)*(m_MaxExtraDamage-m_MinExtraDamage)/(18-1)+m_MinExtraDamage;
 	}
 }
