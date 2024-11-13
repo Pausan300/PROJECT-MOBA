@@ -37,6 +37,10 @@ public class CharacterMaster : MonoBehaviour, ITakeDamage
     public Skill m_WSkill;
     public Skill m_ESkill;
     public Skill m_RSkill;
+    public float m_QDisabledTime;
+    public float m_WDisabledTime;
+    public float m_EDisabledTime;
+    public float m_RDisabledTime;
     public LayerMask m_DamageLayerMask;
 
 	protected virtual void Start()
@@ -219,7 +223,7 @@ public class CharacterMaster : MonoBehaviour, ITakeDamage
             }
         }
     }
-    public Vector3 GetDirectionWithMouse()
+    public Vector3 GetPositionWithMouse()
     {
         Vector3 l_MousePosition=Input.mousePosition;
         l_MousePosition.z=10.0f;
@@ -229,12 +233,10 @@ public class CharacterMaster : MonoBehaviour, ITakeDamage
         {
             if(l_CameraRaycastHit.transform.CompareTag("Terrain"))
             {
-                Vector3 l_Direction=l_CameraRaycastHit.point-transform.position;
-                l_Direction.y=0.0f;
-                return l_Direction;
+                return l_CameraRaycastHit.point;
             }
         }
-        return m_CharacterCamera.m_Camera.ScreenToWorldPoint(l_MousePosition)-transform.position;
+        return m_CharacterCamera.m_Camera.ScreenToWorldPoint(l_MousePosition);
     }
     public void StopMovement()
     {
@@ -279,7 +281,7 @@ public class CharacterMaster : MonoBehaviour, ITakeDamage
     }
     protected virtual void QSkill()
     {
-		m_QSkill.SetTimer(m_WSkill.GetCd());
+		m_QSkill.SetTimer(m_QSkill.GetCd());
 		m_CharacterUI.m_QSkillCdImage.fillAmount=1.0f;
         m_CharacterUI.m_QSkillCdText.enabled=true;
         m_CharacterStats.SetCurrentMana(m_CharacterStats.GetCurrentMana()-m_QSkill.GetMana());

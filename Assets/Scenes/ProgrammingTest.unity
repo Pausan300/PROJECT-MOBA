@@ -814,25 +814,9 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1440995684}
     - target: {fileID: 6605872161093242712, guid: ce1b7c0bd7344354f99a9206f3d72093, type: 3}
-      propertyPath: m_WSpeedDebuff
-      value: 
-      objectReference: {fileID: 11400000, guid: 76e4fe222e64d3f4f90a389037540af9, type: 2}
-    - target: {fileID: 6605872161093242712, guid: ce1b7c0bd7344354f99a9206f3d72093, type: 3}
       propertyPath: m_RecallTpPoint
       value: 
       objectReference: {fileID: 1125553929}
-    - target: {fileID: 6605872161093242712, guid: ce1b7c0bd7344354f99a9206f3d72093, type: 3}
-      propertyPath: m_WSpeedDebuffDuration
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 6605872161093242712, guid: ce1b7c0bd7344354f99a9206f3d72093, type: 3}
-      propertyPath: m_WSpeedDebuffAmountSplinter
-      value: -30
-      objectReference: {fileID: 0}
-    - target: {fileID: 6605872161093242712, guid: ce1b7c0bd7344354f99a9206f3d72093, type: 3}
-      propertyPath: m_WSpeedDebuffAmountExplosion
-      value: -20
-      objectReference: {fileID: 0}
     - target: {fileID: 7633917350864903895, guid: ce1b7c0bd7344354f99a9206f3d72093, type: 3}
       propertyPath: m_Camera
       value: 

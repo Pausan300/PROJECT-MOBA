@@ -103,7 +103,8 @@ public class HirasuCharacterController : CharacterMaster
 		if(m_UsingQ)
 		{
 			Gizmos.color=Color.red;
-			Vector3 l_Direction=GetDirectionWithMouse();
+			Vector3 l_Direction=GetPositionWithMouse()-transform.position;
+			l_Direction.y=0.0f;
 			l_Direction.Normalize();
 			Vector3 l_DesiredPos=transform.position+l_Direction*(m_QTapRange/100.0f/2.0f);
 			Gizmos.matrix=Matrix4x4.TRS(l_DesiredPos, Quaternion.LookRotation(l_Direction, transform.up), new Vector3(m_QTapWidth/100.0f, 2.0f, m_QTapRange/100.0f));
@@ -112,6 +113,7 @@ public class HirasuCharacterController : CharacterMaster
 	}
 #endif
 
+	//Q SKILL
 	protected override void QSkill()
 	{
 		m_QCurrentHoldTime=0.0f;
@@ -132,11 +134,13 @@ public class HirasuCharacterController : CharacterMaster
 		}
 		else if(Input.GetKeyUp(KeyCode.Q) || m_QCurrentHoldTime>m_QMaxHoldTime)
 		{
-			Vector3 l_Direction=GetDirectionWithMouse();
+			Vector3 l_Direction=GetPositionWithMouse()-transform.position;
+			l_Direction.y=0.0f;
 			l_Direction.Normalize();
 			transform.forward=l_Direction;
 			float l_ExtraPhysDamage=0.0f;
 			float l_ExtraMagicDamage=0.0f;
+			bool l_ReducedCooldown=false;
 			if(m_RSkill.GetLevel()>=2)
 			{
 				l_ExtraPhysDamage=m_PassiveExtraDamage;
@@ -161,11 +165,12 @@ public class HirasuCharacterController : CharacterMaster
 							if(m_QSkill.GetLevel()<=1)
 								break;
 						}
-						if(Entity.TryGetComponent(out BuffableEntity Buffs))
+						if(m_WSkill.GetLevel()>0 && m_RSkill.GetLevel()>0 && Entity.TryGetComponent(out BuffableEntity Buffs))
 							Buffs.AddBuff(m_WMarksDebuff.InitializeBuff(m_WMarksDuration, Entity.gameObject));
 						break;
 					}
 				}
+				l_ReducedCooldown=true;
 			}
 			else if(m_QCurrentHoldTime<m_QMaxHoldTime)
 			{
@@ -176,9 +181,11 @@ public class HirasuCharacterController : CharacterMaster
 				l_ProjectileScript.SetStats(this, l_Range, m_QDuration, l_Direction, m_QDamagePerLevel[m_QSkill.GetLevel()-1]+(m_QAdditionalDamage/100.0f*m_CharacterStats.GetBonusAttackDamage()), 
 					l_ExtraPhysDamage, l_ExtraMagicDamage, m_QSkill.GetLevel(), m_QSplinter, m_QSplintersDuration);
 			}
-			StartCoroutine(DisableForDuration(0.5f));
+			StartCoroutine(DisableForDuration(m_QDisabledTime));
 			m_UsingQ=false;
 			base.QSkill();
+			if(l_ReducedCooldown)
+				m_QSkill.SetTimer(m_QSkill.GetCd()/2.0f);
 			GetCharacterUI().HideCastingUI();
 		}
 	}
@@ -197,13 +204,14 @@ public class HirasuCharacterController : CharacterMaster
 		m_ActiveSplinters.Remove(Splinter);
 	}
 
+	//W SKILL
 	protected override void WSkill()
 	{
 		if(!m_UsingQ)
 		{
 			if(m_ActiveSplinters.Count>0)
 			{
-				StartCoroutine(DisableForDuration(0.5f));
+				StartCoroutine(DisableForDuration(m_WDisabledTime));
 				SetAnimatorTrigger("IsUsingW");
 
 				foreach(HirasuQSplinter Splinter in m_ActiveSplinters)
@@ -220,16 +228,15 @@ public class HirasuCharacterController : CharacterMaster
 		}
 	}
 
+	//E SKILL
 	protected override void ESkill()
 	{
 		if(!m_UsingQ)
 		{
-			Vector3 l_Direction=GetDirectionWithMouse();
-			l_Direction.Normalize();
-			StartCoroutine(EDash(l_Direction));
+			StartCoroutine(EDash(GetPositionWithMouse()));
 		}
 	}
-	IEnumerator EDash(Vector3 Direction)
+	IEnumerator EDash(Vector3 Position)
 	{
 		base.ESkill();
 		SetDisabled(true);
@@ -238,14 +245,19 @@ public class HirasuCharacterController : CharacterMaster
 		if(!GetIsLookingForPosition())
 			StopMovement();
         SetAnimatorTrigger("IsUsingE");
-		transform.forward=Direction;
+		Vector3 l_Direction=Position-transform.position;
+		l_Direction.y=0.0f;
+		l_Direction.Normalize();
+		transform.forward=l_Direction;
+		float l_Distance=Vector3.Distance(Position, transform.position);
 		Vector3 l_StartPos=transform.position;
-		float l_Range=m_ERange/100.0f;
+		float l_Range=(l_Distance*100.0f)<m_ERange ? l_Distance : m_ERange/100.0f;
+		Debug.Log("Position: "+Position+"  own pos: "+transform.position);
 		float l_Speed=l_Range/m_EDuration;
 		var l_SqrMaxDistance=l_Range*l_Range;
 		for(float timePassed=0.0f; timePassed<m_EDuration && (transform.position-l_StartPos).sqrMagnitude<l_SqrMaxDistance; timePassed+=Time.deltaTime)
 		{
-			transform.position+=l_Speed*Direction*Time.deltaTime;
+			transform.position+=l_Speed*l_Direction*Time.deltaTime;
 			yield return null;
 		}
 		if(m_RSkill.GetLevel()>=3)
@@ -263,6 +275,7 @@ public class HirasuCharacterController : CharacterMaster
 		SetDisabled(false);
 	}
 
+	//R SKILL
 	protected override void RSkill()
 	{
 		if(!m_UsingQ)
@@ -274,7 +287,7 @@ public class HirasuCharacterController : CharacterMaster
 	IEnumerator RAttack()
 	{
 		base.RSkill();
-		StartCoroutine(DisableForDuration(0.5f));
+		StartCoroutine(DisableForDuration(m_RDisabledTime));
 		float l_Damage=m_RDamagePerLevel[m_RSkill.GetLevel()-1]+(m_RAdditionalDamage/100.0f*m_CharacterStats.GetBonusAttackDamage());
 		SetAnimatorTrigger("IsUsingR");
 		SetAnimatorBool("IsAAttacking", false);
@@ -333,6 +346,7 @@ public class HirasuCharacterController : CharacterMaster
 		}
 	}
 
+
 	public override void LevelUp()
 	{
 		base.LevelUp();
@@ -383,7 +397,7 @@ public class HirasuCharacterController : CharacterMaster
 		else if(m_RSkill.GetLevel()>=1)
 			l_ExtraPhysDamage=m_PassiveExtraDamage;
 
-		if(m_RSkill.GetLevel()>=1)
+		if(m_RSkill.GetLevel()>=1 && m_WSkill.GetLevel()>0)
 		{
 			if(m_DesiredEnemy.TryGetComponent(out BuffableEntity Buffs))
 				Buffs.AddBuff(m_WMarksDebuff.InitializeBuff(m_WMarksDuration, m_DesiredEnemy.gameObject));

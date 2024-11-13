@@ -444,10 +444,10 @@ AnimatorState:
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions:
+  - {fileID: 4372316328358616852}
   - {fileID: -938198653551623491}
   - {fileID: 7957985785260101601}
   - {fileID: -3383861326947592613}
-  - {fileID: 4372316328358616852}
   - {fileID: 1001227577094513195}
   - {fileID: 2857020357628908932}
   - {fileID: -1337703368903277692}
@@ -625,7 +625,7 @@ AnimatorState:
   m_SpeedParameter: 
   m_MirrorParameter: 
   m_CycleOffsetParameter: 
-  m_TimeParameter: 
+  m_TimeParameter: AAttackSpeed
 --- !u!91 &9100000
 AnimatorController:
   m_ObjectHideFlags: 0

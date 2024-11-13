@@ -79,7 +79,7 @@ public class HirasuQProjectile : MonoBehaviour
                 }
                 if(m_SplintersLeft>0)
                     CalcDistancePerSplinter();
-			    if(other.TryGetComponent(out BuffableEntity Buffs))
+			    if(m_Player.m_WSkill.GetLevel()>0 && m_Player.m_RSkill.GetLevel()>0 && other.TryGetComponent(out BuffableEntity Buffs))
 				    Buffs.AddBuff(m_Player.m_WMarksDebuff.InitializeBuff(m_Player.m_WMarksDuration, other.gameObject));
                 m_EnemyHit=true;
             }
