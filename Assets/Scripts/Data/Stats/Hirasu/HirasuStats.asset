@@ -1,0 +1,52 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 75660bcf83fc7884a9f9daa7109d1cc3, type: 3}
+  m_Name: HirasuStats
+  m_EditorClassIdentifier: 
+  m_PlayerName: Hirasu
+  m_BaseHealth: 670
+  m_BaseMana: 250
+  m_BaseAttackDamage: 65
+  m_BaseAttackSpeed: 0.68
+  m_BaseArmor: 33
+  m_BaseMagicResist: 32
+  m_BaseHealthRegen: 8
+  m_BaseManaRegen: 7
+  m_AttackRange: 175
+  m_BaseMovementSpeed: 350
+  m_HealthPerLevel: 100
+  m_ManaPerLevel: 52
+  m_AttackDamagePerLevel: 4
+  m_AttackSpeedPerLevel: 0.022
+  m_ArmorPerLevel: 5
+  m_MagicResistPerLevel: 2
+  m_HealthRegenPerLevel: 0.55
+  m_ManaRegenPerLevel: 0.68
+  m_ExpPerLevel:
+  - 0
+  - 280
+  - 380
+  - 480
+  - 580
+  - 680
+  - 780
+  - 880
+  - 980
+  - 1080
+  - 1180
+  - 1280
+  - 1380
+  - 1480
+  - 1580
+  - 1680
+  - 1780
+  - 1880

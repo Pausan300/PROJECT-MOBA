@@ -63,7 +63,6 @@ public class HirasuQProjectile : MonoBehaviour
         m_EnemyHit=false;
         m_DropSplinters=false;
         m_Traveling=true;
-
     }
 	private void OnTriggerEnter(Collider other)
 	{
@@ -80,6 +79,8 @@ public class HirasuQProjectile : MonoBehaviour
                 }
                 if(m_SplintersLeft>0)
                     CalcDistancePerSplinter();
+			    if(other.TryGetComponent(out BuffableEntity Buffs))
+				    Buffs.AddBuff(m_Player.m_WMarksDebuff.InitializeBuff(m_Player.m_WMarksDuration, other.gameObject));
                 m_EnemyHit=true;
             }
         }
@@ -97,6 +98,5 @@ public class HirasuQProjectile : MonoBehaviour
         m_DistancePerSplinter=l_DistanceLeft/m_SplintersLeft;
         m_DistancePerSplinterTraveled=0.0f;
         m_DropSplinters=true;
-        Debug.Log("Distance Left: "+l_DistanceLeft+"  DistancePerSplinter: "+m_DistancePerSplinter);
     }
 }

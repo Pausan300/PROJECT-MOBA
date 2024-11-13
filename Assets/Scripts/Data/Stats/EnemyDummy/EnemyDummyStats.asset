@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 75660bcf83fc7884a9f9daa7109d1cc3, type: 3}
+  m_Name: EnemyDummyStats
+  m_EditorClassIdentifier: 
+  m_PlayerName: EnemyDummy
+  m_BaseHealth: 500
+  m_BaseMana: 0
+  m_BaseAttackDamage: 100
+  m_BaseAttackSpeed: 0
+  m_BaseArmor: 25
+  m_BaseMagicResist: 25
+  m_BaseHealthRegen: 0
+  m_BaseManaRegen: 0
+  m_AttackRange: 0
+  m_BaseMovementSpeed: 100
+  m_HealthPerLevel: 0
+  m_ManaPerLevel: 0
+  m_AttackDamagePerLevel: 0
+  m_AttackSpeedPerLevel: 0
+  m_ArmorPerLevel: 0
+  m_MagicResistPerLevel: 0
+  m_HealthRegenPerLevel: 0
+  m_ManaRegenPerLevel: 0
+  m_ExpPerLevel: []

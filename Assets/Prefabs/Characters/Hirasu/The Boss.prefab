@@ -30881,7 +30881,7 @@ PrefabInstance:
       addedObject: {fileID: 8897145909671556001}
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 70d8c0e6a3fab214ba722d726cf962f7, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 7635419542250428407}
+      addedObject: {fileID: 7780092429937281219}
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 70d8c0e6a3fab214ba722d726cf962f7, type: 3}
       insertIndex: -1
       addedObject: {fileID: 4279021379374391962}
@@ -30932,68 +30932,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2d0e77b5825c8044facb1ff52fb6e5a0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_PlayerName: HIRASU
-  m_BaseHealth: 670
-  m_BaseMana: 250
-  m_BaseAttackDamage: 65
-  m_BaseAttackSpeed: 0.68
-  m_BaseArmor: 33
-  m_BaseMagicResist: 32
-  m_BaseHealthRegen: 8
-  m_BaseManaRegen: 7
-  m_AttackRange: 175
-  m_BaseMovementSpeed: 350
-  m_HealthPerLevel: 100
-  m_ManaPerLevel: 52
-  m_AttackDamagePerLevel: 4
-  m_AttackSpeedPerLevel: 0.022
-  m_ArmorPerLevel: 5
-  m_MagicResistPerLevel: 2
-  m_HealthRegenPerLevel: 0.55
-  m_ManaRegenPerLevel: 0.68
-  m_CurrentLevel: 1
-  m_SkillPoints: 0
-  m_CurrentExp: 0
-  m_ExpPerLevel:
-  - 0
-  - 280
-  - 380
-  - 480
-  - 580
-  - 680
-  - 780
-  - 880
-  - 980
-  - 1080
-  - 1180
-  - 1280
-  - 1380
-  - 1480
-  - 1580
-  - 1680
-  - 1780
-  - 1880
-  m_QSkillCooldown: 8
-  m_QSkillMana: 30
-  m_QSkillLevel: 0
-  m_WSkillCooldown: 10
-  m_WSkillMana: 50
-  m_WSkillLevel: 0
-  m_ESkillCooldown: 8
-  m_ESkillMana: 40
-  m_ESkillLevel: 0
-  m_RSkillCooldown: 60
-  m_RSkillMana: 100
-  m_RSkillLevel: 0
-  m_SumSpell1Cooldown: 120
-  m_SumSpell2Cooldown: 120
-  m_DamageLayerMask:
-    serializedVersion: 2
-    m_Bits: 128
+  m_CharacterUI: {fileID: 0}
+  m_CharacterStats: {fileID: 11400000, guid: 0b437b3e3a0f49543829a4a4bc4f4037, type: 2}
   m_RecallTime: 8
   m_RecallTpPoint: {fileID: 0}
   m_DesiredEnemy: {fileID: 0}
   m_TimeSinceLastAuto: 0
+  m_SummSpell1: {fileID: 11400000, guid: ca8ff71d96317c541b37d751c8b81f3e, type: 2}
+  m_SummSpell2: {fileID: 11400000, guid: 09545bf2b1fed7949a8004f6bf84b493, type: 2}
+  m_QSkill: {fileID: 11400000, guid: 288a2a95786c30444810bf91582e74e2, type: 2}
+  m_WSkill: {fileID: 11400000, guid: fe834634a42608c41b3ac27b5518ccc7, type: 2}
+  m_ESkill: {fileID: 11400000, guid: 0e13596a18126584ebbf304442590da6, type: 2}
+  m_RSkill: {fileID: 11400000, guid: e518c4a4336a795429f6bf8d5e62f15f, type: 2}
+  m_DamageLayerMask:
+    serializedVersion: 2
+    m_Bits: 128
   m_MinExtraDamage: 30
   m_MaxExtraDamage: 180
   m_Staff: {fileID: 8175576814537329803}
@@ -31026,11 +30979,21 @@ MonoBehaviour:
   m_WAdditionalDamageExplosion: 90
   m_WExplosionRadius: 100
   m_WTimeToExpand: 0.5
-  m_WMarks: {fileID: 0}
-  m_WMarksExtraDamage: 0
-  m_WMarksDuration: 0
+  m_WExplosionDebuff: {fileID: 11400000, guid: 76e4fe222e64d3f4f90a389037540af9, type: 2}
+  m_WExplosionSlowAmount: -30
+  m_WExplosionSlowDuration: 5
+  m_WMarksDebuff: {fileID: 11400000, guid: 12039c31894a6ec4296c995db0e970a8, type: 2}
+  m_WMarksDuration: 5
+  m_WMarksExtraDamage: 5
   m_ERange: 350
   m_EDuration: 0.2
+  m_EBuff: {fileID: 11400000, guid: b7f73c03b38214c499c2e8a044fa40f8, type: 2}
+  m_EBuffDuration:
+  - 1
+  - 3
+  m_EBuffSpeed:
+  - 20
+  - 30
   m_RDamagePerLevel:
   - 250
   - 300
@@ -31070,7 +31033,7 @@ MonoBehaviour:
   m_CameraSpeed: 25
   m_WidthLimitOffset: 15
   m_HeightLimitOffset: 15
---- !u!114 &7635419542250428407
+--- !u!114 &7780092429937281219
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -31079,66 +31042,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 8207142013517453575}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d9fc2bae75b591049960c1351d15ed18, type: 3}
+  m_Script: {fileID: 11500000, guid: 537a50296ba9ebf45a8ede348b5c8b21, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_QSkillCdImage: {fileID: 0}
-  m_WSkillCdImage: {fileID: 0}
-  m_ESkillCdImage: {fileID: 0}
-  m_RSkillCdImage: {fileID: 0}
-  m_SumSpell1CdImage: {fileID: 0}
-  m_SumSpell2CdImage: {fileID: 0}
-  m_QSkillCdText: {fileID: 0}
-  m_WSkillCdText: {fileID: 0}
-  m_ESkillCdText: {fileID: 0}
-  m_RSkillCdText: {fileID: 0}
-  m_SumSpell1CdText: {fileID: 0}
-  m_SumSpell2CdText: {fileID: 0}
-  m_QLevelUpButton: {fileID: 0}
-  m_WLevelUpButton: {fileID: 0}
-  m_ELevelUpButton: {fileID: 0}
-  m_RLevelUpButton: {fileID: 0}
-  m_QLevelPoints: {fileID: 0}
-  m_WLevelPoints: {fileID: 0}
-  m_ELevelPoints: {fileID: 0}
-  m_RLevelPoints: {fileID: 0}
-  m_ExpBar: {fileID: 0}
-  m_LevelText: {fileID: 0}
-  m_HealthBar: {fileID: 0}
-  m_ManaBar: {fileID: 0}
-  m_HealthText: {fileID: 0}
-  m_ManaText: {fileID: 0}
-  m_WorldCanvas: {fileID: 8729863787317978199}
-  m_IngameHealthBar: {fileID: 2108014466249818695}
-  m_IngameManaBar: {fileID: 468038785231854880}
-  m_IngameLevelText: {fileID: 1789252326568464429}
-  m_PlayerNameText: {fileID: 4318019757475996927}
-  m_DamageNumbers: {fileID: 5019070121339474210, guid: c4ed669be551f9b49be5d414022b5593, type: 3}
-  m_DamageNumbersPosOffset: {x: 0, y: -130, z: 0}
-  m_PhysDamageFont: {fileID: 11400000, guid: e3d0864645595034488de38b50201788, type: 2}
-  m_MagicDamageFont: {fileID: 11400000, guid: aa836847ff1cd414298bd3382ba63fb0, type: 2}
-  m_PrimStatsPanel: {fileID: 0}
-  m_SeconStatsPanel: {fileID: 0}
-  m_AttackDamageText: {fileID: 0}
-  m_ArmorText: {fileID: 0}
-  m_AttackSpeedText: {fileID: 0}
-  m_CriticalChanceText: {fileID: 0}
-  m_AbilityPowerText: {fileID: 0}
-  m_MagicResistanceText: {fileID: 0}
-  m_CooldownReductionText: {fileID: 0}
-  m_MovementSpeedText: {fileID: 0}
-  m_HealthManaRegenText: {fileID: 0}
-  m_ArmorPenText: {fileID: 0}
-  m_LifestealText: {fileID: 0}
-  m_AttackRangeText: {fileID: 0}
-  m_HealsShieldsPowerText: {fileID: 0}
-  m_MagicPenText: {fileID: 0}
-  m_OmnidrainText: {fileID: 0}
-  m_TenacityText: {fileID: 0}
-  m_CastingUI: {fileID: 0}
-  m_CastingBar: {fileID: 0}
-  m_CastingAbilityText: {fileID: 0}
-  m_CastingTimeText: {fileID: 0}
 --- !u!136 &4279021379374391962
 CapsuleCollider:
   m_ObjectHideFlags: 0

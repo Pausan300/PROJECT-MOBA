@@ -9,18 +9,27 @@ public class CharacterUI : MonoBehaviour
     CharacterMaster m_Character;
 
     [Header("SKILLS")]
+    public Image m_QSkillImage;
+    public Image m_WSkillImage;
+    public Image m_ESkillImage;
+    public Image m_RSkillImage;
+    public Image m_SumSpell1Image;
+    public Image m_SumSpell2Image;
+
     public Image m_QSkillCdImage;
     public Image m_WSkillCdImage;
     public Image m_ESkillCdImage;
     public Image m_RSkillCdImage;
     public Image m_SumSpell1CdImage;
     public Image m_SumSpell2CdImage; 
+
     public TextMeshProUGUI m_QSkillCdText;
     public TextMeshProUGUI m_WSkillCdText;
     public TextMeshProUGUI m_ESkillCdText;
     public TextMeshProUGUI m_RSkillCdText;
     public TextMeshProUGUI m_SumSpell1CdText;
     public TextMeshProUGUI m_SumSpell2CdText;
+
     public Transform m_QLevelUpButton;
     public Transform m_WLevelUpButton;
     public Transform m_ELevelUpButton;
@@ -78,13 +87,25 @@ public class CharacterUI : MonoBehaviour
     public TextMeshProUGUI m_CastingAbilityText;
     public TextMeshProUGUI m_CastingTimeText;
 
-    void Start()
+    [Header("BUFFS/DEBUFFS")]
+    public GameObject m_BuffUIPrefab;
+    public RectTransform m_BuffsDebuffsParent;
+    public List<BuffDebuffObjectUI> m_BuffDebuffUIList=new List<BuffDebuffObjectUI>();
+
+    private void Start()
     {
         HideSeconStatsPanel();
         HideCastingUI();
         HideCdTexts();
     }
-    public void UpdateHealthManaBars(float Health, float MaxHealth, float Mana, float MaxMana)
+	private void Update()
+	{
+		UpdatePowerUI(m_Character.m_QSkill.GetTimer(), m_Character.m_QSkill.GetCd(), m_QSkillCdImage, m_QSkillCdText, m_Character.m_QSkill.GetZeroCooldown());
+		UpdatePowerUI(m_Character.m_WSkill.GetTimer(), m_Character.m_WSkill.GetCd(), m_WSkillCdImage, m_WSkillCdText, m_Character.m_WSkill.GetZeroCooldown());
+		UpdatePowerUI(m_Character.m_ESkill.GetTimer(), m_Character.m_ESkill.GetCd(), m_ESkillCdImage, m_ESkillCdText, m_Character.m_ESkill.GetZeroCooldown());
+		UpdatePowerUI(m_Character.m_RSkill.GetTimer(), m_Character.m_RSkill.GetCd(), m_RSkillCdImage, m_RSkillCdText, m_Character.m_RSkill.GetZeroCooldown());
+	}
+	public void UpdateHealthManaBars(float Health, float MaxHealth, float Mana, float MaxMana)
     {
         float l_HealthRounded=Mathf.Round(Health);
         float l_ManaRounded=Mathf.Round(Mana);
@@ -132,44 +153,63 @@ public class CharacterUI : MonoBehaviour
         m_CastingBar.value=CurrentRecallTime/MaxRecallTime;
         m_CastingTimeText.text=CurrentRecallTime.ToString("f1");
     }
+    public void UpdatePowerUI(float PowerTimer, float PowerCd, Image PowerImage, TextMeshProUGUI PowerCdText, bool ZeroCd)
+    {
+        if(ZeroCd)
+        {
+			PowerCdText.text="";
+		    PowerImage.fillAmount=0.0f;
+        }
+        else
+        {
+		    if(PowerTimer>=1.0f)
+			    PowerCdText.text=PowerTimer.ToString("f0");
+            else if(PowerTimer<=0.0f)
+			    PowerCdText.text="";
+		    else
+			    PowerCdText.text=PowerTimer.ToString("f1");
+		    PowerImage.fillAmount=PowerTimer/PowerCd;
+        }
+	}
     public void LevelUpQSkill()
     {
         m_QLevelPoints.value+=1;
-        m_Character.m_SkillPoints-=1;
-        m_Character.m_QSkillLevel++;
-        if(m_Character.m_QSkillLevel>=5)
+        m_Character.m_CharacterStats.SetSkillPoints(m_Character.m_CharacterStats.GetSkillPoints()-1);   
+        m_Character.m_QSkill.LevelUp();
+        if(m_Character.m_QSkill.GetLevel()>=5)
             m_QLevelUpButton.gameObject.SetActive(false);
-        if(m_Character.m_SkillPoints<=0)
+        if(m_Character.m_CharacterStats.GetSkillPoints()<=0)
             HideLevelUpSkillButtons();
     }
     public void LevelUpWSkill()
     {
         m_WLevelPoints.value+=1;
-        m_Character.m_SkillPoints-=1;
-        m_Character.m_WSkillLevel++;
-        if(m_Character.m_WSkillLevel>=5)
+        m_Character.m_CharacterStats.SetSkillPoints(m_Character.m_CharacterStats.GetSkillPoints()-1);
+        m_Character.m_WSkill.LevelUp();
+        if(m_Character.m_WSkill.GetLevel()>=5)
             m_WLevelUpButton.gameObject.SetActive(false);
-        if(m_Character.m_SkillPoints<=0)
+        if(m_Character.m_CharacterStats.GetSkillPoints()<=0)
             HideLevelUpSkillButtons();
     }
     public void LevelUpESkill()
     {
         m_ELevelPoints.value+=1;
-        m_Character.m_SkillPoints-=1;
-        m_Character.m_ESkillLevel++;
-        if(m_Character.m_ESkillLevel>=5)
+        m_Character.m_CharacterStats.SetSkillPoints(m_Character.m_CharacterStats.GetSkillPoints()-1);
+        m_Character.m_ESkill.LevelUp();
+        if(m_Character.m_ESkill.GetLevel()>=5)
             m_ELevelUpButton.gameObject.SetActive(false);
-        if(m_Character.m_SkillPoints<=0)
+        if(m_Character.m_CharacterStats.GetSkillPoints()<=0)
             HideLevelUpSkillButtons();
     }
     public void LevelUpRSkill()
     {
         m_RLevelPoints.value+=1;
-        m_Character.m_SkillPoints-=1;
-        m_Character.m_RSkillLevel++;
-        if(m_Character.m_RSkillLevel>=3 || (m_Character.m_CurrentLevel<11 && m_Character.m_RSkillLevel>=1) || (m_Character.m_CurrentLevel<16 && m_Character.m_RSkillLevel>=2))
+        m_Character.m_CharacterStats.SetSkillPoints(m_Character.m_CharacterStats.GetSkillPoints()-1);
+        m_Character.m_RSkill.LevelUp();
+        if(m_Character.m_RSkill.GetLevel()>=3 || (m_Character.m_CharacterStats.GetCurrentLevel()<11 && m_Character.m_RSkill.GetLevel()>=1) || 
+            (m_Character.m_CharacterStats.GetCurrentLevel()<16 && m_Character.m_RSkill.GetLevel()>=2))
             m_RLevelUpButton.gameObject.SetActive(false);
-        if(m_Character.m_SkillPoints<=0)
+        if(m_Character.m_CharacterStats.GetSkillPoints()<=0)
             HideLevelUpSkillButtons();
     }
     public void ResetSkillLevelPoints()
@@ -202,6 +242,28 @@ public class CharacterUI : MonoBehaviour
             TextMeshProUGUI l_TextMesh=l_MagicDamageText.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
             l_TextMesh.font=m_MagicDamageFont;
             l_TextMesh.text=MagicDamage.ToString("f0");
+        }
+    }
+    public void CreateBuffObject(TimedBuff TimedBuff)
+    {
+        GameObject l_BuffObject=Instantiate(m_BuffUIPrefab, m_BuffsDebuffsParent);
+        BuffDebuffObjectUI l_BuffObjectUI=l_BuffObject.GetComponent<BuffDebuffObjectUI>();
+        l_BuffObjectUI.m_BuffImage.sprite=TimedBuff.m_Buff.m_BuffSprite;
+        l_BuffObjectUI.m_BuffDurationImage.sprite=TimedBuff.m_Buff.m_BuffSprite;
+        l_BuffObjectUI.m_BuffDurationImage.fillAmount=1.0f;
+        l_BuffObjectUI.m_TimedBuff=TimedBuff;
+        m_BuffDebuffUIList.Add(l_BuffObjectUI);
+    }
+    public void DeleteBuffObject(TimedBuff TimedBuff)
+    {
+        foreach(BuffDebuffObjectUI BuffDebuffUI in m_BuffDebuffUIList)
+        {
+            if(BuffDebuffUI.m_TimedBuff==TimedBuff)
+            {
+                m_BuffDebuffUIList.Remove(BuffDebuffUI);
+                Destroy(BuffDebuffUI.gameObject);
+                break;
+            }
         }
     }
 
@@ -241,14 +303,14 @@ public class CharacterUI : MonoBehaviour
     }
     public void ShowLevelUpSkillButtons()
     {
-        if(m_Character.m_QSkillLevel<5)
+        if(m_Character.m_QSkill.GetLevel()<5)
             m_QLevelUpButton.gameObject.SetActive(true);
-        if(m_Character.m_WSkillLevel<5)
+        if(m_Character.m_WSkill.GetLevel()<5)
             m_WLevelUpButton.gameObject.SetActive(true);
-        if(m_Character.m_ESkillLevel<5)
+        if(m_Character.m_ESkill.GetLevel()<5)
             m_ELevelUpButton.gameObject.SetActive(true);
-        if((m_Character.m_CurrentLevel>=6 && m_Character.m_RSkillLevel<1) || (m_Character.m_CurrentLevel>=11 && m_Character.m_RSkillLevel<2) || 
-            (m_Character.m_CurrentLevel>=16 && m_Character.m_RSkillLevel<3))    
+        if((m_Character.m_CharacterStats.GetCurrentLevel()>=6 && m_Character.m_RSkill.GetLevel()<1) || (m_Character.m_CharacterStats.GetCurrentLevel()>=11 && m_Character.m_RSkill.GetLevel()<2) || 
+            (m_Character.m_CharacterStats.GetCurrentLevel()>=16 && m_Character.m_RSkill.GetLevel()<3))    
             m_RLevelUpButton.gameObject.SetActive(true);
     }
     public void HideLevelUpSkillButtons()
@@ -267,5 +329,20 @@ public class CharacterUI : MonoBehaviour
     public void SetCastingUIAbilityText(string Text)
     {
         m_CastingAbilityText.text=Text;
+    }
+    public void SetPowersImages(Sprite QSprite, Sprite WSprite, Sprite ESprite, Sprite RSprite, Sprite Summ1Sprite, Sprite Summ2Sprite)
+    {
+        m_QSkillImage.sprite=QSprite;
+        m_QSkillCdImage.sprite=QSprite;
+        m_WSkillImage.sprite=WSprite;
+        m_WSkillCdImage.sprite=WSprite;
+        m_ESkillImage.sprite=ESprite;
+        m_ESkillCdImage.sprite=ESprite;
+        m_RSkillImage.sprite=RSprite;
+        m_RSkillCdImage.sprite=RSprite;
+        m_SumSpell1Image.sprite=Summ1Sprite;
+        m_SumSpell1CdImage.sprite=Summ1Sprite;
+        m_SumSpell2Image.sprite=Summ2Sprite;
+        m_SumSpell2CdImage.sprite=Summ2Sprite;
     }
 }

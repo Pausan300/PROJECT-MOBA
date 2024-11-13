@@ -5,4 +5,5 @@ using UnityEngine;
 public interface ITakeDamage
 {
 	void TakeDamage(float PhysDamage, float MagicDamage);
+	CharacterStatsBlock GetCharacterStats();
 }

@@ -85,9 +85,9 @@ public class PracticeModeUI : MonoBehaviour
     void ButtonUpdateActions()
     {
         if(m_HealthButtonActive)
-            m_Character.SetCurrentHealth(m_Character.GetMaxHealth());
+            m_Character.m_CharacterStats.SetCurrentHealth(m_Character.m_CharacterStats.GetMaxHealth());
         if(m_ManaButtonActive)
-            m_Character.SetCurrentMana(m_Character.GetMaxMana());
+            m_Character.m_CharacterStats.SetCurrentMana(m_Character.m_CharacterStats.GetMaxMana());
         m_Tick=0.0f;
     }
     public void OpenCloseUI()
@@ -258,8 +258,9 @@ public class PracticeModeUI : MonoBehaviour
             Debug.DrawLine(l_CameraController.m_Camera.transform.position, l_CameraRaycastHit.point, Color.red);
             if(l_CameraRaycastHit.transform.CompareTag("Enemy"))
             {
-                l_CameraRaycastHit.transform.GetComponent<EnemyDummy>().m_Armor+=10.0f;
-                l_CameraRaycastHit.transform.GetComponent<EnemyDummy>().m_MagicResistance+=10.0f;
+                EnemyDummy l_Enemy=l_CameraRaycastHit.transform.GetComponent<EnemyDummy>();
+                l_Enemy.m_CharacterStats.SetArmor(l_Enemy.m_CharacterStats.GetArmor()+10.0f);
+                l_Enemy.m_CharacterStats.SetMagicRes(l_Enemy.m_CharacterStats.GetMagicRes()+10.0f);
             }
         }
     }

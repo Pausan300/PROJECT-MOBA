@@ -34,8 +34,8 @@ public class HirasuQSplinter : MonoBehaviour
         m_AlreadyExploded=true;
 		GameObject l_Explosion=Instantiate(Explosion, EnemyPos, Explosion.transform.rotation);
 		float l_Timer=0.0f;
-        if(m_AttachedEnemy!=null)
-            m_AttachedEnemy.TakeDamage(AttachedDamage, 0.0f);
+        float l_TotalDamage=Damage;
+        float l_SlowAmount=m_Player.m_WSpeedDebuffAmountExplosion;
 		List<Collider> l_CollidersHit=new List<Collider>();
 		while(l_Explosion.transform.localScale.x<Scale)
 		{
@@ -44,9 +44,21 @@ public class HirasuQSplinter : MonoBehaviour
 			Collider[] l_HitColliders=Physics.OverlapSphere(l_Explosion.transform.position, l_Explosion.transform.localScale.x/2.0f, DamageLayerMask);
 			foreach(Collider Entity in l_HitColliders)
 			{
-				if(!l_CollidersHit.Contains(Entity) && Entity.TryGetComponent(out ITakeDamage Enemy) && Enemy!=m_AttachedEnemy)
+				if(!l_CollidersHit.Contains(Entity) && Entity.TryGetComponent(out ITakeDamage Enemy))
 				{
-					Enemy.TakeDamage(Damage, 0.0f);
+                    if(Enemy==m_AttachedEnemy)
+                    {
+                        l_TotalDamage=AttachedDamage;
+                        l_SlowAmount=m_Player.m_WSpeedDebuffAmountSplinter;
+                    }
+                    if(Entity.TryGetComponent(out BuffableEntity Buffs))
+                    {
+                        Buffs.AddBuff(m_Player.m_WSpeedDebuff.InitializeBuff(m_Player.m_WSpeedDebuffDuration, l_SlowAmount, Entity.gameObject));
+						if(Buffs.IsMarkBuffActive(m_Player.m_WMarksDebuff))
+						    l_TotalDamage*=(1.0f+m_Player.m_WMarksExtraDamage/100.0f);
+					    Debug.Log("TAKEN "+l_TotalDamage+" DAMAGE");
+                    }
+					Enemy.TakeDamage(l_TotalDamage, 0.0f);
 					l_CollidersHit.Add(Entity);
 				}
 			}

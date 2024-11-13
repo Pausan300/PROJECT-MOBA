@@ -6,19 +6,16 @@ using UnityEngine.UI;
 
 public class EnemyDummy : MonoBehaviour, ITakeDamage
 {
+    [Header("CHARACTER STATS OBJECT")]
+    public CharacterStatsBlock m_CharacterStats;
+
     [Header("HEALTH & RESISTANCES")]
-    public float m_MaxHealth;
     public WorldSpaceCanvasBillboard m_Canvas;
     public Slider m_HealthBar;
-    public float m_Armor;
-    public float m_MagicResistance;
     public float m_TimeToStartRegen;
-    float m_CurrentHealth;
     float m_TimerSinceLastDamageTaken;
 
     [Header("ATTACKS")]
-    public float m_AttackDamage;
-    public float m_AbilityPower;
     public float m_TimeToAttack;
     public float m_AttackRadius;
     public LayerMask m_LayerMask;
@@ -32,17 +29,18 @@ public class EnemyDummy : MonoBehaviour, ITakeDamage
 
     void Start()
     {
-        m_CurrentHealth=m_MaxHealth;
+        m_CharacterStats.SetInitStats();
     }
     void Update()
     {
-        m_HealthBar.value=m_CurrentHealth/m_MaxHealth;
-        if(m_CurrentHealth<m_MaxHealth)
+        m_HealthBar.value=m_CharacterStats.GetCurrentHealth()/m_CharacterStats.GetMaxHealth();
+        if(m_CharacterStats.GetCurrentHealth()<m_CharacterStats.GetMaxHealth())
         {
             m_TimerSinceLastDamageTaken+=Time.deltaTime;
             if(m_TimerSinceLastDamageTaken>=m_TimeToStartRegen)
-                m_CurrentHealth=m_MaxHealth;
+                m_CharacterStats.SetCurrentHealth(m_CharacterStats.GetMaxHealth());
         }
+        m_CharacterStats.UpdateMovement();
     }
     public IEnumerator PerformAttack()
     {
@@ -50,7 +48,7 @@ public class EnemyDummy : MonoBehaviour, ITakeDamage
         foreach(Collider Entity in l_HitColliders)
         {
             if(Entity.TryGetComponent(out ITakeDamage Enemy))
-                Enemy.TakeDamage(m_AttackDamage, m_AbilityPower);
+                Enemy.TakeDamage(m_CharacterStats.GetAttackDamage(), m_CharacterStats.GetAbilityPower());
         }
         m_ShowGizmos=true;
         yield return new WaitForSeconds(0.25f);
@@ -66,12 +64,12 @@ public class EnemyDummy : MonoBehaviour, ITakeDamage
     }
     public void TakeDamage(float PhysDamage, float MagicDamage)
     {
-        float l_TotalPhysDamage=PhysDamage/(1.0f+m_Armor/100.0f);
-        float l_TotalMagicDamage=MagicDamage/(1.0f+m_MagicResistance/100.0f);
+        float l_TotalPhysDamage=PhysDamage/(1.0f+m_CharacterStats.GetArmor()/100.0f);
+        float l_TotalMagicDamage=MagicDamage/(1.0f+m_CharacterStats.GetMagicRes()/100.0f);
         if(PhysDamage>0.0f)
-            m_CurrentHealth-=l_TotalPhysDamage;
+            m_CharacterStats.SetCurrentHealth(m_CharacterStats.GetCurrentHealth()-l_TotalPhysDamage);
         if(MagicDamage>0.0f)
-            m_CurrentHealth-=l_TotalMagicDamage;
+            m_CharacterStats.SetCurrentHealth(m_CharacterStats.GetCurrentHealth()-l_TotalMagicDamage);
         m_TimerSinceLastDamageTaken=0.0f;
 
         //UI Display
@@ -94,15 +92,19 @@ public class EnemyDummy : MonoBehaviour, ITakeDamage
             l_TextMesh.text=l_TotalMagicDamage.ToString("f0");
         }
     }
+    public CharacterStatsBlock GetCharacterStats()
+    {
+        return m_CharacterStats;
+    }
     public void SetCanvasCamera(Camera CanvasCamera)
     {
         m_Canvas.m_Camera=CanvasCamera;
     }
     public void AddHealth(float Health)
     {
-        m_MaxHealth+=Health;
-        m_CurrentHealth+=Health;
-        if(m_CurrentHealth>m_MaxHealth)
-            m_CurrentHealth=m_MaxHealth;
+        m_CharacterStats.SetMaxHealth(m_CharacterStats.GetMaxHealth()+Health);
+        m_CharacterStats.SetCurrentHealth(m_CharacterStats.GetCurrentHealth()+Health);
+        if(m_CharacterStats.GetCurrentHealth()>m_CharacterStats.GetMaxHealth())
+            m_CharacterStats.SetCurrentHealth(m_CharacterStats.GetMaxHealth());
     }
 }
