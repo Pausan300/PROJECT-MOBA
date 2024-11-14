@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public class CharacterMaster : MonoBehaviour, ITakeDamage
@@ -20,6 +21,7 @@ public class CharacterMaster : MonoBehaviour, ITakeDamage
     bool m_Recalling;
 
     Vector3 m_DesiredPosition;
+    public Transform m_SelectedCharacter;
     public Transform m_DesiredEnemy;
     bool m_GoingToDesiredPosition;
     bool m_LookingForNextPosition;
@@ -65,10 +67,7 @@ public class CharacterMaster : MonoBehaviour, ITakeDamage
 	}
     protected virtual void Update()
     {
-        Vector3 l_MousePosition=Input.mousePosition;
-        l_MousePosition.z=10.0f;
-        Vector3 l_MouseDirection=m_CharacterCamera.m_Camera.ScreenToWorldPoint(l_MousePosition)-m_CharacterCamera.m_Camera.transform.position;
-        MouseTargeting(l_MouseDirection);
+        MouseTargeting();
         m_CharacterStats.UpdateMovement();
         if(!m_Disabled)
         {
@@ -111,11 +110,6 @@ public class CharacterMaster : MonoBehaviour, ITakeDamage
         if(m_CharacterStats.GetCurrentLevel()<18)
             m_CharacterUI.UpdateExpBar(m_CharacterStats.GetCurrentExp(), m_CharacterStats.m_ExpPerLevel[m_CharacterStats.GetCurrentLevel()]);
 
-        if(Input.GetKey(KeyCode.C))
-            m_CharacterUI.ShowSeconStatsPanel();
-        else if(Input.GetKeyUp(KeyCode.C))
-            m_CharacterUI.HideSeconStatsPanel();
-
         if(!m_Disabled)
         {
             if(Input.GetKeyDown(KeyCode.B))
@@ -129,6 +123,7 @@ public class CharacterMaster : MonoBehaviour, ITakeDamage
                 UseESkill();
             if(Input.GetKeyDown(KeyCode.R))
                 UseRSkill();
+
             if(Input.GetKeyDown(KeyCode.D))
                 UseSummonerSpell1();
             if(Input.GetKeyDown(KeyCode.F))
@@ -137,41 +132,87 @@ public class CharacterMaster : MonoBehaviour, ITakeDamage
 
         PowersCooldown();
     }
-    void MouseTargeting(Vector3 MouseDirection)
+    public Vector3 GetMouseDir()
     {
+        Vector3 l_MousePosition=Input.mousePosition;
+        l_MousePosition.z=10.0f;
+        return m_CharacterCamera.m_Camera.ScreenToWorldPoint(l_MousePosition)-m_CharacterCamera.m_Camera.transform.position;
+    }
+    public Transform GetEnemy()
+    {
+        Vector3 l_MouseDirection=GetMouseDir();
         RaycastHit l_CameraRaycastHit;
+        if(Physics.Raycast(m_CharacterCamera.m_Camera.transform.position, l_MouseDirection, out l_CameraRaycastHit, 1000.0f, m_CharacterCamera.m_CameraLayerMask))
+        {
+            if(l_CameraRaycastHit.transform.CompareTag("Enemy"))
+            {
+                return l_CameraRaycastHit.transform;
+            }
+        }
+        return null;
+    }
+    public CharacterStatsBlock GetSelectedCharacterStats()
+    {
+        Vector3 l_MouseDirection=GetMouseDir();
+        RaycastHit l_CameraRaycastHit;
+        if(Physics.Raycast(m_CharacterCamera.m_Camera.transform.position, l_MouseDirection, out l_CameraRaycastHit, 1000.0f, m_CharacterCamera.m_CameraLayerMask))
+        {
+            if(l_CameraRaycastHit.transform.TryGetComponent(out ITakeDamage Stats))
+            {
+                return Stats.GetCharacterStats();
+            }
+        }
+        return null;
+    }
+    public Vector3 GetPosition()
+    {
+        Vector3 l_MouseDirection=GetMouseDir();
+        RaycastHit l_CameraRaycastHit;
+        if(Physics.Raycast(m_CharacterCamera.m_Camera.transform.position, l_MouseDirection, out l_CameraRaycastHit, 1000.0f, m_CharacterCamera.m_CameraLayerMask))
+        {
+            if(l_CameraRaycastHit.transform.CompareTag("Terrain"))
+            {
+                return l_CameraRaycastHit.point;
+            }
+        }
+        return Vector3.zero;
+    }
+    void MouseTargeting()
+    {
         if(Input.GetMouseButtonDown(1))
         {
-            if(Physics.Raycast(m_CharacterCamera.m_Camera.transform.position, MouseDirection, out l_CameraRaycastHit, 1000.0f, m_CharacterCamera.m_CameraLayerMask))
+            m_DesiredEnemy=GetEnemy();
+            if(m_DesiredEnemy)
             {
-                if(l_CameraRaycastHit.transform.CompareTag("Enemy"))
-                {
-                    m_DesiredEnemy=l_CameraRaycastHit.transform;
-                    m_DesiredPosition=m_DesiredEnemy.position;
-                    m_DesiredPosition.y=0.0f;
-                    m_GoingToDesiredPosition=true;
-                    StopRecall();
-                }
+                m_DesiredPosition=m_DesiredEnemy.position;
+                m_DesiredPosition.y=0.0f;
+                m_GoingToDesiredPosition=true;
+                StopRecall();
             }
             m_LookingForNextPosition=true;
         }
         else if(Input.GetMouseButtonUp(1))
             m_LookingForNextPosition=false;
+                
+        if(Input.GetMouseButtonDown(0) && !EventSystem.current.IsPointerOverGameObject())
+        {
+            CharacterStatsBlock l_SelectedCharacterStats=GetSelectedCharacterStats();
+            if(l_SelectedCharacterStats)
+                m_CharacterUI.ShowTargetInfoUI(l_SelectedCharacterStats);
+            else
+                m_CharacterUI.HideTargetInfoUI();
+        }
 
         if(m_LookingForNextPosition)
         {
-            if(Physics.Raycast(m_CharacterCamera.m_Camera.transform.position, MouseDirection, out l_CameraRaycastHit, 1000.0f, m_CharacterCamera.m_CameraLayerMask))
+            if(GetPosition()!=Vector3.zero && !m_DesiredEnemy)
             {
-                Debug.DrawLine(m_CharacterCamera.m_Camera.transform.position, l_CameraRaycastHit.point, Color.green);
-                if(l_CameraRaycastHit.transform.CompareTag("Terrain"))
-                {
-                    m_DesiredPosition=l_CameraRaycastHit.point;
-                    m_DesiredPosition.y=0.0f;
-                    m_DesiredEnemy=null;
-                    m_GoingToDesiredPosition=true;
-                    StopAttacking();
-                    StopRecall();
-                }
+                m_DesiredPosition=GetPosition();
+                m_DesiredPosition.y=0.0f;
+                m_DesiredEnemy=null;
+                m_GoingToDesiredPosition=true;
+                StopAttacking();
+                StopRecall();
             }
         }
     }

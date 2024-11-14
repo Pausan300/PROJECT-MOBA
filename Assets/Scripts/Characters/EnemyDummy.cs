@@ -38,7 +38,10 @@ public class EnemyDummy : MonoBehaviour, ITakeDamage
         {
             m_TimerSinceLastDamageTaken+=Time.deltaTime;
             if(m_TimerSinceLastDamageTaken>=m_TimeToStartRegen)
+            {
                 m_CharacterStats.SetCurrentHealth(m_CharacterStats.GetMaxHealth());
+                m_CharacterStats.SetCurrentMana(m_CharacterStats.GetMaxMana());
+            }
         }
         m_CharacterStats.UpdateMovement();
     }
@@ -50,6 +53,7 @@ public class EnemyDummy : MonoBehaviour, ITakeDamage
             if(Entity.TryGetComponent(out ITakeDamage Enemy))
                 Enemy.TakeDamage(m_CharacterStats.GetAttackDamage(), m_CharacterStats.GetAbilityPower());
         }
+        m_CharacterStats.SetCurrentMana(m_CharacterStats.GetCurrentMana()-10.0f);
         m_ShowGizmos=true;
         yield return new WaitForSeconds(0.25f);
         m_ShowGizmos=false;

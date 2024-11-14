@@ -8,6 +8,12 @@ public class CharacterUI : MonoBehaviour
 {
     CharacterMaster m_Character;
 
+    [Header("HEALTH MANA BARS")]
+    public Slider m_HealthBar;
+    public Slider m_ManaBar;
+    public TextMeshProUGUI m_HealthText;
+    public TextMeshProUGUI m_ManaText;
+
     [Header("SKILLS")]
     public Image m_QSkillImage;
     public Image m_WSkillImage;
@@ -43,23 +49,6 @@ public class CharacterUI : MonoBehaviour
     public Slider m_ExpBar;
     public TextMeshProUGUI m_LevelText;
 
-    [Header("HEALTH MANA BARS")]
-    public Slider m_HealthBar;
-    public Slider m_ManaBar;
-    public TextMeshProUGUI m_HealthText;
-    public TextMeshProUGUI m_ManaText;
-
-    [Header("INGAME PLAYER INFO")]
-    public GameObject m_WorldCanvas;
-    public Slider m_IngameHealthBar;
-    public Slider m_IngameManaBar;
-    public TextMeshProUGUI m_IngameLevelText;
-    public TextMeshProUGUI m_PlayerNameText;
-    public GameObject m_DamageNumbers;
-    public Vector3 m_DamageNumbersPosOffset;
-    public TMP_FontAsset m_PhysDamageFont;
-    public TMP_FontAsset m_MagicDamageFont;
-
     [Header("STATS")]
     public RectTransform m_PrimStatsPanel;
     public RectTransform m_SeconStatsPanel;
@@ -81,22 +70,51 @@ public class CharacterUI : MonoBehaviour
     public TextMeshProUGUI m_OmnidrainText;
     public TextMeshProUGUI m_TenacityText;
 
+    [Header("BUFFS/DEBUFFS")]
+    public GameObject m_BuffUIPrefab;
+    public RectTransform m_BuffsDebuffsParent;
+    public List<BuffDebuffObjectUI> m_BuffDebuffUIList=new List<BuffDebuffObjectUI>();
+
     [Header("CASTING UI")]
     public RectTransform m_CastingUI;
     public Slider m_CastingBar;
     public TextMeshProUGUI m_CastingAbilityText;
     public TextMeshProUGUI m_CastingTimeText;
 
-    [Header("BUFFS/DEBUFFS")]
-    public GameObject m_BuffUIPrefab;
-    public RectTransform m_BuffsDebuffsParent;
-    public List<BuffDebuffObjectUI> m_BuffDebuffUIList=new List<BuffDebuffObjectUI>();
+    [Header("INGAME PLAYER UI")]
+    public GameObject m_WorldCanvas;
+    public Slider m_IngameHealthBar;
+    public Slider m_IngameManaBar;
+    public TextMeshProUGUI m_IngameLevelText;
+    public TextMeshProUGUI m_PlayerNameText;
+    public GameObject m_DamageNumbers;
+    public Vector3 m_DamageNumbersPosOffset;
+    public TMP_FontAsset m_PhysDamageFont;
+    public TMP_FontAsset m_MagicDamageFont;
+
+    [Header("TARGET INFO UI")]
+    public GameObject m_TargetInfoUI;
+    public TextMeshProUGUI m_TargetAttackDamageText;
+    public TextMeshProUGUI m_TargetArmorText;
+    public TextMeshProUGUI m_TargetAttackSpeedText;
+    public TextMeshProUGUI m_TargetCriticalChanceText;
+    public TextMeshProUGUI m_TargetAbilityPowerText;
+    public TextMeshProUGUI m_TargetMagicResistanceText;
+    public TextMeshProUGUI m_TargetCooldownReductionText;
+    public TextMeshProUGUI m_TargetMovementSpeedText;
+    public TextMeshProUGUI m_TargetLevelText;
+    public TextMeshProUGUI m_TargetHealthText;
+    public TextMeshProUGUI m_TargetManaText;
+    public Slider m_TargetHealthBar;
+    public Slider m_TargetManaBar;
+    CharacterStatsBlock m_TargetStats;
 
     private void Start()
     {
         HideSeconStatsPanel();
         HideCastingUI();
         HideCdTexts();
+        HideTargetInfoUI();
     }
 	private void Update()
 	{
@@ -104,6 +122,13 @@ public class CharacterUI : MonoBehaviour
 		UpdatePowerUI(m_Character.m_WSkill.GetTimer(), m_Character.m_WSkill.GetCd(), m_WSkillCdImage, m_WSkillCdText, m_Character.m_WSkill.GetZeroCooldown());
 		UpdatePowerUI(m_Character.m_ESkill.GetTimer(), m_Character.m_ESkill.GetCd(), m_ESkillCdImage, m_ESkillCdText, m_Character.m_ESkill.GetZeroCooldown());
 		UpdatePowerUI(m_Character.m_RSkill.GetTimer(), m_Character.m_RSkill.GetCd(), m_RSkillCdImage, m_RSkillCdText, m_Character.m_RSkill.GetZeroCooldown());
+
+        if(Input.GetKey(KeyCode.C))
+            ShowSeconStatsPanel();
+        else if(Input.GetKeyUp(KeyCode.C))
+            HideSeconStatsPanel();
+
+        UpdateTargetInfoUI(m_TargetStats);
 	}
 	public void UpdateHealthManaBars(float Health, float MaxHealth, float Mana, float MaxMana)
     {
@@ -152,6 +177,27 @@ public class CharacterUI : MonoBehaviour
     {
         m_CastingBar.value=CurrentRecallTime/MaxRecallTime;
         m_CastingTimeText.text=CurrentRecallTime.ToString("f1");
+    }
+    public void UpdateTargetInfoUI(CharacterStatsBlock Stats)
+    {
+        if(Stats)
+        {
+            m_TargetAttackDamageText.text=Mathf.Round(Stats.GetAttackDamage()).ToString();
+            m_TargetArmorText.text=Mathf.Round(Stats.GetArmor()).ToString();
+            m_TargetAttackSpeedText.text=Stats.GetAttackSpeed().ToString("f2");
+            m_TargetCriticalChanceText.text=Stats.GetCritChance().ToString();
+            m_TargetAbilityPowerText.text=Stats.GetAbilityPower().ToString();
+            m_TargetMagicResistanceText.text=Mathf.Round(Stats.GetMagicRes()).ToString();
+            m_TargetCooldownReductionText.text=Stats.GetCdr().ToString();
+            m_TargetMovementSpeedText.text=Stats.GetMovSpeed().ToString();
+            float l_HealthRounded=Mathf.Round(Stats.GetCurrentHealth());
+            float l_ManaRounded=Mathf.Round(Stats.GetCurrentMana());
+            m_TargetHealthBar.value=l_HealthRounded/Stats.GetMaxHealth();
+            m_TargetManaBar.value=l_ManaRounded/Stats.GetMaxMana();
+            m_TargetHealthText.text=l_HealthRounded+"/"+Mathf.Round(Stats.GetMaxHealth());
+            m_TargetManaText.text=l_ManaRounded+"/"+Mathf.Round(Stats.GetMaxMana());
+            m_TargetLevelText.text=Stats.GetCurrentLevel().ToString();
+        }
     }
     public void UpdatePowerUI(float PowerTimer, float PowerCd, Image PowerImage, TextMeshProUGUI PowerCdText, bool ZeroCd)
     {
@@ -275,6 +321,16 @@ public class CharacterUI : MonoBehaviour
     public void HideSeconStatsPanel()
     {
         m_SeconStatsPanel.gameObject.SetActive(false);
+    }
+    public void ShowTargetInfoUI(CharacterStatsBlock Stats)
+    {
+        m_TargetStats=Stats;
+        m_TargetInfoUI.gameObject.SetActive(true);
+    }
+    public void HideTargetInfoUI()
+    {
+        m_TargetInfoUI.gameObject.SetActive(false);
+        m_TargetStats=null;
     }
     public void ShowCastingUI()
     {

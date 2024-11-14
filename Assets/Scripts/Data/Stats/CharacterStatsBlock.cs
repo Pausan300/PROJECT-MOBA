@@ -77,7 +77,7 @@ public class CharacterStatsBlock : ScriptableObject
     {
         m_MovementSpeed=m_BaseMovementSpeed+m_MoveSpeedBonusFlat;
         m_MovementSpeed*=1.0f+(m_MoveSpeedBonusAddi/100.0f);
-        if(m_MoveSpeedBonusMulti>1.0f)
+        if(m_MoveSpeedBonusMulti!=0.0f)
             m_MovementSpeed*=m_MoveSpeedBonusMulti;
     }
     public virtual void SetInitStats()

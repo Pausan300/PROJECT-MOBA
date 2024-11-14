@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_PlayerName: EnemyDummy
   m_BaseHealth: 500
-  m_BaseMana: 0
+  m_BaseMana: 200
   m_BaseAttackDamage: 100
   m_BaseAttackSpeed: 0
   m_BaseArmor: 25
