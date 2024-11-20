@@ -6,13 +6,15 @@ using UnityEngine.UI;
 
 public class CharacterMaster : MonoBehaviour, ITakeDamage
 {
-    public CharacterUI m_CharacterUI;
     CameraController m_CharacterCamera;
     Animator m_CharacterAnimator;
     AudioSource m_AudioSource;
 
-    [Header("CHARACTER STATS OBJECT")]
-    public CharacterStatsBlock m_CharacterStats;
+    [Header("CHARACTER STATS")]
+    public CharacterStats m_CharacterStats;
+
+    [Header("CHARACTER UI")]
+    public CharacterUI m_CharacterUI;
 
     [Header("RECALL")]
     public float m_RecallTime;
@@ -39,11 +41,8 @@ public class CharacterMaster : MonoBehaviour, ITakeDamage
     public Skill m_WSkill;
     public Skill m_ESkill;
     public Skill m_RSkill;
-    public float m_QDisabledTime;
-    public float m_WDisabledTime;
-    public float m_EDisabledTime;
-    public float m_RDisabledTime;
     public LayerMask m_DamageLayerMask;
+    bool m_ShowingGizmos;
 
 	protected virtual void Start()
 	{
@@ -73,7 +72,7 @@ public class CharacterMaster : MonoBehaviour, ITakeDamage
         {
             CharacterMovement();
         }
-        m_CharacterStats.ResourceRestoring();
+
         m_CharacterUI.UpdateHealthManaBars(m_CharacterStats.GetCurrentHealth(), m_CharacterStats.GetMaxHealth(), m_CharacterStats.GetCurrentMana(), m_CharacterStats.GetMaxMana());
         m_CharacterUI.UpdatePrimStats(m_CharacterStats.GetAttackDamage(), m_CharacterStats.GetArmor(), m_CharacterStats.GetAttackSpeed(), m_CharacterStats.GetCritChance(), 
             m_CharacterStats.GetAbilityPower(), m_CharacterStats.GetMagicRes(), m_CharacterStats.GetCdr(), m_CharacterStats.GetMovSpeed());
@@ -96,19 +95,9 @@ public class CharacterMaster : MonoBehaviour, ITakeDamage
             m_TimeSinceLastAuto+=Time.deltaTime;
 #endif
         }
-#if UNITY_EDITOR
-        if(Input.GetKeyDown(KeyCode.P))
-        {
-            m_CharacterStats.SetCurrentExp(m_CharacterStats.GetCurrentExp()+200.0f);
-            if(m_CharacterStats.GetCurrentLevel()<18)
-            {
-                if(m_CharacterStats.GetCurrentExp()>=m_CharacterStats.m_ExpPerLevel[m_CharacterStats.GetCurrentLevel()])
-                    LevelUp();
-            }
-        }
-#endif
+
         if(m_CharacterStats.GetCurrentLevel()<18)
-            m_CharacterUI.UpdateExpBar(m_CharacterStats.GetCurrentExp(), m_CharacterStats.m_ExpPerLevel[m_CharacterStats.GetCurrentLevel()]);
+            m_CharacterUI.UpdateExpBar(m_CharacterStats.GetCurrentExp(), m_CharacterStats.m_CharacterBaseStats.m_ExpPerLevel[m_CharacterStats.GetCurrentLevel()]);
 
         if(!m_Disabled)
         {
@@ -131,6 +120,8 @@ public class CharacterMaster : MonoBehaviour, ITakeDamage
         }
 
         PowersCooldown();
+
+       
     }
     public Vector3 GetMouseDir()
     {
@@ -145,22 +136,18 @@ public class CharacterMaster : MonoBehaviour, ITakeDamage
         if(Physics.Raycast(m_CharacterCamera.m_Camera.transform.position, l_MouseDirection, out l_CameraRaycastHit, 1000.0f, m_CharacterCamera.m_CameraLayerMask))
         {
             if(l_CameraRaycastHit.transform.CompareTag("Enemy"))
-            {
                 return l_CameraRaycastHit.transform;
-            }
         }
         return null;
     }
-    public CharacterStatsBlock GetSelectedCharacterStats()
+    public CharacterStats GetSelectedCharacterStats()
     {
         Vector3 l_MouseDirection=GetMouseDir();
         RaycastHit l_CameraRaycastHit;
         if(Physics.Raycast(m_CharacterCamera.m_Camera.transform.position, l_MouseDirection, out l_CameraRaycastHit, 1000.0f, m_CharacterCamera.m_CameraLayerMask))
         {
             if(l_CameraRaycastHit.transform.TryGetComponent(out ITakeDamage Stats))
-            {
                 return Stats.GetCharacterStats();
-            }
         }
         return null;
     }
@@ -171,9 +158,7 @@ public class CharacterMaster : MonoBehaviour, ITakeDamage
         if(Physics.Raycast(m_CharacterCamera.m_Camera.transform.position, l_MouseDirection, out l_CameraRaycastHit, 1000.0f, m_CharacterCamera.m_CameraLayerMask))
         {
             if(l_CameraRaycastHit.transform.CompareTag("Terrain"))
-            {
                 return l_CameraRaycastHit.point;
-            }
         }
         return Vector3.zero;
     }
@@ -181,26 +166,39 @@ public class CharacterMaster : MonoBehaviour, ITakeDamage
     {
         if(Input.GetMouseButtonDown(1))
         {
-            m_DesiredEnemy=GetEnemy();
-            if(m_DesiredEnemy)
+            if(IsAnySkillBeingUsed())
             {
-                m_DesiredPosition=m_DesiredEnemy.position;
-                m_DesiredPosition.y=0.0f;
-                m_GoingToDesiredPosition=true;
-                StopRecall();
+                m_CharacterUI.ClearDeletableSkillIndicatorUI();
+                m_ShowingGizmos=false;
+                StopSkillsCancelableWithMouseClick();
             }
-            m_LookingForNextPosition=true;
+            else
+            {
+                m_DesiredEnemy=GetEnemy();
+                if(m_DesiredEnemy)
+                {
+                    m_DesiredPosition=m_DesiredEnemy.position;
+                    m_DesiredPosition.y=0.0f;
+                    m_GoingToDesiredPosition=true;
+                    StopRecall();
+                }
+                m_LookingForNextPosition=true;
+            }
         }
         else if(Input.GetMouseButtonUp(1))
             m_LookingForNextPosition=false;
                 
-        if(Input.GetMouseButtonDown(0) && !EventSystem.current.IsPointerOverGameObject())
+        if(Input.GetMouseButtonDown(0)) 
         {
-            CharacterStatsBlock l_SelectedCharacterStats=GetSelectedCharacterStats();
-            if(l_SelectedCharacterStats)
-                m_CharacterUI.ShowTargetInfoUI(l_SelectedCharacterStats);
-            else
-                m_CharacterUI.HideTargetInfoUI();
+            if(!EventSystem.current.IsPointerOverGameObject())
+            {
+                CharacterStats l_SelectedCharacterStats=GetSelectedCharacterStats();
+                if(l_SelectedCharacterStats)
+                    m_CharacterUI.ShowTargetInfoUI(l_SelectedCharacterStats);
+                else
+                    m_CharacterUI.HideTargetInfoUI();
+            }
+            m_CharacterUI.ClearDeletableSkillIndicatorUI();
         }
 
         if(m_LookingForNextPosition)
@@ -529,9 +527,28 @@ public class CharacterMaster : MonoBehaviour, ITakeDamage
             StopRecall();
         m_CharacterUI.SpawnDamageNumbers(l_TotalPhysDamage, l_TotalMagicDamage);
 	}
-    public CharacterStatsBlock GetCharacterStats()
+    public bool IsAnySkillBeingUsed()
     {
-        return m_CharacterStats;
+        return (m_QSkill.GetUsingSkill() && m_QSkill.m_CancelableWithMouseClick) || (m_WSkill.GetUsingSkill() && m_WSkill.m_CancelableWithMouseClick) 
+            || (m_ESkill.GetUsingSkill() && m_ESkill.m_CancelableWithMouseClick) || (m_RSkill.GetUsingSkill() && m_RSkill.m_CancelableWithMouseClick);
+    }
+    public void StopSkills()
+    {
+        m_QSkill.SetUsingSkill(false);
+        m_WSkill.SetUsingSkill(false);
+        m_ESkill.SetUsingSkill(false);
+        m_RSkill.SetUsingSkill(false);
+    }
+    public void StopSkillsCancelableWithMouseClick()
+    {
+        if(m_QSkill.m_CancelableWithMouseClick)
+            m_QSkill.SetUsingSkill(false);
+        if(m_WSkill.m_CancelableWithMouseClick)
+            m_WSkill.SetUsingSkill(false);
+        if(m_ESkill.m_CancelableWithMouseClick)
+            m_ESkill.SetUsingSkill(false);
+        if(m_RSkill.m_CancelableWithMouseClick)
+            m_RSkill.SetUsingSkill(false);
     }
 
     //LLAMADA POR EVENTO EN LA ANIMACION DE AUTOATAQUE
@@ -545,6 +562,26 @@ public class CharacterMaster : MonoBehaviour, ITakeDamage
     }
 
     //GETTERS & SETTERS
+    public CharacterStats GetCharacterStats()
+    {
+        return m_CharacterStats;
+    }
+    public CameraController GetCameraController()
+    {
+        return m_CharacterCamera;
+    }
+    public AudioSource GetAudioSource()
+    {
+        return m_AudioSource;
+    }
+    public Animator GetAnimator()
+    {
+        return m_CharacterAnimator;
+    }
+    public CharacterUI GetCharacterUI()
+    {
+        return m_CharacterUI;
+    }
     public float GetAttackAnimationLength()
     {
         return m_AttackAnimLength;
@@ -584,20 +621,12 @@ public class CharacterMaster : MonoBehaviour, ITakeDamage
         m_ESkill.SetZeroCooldown(Active);
         m_RSkill.SetZeroCooldown(Active);
     }
-    public CameraController GetCameraController()
+    public bool GetShowingGizmos()
     {
-        return m_CharacterCamera;
+        return m_ShowingGizmos;
     }
-    public AudioSource GetAudioSource()
+    public void SetShowingGizmos(bool True)
     {
-        return m_AudioSource;
-    }
-    public Animator GetAnimator()
-    {
-        return m_CharacterAnimator;
-    }
-    public CharacterUI GetCharacterUI()
-    {
-        return m_CharacterUI;
+        m_ShowingGizmos=True;
     }
 }

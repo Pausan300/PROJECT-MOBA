@@ -15,11 +15,11 @@ public class BuffableEntity : MonoBehaviour
             if(buff.m_IsFinished)
             {
                 m_Buffs.Remove(buff.m_Buff);
-                if(TryGetComponent(out CharacterMaster Player))
-                {
-                    Player.GetCharacterUI().DeleteBuffObject(buff);
-                }
-            }
+				//if(TryGetComponent(out CharacterMaster Player))
+				//{
+				//	Player.GetCharacterUI().DeleteBuffObject(buff);
+				//}
+			}
         }
     }
     public void AddBuff(TimedBuff buff)
@@ -53,5 +53,9 @@ public class BuffableEntity : MonoBehaviour
             return l_MarkBuff.GetIsEffectActive();
         }
         return false;
+    }
+    public List<TimedBuff> GetBuffs()
+    {
+        return m_Buffs.Values.ToList();
     }
 }

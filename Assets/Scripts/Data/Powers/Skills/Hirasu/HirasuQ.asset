@@ -13,6 +13,15 @@ MonoBehaviour:
   m_Name: HirasuQ
   m_EditorClassIdentifier: 
   m_Sprite: {fileID: 21300000, guid: f6251a35b3515ec47a9e4e0e2c6a512c, type: 3}
+  m_Description: "Pulsar: Hirasu embiste con su bast\xF3n, lo que inflige X = (70
+    +80% del da\xF1o de ataque adicional) de da\xF1o f\xEDsico al primer enemigo
+    golpeado. Devuelve la mitad del enfriamiento si golpea a un enemigo.\r\n\r\nMantener:
+    Hirasu arroja el bast\xF3n, lo que inflige X = (70 +80% del da\xF1o de ataque
+    adicional) de da\xF1o f\xEDsico a cada enemigo golpeado.\r\n\r\nCuando el bast\xF3n
+    impacta con un enemigo le clava hasta 2 astillas del bast\xF3n y mantiene la
+    trayectoria. Si el bast\xF3n impacta con m\xE1s de 2 astillas, las deja clavadas
+    en el suelo tras el enemigo impactado.\r"
+  m_IndicatorUIObject: {fileID: 6649836915933689498, guid: 8caef782d2af9ec429b3465c5f423ec6, type: 3}
   m_SkillCooldownPerLevel:
   - 8
   - 8
@@ -25,3 +34,5 @@ MonoBehaviour:
   - 40
   - 45
   - 50
+  m_SkillDisabledTime: 0.3
+  m_CancelableWithMouseClick: 0

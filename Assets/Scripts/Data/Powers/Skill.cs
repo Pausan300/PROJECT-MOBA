@@ -8,7 +8,10 @@ public class Skill : Power
     int m_SkillLevel;
     public float[] m_SkillCooldownPerLevel;
     public float[] m_SkillManaPerLevel;
+    public float m_SkillDisabledTime;
     float m_SkillMana;
+    public bool m_CancelableWithMouseClick;
+    bool m_UsingSkill;
 
     public override void SetInitStats()
     {
@@ -16,6 +19,7 @@ public class Skill : Power
         m_SkillLevel=0;
         m_SkillMana=m_SkillManaPerLevel[0];
         SetCd(m_SkillCooldownPerLevel[0]);
+        SetUsingSkill(false);
     }
 
     public void LevelUp()
@@ -43,5 +47,13 @@ public class Skill : Power
     public void SetCd(int Level)
     {
         SetCd(m_SkillCooldownPerLevel[Level-1]);
+    }
+    public bool GetUsingSkill()
+    {
+        return m_UsingSkill;
+    }
+    public void SetUsingSkill(bool True)
+    {
+        m_UsingSkill=True;
     }
 }

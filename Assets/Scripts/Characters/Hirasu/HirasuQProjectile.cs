@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class HirasuQProjectile : MonoBehaviour
 {
+    public BoxCollider m_Collider;
     HirasuCharacterController m_Player;
     GameObject m_Splinter;
     Vector3 m_Direction;
@@ -46,7 +47,7 @@ public class HirasuQProjectile : MonoBehaviour
         }
     }
     public void SetStats(HirasuCharacterController Player, float Range, float Duration, Vector3 Direction, float Damage, float ExtraPhysDamage, float ExtraMagicDamage,
-        int TotalSplinters, GameObject SplinterObject, float SplintersDuration)
+        int TotalSplinters, GameObject SplinterObject, float SplintersDuration, float Width)
     {
         m_Player=Player;
         m_Direction=Direction;
@@ -63,6 +64,7 @@ public class HirasuQProjectile : MonoBehaviour
         m_EnemyHit=false;
         m_DropSplinters=false;
         m_Traveling=true;
+        m_Collider.size=new Vector3(Width/100.0f, m_Collider.size.y, m_Collider.size.z);
     }
 	private void OnTriggerEnter(Collider other)
 	{

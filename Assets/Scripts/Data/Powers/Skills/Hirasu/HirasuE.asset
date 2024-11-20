@@ -13,6 +13,11 @@ MonoBehaviour:
   m_Name: HirasuE
   m_EditorClassIdentifier: 
   m_Sprite: {fileID: 21300000, guid: 8ac145c8b7b5ccc4dba1dd3eba755798, type: 3}
+  m_Description: "Hirasu se impulsa con fuego para saltar una peque\xF1a distancia.\r\n\r\nNivel
+    6: Al acabar el salto, obtiene un 20% de velocidad de movimiento durante 1 s.\n\r\nNivel
+    11: Al acabar el salto, obtiene un 30% de velocidad de movimiento durante 1 s.\n\r\nNivel
+    16: Al acabar el salto, obtiene un 30% de velocidad de movimiento durante 3 s. "
+  m_IndicatorUIObject: {fileID: 6649836915933689498, guid: 8caef782d2af9ec429b3465c5f423ec6, type: 3}
   m_SkillCooldownPerLevel:
   - 8
   - 7.5
@@ -25,3 +30,5 @@ MonoBehaviour:
   - 30
   - 25
   - 20
+  m_SkillDisabledTime: 0
+  m_CancelableWithMouseClick: 1

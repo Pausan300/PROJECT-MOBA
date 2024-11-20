@@ -330,6 +330,7 @@ GameObject:
   - component: {fileID: 5205871527970264931}
   - component: {fileID: 3306758240520443805}
   - component: {fileID: 8163902907407443686}
+  - component: {fileID: 3771395301891844531}
   - component: {fileID: 3716759342269532723}
   - component: {fileID: 852399847533407206}
   m_Layer: 7
@@ -455,6 +456,19 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 126
   m_CollisionDetection: 0
+--- !u!114 &3771395301891844531
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6438156489008617800}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f7ad577bb2939dc4e883a6a918f67250, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_CharacterBaseStats: {fileID: 11400000, guid: 488abda0eb7e13f42aeed5e52ba3592f, type: 2}
 --- !u!114 &3716759342269532723
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -467,7 +481,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 181b61b6a2696f84ea42a5f3c8678dcf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_CharacterStats: {fileID: 11400000, guid: 488abda0eb7e13f42aeed5e52ba3592f, type: 2}
+  m_CharacterStats: {fileID: 3771395301891844531}
   m_Canvas: {fileID: 2283608347897315017}
   m_HealthBar: {fileID: 8118942208049473921}
   m_TimeToStartRegen: 5

@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1b99bce7ea32ac459c70144bb0096a3, type: 3}
+  m_Name: HirasuPassive
+  m_EditorClassIdentifier: 
+  m_Sprite: {fileID: 21300000, guid: d701992e566d51a408d2d2a8b003e723, type: 3}
+  m_Description: "Los ataques b\xE1sicos y Marcaje de Hirasu aumentan de poder al
+    subir de nivel y mejorar la Palmada Solar.\r\n\r\nNivel 6: Obtiene un bast\xF3n,
+    aumentando su alcance de ataque a 225 y obtiene X = (30 - 180) de da\xF1o f\xEDsico
+    adicional al golpear. \n\r\nNivel 11: Prende fuego en una punta del bast\xF3n,
+    otorg\xE1ndole X = (30 - 180) de da\xF1o m\xE1gico adicional al golpear.\n\r\nNivel
+    16: Prende fuego la otra punta para alternar entre golpes directos y golpes girando
+    el bast\xF3n. Tras cada golpe directo puede realizar r\xE1pidamente un golpe
+    girando el bast\xF3n."
+  m_IndicatorUIObject: {fileID: 0}
+  m_SkillCooldownPerLevel: []
+  m_SkillManaPerLevel: []
+  m_SkillDisabledTime: 0
+  m_CancelableWithMouseClick: 0

@@ -3,23 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-[CreateAssetMenu(menuName="CharacterStats/StatBlock")]
-public class CharacterStatsBlock : ScriptableObject
+public class CharacterStats : MonoBehaviour
 {
-    [Header("PLAYER INFO")]
-    public string m_PlayerName;
+    public CharacterBaseStatsBlock m_CharacterBaseStats;
 
-    [Header("BASE STATS")]
-    public float m_BaseHealth;
-    public float m_BaseMana;
-    public float m_BaseAttackDamage;
-    public float m_BaseAttackSpeed;
-    public float m_BaseArmor;
-    public float m_BaseMagicResist;
-    public float m_BaseHealthRegen;
-    public float m_BaseManaRegen;
-    public float m_AttackRange;
-    public float m_BaseMovementSpeed;
     float m_MaxHealth;
     float m_MaxMana;
     float m_CurrentHealth;
@@ -44,15 +31,6 @@ public class CharacterStatsBlock : ScriptableObject
     float m_ShieldsAndHealsPower;
     float m_MovementSpeed;
     
-    [Header("GROWTH STATS")]
-    public float m_HealthPerLevel;
-    public float m_ManaPerLevel;
-    public float m_AttackDamagePerLevel;
-    public float m_AttackSpeedPerLevel;
-    public float m_ArmorPerLevel;
-    public float m_MagicResistPerLevel;
-    public float m_HealthRegenPerLevel;
-    public float m_ManaRegenPerLevel;
     float m_HealthBonus;
     float m_ManaBonus;
     float m_AttackDamageBonus;
@@ -66,31 +44,37 @@ public class CharacterStatsBlock : ScriptableObject
     float m_MoveSpeedBonusMulti;
     Dictionary<string, float> m_MoveSpeedBonusMultiBuffs=new Dictionary<string, float>();
 
-    [Header("EXPERIENCE")]
     int m_CurrentLevel;
     int m_SkillPoints;
     float m_CurrentExp;
-    public List<float> m_ExpPerLevel;
 
-
-    public void UpdateMovement()
+    private void Awake()
     {
-        m_MovementSpeed=m_BaseMovementSpeed+m_MoveSpeedBonusFlat;
+        SetInitStats();
+    }
+	private void Update()
+	{
+		UpdateMovement();
+        ResourceRestoring();
+	}
+	public void UpdateMovement()
+    {
+        m_MovementSpeed=m_CharacterBaseStats.m_BaseMovementSpeed+m_MoveSpeedBonusFlat;
         m_MovementSpeed*=1.0f+(m_MoveSpeedBonusAddi/100.0f);
         if(m_MoveSpeedBonusMulti!=0.0f)
             m_MovementSpeed*=m_MoveSpeedBonusMulti;
     }
-    public virtual void SetInitStats()
+    public void SetInitStats()
     {
-        m_MaxHealth=m_BaseHealth;
-        m_MaxMana=m_BaseMana;
-        m_AttackDamage=m_BaseAttackDamage;
-        m_AttackSpeed=m_BaseAttackSpeed;
-        m_Armor=m_BaseArmor;
-        m_MagicResistance=m_BaseMagicResist;
-        m_HealthRegen=m_BaseHealthRegen;
-        m_ManaRegen=m_BaseManaRegen;
-        m_MovementSpeed=m_BaseMovementSpeed;
+        m_MaxHealth=m_CharacterBaseStats.m_BaseHealth;
+        m_MaxMana=m_CharacterBaseStats.m_BaseMana;
+        m_AttackDamage=m_CharacterBaseStats.m_BaseAttackDamage;
+        m_AttackSpeed=m_CharacterBaseStats.m_BaseAttackSpeed;
+        m_Armor=m_CharacterBaseStats.m_BaseArmor;
+        m_MagicResistance=m_CharacterBaseStats.m_BaseMagicResist;
+        m_HealthRegen=m_CharacterBaseStats.m_BaseHealthRegen;
+        m_ManaRegen=m_CharacterBaseStats.m_BaseManaRegen;
+        m_MovementSpeed=m_CharacterBaseStats.m_BaseMovementSpeed;
 
         m_HealthBonus=0.0f;
         m_ManaBonus=0.0f;
@@ -110,21 +94,21 @@ public class CharacterStatsBlock : ScriptableObject
         m_CurrentExp=0.0f;
         m_SkillPoints=1;
     }
-    public virtual void LevelUp()
+    public void LevelUp()
     {
-        m_CurrentExp-=m_ExpPerLevel[m_CurrentLevel];
+        m_CurrentExp-=m_CharacterBaseStats.m_ExpPerLevel[m_CurrentLevel];
         if(m_CurrentExp<0.0f)
             m_CurrentExp=0.0f;
         m_CurrentLevel++;
         m_SkillPoints++;
-        RecalculateStat(m_MaxHealth, out m_MaxHealth, m_CurrentHealth, out m_CurrentHealth, m_BaseHealth, m_HealthPerLevel, m_HealthBonus);
-        RecalculateStat(m_MaxMana, out m_MaxMana, m_CurrentMana, out m_CurrentMana, m_BaseMana, m_ManaPerLevel, m_ManaBonus);
-        RecalculateStat(out m_AttackDamage, m_BaseAttackDamage, m_AttackDamagePerLevel, m_AttackDamageBonus);
-        RecalculateStat(out m_AttackSpeed, m_BaseAttackSpeed, m_AttackSpeedPerLevel, m_AttackSpeedBonus);
-        RecalculateStat(out m_Armor, m_BaseArmor, m_ArmorPerLevel, m_ArmorBonus);
-        RecalculateStat(out m_MagicResistance, m_BaseMagicResist, m_MagicResistPerLevel, m_MagicResistBonus);
-        RecalculateStat(out m_HealthRegen, m_BaseHealthRegen, m_HealthRegenPerLevel, m_HealthRegenBonus);
-        RecalculateStat(out m_ManaRegen, m_BaseManaRegen, m_ManaRegenPerLevel, m_ManaRegenBonus);
+        RecalculateStat(m_MaxHealth, out m_MaxHealth, m_CurrentHealth, out m_CurrentHealth, m_CharacterBaseStats.m_BaseHealth, m_CharacterBaseStats.m_HealthPerLevel, m_HealthBonus);
+        RecalculateStat(m_MaxMana, out m_MaxMana, m_CurrentMana, out m_CurrentMana, m_CharacterBaseStats.m_BaseMana, m_CharacterBaseStats.m_ManaPerLevel, m_ManaBonus);
+        RecalculateStat(out m_AttackDamage, m_CharacterBaseStats.m_BaseAttackDamage, m_CharacterBaseStats.m_AttackDamagePerLevel, m_AttackDamageBonus);
+        RecalculateStat(out m_AttackSpeed, m_CharacterBaseStats.m_BaseAttackSpeed, m_CharacterBaseStats.m_AttackSpeedPerLevel, m_AttackSpeedBonus);
+        RecalculateStat(out m_Armor, m_CharacterBaseStats.m_BaseArmor, m_CharacterBaseStats.m_ArmorPerLevel, m_ArmorBonus);
+        RecalculateStat(out m_MagicResistance, m_CharacterBaseStats.m_BaseMagicResist, m_CharacterBaseStats.m_MagicResistPerLevel, m_MagicResistBonus);
+        RecalculateStat(out m_HealthRegen, m_CharacterBaseStats.m_BaseHealthRegen, m_CharacterBaseStats.m_HealthRegenPerLevel, m_HealthRegenBonus);
+        RecalculateStat(out m_ManaRegen, m_CharacterBaseStats.m_BaseManaRegen, m_CharacterBaseStats.m_ManaRegenPerLevel, m_ManaRegenBonus);
     }
     void RecalculateStat(float Stat, out float StatRef, float Current, out float CurrentRef, float BaseStat, float LevelIncr, float Bonus)
     {
@@ -152,11 +136,11 @@ public class CharacterStatsBlock : ScriptableObject
                 m_CurrentHealth=m_MaxHealth;
         }
     }
-
+    
     //GETTERS & SETTERS
     public string GetPlayerName()
     {
-        return m_PlayerName;
+        return m_CharacterBaseStats.m_PlayerName;
     }
     public int GetCurrentLevel()
     {
@@ -212,7 +196,7 @@ public class CharacterStatsBlock : ScriptableObject
     }
     public float GetAttackRange()
     {
-        return m_AttackRange;
+        return m_CharacterBaseStats.m_AttackRange;
     }
     public float GetLifeSteal()
     {
@@ -321,10 +305,7 @@ public class CharacterStatsBlock : ScriptableObject
         for(int i=0; i<m_MoveSpeedBonusMultiBuffs.Count; ++i)
         {
             if(i==0)
-            {
                 m_MoveSpeedBonusMulti=1+m_MoveSpeedBonusMultiBuffs.Values.ToList()[i]/100.0f;
-                Debug.Log("HOLA "+m_MoveSpeedBonusMultiBuffs.Values.ToList()[i]/100.0f);
-            }
             else
                 m_MoveSpeedBonusMulti*=1+m_MoveSpeedBonusMultiBuffs.Values.ToList()[i]/100.0f;
         }

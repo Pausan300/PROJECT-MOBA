@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class TimedSpeedBuff : TimedBuff
 {
-    private readonly CharacterStatsBlock m_StatsComponent;
+    private readonly CharacterStats m_StatsComponent;
 
     public TimedSpeedBuff(float Duration, Buff buff, GameObject obj) : base(buff, obj)
     {

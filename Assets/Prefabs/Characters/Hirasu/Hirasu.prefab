@@ -65,7 +65,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'The Boss '
+  m_text: Hirasu
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -19657,6 +19657,107 @@ ParticleSystemRenderer:
   m_MeshWeighting2: 1
   m_MeshWeighting3: 1
   m_MaskInteraction: 0
+--- !u!1 &4372123382934979845
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6703158970996671057}
+  - component: {fileID: 6986717672186385218}
+  - component: {fileID: 5353041281822800381}
+  - component: {fileID: 7620745629962689215}
+  m_Layer: 0
+  m_Name: IndicatorUI
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &6703158970996671057
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4372123382934979845}
+  m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8840126818101232573}
+  m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 2, y: 2}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!223 &6986717672186385218
+Canvas:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4372123382934979845}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_RenderMode: 2
+  m_Camera: {fileID: 0}
+  m_PlaneDistance: 100
+  m_PixelPerfect: 0
+  m_ReceivesEvents: 1
+  m_OverrideSorting: 0
+  m_OverridePixelPerfect: 0
+  m_SortingBucketNormalizedSize: 0
+  m_VertexColorAlwaysGammaSpace: 0
+  m_AdditionalShaderChannelsFlag: 25
+  m_UpdateRectTransformForStandalone: 0
+  m_SortingLayerID: 0
+  m_SortingOrder: 0
+  m_TargetDisplay: 0
+--- !u!114 &5353041281822800381
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4372123382934979845}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0cd44c1031e13a943bb63640046fad76, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_UiScaleMode: 0
+  m_ReferencePixelsPerUnit: 100
+  m_ScaleFactor: 1
+  m_ReferenceResolution: {x: 800, y: 600}
+  m_ScreenMatchMode: 0
+  m_MatchWidthOrHeight: 0
+  m_PhysicalUnit: 3
+  m_FallbackScreenDPI: 96
+  m_DefaultSpriteDPI: 96
+  m_DynamicPixelsPerUnit: 1
+  m_PresetInfoIsWorld: 1
+--- !u!114 &7620745629962689215
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4372123382934979845}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dc42784cf147c0c48a680349fa168899, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_IgnoreReversedGraphics: 1
+  m_BlockingObjects: 0
+  m_BlockingMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
 --- !u!1 &4619377140829066908
 GameObject:
   m_ObjectHideFlags: 0
@@ -25123,7 +25224,7 @@ GameObject:
   m_Component:
   - component: {fileID: 532213498984557331}
   m_Layer: 0
-  m_Name: IngameCharacterBars
+  m_Name: IngameCharacterUI
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -30003,7 +30104,7 @@ GameObject:
   - component: {fileID: 3956343800707361108}
   - component: {fileID: 4577933833487518371}
   m_Layer: 0
-  m_Name: Canvas
+  m_Name: WorldCanvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -30558,7 +30659,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 70d8c0e6a3fab214ba722d726cf962f7, type: 3}
       propertyPath: m_Name
-      value: The Boss
+      value: Hirasu
       objectReference: {fileID: 0}
     - target: {fileID: 1092408308860062549, guid: 70d8c0e6a3fab214ba722d726cf962f7, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -30866,10 +30967,16 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: -8679921383154817045, guid: 70d8c0e6a3fab214ba722d726cf962f7, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1647626060415487837}
+    - targetCorrespondingSourceObject: {fileID: -8679921383154817045, guid: 70d8c0e6a3fab214ba722d726cf962f7, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6703158970996671057}
     - targetCorrespondingSourceObject: {fileID: 6502182839619065283, guid: 70d8c0e6a3fab214ba722d726cf962f7, type: 3}
       insertIndex: -1
       addedObject: {fileID: 6674757589123658874}
     m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 70d8c0e6a3fab214ba722d726cf962f7, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 7591410689033805986}
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 70d8c0e6a3fab214ba722d726cf962f7, type: 3}
       insertIndex: -1
       addedObject: {fileID: 6605872161093242712}
@@ -30899,6 +31006,19 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 70d8c0e6a3fab214ba722d726cf962f7, type: 3}
   m_PrefabInstance: {fileID: 9017554440032969814}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &7591410689033805986
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8207142013517453575}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f7ad577bb2939dc4e883a6a918f67250, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_CharacterBaseStats: {fileID: 11400000, guid: 0b437b3e3a0f49543829a4a4bc4f4037, type: 2}
 --- !u!114 &6605872161093242712
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -30911,10 +31031,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2d0e77b5825c8044facb1ff52fb6e5a0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_CharacterStats: {fileID: 7591410689033805986}
   m_CharacterUI: {fileID: 0}
-  m_CharacterStats: {fileID: 11400000, guid: 0b437b3e3a0f49543829a4a4bc4f4037, type: 2}
   m_RecallTime: 8
   m_RecallTpPoint: {fileID: 0}
+  m_SelectedCharacter: {fileID: 0}
   m_DesiredEnemy: {fileID: 0}
   m_TimeSinceLastAuto: 0
   m_SummSpell1: {fileID: 11400000, guid: ca8ff71d96317c541b37d751c8b81f3e, type: 2}
@@ -30923,10 +31044,6 @@ MonoBehaviour:
   m_WSkill: {fileID: 11400000, guid: fe834634a42608c41b3ac27b5518ccc7, type: 2}
   m_ESkill: {fileID: 11400000, guid: 0e13596a18126584ebbf304442590da6, type: 2}
   m_RSkill: {fileID: 11400000, guid: e518c4a4336a795429f6bf8d5e62f15f, type: 2}
-  m_QDisabledTime: 0.3
-  m_WDisabledTime: 0.3
-  m_EDisabledTime: 0
-  m_RDisabledTime: 0.4
   m_DamageLayerMask:
     serializedVersion: 2
     m_Bits: 128
@@ -30949,8 +31066,9 @@ MonoBehaviour:
   m_QMinHoldTime: 0.5
   m_QDuration: 0.25
   m_QTapRange: 200
-  m_QTapWidth: 80
+  m_QTapWidth: 70
   m_QHoldRange: 1200
+  m_QHoldWidth: 40
   m_QSplintersDuration: 4
   m_WDamagePerLevel:
   - 50
@@ -30991,6 +31109,7 @@ MonoBehaviour:
   - 350
   m_RSecondExplosionDelay: 0.5
   m_RSound: {fileID: 8300000, guid: 88786828affe0e3458607bb0417fecee, type: 3}
+  m_IndicatorCanvas: {fileID: 4372123382934979845}
 --- !u!114 &8897145909671556001
 MonoBehaviour:
   m_ObjectHideFlags: 0

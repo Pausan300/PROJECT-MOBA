@@ -5,6 +5,9 @@ using UnityEngine;
 public class Power : ScriptableObject
 {
     public Sprite m_Sprite;
+    [TextArea(3, 10)]
+    public string m_Description;
+    public GameObject m_IndicatorUIObject;
     float m_Cooldown;
     float m_Timer;
     bool m_OnCd;

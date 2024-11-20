@@ -6,8 +6,8 @@ using UnityEngine.UI;
 
 public class EnemyDummy : MonoBehaviour, ITakeDamage
 {
-    [Header("CHARACTER STATS OBJECT")]
-    public CharacterStatsBlock m_CharacterStats;
+    [Header("CHARACTER STATS")]
+    public CharacterStats m_CharacterStats;
 
     [Header("HEALTH & RESISTANCES")]
     public WorldSpaceCanvasBillboard m_Canvas;
@@ -96,7 +96,7 @@ public class EnemyDummy : MonoBehaviour, ITakeDamage
             l_TextMesh.text=l_TotalMagicDamage.ToString("f0");
         }
     }
-    public CharacterStatsBlock GetCharacterStats()
+    public CharacterStats GetCharacterStats()
     {
         return m_CharacterStats;
     }

@@ -13,6 +13,13 @@ MonoBehaviour:
   m_Name: HirasuR
   m_EditorClassIdentifier: 
   m_Sprite: {fileID: 21300000, guid: 313aa9af13a3858498db7195c5a3e1f8, type: 3}
+  m_Description: "Hirasu golpea con la palma de la mano al enemigo seleccionado,
+    creando una peque\xF1a explosi\xF3n desde el centro del enemigo hacia atr\xE1s
+    que inflige X = (250 +120% del da\xF1o de ataque adicional) de da\xF1o f\xEDsico.\r\n\r\nNivel
+    11: La explosi\xF3n es m\xE1s grande.\r\n\r\nNivel 16: Al cabo de 0,75 segundos,
+    crea una segunda explosi\xF3n que inflige X = (125 +60% del da\xF1o de ataque
+    adicional) de da\xF1o f\xEDsico."
+  m_IndicatorUIObject: {fileID: 5078714052237607800, guid: 83f81966102af0341a86559624a7f892, type: 3}
   m_SkillCooldownPerLevel:
   - 60
   - 60
@@ -21,3 +28,5 @@ MonoBehaviour:
   - 100
   - 100
   - 100
+  m_SkillDisabledTime: 0.4
+  m_CancelableWithMouseClick: 1

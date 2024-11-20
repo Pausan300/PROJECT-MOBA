@@ -13,6 +13,15 @@ MonoBehaviour:
   m_Name: HirasuW
   m_EditorClassIdentifier: 
   m_Sprite: {fileID: 21300000, guid: 8c42c262388d20a4ca5a7f9a8e50d43c, type: 3}
+  m_Description: "Hirasu explota las astillas clavadas en enemigos y el suelo, inflige
+    X = (50 +120% del da\xF1o de ataque adicional) de da\xF1o f\xEDsico y ralentiza
+    un 30% durante 2 s a los enemigos con astillas clavadas. Adem\xE1s inflige X
+    = (50 +90% del da\xF1o de ataque adicional) de da\xF1o f\xEDsico y ralentiza
+    un 20% durante 2 s a los afectados por la explosi\xF3n.\r\n\r\nPasiva - Nivel
+    6: Al golpear 3 veces con ataques b\xE1sicos o Marcaje, marca a los enemigos
+    para que reciban 5% da\xF1o m\xE1gico adicional de la Detonaci\xF3n y la Palmada
+    Solar durante 5 s."
+  m_IndicatorUIObject: {fileID: 5078714052237607800, guid: 83f81966102af0341a86559624a7f892, type: 3}
   m_SkillCooldownPerLevel:
   - 10
   - 9.5
@@ -25,3 +34,5 @@ MonoBehaviour:
   - 50
   - 50
   - 50
+  m_SkillDisabledTime: 0.3
+  m_CancelableWithMouseClick: 1

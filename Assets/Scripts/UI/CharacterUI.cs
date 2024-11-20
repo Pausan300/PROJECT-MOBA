@@ -92,8 +92,17 @@ public class CharacterUI : MonoBehaviour
     public TMP_FontAsset m_PhysDamageFont;
     public TMP_FontAsset m_MagicDamageFont;
 
+	[Header("SKILLS INDICATOR UI")]
+	public Transform m_SkillIndicatorParent;
+    RectTransform m_ArrowSkillshotRect;
+    RectTransform m_CircleSkillshotRect;
+    List<RectTransform> m_DeletableIndicatorList=new List<RectTransform>();
+    List<RectTransform> m_NormalIndicatorList=new List<RectTransform>();
+    List<Vector3> m_IndicatorPositions=new List<Vector3>();
+
     [Header("TARGET INFO UI")]
     public GameObject m_TargetInfoUI;
+    CharacterStats m_TargetStats;
     public TextMeshProUGUI m_TargetAttackDamageText;
     public TextMeshProUGUI m_TargetArmorText;
     public TextMeshProUGUI m_TargetAttackSpeedText;
@@ -107,7 +116,7 @@ public class CharacterUI : MonoBehaviour
     public TextMeshProUGUI m_TargetManaText;
     public Slider m_TargetHealthBar;
     public Slider m_TargetManaBar;
-    CharacterStatsBlock m_TargetStats;
+    public RectTransform m_TargetBuffsDebuffsParent;
 
     private void Start()
     {
@@ -115,6 +124,8 @@ public class CharacterUI : MonoBehaviour
         HideCastingUI();
         HideCdTexts();
         HideTargetInfoUI();
+        ClearDeletableSkillIndicatorUI();
+        ClearNormalSkillIndicatorUI();
     }
 	private void Update()
 	{
@@ -129,6 +140,9 @@ public class CharacterUI : MonoBehaviour
             HideSeconStatsPanel();
 
         UpdateTargetInfoUI(m_TargetStats);
+
+        if(m_ArrowSkillshotRect!=null)
+            MoveArrowSkillshot();
 	}
 	public void UpdateHealthManaBars(float Health, float MaxHealth, float Mana, float MaxMana)
     {
@@ -178,7 +192,7 @@ public class CharacterUI : MonoBehaviour
         m_CastingBar.value=CurrentRecallTime/MaxRecallTime;
         m_CastingTimeText.text=CurrentRecallTime.ToString("f1");
     }
-    public void UpdateTargetInfoUI(CharacterStatsBlock Stats)
+    public void UpdateTargetInfoUI(CharacterStats Stats)
     {
         if(Stats)
         {
@@ -197,6 +211,7 @@ public class CharacterUI : MonoBehaviour
             m_TargetHealthText.text=l_HealthRounded+"/"+Mathf.Round(Stats.GetMaxHealth());
             m_TargetManaText.text=l_ManaRounded+"/"+Mathf.Round(Stats.GetMaxMana());
             m_TargetLevelText.text=Stats.GetCurrentLevel().ToString();
+            //
         }
     }
     public void UpdatePowerUI(float PowerTimer, float PowerCd, Image PowerImage, TextMeshProUGUI PowerCdText, bool ZeroCd)
@@ -265,10 +280,6 @@ public class CharacterUI : MonoBehaviour
         m_ELevelPoints.value=0;
         m_RLevelPoints.value=0;
     }
-    public void SetPlayerName(string Name)
-    {
-        m_PlayerNameText.text=Name;
-    }
     public void SpawnDamageNumbers(float PhysDamage, float MagicDamage)
     {
         Vector3 l_PosOffset=m_DamageNumbersPosOffset;
@@ -298,21 +309,86 @@ public class CharacterUI : MonoBehaviour
         l_BuffObjectUI.m_BuffDurationImage.sprite=TimedBuff.m_Buff.m_BuffSprite;
         l_BuffObjectUI.m_BuffDurationImage.fillAmount=1.0f;
         l_BuffObjectUI.m_TimedBuff=TimedBuff;
-        m_BuffDebuffUIList.Add(l_BuffObjectUI);
+        //m_BuffDebuffUIList.Add(l_BuffObjectUI);
     }
-    public void DeleteBuffObject(TimedBuff TimedBuff)
-    {
-        foreach(BuffDebuffObjectUI BuffDebuffUI in m_BuffDebuffUIList)
-        {
-            if(BuffDebuffUI.m_TimedBuff==TimedBuff)
-            {
-                m_BuffDebuffUIList.Remove(BuffDebuffUI);
-                Destroy(BuffDebuffUI.gameObject);
-                break;
-            }
-        }
-    }
+    //public void DeleteBuffObject(TimedBuff TimedBuff)
+    //{
+    //    foreach(BuffDebuffObjectUI BuffDebuffUI in m_BuffDebuffUIList)
+    //    {
+    //        if(BuffDebuffUI.m_TimedBuff==TimedBuff)
+    //        {
+    //            m_BuffDebuffUIList.Remove(BuffDebuffUI);
+    //            Destroy(BuffDebuffUI.gameObject);
+    //            break;
+    //        }
+    //    }
+    //}
 
+    //SKILL INDICATOR METHODS
+    public void CreateArrowSkillshot(GameObject Arrow, float Width, float Range, Vector3 Position, bool DeleteOnMouseClick)
+    {
+        GameObject l_Arrow=Instantiate(Arrow, m_SkillIndicatorParent);
+        RectTransform l_ArrowRect=l_Arrow.GetComponent<RectTransform>();
+        l_ArrowRect.sizeDelta=new Vector2(Width/100.0f, Range/100.0f);
+        l_ArrowRect.position=Position;
+        m_ArrowSkillshotRect=l_ArrowRect;
+        m_ArrowSkillshotRect.position=new Vector3(m_ArrowSkillshotRect.position.x, 0.05f, m_ArrowSkillshotRect.position.z);
+        if(DeleteOnMouseClick)
+            m_DeletableIndicatorList.Add(m_ArrowSkillshotRect);
+        else
+            m_NormalIndicatorList.Add(m_ArrowSkillshotRect);
+    }
+    public void ChangeArrowSkillshotSize(float Width, float Range)
+    {
+        m_ArrowSkillshotRect.sizeDelta=new Vector2(Width/100.0f, Range/100.0f);
+    }
+    public void MoveArrowSkillshot()
+    {
+        Vector3 l_MouseDirection=m_Character.GetMouseDir();
+        RaycastHit l_CameraRaycastHit;
+        if(Physics.Raycast(m_Character.GetCameraController().m_Camera.transform.position, l_MouseDirection, out l_CameraRaycastHit, 1000.0f, m_Character.GetCameraController().m_CameraLayerMask))
+		{
+			Quaternion a=Quaternion.LookRotation(l_CameraRaycastHit.point-m_Character.transform.position);
+			a.eulerAngles=new Vector3(90.0f, a.eulerAngles.y, a.eulerAngles.z);
+			m_ArrowSkillshotRect.transform.rotation=Quaternion.Lerp(a, m_ArrowSkillshotRect.transform.rotation, 0.0f);
+		}
+    }
+    public void CreateCircleSkillshot(GameObject Circle, float Radius, Vector3 Position)
+    {
+        GameObject l_Circle=Instantiate(Circle, m_SkillIndicatorParent);
+        RectTransform l_CircleRect=l_Circle.GetComponent<RectTransform>();
+        l_CircleRect.sizeDelta=new Vector2(Radius/100.0f*2.0f, Radius/100.0f*2.0f);
+        l_CircleRect.position=Position;
+        l_CircleRect.position=new Vector3(l_CircleRect.position.x, 0.05f, l_CircleRect.position.z);
+        m_DeletableIndicatorList.Add(l_CircleRect);
+        m_IndicatorPositions.Add(l_CircleRect.position);
+    }
+    public void MoveCircleSkillshot()
+    {
+        for(int i=0; i<m_DeletableIndicatorList.Count; ++i)
+            m_DeletableIndicatorList[i].position=m_IndicatorPositions[i];
+    }
+    public void ClearDeletableSkillIndicatorUI()
+    {
+        if(m_DeletableIndicatorList.Count>0)
+        {
+            for(int i=0; i<m_DeletableIndicatorList.Count; ++i)
+                Destroy(m_DeletableIndicatorList[i].gameObject);
+        }
+        m_DeletableIndicatorList.Clear();
+        m_IndicatorPositions.Clear();
+    }
+    public void ClearNormalSkillIndicatorUI()
+    {
+        if(m_NormalIndicatorList.Count>0)
+        {
+            for(int i=0; i<m_NormalIndicatorList.Count; ++i)
+                Destroy(m_NormalIndicatorList[i].gameObject);
+        }
+        m_NormalIndicatorList.Clear();
+        m_IndicatorPositions.Clear();
+    }
+    
     //SHOW & HIDE METHODS
     public void ShowSeconStatsPanel()
     {
@@ -322,7 +398,7 @@ public class CharacterUI : MonoBehaviour
     {
         m_SeconStatsPanel.gameObject.SetActive(false);
     }
-    public void ShowTargetInfoUI(CharacterStatsBlock Stats)
+    public void ShowTargetInfoUI(CharacterStats Stats)
     {
         m_TargetStats=Stats;
         m_TargetInfoUI.gameObject.SetActive(true);
@@ -381,6 +457,10 @@ public class CharacterUI : MonoBehaviour
     public void SetPlayer(CharacterMaster Player)
     {
         m_Character=Player;
+    }
+    public void SetPlayerName(string Name)
+    {
+        m_PlayerNameText.text=Name;
     }
     public void SetCastingUIAbilityText(string Text)
     {
