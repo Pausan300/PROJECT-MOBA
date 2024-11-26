@@ -95,7 +95,6 @@ public class CharacterUI : MonoBehaviour
 	[Header("SKILLS INDICATOR UI")]
 	public Transform m_SkillIndicatorParent;
     RectTransform m_ArrowSkillshotRect;
-    RectTransform m_CircleSkillshotRect;
     List<RectTransform> m_DeletableIndicatorList=new List<RectTransform>();
     List<RectTransform> m_NormalIndicatorList=new List<RectTransform>();
     List<Vector3> m_IndicatorPositions=new List<Vector3>();
@@ -118,12 +117,27 @@ public class CharacterUI : MonoBehaviour
     public Slider m_TargetManaBar;
     public RectTransform m_TargetBuffsDebuffsParent;
 
+    [Header("SKILL POPUP")]
+    public PopupUI m_PopupUI;
+
+
+    public enum PopupType
+    {
+        QSKILL,
+        WSKILL,
+        ESKILL,
+        RSKILL,
+        SUMMONER1,
+        SUMMONER2
+    }
+
     private void Start()
     {
         HideSeconStatsPanel();
         HideCastingUI();
         HideCdTexts();
         HideTargetInfoUI();
+        HidePopup();
         ClearDeletableSkillIndicatorUI();
         ClearNormalSkillIndicatorUI();
     }
@@ -133,6 +147,8 @@ public class CharacterUI : MonoBehaviour
 		UpdatePowerUI(m_Character.m_WSkill.GetTimer(), m_Character.m_WSkill.GetCd(), m_WSkillCdImage, m_WSkillCdText, m_Character.m_WSkill.GetZeroCooldown());
 		UpdatePowerUI(m_Character.m_ESkill.GetTimer(), m_Character.m_ESkill.GetCd(), m_ESkillCdImage, m_ESkillCdText, m_Character.m_ESkill.GetZeroCooldown());
 		UpdatePowerUI(m_Character.m_RSkill.GetTimer(), m_Character.m_RSkill.GetCd(), m_RSkillCdImage, m_RSkillCdText, m_Character.m_RSkill.GetZeroCooldown());
+		UpdatePowerUI(m_Character.m_SummSpell1.GetTimer(), m_Character.m_SummSpell1.GetCd(), m_SumSpell1CdImage, m_SumSpell1CdText, m_Character.m_SummSpell1.GetZeroCooldown());
+		UpdatePowerUI(m_Character.m_SummSpell2.GetTimer(), m_Character.m_SummSpell2.GetCd(), m_SumSpell2CdImage, m_SumSpell2CdText, m_Character.m_SummSpell2.GetZeroCooldown());
 
         if(Input.GetKey(KeyCode.C))
             ShowSeconStatsPanel();
@@ -211,7 +227,6 @@ public class CharacterUI : MonoBehaviour
             m_TargetHealthText.text=l_HealthRounded+"/"+Mathf.Round(Stats.GetMaxHealth());
             m_TargetManaText.text=l_ManaRounded+"/"+Mathf.Round(Stats.GetMaxMana());
             m_TargetLevelText.text=Stats.GetCurrentLevel().ToString();
-            //
         }
     }
     public void UpdatePowerUI(float PowerTimer, float PowerCd, Image PowerImage, TextMeshProUGUI PowerCdText, bool ZeroCd)
@@ -323,6 +338,37 @@ public class CharacterUI : MonoBehaviour
     //        }
     //    }
     //}
+    public void SetPopupType(PopupType PopupElement)
+    {
+		switch(PopupElement)
+		{
+			case PopupType.QSKILL:
+                m_PopupUI.UpdatePopupInfo(m_Character.m_QSkill.m_Description, m_Character.m_QSkill.m_PowerName, m_Character.m_QSkillKey.ToString(), 
+                    m_Character.m_QSkill.GetCd().ToString(), m_Character.m_QSkill.GetMana().ToString(), m_Character.m_QSkill.m_Sprite);
+			    break;
+			case PopupType.WSKILL:
+                m_PopupUI.UpdatePopupInfo(m_Character.m_WSkill.m_Description, m_Character.m_WSkill.m_PowerName, m_Character.m_WSkillKey.ToString(), 
+                    m_Character.m_WSkill.GetCd().ToString(), m_Character.m_WSkill.GetMana().ToString(), m_Character.m_WSkill.m_Sprite);
+			    break;
+			case PopupType.ESKILL:
+                m_PopupUI.UpdatePopupInfo(m_Character.m_ESkill.m_Description, m_Character.m_ESkill.m_PowerName, m_Character.m_ESkillKey.ToString(), 
+                    m_Character.m_ESkill.GetCd().ToString(), m_Character.m_ESkill.GetMana().ToString(), m_Character.m_ESkill.m_Sprite);
+			    break;
+			case PopupType.RSKILL:
+                m_PopupUI.UpdatePopupInfo(m_Character.m_RSkill.m_Description, m_Character.m_RSkill.m_PowerName, m_Character.m_RSkillKey.ToString(), 
+                    m_Character.m_RSkill.GetCd().ToString(), m_Character.m_RSkill.GetMana().ToString(), m_Character.m_RSkill.m_Sprite);
+			    break;
+			case PopupType.SUMMONER1:
+                m_PopupUI.UpdatePopupInfo(m_Character.m_SummSpell1.m_Description, m_Character.m_SummSpell1.m_PowerName, m_Character.m_SummSpell1Key.ToString(), 
+                    m_Character.m_SummSpell1.GetCd().ToString(), null, m_Character.m_SummSpell1.m_Sprite);
+			    break;
+			case PopupType.SUMMONER2:
+                m_PopupUI.UpdatePopupInfo(m_Character.m_SummSpell2.m_Description, m_Character.m_SummSpell2.m_PowerName, m_Character.m_SummSpell2Key.ToString(), 
+                    m_Character.m_SummSpell2.GetCd().ToString(), null, m_Character.m_SummSpell2.m_Sprite);
+			    break;
+		}
+        ShowPopup();
+	}
 
     //SKILL INDICATOR METHODS
     public void CreateArrowSkillshot(GameObject Arrow, float Width, float Range, Vector3 Position, bool DeleteOnMouseClick)
@@ -451,6 +497,14 @@ public class CharacterUI : MonoBehaviour
         m_WLevelUpButton.gameObject.SetActive(false);
         m_ELevelUpButton.gameObject.SetActive(false);
         m_RLevelUpButton.gameObject.SetActive(false);
+    }
+    public void ShowPopup()
+    {
+        m_PopupUI.gameObject.SetActive(true);
+    }
+    public void HidePopup()
+    {
+        m_PopupUI.gameObject.SetActive(false);
     }
 
     //GETTERS & SETTERS

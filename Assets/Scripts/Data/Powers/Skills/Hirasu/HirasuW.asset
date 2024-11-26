@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a1b99bce7ea32ac459c70144bb0096a3, type: 3}
   m_Name: HirasuW
   m_EditorClassIdentifier: 
+  m_PowerName: Detonacion
   m_Sprite: {fileID: 21300000, guid: 8c42c262388d20a4ca5a7f9a8e50d43c, type: 3}
   m_Description: "Hirasu explota las astillas clavadas en enemigos y el suelo, inflige
     X = (50 +120% del da\xF1o de ataque adicional) de da\xF1o f\xEDsico y ralentiza

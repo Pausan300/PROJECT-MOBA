@@ -31040,10 +31040,16 @@ MonoBehaviour:
   m_TimeSinceLastAuto: 0
   m_SummSpell1: {fileID: 11400000, guid: ca8ff71d96317c541b37d751c8b81f3e, type: 2}
   m_SummSpell2: {fileID: 11400000, guid: 09545bf2b1fed7949a8004f6bf84b493, type: 2}
+  m_SummSpell1Key: 100
+  m_SummSpell2Key: 102
   m_QSkill: {fileID: 11400000, guid: 288a2a95786c30444810bf91582e74e2, type: 2}
   m_WSkill: {fileID: 11400000, guid: fe834634a42608c41b3ac27b5518ccc7, type: 2}
   m_ESkill: {fileID: 11400000, guid: 0e13596a18126584ebbf304442590da6, type: 2}
   m_RSkill: {fileID: 11400000, guid: e518c4a4336a795429f6bf8d5e62f15f, type: 2}
+  m_QSkillKey: 113
+  m_WSkillKey: 119
+  m_ESkillKey: 101
+  m_RSkillKey: 114
   m_DamageLayerMask:
     serializedVersion: 2
     m_Bits: 128

@@ -35,12 +35,18 @@ public class CharacterMaster : MonoBehaviour, ITakeDamage
     [Header("SUMMONERS")]
     public Summoner m_SummSpell1;
     public Summoner m_SummSpell2;
+    public KeyCode m_SummSpell1Key;
+    public KeyCode m_SummSpell2Key;
 
     [Header("SKILLS")]
     public Skill m_QSkill;
     public Skill m_WSkill;
     public Skill m_ESkill;
     public Skill m_RSkill;
+    public KeyCode m_QSkillKey;
+    public KeyCode m_WSkillKey;
+    public KeyCode m_ESkillKey;
+    public KeyCode m_RSkillKey;
     public LayerMask m_DamageLayerMask;
     bool m_ShowingGizmos;
 
@@ -500,6 +506,8 @@ public class CharacterMaster : MonoBehaviour, ITakeDamage
         m_WSkill.SetInitStats();
         m_ESkill.SetInitStats();
         m_RSkill.SetInitStats();
+        m_SummSpell1.SetInitStats();
+        m_SummSpell2.SetInitStats();
 
         m_CharacterUI.SetPlayer(this);
         m_CharacterUI.SetPlayerName(m_CharacterStats.GetPlayerName());
@@ -620,6 +628,8 @@ public class CharacterMaster : MonoBehaviour, ITakeDamage
         m_WSkill.SetZeroCooldown(Active);
         m_ESkill.SetZeroCooldown(Active);
         m_RSkill.SetZeroCooldown(Active);
+        m_SummSpell1.SetZeroCooldown(Active);
+        m_SummSpell2.SetZeroCooldown(Active);
     }
     public bool GetShowingGizmos()
     {

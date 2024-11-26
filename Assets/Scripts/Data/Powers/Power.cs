@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class Power : ScriptableObject
 {
+    public string m_PowerName;
     public Sprite m_Sprite;
     [TextArea(3, 10)]
     public string m_Description;
