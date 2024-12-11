@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a1b99bce7ea32ac459c70144bb0096a3, type: 3}
   m_Name: HirasuPassive
   m_EditorClassIdentifier: 
-  m_PowerName: TecnicaSolar
+  m_PowerName: Tecnica Solar
   m_Sprite: {fileID: 21300000, guid: d701992e566d51a408d2d2a8b003e723, type: 3}
   m_Description: "Los ataques b\xE1sicos y Marcaje de Hirasu aumentan de poder al
     subir de nivel y mejorar la Palmada Solar.\r\n\r\nNivel 6: Obtiene un bast\xF3n,

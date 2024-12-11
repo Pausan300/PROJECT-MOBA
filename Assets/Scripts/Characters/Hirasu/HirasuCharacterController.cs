@@ -97,37 +97,25 @@ public class HirasuCharacterController : CharacterMaster
 				m_QSkill.SetUsingSkill(false);
 			}
 		}
-		if(m_WSkill.GetUsingSkill())
-			GetCharacterUI().MoveCircleSkillshot();
-		if(m_ESkill.GetUsingSkill())
-			GetCharacterUI().ChangeArrowSkillshotSize(100.0f, Mathf.Min(m_ERange, Vector3.Distance(GetPositionWithMouse(), transform.position)*100.0f));
 
-		if(Input.GetMouseButtonDown(0))
+		if(GetUseSkillGizmos()) 
 		{
 			if(m_WSkill.GetUsingSkill())
-				WTriggerExplosions();
+				GetCharacterUI().MoveCircleSkillshot();
 			if(m_ESkill.GetUsingSkill())
-				StartCoroutine(EDash(GetPositionWithMouse()));
-			if(m_RSkill.GetUsingSkill())
-				GetEnemyWithMouse();
+				GetCharacterUI().ChangeArrowSkillshotSize(100.0f, Mathf.Min(m_ERange, Vector3.Distance(GetPositionWithMouse(), transform.position)*100.0f));
+
+			if(Input.GetMouseButtonDown(0))
+			{
+				if(m_WSkill.GetUsingSkill())
+					WTriggerExplosions();
+				if(m_ESkill.GetUsingSkill())
+					StartCoroutine(EDash(GetPositionWithMouse()));
+				if(m_RSkill.GetUsingSkill())
+					GetEnemyWithMouse();
+			}
 		}
     }
-
-#if UNITY_EDITOR
-	private void OnDrawGizmos()
-	{
-		if(m_QSkill.GetUsingSkill())
-		{
-			Gizmos.color=Color.red;
-			Vector3 l_Direction=GetPositionWithMouse()-transform.position;
-			l_Direction.y=0.0f;
-			l_Direction.Normalize();
-			Vector3 l_DesiredPos=transform.position+l_Direction*(m_QTapRange/100.0f/2.0f);
-			Gizmos.matrix=Matrix4x4.TRS(l_DesiredPos, Quaternion.LookRotation(l_Direction, transform.up), new Vector3(m_QTapWidth/100.0f, 2.0f, m_QTapRange/100.0f));
-			Gizmos.DrawCube(Vector3.zero, Vector3.one);
-		}
-	}
-#endif
 
 	//Q SKILL
 	protected override void QSkill()
@@ -138,11 +126,12 @@ public class HirasuCharacterController : CharacterMaster
 			m_CharacterUI.ClearNormalSkillIndicatorUI();
 			StopSkills();
 		}
+		GetCharacterUI().CreateArrowSkillshot(m_QSkill.m_IndicatorUIObject, m_QTapWidth, m_QTapRange, transform.position, false);
+		
 		StopAttacking();
 		GetCharacterUI().SetCastingUIAbilityText("Marcaje");
 		GetCharacterUI().HideCastingTime();
 		GetCharacterUI().ShowCastingUI();
-		GetCharacterUI().CreateArrowSkillshot(m_QSkill.m_IndicatorUIObject, m_QTapWidth, m_QTapRange, transform.position, false);
 		if(m_RSkill.GetUsingSkill())
 			m_RSkill.SetUsingSkill(false);
 		m_QSkill.SetUsingSkill(true);
@@ -197,6 +186,7 @@ public class HirasuCharacterController : CharacterMaster
 					}
 				}
 				l_ReducedCooldown=true;
+				StartCoroutine(DisableForDuration(m_QSkill.m_SkillDisabledTime));
 			}
 			else if(m_QCurrentHoldTime<m_QMaxHoldTime)
 			{
@@ -206,8 +196,8 @@ public class HirasuCharacterController : CharacterMaster
 				HirasuQProjectile l_ProjectileScript=l_Projectile.GetComponent<HirasuQProjectile>();
 				l_ProjectileScript.SetStats(this, l_Range, m_QDuration, l_Direction, m_QDamagePerLevel[m_QSkill.GetLevel()-1]+(m_QAdditionalDamage/100.0f*m_CharacterStats.GetBonusAttackDamage()), 
 					l_ExtraPhysDamage, l_ExtraMagicDamage, m_QSkill.GetLevel(), m_QSplinter, m_QSplintersDuration, m_QHoldWidth);
+				StartCoroutine(DisableForDuration(m_QSkill.m_SkillDisabledTime));
 			}
-			StartCoroutine(DisableForDuration(m_QSkill.m_SkillDisabledTime));
 			base.QSkill();
 			if(l_ReducedCooldown)
 				m_QSkill.SetTimer(m_QSkill.GetCd()/2.0f);
@@ -239,17 +229,22 @@ public class HirasuCharacterController : CharacterMaster
 		{
 			if(m_ActiveSplinters.Count>0)
 			{
-				if(GetShowingGizmos())
+				if(GetUseSkillGizmos()) 
 				{
-					m_CharacterUI.ClearDeletableSkillIndicatorUI();
-					m_CharacterUI.ClearNormalSkillIndicatorUI();
-					StopSkills();
-				}
-				foreach(HirasuQSplinter Splinter in m_ActiveSplinters)
-				{
-					GetCharacterUI().CreateCircleSkillshot(m_WSkill.m_IndicatorUIObject, m_WExplosionRadius, Splinter.transform.position);
-				}
-				SetShowingGizmos(true);
+					if(GetShowingGizmos())
+					{
+						m_CharacterUI.ClearDeletableSkillIndicatorUI();
+						m_CharacterUI.ClearNormalSkillIndicatorUI();
+						StopSkills();
+					}
+					foreach(HirasuQSplinter Splinter in m_ActiveSplinters)
+					{
+						GetCharacterUI().CreateCircleSkillshot(m_WSkill.m_IndicatorUIObject, m_WExplosionRadius, Splinter.transform.position);
+					}
+					SetShowingGizmos(true);
+				} 
+				else
+					WTriggerExplosions();
 				m_WSkill.SetUsingSkill(true);
 			}
 		}
@@ -283,14 +278,19 @@ public class HirasuCharacterController : CharacterMaster
 	{
 		if(!m_QSkill.GetUsingSkill())
 		{
-			if(GetShowingGizmos())
+			if(GetUseSkillGizmos()) 
 			{
-				m_CharacterUI.ClearDeletableSkillIndicatorUI();
-				m_CharacterUI.ClearNormalSkillIndicatorUI();
-				StopSkills();
+				if(GetShowingGizmos())
+				{
+					m_CharacterUI.ClearDeletableSkillIndicatorUI();
+					m_CharacterUI.ClearNormalSkillIndicatorUI();
+					StopSkills();
+				}
+				GetCharacterUI().CreateArrowSkillshot(m_ESkill.m_IndicatorUIObject, 100.0f, m_ERange, transform.position, true);
+				SetShowingGizmos(true);
 			}
-			GetCharacterUI().CreateArrowSkillshot(m_ESkill.m_IndicatorUIObject, 100.0f, m_ERange, transform.position, true);
-			SetShowingGizmos(true);
+			else
+				StartCoroutine(EDash(GetPositionWithMouse()));
 			m_ESkill.SetUsingSkill(true);
 		}
 	}
@@ -339,14 +339,19 @@ public class HirasuCharacterController : CharacterMaster
 	{
 		if(!m_QSkill.GetUsingSkill())
 		{
-			if(GetShowingGizmos())
+			if(GetUseSkillGizmos()) 
 			{
-				m_CharacterUI.ClearDeletableSkillIndicatorUI();
-				m_CharacterUI.ClearNormalSkillIndicatorUI();
-				StopSkills();
+				if(GetShowingGizmos())
+				{
+					m_CharacterUI.ClearDeletableSkillIndicatorUI();
+					m_CharacterUI.ClearNormalSkillIndicatorUI();
+					StopSkills();
+				}
+				GetCharacterUI().CreateCircleSkillshot(m_RSkill.m_IndicatorUIObject, GetCharacterStats().GetAttackRange(), transform.position);
+				SetShowingGizmos(true);
 			}
-			GetCharacterUI().CreateCircleSkillshot(m_RSkill.m_IndicatorUIObject, GetCharacterStats().GetAttackRange(), transform.position);
-			SetShowingGizmos(true);
+			else
+				GetEnemyWithMouse();
 			m_RSkill.SetUsingSkill(true);
 		}
 	}

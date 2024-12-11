@@ -4,6 +4,17 @@ using UnityEngine;
 
 public class Power : ScriptableObject
 {
+    public enum PowerType
+    {
+        PASSIVESKILL,
+        QSKILL,
+        WSKILL,
+        ESKILL,
+        RSKILL,
+        SUMMONER1,
+        SUMMONER2
+    }
+    public PowerType m_PowerType;
     public string m_PowerName;
     public Sprite m_Sprite;
     [TextArea(3, 10)]
@@ -16,31 +27,25 @@ public class Power : ScriptableObject
 
     public void Tick(float Delta)
     {
-		if(!m_ZeroCd)
-		{
-			m_Timer-=Delta;
-			if(m_Timer<=0.0f)
-				m_OnCd=false;
-		} 
-        else
-		{
-			m_Timer=0.0f;
+		m_Timer-=Delta;
+		if(m_Timer<=0.0f)
 			m_OnCd=false;
-		}
 	}
     public virtual void SetInitStats()
     {
         m_OnCd=false;
         m_Timer=0.0f;
     }
-
     public float GetTimer()
     {
         return m_Timer;
     }
     public void SetTimer(float Time)
     {
-        m_Timer=Time;
+        if(!m_ZeroCd)
+            m_Timer=Time;
+        else
+            m_Timer=0.5f;
     }
     public bool GetIsOnCd()
     {
@@ -61,6 +66,8 @@ public class Power : ScriptableObject
     public void SetZeroCooldown(bool IsZeroCd)
     {
         m_ZeroCd=IsZeroCd;
+        if(m_ZeroCd && m_Timer>0.0f)
+            m_Timer=0.0f;
     }
     public bool GetZeroCooldown()
     {

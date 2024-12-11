@@ -1,8 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using UnityEngine.UI;
 
 public class CharacterMaster : MonoBehaviour, ITakeDamage
 {
@@ -39,6 +39,7 @@ public class CharacterMaster : MonoBehaviour, ITakeDamage
     public KeyCode m_SummSpell2Key;
 
     [Header("SKILLS")]
+    public Skill m_PassiveSkill;
     public Skill m_QSkill;
     public Skill m_WSkill;
     public Skill m_ESkill;
@@ -49,6 +50,17 @@ public class CharacterMaster : MonoBehaviour, ITakeDamage
     public KeyCode m_RSkillKey;
     public LayerMask m_DamageLayerMask;
     bool m_ShowingGizmos;
+    bool m_UseSkillGizmos;
+
+    [Header("INPUT BUFFERING")]
+    public InputBufferController m_InputBufferController;
+    public delegate void InputDelegate();
+    public InputDelegate m_QInputDelegate;
+    public InputDelegate m_WInputDelegate;
+    public InputDelegate m_EInputDelegate;
+    public InputDelegate m_RInputDelegate;
+    public InputDelegate m_Summ1InputDelegate;
+    public InputDelegate m_Summ2InputDelegate;
 
 	protected virtual void Start()
 	{
@@ -69,11 +81,17 @@ public class CharacterMaster : MonoBehaviour, ITakeDamage
         SetZeroCooldown(false);
         m_GoingToDesiredPosition=false;
         m_DesiredEnemy=null;
+
+        m_QInputDelegate=QSkill;
+        m_WInputDelegate=WSkill;
+        m_EInputDelegate=ESkill;
+        m_RInputDelegate=RSkill;
+        m_Summ1InputDelegate=SummonerSpell1;
+        m_Summ2InputDelegate=SummonerSpell2;
 	}
     protected virtual void Update()
     {
         MouseTargeting();
-        m_CharacterStats.UpdateMovement();
         if(!m_Disabled)
         {
             CharacterMovement();
@@ -110,24 +128,23 @@ public class CharacterMaster : MonoBehaviour, ITakeDamage
             if(Input.GetKeyDown(KeyCode.B))
                 UseRecall();
 
-            if(Input.GetKeyDown(KeyCode.Q))
-                UseQSkill();
-            if(Input.GetKeyDown(KeyCode.W))
-                UseWSkill();
-            if(Input.GetKeyDown(KeyCode.E))
-                UseESkill();
-            if(Input.GetKeyDown(KeyCode.R))
-                UseRSkill();
-
-            if(Input.GetKeyDown(KeyCode.D))
-                UseSummonerSpell1();
-            if(Input.GetKeyDown(KeyCode.F))
-                UseSummonerSpell2();
+            m_InputBufferController.CheckInputBuffer();
         }
 
-        PowersCooldown();
+        if(Input.GetKeyDown(m_QSkillKey))
+            UseQSkill();
+        if(Input.GetKeyDown(m_WSkillKey))
+            UseWSkill();
+        if(Input.GetKeyDown(m_ESkillKey))
+            UseESkill();
+        if(Input.GetKeyDown(m_RSkillKey))
+            UseRSkill();
 
-       
+        if(Input.GetKeyDown(m_SummSpell1Key))
+            UseSummonerSpell1();
+        if(Input.GetKeyDown(m_SummSpell2Key))
+            UseSummonerSpell2();
+        
     }
     public Vector3 GetMouseDir()
     {
@@ -150,7 +167,7 @@ public class CharacterMaster : MonoBehaviour, ITakeDamage
     {
         Vector3 l_MouseDirection=GetMouseDir();
         RaycastHit l_CameraRaycastHit;
-        if(Physics.Raycast(m_CharacterCamera.m_Camera.transform.position, l_MouseDirection, out l_CameraRaycastHit, 1000.0f, m_CharacterCamera.m_CameraLayerMask))
+        if(Physics.Raycast(m_CharacterCamera.m_Camera.transform.position, l_MouseDirection, out l_CameraRaycastHit, 1000.0f, m_CharacterCamera.m_SelectHitboxLayerMask))
         {
             if(l_CameraRaycastHit.transform.TryGetComponent(out ITakeDamage Stats))
                 return Stats.GetCharacterStats();
@@ -161,7 +178,7 @@ public class CharacterMaster : MonoBehaviour, ITakeDamage
     {
         Vector3 l_MouseDirection=GetMouseDir();
         RaycastHit l_CameraRaycastHit;
-        if(Physics.Raycast(m_CharacterCamera.m_Camera.transform.position, l_MouseDirection, out l_CameraRaycastHit, 1000.0f, m_CharacterCamera.m_CameraLayerMask))
+        if(Physics.Raycast(m_CharacterCamera.m_Camera.transform.position, l_MouseDirection, out l_CameraRaycastHit, 1000.0f, m_CharacterCamera.m_TerrainLayerMask))
         {
             if(l_CameraRaycastHit.transform.CompareTag("Terrain"))
                 return l_CameraRaycastHit.point;
@@ -172,7 +189,7 @@ public class CharacterMaster : MonoBehaviour, ITakeDamage
     {
         if(Input.GetMouseButtonDown(1))
         {
-            if(IsAnySkillBeingUsed())
+            if(m_UseSkillGizmos && IsAnySkillBeingUsed())
             {
                 m_CharacterUI.ClearDeletableSkillIndicatorUI();
                 m_ShowingGizmos=false;
@@ -321,7 +338,8 @@ public class CharacterMaster : MonoBehaviour, ITakeDamage
         }
         else
         {
-            QSkill();
+            m_InputBufferController.AddInput(new InputBufferAction(InputBufferAction.Action.QPRESSED, /*Time.time,*/ m_QInputDelegate));
+           // QSkill();
         }
     }
     protected virtual void QSkill()
@@ -331,6 +349,7 @@ public class CharacterMaster : MonoBehaviour, ITakeDamage
         m_CharacterUI.m_QSkillCdText.enabled=true;
         m_CharacterStats.SetCurrentMana(m_CharacterStats.GetCurrentMana()-m_QSkill.GetMana());
         m_QSkill.SetIsOnCd(true);
+        StartCoroutine(PowersCooldown(m_QSkill));
         StopRecall();
     }
     void UseWSkill()
@@ -349,7 +368,8 @@ public class CharacterMaster : MonoBehaviour, ITakeDamage
         }
         else
         {
-            WSkill();
+            m_InputBufferController.AddInput(new InputBufferAction(InputBufferAction.Action.WPRESSED, /*Time.time,*/ m_WInputDelegate));
+            //WSkill();
         }
     }
     protected virtual void WSkill()
@@ -359,6 +379,7 @@ public class CharacterMaster : MonoBehaviour, ITakeDamage
         m_CharacterUI.m_WSkillCdText.enabled=true;
         m_CharacterStats.SetCurrentMana(m_CharacterStats.GetCurrentMana()-m_WSkill.GetMana());
         m_WSkill.SetIsOnCd(true);
+        StartCoroutine(PowersCooldown(m_WSkill));
         StopRecall();
     }
     void UseESkill()
@@ -377,7 +398,8 @@ public class CharacterMaster : MonoBehaviour, ITakeDamage
         }
         else
         {
-            ESkill();
+            m_InputBufferController.AddInput(new InputBufferAction(InputBufferAction.Action.EPRESSED, /*Time.time,*/ m_EInputDelegate));
+            //ESkill();
         }
     }
     protected virtual void ESkill()
@@ -387,6 +409,7 @@ public class CharacterMaster : MonoBehaviour, ITakeDamage
         m_CharacterUI.m_ESkillCdText.enabled=true;
         m_CharacterStats.SetCurrentMana(m_CharacterStats.GetCurrentMana()-m_ESkill.GetMana());
         m_ESkill.SetIsOnCd(true);
+        StartCoroutine(PowersCooldown(m_ESkill));
         StopRecall();
     }
     void UseRSkill()
@@ -405,7 +428,8 @@ public class CharacterMaster : MonoBehaviour, ITakeDamage
         }
         else
         {
-            RSkill();
+            m_InputBufferController.AddInput(new InputBufferAction(InputBufferAction.Action.RPRESSED, /*Time.time,*/ m_RInputDelegate));
+            //RSkill();
         }
     }
     protected virtual void RSkill()
@@ -415,6 +439,7 @@ public class CharacterMaster : MonoBehaviour, ITakeDamage
         m_CharacterUI.m_RSkillCdText.enabled=true;
         m_CharacterStats.SetCurrentMana(m_CharacterStats.GetCurrentMana()-m_RSkill.GetMana());
         m_RSkill.SetIsOnCd(true);
+        StartCoroutine(PowersCooldown(m_RSkill));
         StopRecall();
     }
     void UseSummonerSpell1()
@@ -425,12 +450,17 @@ public class CharacterMaster : MonoBehaviour, ITakeDamage
         }
         else
         {
-            m_SummSpell1.SetTimer(m_SummSpell1.GetCd());
-            m_CharacterUI.m_SumSpell1CdImage.fillAmount=1.0f;
-            m_CharacterUI.m_SumSpell1CdText.enabled=true;
-            m_SummSpell1.SetIsOnCd(true);
-            StopRecall();
+            m_InputBufferController.AddInput(new InputBufferAction(InputBufferAction.Action.DPRESSED, /*Time.time,*/ m_Summ1InputDelegate));
         }
+    }
+    void SummonerSpell1() 
+    {
+        m_SummSpell1.SetTimer(m_SummSpell1.GetCd());
+        m_CharacterUI.m_SumSpell1CdImage.fillAmount=1.0f;
+        m_CharacterUI.m_SumSpell1CdText.enabled=true;
+        m_SummSpell1.SetIsOnCd(true);
+        StartCoroutine(PowersCooldown(m_SummSpell1));
+        StopRecall();
     }
     void UseSummonerSpell2()
     {
@@ -440,29 +470,28 @@ public class CharacterMaster : MonoBehaviour, ITakeDamage
         }
         else
         {
-            m_SummSpell2.SetTimer(m_SummSpell2.GetCd());
-            m_CharacterUI.m_SumSpell2CdImage.fillAmount=1.0f;
-            m_CharacterUI.m_SumSpell2CdText.enabled=true;
-            m_SummSpell2.SetIsOnCd(true);
-            StopRecall();
+            m_InputBufferController.AddInput(new InputBufferAction(InputBufferAction.Action.FPRESSED, /*Time.time,*/ m_Summ2InputDelegate));
         }
     }
-    void PowersCooldown()
+    void SummonerSpell2() 
     {
-        if(m_QSkill.GetIsOnCd())
-            m_QSkill.Tick(Time.deltaTime);
-        if(m_WSkill.GetIsOnCd())
-            m_WSkill.Tick(Time.deltaTime);
-        if(m_ESkill.GetIsOnCd())
-            m_ESkill.Tick(Time.deltaTime);
-        if(m_RSkill.GetIsOnCd())
-            m_RSkill.Tick(Time.deltaTime);
-
-        if(m_SummSpell1.GetIsOnCd())
-            m_SummSpell1.Tick(Time.deltaTime);
-        if(m_SummSpell2.GetIsOnCd())
-            m_SummSpell2.Tick(Time.deltaTime);
+        m_SummSpell2.SetTimer(m_SummSpell2.GetCd());
+        m_CharacterUI.m_SumSpell2CdImage.fillAmount=1.0f;
+        m_CharacterUI.m_SumSpell2CdText.enabled=true;
+        m_SummSpell2.SetIsOnCd(true);
+        StartCoroutine(PowersCooldown(m_SummSpell2));
+        StopRecall();
     }
+
+    IEnumerator PowersCooldown(Power PowerOnCd) 
+    {
+        while(PowerOnCd.GetIsOnCd())
+        {
+            PowerOnCd.Tick(Time.deltaTime);
+            m_CharacterUI.UpdatePowerUI(PowerOnCd.m_PowerType, PowerOnCd.GetTimer(), PowerOnCd.GetCd(), PowerOnCd.GetZeroCooldown());
+            yield return null;
+        }
+    }    
     void UseRecall()
     {
         if(!m_Recalling)
@@ -638,5 +667,13 @@ public class CharacterMaster : MonoBehaviour, ITakeDamage
     public void SetShowingGizmos(bool True)
     {
         m_ShowingGizmos=True;
+    }
+    public bool GetUseSkillGizmos() 
+    {
+        return m_UseSkillGizmos;
+    }
+    public void SetUseSkillGizmos(bool True) 
+    {
+        m_UseSkillGizmos=True;
     }
 }

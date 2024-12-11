@@ -20,6 +20,7 @@ public class PracticeModeUI : MonoBehaviour
     public Animation m_EnemyAttacksButtonAnim;
     public Animation m_EnemyResistsButtonAnim;
     public Animation m_EnemyHealthButtonAnim;
+    public Animation m_ShowGizmosButtonAnim;
 
     bool m_Opened;
     bool m_CooldownsButtonActive;
@@ -29,6 +30,7 @@ public class PracticeModeUI : MonoBehaviour
     bool m_EnemyAttacksButtonActive;
     bool m_EnemyResistsButtonActive;
     bool m_EnemyHealthButtonActive;
+    bool m_ShowGizmosButtonActive;
     float m_ButtonAnimTime;
     float m_TimerSinceLastDummyAttack;
     float m_Tick;
@@ -69,6 +71,8 @@ public class PracticeModeUI : MonoBehaviour
             m_ButtonAnimTime=m_EnemyResistsButtonAnim[m_EnemyResistsButtonAnim.clip.name].time;
         if(m_EnemyHealthButtonActive)
             m_ButtonAnimTime=m_EnemyHealthButtonAnim[m_EnemyHealthButtonAnim.clip.name].time;
+        if(m_ShowGizmosButtonActive)
+            m_ButtonAnimTime=m_ShowGizmosButtonAnim[m_ShowGizmosButtonAnim.clip.name].time;
 
         if(m_EnemyAttacksButtonActive)
         {
@@ -286,5 +290,23 @@ public class PracticeModeUI : MonoBehaviour
         foreach(EnemyDummy Enemy in m_EnemiesList)
             Destroy(Enemy.gameObject);
         m_EnemiesList.Clear();
+    }
+    public void ShowGizmosButton()
+    {
+        m_ShowGizmosButtonActive=!m_ShowGizmosButtonActive;
+        if(m_ShowGizmosButtonAnim.isPlaying)
+        {
+            m_ShowGizmosButtonAnim[m_ShowGizmosButtonAnim.clip.name].time=0.0f;
+            m_ShowGizmosButtonAnim.Sample();
+            m_ShowGizmosButtonAnim.Stop();
+            m_Character.SetUseSkillGizmos(false);
+        }
+        else
+        { 
+            m_ShowGizmosButtonAnim[m_ShowGizmosButtonAnim.clip.name].time=m_ButtonAnimTime;
+            m_ShowGizmosButtonAnim.Sample();
+            m_ShowGizmosButtonAnim.Play();
+            m_Character.SetUseSkillGizmos(true);
+        }
     }
 }

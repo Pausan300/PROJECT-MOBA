@@ -1,5 +1,7 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 
 [CreateAssetMenu(menuName="Powers/Skill")]
@@ -12,6 +14,7 @@ public class Skill : Power
     float m_SkillMana;
     public bool m_CancelableWithMouseClick;
     bool m_UsingSkill;
+    public SkillAttribute[] m_AttributeList;
 
     public override void SetInitStats()
     {
@@ -55,5 +58,38 @@ public class Skill : Power
     public void SetUsingSkill(bool True)
     {
         m_UsingSkill=True;
+    }
+}
+
+[Serializable]
+public class SkillAttribute 
+{
+    public string m_AttributeId;
+    public List<float> m_LevelScaling;
+}
+
+[CustomEditor(typeof(SkillAttribute))]
+public class SkillAttributeCustomEditor : Editor
+{
+    public override void OnInspectorGUI()
+    {
+        SerializedProperty l_PopupType=serializedObject.FindProperty("m_AttributeId");
+        SerializedProperty l_CharacterUI=serializedObject.FindProperty("m_LevelScaling");
+
+        EditorGUILayout.PropertyField(l_PopupType);
+        //l_Inspector.m_PopupType=(InspectableElementUI.PopupType)EditorGUILayout.EnumPopup("Group", l_Inspector.m_PopupType);
+        EditorGUILayout.PropertyField(l_CharacterUI);
+        //l_Inspector.m_CharacterUI=(CharacterUI)EditorGUILayout.ObjectField("CharacterUI", l_Inspector.m_CharacterUI, typeof(CharacterUI), true);
+
+        //if(l_Inspector.m_PopupType==InspectableElementUI.PopupType.STAT)
+        //{
+        //    SerializedProperty l_StatName=serializedObject.FindProperty("m_StatName");
+        //    EditorGUILayout.PropertyField(l_StatName);
+        //    //l_Inspector.m_StatName=EditorGUILayout.TextField("Stat Name", l_Inspector.m_StatName);
+        //    SerializedProperty l_StatDescription = serializedObject.FindProperty("m_StatDescription");
+        //    EditorGUILayout.PropertyField(l_StatDescription, GUILayout.Height(80));
+        //    //l_Inspector.m_StatDescription=EditorGUILayout.TextArea(l_Inspector.m_StatDescription, GUILayout.Height(60));
+        //}
+        serializedObject.ApplyModifiedProperties();
     }
 }

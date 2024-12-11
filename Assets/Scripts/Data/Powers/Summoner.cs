@@ -6,7 +6,6 @@ using UnityEngine;
 public class Summoner : Power
 {
     public float m_SummonerCooldown; 
-    
     public override void SetInitStats()
     {
         base.SetInitStats();

@@ -48,11 +48,11 @@ public class CharacterStats : MonoBehaviour
     int m_SkillPoints;
     float m_CurrentExp;
 
-    private void Awake()
+    void Awake()
     {
         SetInitStats();
     }
-	private void Update()
+	void Update()
 	{
 		UpdateMovement();
         ResourceRestoring();

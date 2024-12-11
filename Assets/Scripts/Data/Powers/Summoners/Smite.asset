@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d8bf65f036ffd054faaf8479b7a58ea7, type: 3}
   m_Name: Smite
   m_EditorClassIdentifier: 
+  m_PowerType: 6
   m_PowerName: Smite
   m_Sprite: {fileID: 21300000, guid: 7652e599519158c4bbf180896f7048e6, type: 3}
   m_Description: 'Insertar descripcion lmao

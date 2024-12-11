@@ -120,17 +120,6 @@ public class CharacterUI : MonoBehaviour
     [Header("SKILL POPUP")]
     public PopupUI m_PopupUI;
 
-
-    public enum PopupType
-    {
-        QSKILL,
-        WSKILL,
-        ESKILL,
-        RSKILL,
-        SUMMONER1,
-        SUMMONER2
-    }
-
     private void Start()
     {
         HideSeconStatsPanel();
@@ -143,19 +132,13 @@ public class CharacterUI : MonoBehaviour
     }
 	private void Update()
 	{
-		UpdatePowerUI(m_Character.m_QSkill.GetTimer(), m_Character.m_QSkill.GetCd(), m_QSkillCdImage, m_QSkillCdText, m_Character.m_QSkill.GetZeroCooldown());
-		UpdatePowerUI(m_Character.m_WSkill.GetTimer(), m_Character.m_WSkill.GetCd(), m_WSkillCdImage, m_WSkillCdText, m_Character.m_WSkill.GetZeroCooldown());
-		UpdatePowerUI(m_Character.m_ESkill.GetTimer(), m_Character.m_ESkill.GetCd(), m_ESkillCdImage, m_ESkillCdText, m_Character.m_ESkill.GetZeroCooldown());
-		UpdatePowerUI(m_Character.m_RSkill.GetTimer(), m_Character.m_RSkill.GetCd(), m_RSkillCdImage, m_RSkillCdText, m_Character.m_RSkill.GetZeroCooldown());
-		UpdatePowerUI(m_Character.m_SummSpell1.GetTimer(), m_Character.m_SummSpell1.GetCd(), m_SumSpell1CdImage, m_SumSpell1CdText, m_Character.m_SummSpell1.GetZeroCooldown());
-		UpdatePowerUI(m_Character.m_SummSpell2.GetTimer(), m_Character.m_SummSpell2.GetCd(), m_SumSpell2CdImage, m_SumSpell2CdText, m_Character.m_SummSpell2.GetZeroCooldown());
-
         if(Input.GetKey(KeyCode.C))
             ShowSeconStatsPanel();
         else if(Input.GetKeyUp(KeyCode.C))
             HideSeconStatsPanel();
 
-        UpdateTargetInfoUI(m_TargetStats);
+        if(m_TargetInfoUI.activeSelf)
+            UpdateTargetInfoUI(m_TargetStats);
 
         if(m_ArrowSkillshotRect!=null)
             MoveArrowSkillshot();
@@ -210,7 +193,7 @@ public class CharacterUI : MonoBehaviour
     }
     public void UpdateTargetInfoUI(CharacterStats Stats)
     {
-        if(Stats)
+        if(Stats!=null)
         {
             m_TargetAttackDamageText.text=Mathf.Round(Stats.GetAttackDamage()).ToString();
             m_TargetArmorText.text=Mathf.Round(Stats.GetArmor()).ToString();
@@ -229,23 +212,44 @@ public class CharacterUI : MonoBehaviour
             m_TargetLevelText.text=Stats.GetCurrentLevel().ToString();
         }
     }
-    public void UpdatePowerUI(float PowerTimer, float PowerCd, Image PowerImage, TextMeshProUGUI PowerCdText, bool ZeroCd)
+    public void UpdatePowerUI(Power.PowerType Type, float PowerTimer, float PowerCd, bool ZeroCd)
     {
-        if(ZeroCd)
+        TextMeshProUGUI l_PowerCdText=null;
+        Image l_PowerCdImage=null;
+        switch(Type)
         {
-			PowerCdText.text="";
-		    PowerImage.fillAmount=0.0f;
+            case Power.PowerType.QSKILL:
+                l_PowerCdText=m_QSkillCdText;
+                l_PowerCdImage=m_QSkillCdImage;
+                break;
+            case Power.PowerType.WSKILL:
+                l_PowerCdText=m_WSkillCdText;
+                l_PowerCdImage=m_WSkillCdImage;
+                break;
+            case Power.PowerType.ESKILL:
+                l_PowerCdText=m_ESkillCdText;
+                l_PowerCdImage=m_ESkillCdImage;
+                break;
+            case Power.PowerType.RSKILL:
+                l_PowerCdText=m_RSkillCdText;
+                l_PowerCdImage=m_RSkillCdImage;
+                break;
+            case Power.PowerType.SUMMONER1:
+                l_PowerCdText=m_SumSpell1CdText;
+                l_PowerCdImage=m_SumSpell1CdImage;
+                break;
+            case Power.PowerType.SUMMONER2:
+                l_PowerCdText=m_SumSpell2CdText;
+                l_PowerCdImage=m_SumSpell2CdImage;
+                break;
         }
-        else
-        {
-		    if(PowerTimer>=1.0f)
-			    PowerCdText.text=PowerTimer.ToString("f0");
-            else if(PowerTimer<=0.0f)
-			    PowerCdText.text="";
-		    else
-			    PowerCdText.text=PowerTimer.ToString("f1");
-		    PowerImage.fillAmount=PowerTimer/PowerCd;
-        }
+        if(PowerTimer>=1.0f)
+			l_PowerCdText.text=PowerTimer.ToString("f0");
+        else if(PowerTimer<=0.0f)
+			l_PowerCdText.text="";
+		else
+			l_PowerCdText.text=PowerTimer.ToString("f1");
+		l_PowerCdImage.fillAmount=PowerTimer/PowerCd;
 	}
     public void LevelUpQSkill()
     {
@@ -338,34 +342,41 @@ public class CharacterUI : MonoBehaviour
     //        }
     //    }
     //}
-    public void SetPopupType(PopupType PopupElement)
+    public void SetPopupType(InspectableElementUI.PopupType PopupElement, string Description, string Name)
     {
 		switch(PopupElement)
 		{
-			case PopupType.QSKILL:
-                m_PopupUI.UpdatePopupInfo(m_Character.m_QSkill.m_Description, m_Character.m_QSkill.m_PowerName, m_Character.m_QSkillKey.ToString(), 
+            case InspectableElementUI.PopupType.PASSIVESKILL:
+                m_PopupUI.UpdatePowerPopupInfo(m_Character.m_PassiveSkill.m_Description, m_Character.m_PassiveSkill.m_PowerName, "P",
+                    null, null, m_Character.m_PassiveSkill.m_Sprite);
+                break;
+            case InspectableElementUI.PopupType.QSKILL:
+                m_PopupUI.UpdatePowerPopupInfo(m_Character.m_QSkill.m_Description, m_Character.m_QSkill.m_PowerName, m_Character.m_QSkillKey.ToString(), 
                     m_Character.m_QSkill.GetCd().ToString(), m_Character.m_QSkill.GetMana().ToString(), m_Character.m_QSkill.m_Sprite);
 			    break;
-			case PopupType.WSKILL:
-                m_PopupUI.UpdatePopupInfo(m_Character.m_WSkill.m_Description, m_Character.m_WSkill.m_PowerName, m_Character.m_WSkillKey.ToString(), 
+			case InspectableElementUI.PopupType.WSKILL:
+                m_PopupUI.UpdatePowerPopupInfo(m_Character.m_WSkill.m_Description, m_Character.m_WSkill.m_PowerName, m_Character.m_WSkillKey.ToString(), 
                     m_Character.m_WSkill.GetCd().ToString(), m_Character.m_WSkill.GetMana().ToString(), m_Character.m_WSkill.m_Sprite);
 			    break;
-			case PopupType.ESKILL:
-                m_PopupUI.UpdatePopupInfo(m_Character.m_ESkill.m_Description, m_Character.m_ESkill.m_PowerName, m_Character.m_ESkillKey.ToString(), 
+			case InspectableElementUI.PopupType.ESKILL:
+                m_PopupUI.UpdatePowerPopupInfo(m_Character.m_ESkill.m_Description, m_Character.m_ESkill.m_PowerName, m_Character.m_ESkillKey.ToString(), 
                     m_Character.m_ESkill.GetCd().ToString(), m_Character.m_ESkill.GetMana().ToString(), m_Character.m_ESkill.m_Sprite);
 			    break;
-			case PopupType.RSKILL:
-                m_PopupUI.UpdatePopupInfo(m_Character.m_RSkill.m_Description, m_Character.m_RSkill.m_PowerName, m_Character.m_RSkillKey.ToString(), 
+			case InspectableElementUI.PopupType.RSKILL:
+                m_PopupUI.UpdatePowerPopupInfo(m_Character.m_RSkill.m_Description, m_Character.m_RSkill.m_PowerName, m_Character.m_RSkillKey.ToString(), 
                     m_Character.m_RSkill.GetCd().ToString(), m_Character.m_RSkill.GetMana().ToString(), m_Character.m_RSkill.m_Sprite);
 			    break;
-			case PopupType.SUMMONER1:
-                m_PopupUI.UpdatePopupInfo(m_Character.m_SummSpell1.m_Description, m_Character.m_SummSpell1.m_PowerName, m_Character.m_SummSpell1Key.ToString(), 
+			case InspectableElementUI.PopupType.SUMMONER1:
+                m_PopupUI.UpdatePowerPopupInfo(m_Character.m_SummSpell1.m_Description, m_Character.m_SummSpell1.m_PowerName, m_Character.m_SummSpell1Key.ToString(), 
                     m_Character.m_SummSpell1.GetCd().ToString(), null, m_Character.m_SummSpell1.m_Sprite);
 			    break;
-			case PopupType.SUMMONER2:
-                m_PopupUI.UpdatePopupInfo(m_Character.m_SummSpell2.m_Description, m_Character.m_SummSpell2.m_PowerName, m_Character.m_SummSpell2Key.ToString(), 
+			case InspectableElementUI.PopupType.SUMMONER2:
+                m_PopupUI.UpdatePowerPopupInfo(m_Character.m_SummSpell2.m_Description, m_Character.m_SummSpell2.m_PowerName, m_Character.m_SummSpell2Key.ToString(), 
                     m_Character.m_SummSpell2.GetCd().ToString(), null, m_Character.m_SummSpell2.m_Sprite);
 			    break;
+            case InspectableElementUI.PopupType.STAT:
+                m_PopupUI.UpdateStatPopupInfo(Description, Name);
+                break;
 		}
         ShowPopup();
 	}
@@ -375,7 +386,7 @@ public class CharacterUI : MonoBehaviour
     {
         GameObject l_Arrow=Instantiate(Arrow, m_SkillIndicatorParent);
         RectTransform l_ArrowRect=l_Arrow.GetComponent<RectTransform>();
-        l_ArrowRect.sizeDelta=new Vector2(Width/100.0f, Range/100.0f);
+        l_ArrowRect.sizeDelta=new Vector2(Width, Range);
         l_ArrowRect.position=Position;
         m_ArrowSkillshotRect=l_ArrowRect;
         m_ArrowSkillshotRect.position=new Vector3(m_ArrowSkillshotRect.position.x, 0.05f, m_ArrowSkillshotRect.position.z);
@@ -386,7 +397,7 @@ public class CharacterUI : MonoBehaviour
     }
     public void ChangeArrowSkillshotSize(float Width, float Range)
     {
-        m_ArrowSkillshotRect.sizeDelta=new Vector2(Width/100.0f, Range/100.0f);
+        m_ArrowSkillshotRect.sizeDelta=new Vector2(Width, Range);
     }
     public void MoveArrowSkillshot()
     {
