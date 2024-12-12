@@ -340,7 +340,6 @@ public class CharacterMaster : MonoBehaviour, ITakeDamage
         else
         {
             m_InputBufferController.AddInput(new InputBufferAction(InputBufferAction.Action.QPRESSED, m_QInputDelegate));
-           // QSkill();
         }
     }
     protected virtual void QSkill()
@@ -370,7 +369,6 @@ public class CharacterMaster : MonoBehaviour, ITakeDamage
         else
         {
             m_InputBufferController.AddInput(new InputBufferAction(InputBufferAction.Action.WPRESSED, m_WInputDelegate));
-            //WSkill();
         }
     }
     protected virtual void WSkill()
@@ -400,7 +398,6 @@ public class CharacterMaster : MonoBehaviour, ITakeDamage
         else
         {
             m_InputBufferController.AddInput(new InputBufferAction(InputBufferAction.Action.EPRESSED, m_EInputDelegate));
-            //ESkill();
         }
     }
     protected virtual void ESkill()
@@ -430,7 +427,6 @@ public class CharacterMaster : MonoBehaviour, ITakeDamage
         else
         {
             m_InputBufferController.AddInput(new InputBufferAction(InputBufferAction.Action.RPRESSED, m_RInputDelegate));
-            //RSkill();
         }
     }
     protected virtual void RSkill()

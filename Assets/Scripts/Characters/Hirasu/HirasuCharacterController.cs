@@ -123,7 +123,6 @@ public class HirasuCharacterController : CharacterMaster
 			m_CharacterUI.ClearDeletableSkillIndicatorUI();
 			m_CharacterUI.ClearNormalSkillIndicatorUI();
 			m_CharacterUI.ClearTargetSkillIndicatorUI();
-			StopSkills();
 		}
 		GetCharacterUI().CreateArrowSkillIndicator(m_QSkill.m_IndicatorUIObject, m_QTapWidth, m_QTapRange, transform.position, false);
 		
@@ -133,6 +132,7 @@ public class HirasuCharacterController : CharacterMaster
 		GetCharacterUI().ShowCastingUI();
 		if(m_RSkill.GetUsingSkill())
 			m_RSkill.SetUsingSkill(false);
+		StopSkills();
 		m_QSkill.SetUsingSkill(true);
 		m_QCurrentHoldTime=0.0f;
 	}
@@ -228,6 +228,7 @@ public class HirasuCharacterController : CharacterMaster
 		{
 			if(m_ActiveSplinters.Count>0)
 			{
+				StopSkills();
 				m_WSkill.SetUsingSkill(true);
 				if(GetUseSkillGizmos()) 
 				{
@@ -235,12 +236,10 @@ public class HirasuCharacterController : CharacterMaster
 					{
 						m_CharacterUI.ClearDeletableSkillIndicatorUI();
 						m_CharacterUI.ClearNormalSkillIndicatorUI();
-						StopSkills();
+						m_CharacterUI.ClearTargetSkillIndicatorUI();
 					}
 					foreach(HirasuQSplinter Splinter in m_ActiveSplinters)
-					{
 						GetCharacterUI().CreateCircleSkillIndicator(m_WSkill.m_IndicatorUIObject, m_WExplosionRadius, Splinter.transform, true);
-					}
 					SetShowingGizmos(true);
 				} 
 				else
@@ -277,6 +276,7 @@ public class HirasuCharacterController : CharacterMaster
 	{
 		if(!m_QSkill.GetUsingSkill())
 		{
+			StopSkills();
 			m_ESkill.SetUsingSkill(true);
 			if(GetUseSkillGizmos()) 
 			{
@@ -284,7 +284,7 @@ public class HirasuCharacterController : CharacterMaster
 				{
 					m_CharacterUI.ClearDeletableSkillIndicatorUI();
 					m_CharacterUI.ClearNormalSkillIndicatorUI();
-					StopSkills();
+					m_CharacterUI.ClearTargetSkillIndicatorUI();
 				}
 				GetCharacterUI().CreateArrowSkillIndicator(m_ESkill.m_IndicatorUIObject, 100.0f, m_ERange, transform.position, true);
 				SetShowingGizmos(true);
@@ -337,6 +337,7 @@ public class HirasuCharacterController : CharacterMaster
 	{
 		if(!m_QSkill.GetUsingSkill())
 		{
+			StopSkills();
 			m_RSkill.SetUsingSkill(true);
 			if(GetUseSkillGizmos()) 
 			{
@@ -344,7 +345,7 @@ public class HirasuCharacterController : CharacterMaster
 				{
 					m_CharacterUI.ClearDeletableSkillIndicatorUI();
 					m_CharacterUI.ClearNormalSkillIndicatorUI();
-					StopSkills();
+					m_CharacterUI.ClearTargetSkillIndicatorUI();
 				}
 				GetCharacterUI().CreateCircleSkillIndicator(m_RSkill.m_IndicatorUIObject, GetCharacterStats().GetAttackRange(), transform, false);
 				SetShowingGizmos(true);
