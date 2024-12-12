@@ -132,13 +132,13 @@ public class CharacterMaster : MonoBehaviour, ITakeDamage
         }
 
         if(Input.GetKeyDown(m_QSkillKey))
-            UseQSkill();
+            QSkillInput();
         if(Input.GetKeyDown(m_WSkillKey))
-            UseWSkill();
+            WSkillInput();
         if(Input.GetKeyDown(m_ESkillKey))
-            UseESkill();
+            ESkillInput();
         if(Input.GetKeyDown(m_RSkillKey))
-            UseRSkill();
+            RSkillInput();
 
         if(Input.GetKeyDown(m_SummSpell1Key))
             UseSummonerSpell1();
@@ -192,6 +192,7 @@ public class CharacterMaster : MonoBehaviour, ITakeDamage
             if(m_UseSkillGizmos && IsAnySkillBeingUsed())
             {
                 m_CharacterUI.ClearDeletableSkillIndicatorUI();
+			    m_CharacterUI.ClearTargetSkillIndicatorUI();
                 m_ShowingGizmos=false;
                 StopSkillsCancelableWithMouseClick();
             }
@@ -322,7 +323,7 @@ public class CharacterMaster : MonoBehaviour, ITakeDamage
             m_CharacterAnimator.SetBool("IsAAttacking", false);
         }
     }
-	void UseQSkill()
+	void QSkillInput()
     {
         if(m_QSkill.GetLevel()<=0)
         {
@@ -338,7 +339,7 @@ public class CharacterMaster : MonoBehaviour, ITakeDamage
         }
         else
         {
-            m_InputBufferController.AddInput(new InputBufferAction(InputBufferAction.Action.QPRESSED, /*Time.time,*/ m_QInputDelegate));
+            m_InputBufferController.AddInput(new InputBufferAction(InputBufferAction.Action.QPRESSED, m_QInputDelegate));
            // QSkill();
         }
     }
@@ -352,7 +353,7 @@ public class CharacterMaster : MonoBehaviour, ITakeDamage
         StartCoroutine(PowersCooldown(m_QSkill));
         StopRecall();
     }
-    void UseWSkill()
+    void WSkillInput()
     {
         if(m_WSkill.GetLevel()<=0)
         {
@@ -368,7 +369,7 @@ public class CharacterMaster : MonoBehaviour, ITakeDamage
         }
         else
         {
-            m_InputBufferController.AddInput(new InputBufferAction(InputBufferAction.Action.WPRESSED, /*Time.time,*/ m_WInputDelegate));
+            m_InputBufferController.AddInput(new InputBufferAction(InputBufferAction.Action.WPRESSED, m_WInputDelegate));
             //WSkill();
         }
     }
@@ -382,7 +383,7 @@ public class CharacterMaster : MonoBehaviour, ITakeDamage
         StartCoroutine(PowersCooldown(m_WSkill));
         StopRecall();
     }
-    void UseESkill()
+    void ESkillInput()
     {
         if(m_ESkill.GetLevel()<=0)
         {
@@ -398,7 +399,7 @@ public class CharacterMaster : MonoBehaviour, ITakeDamage
         }
         else
         {
-            m_InputBufferController.AddInput(new InputBufferAction(InputBufferAction.Action.EPRESSED, /*Time.time,*/ m_EInputDelegate));
+            m_InputBufferController.AddInput(new InputBufferAction(InputBufferAction.Action.EPRESSED, m_EInputDelegate));
             //ESkill();
         }
     }
@@ -412,7 +413,7 @@ public class CharacterMaster : MonoBehaviour, ITakeDamage
         StartCoroutine(PowersCooldown(m_ESkill));
         StopRecall();
     }
-    void UseRSkill()
+    void RSkillInput()
     {
         if(m_RSkill.GetLevel()<=0)
         {
@@ -428,7 +429,7 @@ public class CharacterMaster : MonoBehaviour, ITakeDamage
         }
         else
         {
-            m_InputBufferController.AddInput(new InputBufferAction(InputBufferAction.Action.RPRESSED, /*Time.time,*/ m_RInputDelegate));
+            m_InputBufferController.AddInput(new InputBufferAction(InputBufferAction.Action.RPRESSED, m_RInputDelegate));
             //RSkill();
         }
     }
@@ -450,7 +451,7 @@ public class CharacterMaster : MonoBehaviour, ITakeDamage
         }
         else
         {
-            m_InputBufferController.AddInput(new InputBufferAction(InputBufferAction.Action.DPRESSED, /*Time.time,*/ m_Summ1InputDelegate));
+            m_InputBufferController.AddInput(new InputBufferAction(InputBufferAction.Action.DPRESSED, m_Summ1InputDelegate));
         }
     }
     void SummonerSpell1() 
@@ -470,7 +471,7 @@ public class CharacterMaster : MonoBehaviour, ITakeDamage
         }
         else
         {
-            m_InputBufferController.AddInput(new InputBufferAction(InputBufferAction.Action.FPRESSED, /*Time.time,*/ m_Summ2InputDelegate));
+            m_InputBufferController.AddInput(new InputBufferAction(InputBufferAction.Action.FPRESSED, m_Summ2InputDelegate));
         }
     }
     void SummonerSpell2() 

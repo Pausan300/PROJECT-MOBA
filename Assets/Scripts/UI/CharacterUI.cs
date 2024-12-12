@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -94,10 +95,20 @@ public class CharacterUI : MonoBehaviour
 
 	[Header("SKILLS INDICATOR UI")]
 	public Transform m_SkillIndicatorParent;
-    RectTransform m_ArrowSkillshotRect;
-    List<RectTransform> m_DeletableIndicatorList=new List<RectTransform>();
-    List<RectTransform> m_NormalIndicatorList=new List<RectTransform>();
-    List<Vector3> m_IndicatorPositions=new List<Vector3>();
+    RectTransform m_ArrowSkillIndicatorRect;
+    List<RectTransform> m_DeletableSkillIndicatorList=new List<RectTransform>();
+    List<RectTransform> m_NormalSkillIndicatorList=new List<RectTransform>();
+    public struct TargetSkillIndicator 
+    {
+        public Transform m_TargetObject;
+        public RectTransform m_SkillIndicator;
+        public TargetSkillIndicator(Transform TargetObject, RectTransform SkillIndicator) 
+        {
+            m_TargetObject=TargetObject;
+            m_SkillIndicator=SkillIndicator;
+        }
+    }
+    List<TargetSkillIndicator> m_TargetSkillIndicatorList=new List<TargetSkillIndicator>();
 
     [Header("TARGET INFO UI")]
     public GameObject m_TargetInfoUI;
@@ -129,6 +140,7 @@ public class CharacterUI : MonoBehaviour
         HidePopup();
         ClearDeletableSkillIndicatorUI();
         ClearNormalSkillIndicatorUI();
+        ClearTargetSkillIndicatorUI();
     }
 	private void Update()
 	{
@@ -140,8 +152,10 @@ public class CharacterUI : MonoBehaviour
         if(m_TargetInfoUI.activeSelf)
             UpdateTargetInfoUI(m_TargetStats);
 
-        if(m_ArrowSkillshotRect!=null)
-            MoveArrowSkillshot();
+        if(m_ArrowSkillIndicatorRect!=null)
+            MoveArrowSkillIndicator();
+        if(m_TargetSkillIndicatorList.Count>0)
+            UpdateTargetSkillIndicatorUI();
 	}
 	public void UpdateHealthManaBars(float Health, float MaxHealth, float Mana, float MaxMana)
     {
@@ -382,68 +396,87 @@ public class CharacterUI : MonoBehaviour
 	}
 
     //SKILL INDICATOR METHODS
-    public void CreateArrowSkillshot(GameObject Arrow, float Width, float Range, Vector3 Position, bool DeleteOnMouseClick)
+    public void CreateArrowSkillIndicator(GameObject Arrow, float Width, float Range, Vector3 Position, bool DeleteOnMouseClick)
     {
         GameObject l_Arrow=Instantiate(Arrow, m_SkillIndicatorParent);
         RectTransform l_ArrowRect=l_Arrow.GetComponent<RectTransform>();
         l_ArrowRect.sizeDelta=new Vector2(Width, Range);
         l_ArrowRect.position=Position;
-        m_ArrowSkillshotRect=l_ArrowRect;
-        m_ArrowSkillshotRect.position=new Vector3(m_ArrowSkillshotRect.position.x, 0.05f, m_ArrowSkillshotRect.position.z);
+        m_ArrowSkillIndicatorRect=l_ArrowRect;
+        m_ArrowSkillIndicatorRect.position=new Vector3(m_ArrowSkillIndicatorRect.position.x, 0.05f, m_ArrowSkillIndicatorRect.position.z);
         if(DeleteOnMouseClick)
-            m_DeletableIndicatorList.Add(m_ArrowSkillshotRect);
+            m_DeletableSkillIndicatorList.Add(m_ArrowSkillIndicatorRect);
         else
-            m_NormalIndicatorList.Add(m_ArrowSkillshotRect);
+            m_NormalSkillIndicatorList.Add(m_ArrowSkillIndicatorRect);
     }
-    public void ChangeArrowSkillshotSize(float Width, float Range)
+    public void ChangeArrowSkillIndicatorSize(float Width, float Range)
     {
-        m_ArrowSkillshotRect.sizeDelta=new Vector2(Width, Range);
+        m_ArrowSkillIndicatorRect.sizeDelta=new Vector2(Width, Range);
     }
-    public void MoveArrowSkillshot()
+    public void MoveArrowSkillIndicator()
     {
         Vector3 l_MouseDirection=m_Character.GetMouseDir();
         RaycastHit l_CameraRaycastHit;
-        if(Physics.Raycast(m_Character.GetCameraController().m_Camera.transform.position, l_MouseDirection, out l_CameraRaycastHit, 1000.0f, m_Character.GetCameraController().m_CameraLayerMask))
+        if(Physics.Raycast(m_Character.GetCameraController().m_Camera.transform.position, l_MouseDirection, out l_CameraRaycastHit, 1000.0f, m_Character.GetCameraController().m_TerrainLayerMask))
 		{
 			Quaternion a=Quaternion.LookRotation(l_CameraRaycastHit.point-m_Character.transform.position);
 			a.eulerAngles=new Vector3(90.0f, a.eulerAngles.y, a.eulerAngles.z);
-			m_ArrowSkillshotRect.transform.rotation=Quaternion.Lerp(a, m_ArrowSkillshotRect.transform.rotation, 0.0f);
+			m_ArrowSkillIndicatorRect.transform.rotation=Quaternion.Lerp(a, m_ArrowSkillIndicatorRect.transform.rotation, 0.0f);
 		}
     }
-    public void CreateCircleSkillshot(GameObject Circle, float Radius, Vector3 Position)
+    public void CreateCircleSkillIndicator(GameObject Circle, float Radius, Transform Target, bool FollowTargetPos)
     {
         GameObject l_Circle=Instantiate(Circle, m_SkillIndicatorParent);
         RectTransform l_CircleRect=l_Circle.GetComponent<RectTransform>();
         l_CircleRect.sizeDelta=new Vector2(Radius/100.0f*2.0f, Radius/100.0f*2.0f);
-        l_CircleRect.position=Position;
+        l_CircleRect.position=Target.position;
         l_CircleRect.position=new Vector3(l_CircleRect.position.x, 0.05f, l_CircleRect.position.z);
-        m_DeletableIndicatorList.Add(l_CircleRect);
-        m_IndicatorPositions.Add(l_CircleRect.position);
+        if(FollowTargetPos)
+            m_TargetSkillIndicatorList.Add(new TargetSkillIndicator(Target, l_CircleRect));
+        else
+            m_DeletableSkillIndicatorList.Add(l_CircleRect);
+
     }
-    public void MoveCircleSkillshot()
+    public void UpdateTargetSkillIndicatorUI()
     {
-        for(int i=0; i<m_DeletableIndicatorList.Count; ++i)
-            m_DeletableIndicatorList[i].position=m_IndicatorPositions[i];
+        for(int i=m_TargetSkillIndicatorList.Count-1; i>=0; --i) 
+        {
+            if(m_TargetSkillIndicatorList[i].m_TargetObject==null) 
+            {
+                Destroy(m_TargetSkillIndicatorList[i].m_SkillIndicator.gameObject);
+                m_TargetSkillIndicatorList.Remove(m_TargetSkillIndicatorList[i]);
+            }
+            else
+                m_TargetSkillIndicatorList[i].m_SkillIndicator.position=new Vector3(m_TargetSkillIndicatorList[i].m_TargetObject.position.x, 0.05f, 
+                    m_TargetSkillIndicatorList[i].m_TargetObject.position.z);
+        }
     }
     public void ClearDeletableSkillIndicatorUI()
     {
-        if(m_DeletableIndicatorList.Count>0)
+        if(m_DeletableSkillIndicatorList.Count>0)
         {
-            for(int i=0; i<m_DeletableIndicatorList.Count; ++i)
-                Destroy(m_DeletableIndicatorList[i].gameObject);
+            for(int i=0; i<m_DeletableSkillIndicatorList.Count; ++i)
+                Destroy(m_DeletableSkillIndicatorList[i].gameObject);
         }
-        m_DeletableIndicatorList.Clear();
-        m_IndicatorPositions.Clear();
+        m_DeletableSkillIndicatorList.Clear();
     }
     public void ClearNormalSkillIndicatorUI()
     {
-        if(m_NormalIndicatorList.Count>0)
+        if(m_NormalSkillIndicatorList.Count>0)
         {
-            for(int i=0; i<m_NormalIndicatorList.Count; ++i)
-                Destroy(m_NormalIndicatorList[i].gameObject);
+            for(int i=0; i<m_NormalSkillIndicatorList.Count; ++i)
+                Destroy(m_NormalSkillIndicatorList[i].gameObject);
         }
-        m_NormalIndicatorList.Clear();
-        m_IndicatorPositions.Clear();
+        m_NormalSkillIndicatorList.Clear();
+    }
+    public void ClearTargetSkillIndicatorUI() 
+    {
+        if(m_TargetSkillIndicatorList.Count>0)
+        {
+            for(int i=0; i<m_TargetSkillIndicatorList.Count; ++i)
+                Destroy(m_TargetSkillIndicatorList[i].m_SkillIndicator.gameObject);
+        }
+        m_TargetSkillIndicatorList.Clear();
     }
     
     //SHOW & HIDE METHODS

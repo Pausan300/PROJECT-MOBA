@@ -100,10 +100,8 @@ public class HirasuCharacterController : CharacterMaster
 
 		if(GetUseSkillGizmos()) 
 		{
-			if(m_WSkill.GetUsingSkill())
-				GetCharacterUI().MoveCircleSkillshot();
 			if(m_ESkill.GetUsingSkill())
-				GetCharacterUI().ChangeArrowSkillshotSize(100.0f, Mathf.Min(m_ERange, Vector3.Distance(GetPositionWithMouse(), transform.position)*100.0f));
+				GetCharacterUI().ChangeArrowSkillIndicatorSize(100.0f, Mathf.Min(m_ERange, Vector3.Distance(GetPositionWithMouse(), transform.position)*100.0f));
 
 			if(Input.GetMouseButtonDown(0))
 			{
@@ -124,9 +122,10 @@ public class HirasuCharacterController : CharacterMaster
 		{
 			m_CharacterUI.ClearDeletableSkillIndicatorUI();
 			m_CharacterUI.ClearNormalSkillIndicatorUI();
+			m_CharacterUI.ClearTargetSkillIndicatorUI();
 			StopSkills();
 		}
-		GetCharacterUI().CreateArrowSkillshot(m_QSkill.m_IndicatorUIObject, m_QTapWidth, m_QTapRange, transform.position, false);
+		GetCharacterUI().CreateArrowSkillIndicator(m_QSkill.m_IndicatorUIObject, m_QTapWidth, m_QTapRange, transform.position, false);
 		
 		StopAttacking();
 		GetCharacterUI().SetCastingUIAbilityText("Marcaje");
@@ -145,7 +144,7 @@ public class HirasuCharacterController : CharacterMaster
 			GetCharacterUI().UpdateCastingUI(m_QCurrentHoldTime, m_QMaxHoldTime);
 			
 			if(m_QCurrentHoldTime>m_QMinHoldTime)
-				GetCharacterUI().ChangeArrowSkillshotSize(m_QTapWidth, m_QHoldRange);
+				GetCharacterUI().ChangeArrowSkillIndicatorSize(m_QTapWidth, m_QHoldRange);
 		}
 		else if(Input.GetKeyUp(KeyCode.Q) || m_QCurrentHoldTime>m_QMaxHoldTime)
 		{
@@ -229,6 +228,7 @@ public class HirasuCharacterController : CharacterMaster
 		{
 			if(m_ActiveSplinters.Count>0)
 			{
+				m_WSkill.SetUsingSkill(true);
 				if(GetUseSkillGizmos()) 
 				{
 					if(GetShowingGizmos())
@@ -239,13 +239,12 @@ public class HirasuCharacterController : CharacterMaster
 					}
 					foreach(HirasuQSplinter Splinter in m_ActiveSplinters)
 					{
-						GetCharacterUI().CreateCircleSkillshot(m_WSkill.m_IndicatorUIObject, m_WExplosionRadius, Splinter.transform.position);
+						GetCharacterUI().CreateCircleSkillIndicator(m_WSkill.m_IndicatorUIObject, m_WExplosionRadius, Splinter.transform, true);
 					}
 					SetShowingGizmos(true);
 				} 
 				else
 					WTriggerExplosions();
-				m_WSkill.SetUsingSkill(true);
 			}
 		}
 	}
@@ -278,6 +277,7 @@ public class HirasuCharacterController : CharacterMaster
 	{
 		if(!m_QSkill.GetUsingSkill())
 		{
+			m_ESkill.SetUsingSkill(true);
 			if(GetUseSkillGizmos()) 
 			{
 				if(GetShowingGizmos())
@@ -286,12 +286,11 @@ public class HirasuCharacterController : CharacterMaster
 					m_CharacterUI.ClearNormalSkillIndicatorUI();
 					StopSkills();
 				}
-				GetCharacterUI().CreateArrowSkillshot(m_ESkill.m_IndicatorUIObject, 100.0f, m_ERange, transform.position, true);
+				GetCharacterUI().CreateArrowSkillIndicator(m_ESkill.m_IndicatorUIObject, 100.0f, m_ERange, transform.position, true);
 				SetShowingGizmos(true);
 			}
 			else
 				StartCoroutine(EDash(GetPositionWithMouse()));
-			m_ESkill.SetUsingSkill(true);
 		}
 	}
 	IEnumerator EDash(Vector3 Position)
@@ -299,11 +298,11 @@ public class HirasuCharacterController : CharacterMaster
 		base.ESkill();
 		SetShowingGizmos(false);
 		m_ESkill.SetUsingSkill(false);
-		SetDisabled(true);
 		StopRecall();
 		StopAttacking();
 		if(!GetIsLookingForPosition())
 			StopMovement();
+		StartCoroutine(DisableForDuration(m_EDuration));
         SetAnimatorTrigger("IsUsingE");
 		Vector3 l_Direction=Position-transform.position;
 		l_Direction.y=0.0f;
@@ -331,7 +330,6 @@ public class HirasuCharacterController : CharacterMaster
 		{
 			GetComponent<BuffableEntity>().AddBuff(m_EBuff.InitializeBuff(m_EBuffDuration[0], m_EBuffSpeed[0], gameObject));
 		}
-		SetDisabled(false);
 	}
 
 	//R SKILL
@@ -339,6 +337,7 @@ public class HirasuCharacterController : CharacterMaster
 	{
 		if(!m_QSkill.GetUsingSkill())
 		{
+			m_RSkill.SetUsingSkill(true);
 			if(GetUseSkillGizmos()) 
 			{
 				if(GetShowingGizmos())
@@ -347,12 +346,11 @@ public class HirasuCharacterController : CharacterMaster
 					m_CharacterUI.ClearNormalSkillIndicatorUI();
 					StopSkills();
 				}
-				GetCharacterUI().CreateCircleSkillshot(m_RSkill.m_IndicatorUIObject, GetCharacterStats().GetAttackRange(), transform.position);
+				GetCharacterUI().CreateCircleSkillIndicator(m_RSkill.m_IndicatorUIObject, GetCharacterStats().GetAttackRange(), transform, false);
 				SetShowingGizmos(true);
 			}
 			else
 				GetEnemyWithMouse();
-			m_RSkill.SetUsingSkill(true);
 		}
 	}
 	IEnumerator RAttack()

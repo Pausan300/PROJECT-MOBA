@@ -15,19 +15,16 @@ public struct InputBufferAction
         FPRESSED
     }
     public Action m_PressedAction;
-    //public float m_PressedTime;
     public CharacterMaster.InputDelegate m_Method;
-    public InputBufferAction(Action PressedAction, /*float PressedTime,*/ CharacterMaster.InputDelegate Method) 
+    public InputBufferAction(Action PressedAction, CharacterMaster.InputDelegate Method) 
     {
         m_PressedAction=PressedAction;
-        //m_PressedTime=PressedTime;
         m_Method=Method;
     }
 }
 
 public class InputBufferController : MonoBehaviour
 {
-    //public float m_MaxInputSavingTime;
     List<InputBufferAction> m_InputBuffer=new List<InputBufferAction>();
 
     public void CheckInputBuffer() 
@@ -36,12 +33,9 @@ public class InputBufferController : MonoBehaviour
         {
             foreach(InputBufferAction Action in m_InputBuffer.ToArray())
             {
-                m_InputBuffer.Remove(Action);  
-                //if((Action.m_PressedTime+m_MaxInputSavingTime)>=Time.time)
-                //{
+                m_InputBuffer.Remove(Action);
                 Action.m_Method();
                 break;
-                //}
             }
         }
     }
