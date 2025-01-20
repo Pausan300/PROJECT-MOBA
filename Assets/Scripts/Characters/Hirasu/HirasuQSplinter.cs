@@ -1,8 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Netcode;
 using UnityEngine;
 
-public class HirasuQSplinter : MonoBehaviour
+public class HirasuQSplinter : NetworkBehaviour
 {
     HirasuCharacterController m_Player;
     ITakeDamage m_AttachedEnemy;
@@ -33,6 +34,7 @@ public class HirasuQSplinter : MonoBehaviour
 	{
         m_AlreadyExploded=true;
 		GameObject l_Explosion=Instantiate(Explosion, EnemyPos, Explosion.transform.rotation);
+        l_Explosion.GetComponent<NetworkObject>().SpawnWithOwnership(m_Player.GetComponent<NetworkObject>().OwnerClientId);
 		float l_Timer=0.0f;
         float l_TotalDamage=Damage;
         float l_SlowAmount=m_Player.m_WSpeedDebuffAmountExplosion;
@@ -53,7 +55,7 @@ public class HirasuQSplinter : MonoBehaviour
                     }
                     if(Entity.TryGetComponent(out BuffableEntity Buffs))
                     {
-                        Buffs.AddBuff(m_Player.m_WSpeedDebuff.InitializeBuff(m_Player.m_WSpeedDebuffDuration, l_SlowAmount, Entity.gameObject));
+                        AddDebuffRpc(Entity.GetComponent<NetworkObject>(), l_SlowAmount);
 						if(Buffs.IsMarkBuffActive(m_Player.m_WMarksDebuff))
 						    l_TotalDamage*=(1.0f+m_Player.m_WMarksExtraDamage/100.0f);
 					    Debug.Log("TAKEN "+l_TotalDamage+" DAMAGE");
@@ -68,6 +70,13 @@ public class HirasuQSplinter : MonoBehaviour
 		Destroy(l_Explosion);
         Destroy(gameObject);
 	}
+	[Rpc(SendTo.Everyone)]
+	void AddDebuffRpc(NetworkObjectReference Enemy, float SlowAmount) 
+	{
+		NetworkObject l_Enemy=Enemy;
+		l_Enemy.GetComponent<BuffableEntity>().AddBuff(m_Player.m_WSpeedDebuff.InitializeBuff(m_Player.m_WSpeedDebuffDuration, SlowAmount, l_Enemy.gameObject));
+	}
+
     public bool GetAlreadyExploded()
     {
         return m_AlreadyExploded;

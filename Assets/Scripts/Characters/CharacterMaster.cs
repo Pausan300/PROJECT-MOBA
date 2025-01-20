@@ -1,20 +1,30 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Netcode;
+using Unity.Netcode.Components;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class CharacterMaster : MonoBehaviour, ITakeDamage
+public class CharacterMaster : NetworkBehaviour, ITakeDamage
 {
-    CameraController m_CharacterCamera;
     Animator m_CharacterAnimator;
     AudioSource m_AudioSource;
 
+    [Header("CAMERA")]
+    public GameObject m_CameraPrefab;
+    CameraController m_CharacterCamera;
+
+    [Header("UI")]
+    public GameObject m_CharacterUIPrefab;
+    CharacterUI m_CharacterUI;
+    public GameObject m_PracticeModeUIPrefab;
+    PracticeModeUI m_PracticeModeUI;
+    public IngameCharacterUI m_IngameCharacterUI;
+    public SkillIndicatorUI m_SkillIndicatorUI;
+
     [Header("CHARACTER STATS")]
     public CharacterStats m_CharacterStats;
-
-    [Header("CHARACTER UI")]
-    public CharacterUI m_CharacterUI;
 
     [Header("RECALL")]
     public float m_RecallTime;
@@ -51,6 +61,10 @@ public class CharacterMaster : MonoBehaviour, ITakeDamage
     public LayerMask m_DamageLayerMask;
     bool m_ShowingGizmos;
     bool m_UseSkillGizmos;
+    int m_QSkillLevel;
+    int m_WSkillLevel;
+    int m_ESkillLevel;
+    int m_RSkillLevel;
 
     [Header("INPUT BUFFERING")]
     public InputBufferController m_InputBufferController;
@@ -62,9 +76,21 @@ public class CharacterMaster : MonoBehaviour, ITakeDamage
     public InputDelegate m_Summ1InputDelegate;
     public InputDelegate m_Summ2InputDelegate;
 
-	protected virtual void Start()
+	public override void OnNetworkSpawn()
 	{
-        m_CharacterCamera=GetComponent<CameraController>();
+        base.OnNetworkSpawn();
+
+        if(m_CharacterCamera==null)
+            m_CharacterCamera=Instantiate(m_CameraPrefab, null).GetComponent<CameraController>();
+        m_CharacterCamera.SetFollowTarget(transform);
+
+        if(m_CharacterUI==null)
+            m_CharacterUI=Instantiate(m_CharacterUIPrefab, GameObject.Find("UI").transform).GetComponent<CharacterUI>();
+        m_CharacterUI.SetPlayer(this);
+
+        m_IngameCharacterUI.SetCamera(m_CharacterCamera.GetCamera());
+        m_SkillIndicatorUI.SetPlayer(this);
+
         m_CharacterAnimator=GetComponent<Animator>();
         m_AudioSource=GetComponent<AudioSource>();
         AnimationClip[] l_Clips=m_CharacterAnimator.runtimeAnimatorController.animationClips;
@@ -88,9 +114,39 @@ public class CharacterMaster : MonoBehaviour, ITakeDamage
         m_RInputDelegate=RSkill;
         m_Summ1InputDelegate=SummonerSpell1;
         m_Summ2InputDelegate=SummonerSpell2;
-	}
+
+
+        if(!IsSpawned || !HasAuthority)
+        {
+            m_CharacterCamera.GetCamera().gameObject.SetActive(false);
+            m_CharacterUI.gameObject.SetActive(false);
+            return;
+        }
+        if(m_PracticeModeUI==null)
+            m_PracticeModeUI=Instantiate(m_PracticeModeUIPrefab, null).GetComponent<PracticeModeUI>();
+        m_PracticeModeUI.SetPlayer(this);
+        m_PracticeModeUI.GetComponent<NetworkObject>().SpawnWithOwnership(GetComponent<NetworkObject>().OwnerClientId);
+        //m_PracticeModeUI.transform.SetParent(GameObject.Find("UI").transform, false);
+        //m_PracticeModeUI.SetPlayer(this);
+        SpawnCanvasRpc(m_PracticeModeUI.GetComponent<NetworkObject>());
+    }
+    [Rpc(SendTo.Everyone)]
+    void SpawnCanvasRpc(NetworkObjectReference PracticeUI) 
+    {
+        NetworkObject l_PracticeUI=PracticeUI;
+        l_PracticeUI.transform.SetParent(GameObject.Find("UI").transform, false); 
+        if(!IsSpawned || !HasAuthority)
+        {
+            l_PracticeUI.gameObject.SetActive(false);
+        }
+    }
     protected virtual void Update()
     {
+        if(!IsSpawned||!HasAuthority)
+        {
+            return;
+        }
+
         MouseTargeting();
         if(!m_Disabled)
         {
@@ -103,6 +159,7 @@ public class CharacterMaster : MonoBehaviour, ITakeDamage
         m_CharacterUI.UpdateSeconStats(m_CharacterStats.GetHealthRegen(), m_CharacterStats.GetArmorPenFixed(), m_CharacterStats.GetArmorPenPct(), m_CharacterStats.GetLifeSteal(), 
             m_CharacterStats.GetAttackRange(), m_CharacterStats.GetManaRegen(), m_CharacterStats.GetMagicPenFixed(), m_CharacterStats.GetMagicPenPct(), m_CharacterStats.GetOmniDrain(), 
             m_CharacterStats.GetTenacity(), m_CharacterStats.GetShieldsHealsPower());
+        UpdateBarsRpc();
         if(m_Recalling)
         {
             m_CharacterUI.UpdateCastingUI(m_CurrentRecallTime, m_RecallTime);
@@ -144,19 +201,26 @@ public class CharacterMaster : MonoBehaviour, ITakeDamage
             UseSummonerSpell1();
         if(Input.GetKeyDown(m_SummSpell2Key))
             UseSummonerSpell2();
-        
+
+        if(Input.GetKeyDown(KeyCode.Escape))
+            Application.Quit();
+    }
+    [Rpc(SendTo.Everyone)]
+    public void UpdateBarsRpc() 
+    {
+        m_IngameCharacterUI.UpdateHealthManaBars(m_CharacterStats.GetCurrentHealth(), m_CharacterStats.GetMaxHealth(), m_CharacterStats.GetCurrentMana(), m_CharacterStats.GetMaxMana());
     }
     public Vector3 GetMouseDir()
     {
         Vector3 l_MousePosition=Input.mousePosition;
         l_MousePosition.z=10.0f;
-        return m_CharacterCamera.m_Camera.ScreenToWorldPoint(l_MousePosition)-m_CharacterCamera.m_Camera.transform.position;
+        return m_CharacterCamera.GetCamera().ScreenToWorldPoint(l_MousePosition)-m_CharacterCamera.GetCamera().transform.position;
     }
     public Transform GetEnemy()
     {
         Vector3 l_MouseDirection=GetMouseDir();
         RaycastHit l_CameraRaycastHit;
-        if(Physics.Raycast(m_CharacterCamera.m_Camera.transform.position, l_MouseDirection, out l_CameraRaycastHit, 1000.0f, m_CharacterCamera.m_CameraLayerMask))
+        if(Physics.Raycast(m_CharacterCamera.GetCamera().transform.position, l_MouseDirection, out l_CameraRaycastHit, 1000.0f, m_CharacterCamera.m_CameraLayerMask))
         {
             if(l_CameraRaycastHit.transform.CompareTag("Enemy"))
                 return l_CameraRaycastHit.transform;
@@ -167,9 +231,9 @@ public class CharacterMaster : MonoBehaviour, ITakeDamage
     {
         Vector3 l_MouseDirection=GetMouseDir();
         RaycastHit l_CameraRaycastHit;
-        if(Physics.Raycast(m_CharacterCamera.m_Camera.transform.position, l_MouseDirection, out l_CameraRaycastHit, 1000.0f, m_CharacterCamera.m_SelectHitboxLayerMask))
+        if(Physics.Raycast(m_CharacterCamera.GetCamera().transform.position, l_MouseDirection, out l_CameraRaycastHit, 1000.0f, m_CharacterCamera.m_SelectHitboxLayerMask))
         {
-            if(l_CameraRaycastHit.transform.TryGetComponent(out ITakeDamage Stats))
+            if(l_CameraRaycastHit.transform.TryGetComponent(out ITakeDamage Stats)) 
                 return Stats.GetCharacterStats();
         }
         return null;
@@ -178,7 +242,7 @@ public class CharacterMaster : MonoBehaviour, ITakeDamage
     {
         Vector3 l_MouseDirection=GetMouseDir();
         RaycastHit l_CameraRaycastHit;
-        if(Physics.Raycast(m_CharacterCamera.m_Camera.transform.position, l_MouseDirection, out l_CameraRaycastHit, 1000.0f, m_CharacterCamera.m_TerrainLayerMask))
+        if(Physics.Raycast(m_CharacterCamera.GetCamera().transform.position, l_MouseDirection, out l_CameraRaycastHit, 1000.0f, m_CharacterCamera.m_TerrainLayerMask))
         {
             if(l_CameraRaycastHit.transform.CompareTag("Terrain"))
                 return l_CameraRaycastHit.point;
@@ -191,16 +255,18 @@ public class CharacterMaster : MonoBehaviour, ITakeDamage
         {
             if(m_UseSkillGizmos && IsAnySkillBeingUsed())
             {
-                m_CharacterUI.ClearDeletableSkillIndicatorUI();
-			    m_CharacterUI.ClearTargetSkillIndicatorUI();
+                m_SkillIndicatorUI.ClearDeletableSkillIndicatorUI();
+			    m_SkillIndicatorUI.ClearTargetSkillIndicatorUI();
                 m_ShowingGizmos=false;
                 StopSkillsCancelableWithMouseClick();
             }
             else
             {
                 m_DesiredEnemy=GetEnemy();
-                if(m_DesiredEnemy)
+                if(m_DesiredEnemy) 
                 {
+                    NetworkObject l_Enemy=m_DesiredEnemy.GetComponent<NetworkObject>();
+                    SetDesiredEnemyRpc(l_Enemy);
                     m_DesiredPosition=m_DesiredEnemy.position;
                     m_DesiredPosition.y=0.0f;
                     m_GoingToDesiredPosition=true;
@@ -222,7 +288,7 @@ public class CharacterMaster : MonoBehaviour, ITakeDamage
                 else
                     m_CharacterUI.HideTargetInfoUI();
             }
-            m_CharacterUI.ClearDeletableSkillIndicatorUI();
+            m_SkillIndicatorUI.ClearDeletableSkillIndicatorUI();
         }
 
         if(m_LookingForNextPosition)
@@ -237,6 +303,12 @@ public class CharacterMaster : MonoBehaviour, ITakeDamage
                 StopRecall();
             }
         }
+    }
+    [Rpc(SendTo.Everyone)]
+    void SetDesiredEnemyRpc(NetworkObjectReference Enemy) 
+    {
+        NetworkObject l_Enemy=Enemy;
+        m_DesiredEnemy=l_Enemy.transform;
     }
     void CharacterMovement()
     {
@@ -272,9 +344,9 @@ public class CharacterMaster : MonoBehaviour, ITakeDamage
     {
         Vector3 l_MousePosition=Input.mousePosition;
         l_MousePosition.z=10.0f;
-        Vector3 l_MouseDirection=m_CharacterCamera.m_Camera.ScreenToWorldPoint(l_MousePosition)-m_CharacterCamera.m_Camera.transform.position;
+        Vector3 l_MouseDirection=m_CharacterCamera.GetCamera().ScreenToWorldPoint(l_MousePosition)-m_CharacterCamera.GetCamera().transform.position;
         RaycastHit l_CameraRaycastHit;
-        if(Physics.Raycast(m_CharacterCamera.m_Camera.transform.position, l_MouseDirection, out l_CameraRaycastHit, 1000.0f, m_CharacterCamera.m_CameraLayerMask))
+        if(Physics.Raycast(m_CharacterCamera.GetCamera().transform.position, l_MouseDirection, out l_CameraRaycastHit, 1000.0f, m_CharacterCamera.m_CameraLayerMask))
         {
             if(l_CameraRaycastHit.transform.CompareTag("Enemy"))
             {
@@ -290,16 +362,16 @@ public class CharacterMaster : MonoBehaviour, ITakeDamage
     {
         Vector3 l_MousePosition=Input.mousePosition;
         l_MousePosition.z=10.0f;
-        Vector3 l_MouseDirection=m_CharacterCamera.m_Camera.ScreenToWorldPoint(l_MousePosition)-m_CharacterCamera.m_Camera.transform.position;
+        Vector3 l_MouseDirection=m_CharacterCamera.GetCamera().ScreenToWorldPoint(l_MousePosition)-m_CharacterCamera.GetCamera().transform.position;
         RaycastHit l_CameraRaycastHit;
-        if(Physics.Raycast(m_CharacterCamera.m_Camera.transform.position, l_MouseDirection, out l_CameraRaycastHit, 1000.0f, m_CharacterCamera.m_TerrainLayerMask))
+        if(Physics.Raycast(m_CharacterCamera.GetCamera().transform.position, l_MouseDirection, out l_CameraRaycastHit, 1000.0f, m_CharacterCamera.m_TerrainLayerMask))
         {
             if(l_CameraRaycastHit.transform.CompareTag("Terrain"))
             {
                 return l_CameraRaycastHit.point;
             }
         }
-        return m_CharacterCamera.m_Camera.ScreenToWorldPoint(l_MousePosition);
+        return m_CharacterCamera.GetCamera().ScreenToWorldPoint(l_MousePosition);
     }
     public void StopMovement()
     {
@@ -325,7 +397,7 @@ public class CharacterMaster : MonoBehaviour, ITakeDamage
     }
 	void QSkillInput()
     {
-        if(m_QSkill.GetLevel()<=0)
+        if(m_QSkillLevel<=0)
         {
             Debug.Log("Q STILL LOCKED BOBI");
         }
@@ -333,7 +405,7 @@ public class CharacterMaster : MonoBehaviour, ITakeDamage
         {
             Debug.Log("Q STILL ON COOLDOWN BOBI");
         }
-        else if(m_CharacterStats.GetCurrentMana()<m_QSkill.GetMana())
+        else if(m_CharacterStats.GetCurrentMana()<m_QSkill.GetMana(m_QSkillLevel))
         {
             Debug.Log("NOT ENOUGH MANA TO USE Q");
         }
@@ -347,14 +419,14 @@ public class CharacterMaster : MonoBehaviour, ITakeDamage
 		m_QSkill.SetTimer(m_QSkill.GetCd());
 		m_CharacterUI.m_QSkillCdImage.fillAmount=1.0f;
         m_CharacterUI.m_QSkillCdText.enabled=true;
-        m_CharacterStats.SetCurrentMana(m_CharacterStats.GetCurrentMana()-m_QSkill.GetMana());
+        m_CharacterStats.SetCurrentManaRpc(m_CharacterStats.GetCurrentMana()-m_QSkill.GetMana(m_QSkillLevel));
         m_QSkill.SetIsOnCd(true);
         StartCoroutine(PowersCooldown(m_QSkill));
         StopRecall();
     }
     void WSkillInput()
     {
-        if(m_WSkill.GetLevel()<=0)
+        if(m_WSkillLevel<=0)
         {
             Debug.Log("W STILL LOCKED BOBI");
         }
@@ -362,7 +434,7 @@ public class CharacterMaster : MonoBehaviour, ITakeDamage
         {
             Debug.Log("W STILL ON COOLDOWN BOBI");
         }
-        else if(m_CharacterStats.GetCurrentMana()<m_WSkill.GetMana())
+        else if(m_CharacterStats.GetCurrentMana()<m_WSkill.GetMana(m_WSkillLevel))
         {
             Debug.Log("NOT ENOUGH MANA TO USE W");
         }
@@ -376,14 +448,14 @@ public class CharacterMaster : MonoBehaviour, ITakeDamage
         m_WSkill.SetTimer(m_WSkill.GetCd());
         m_CharacterUI.m_WSkillCdImage.fillAmount=1.0f;
         m_CharacterUI.m_WSkillCdText.enabled=true;
-        m_CharacterStats.SetCurrentMana(m_CharacterStats.GetCurrentMana()-m_WSkill.GetMana());
+        m_CharacterStats.SetCurrentManaRpc(m_CharacterStats.GetCurrentMana()-m_WSkill.GetMana(m_WSkillLevel));
         m_WSkill.SetIsOnCd(true);
         StartCoroutine(PowersCooldown(m_WSkill));
         StopRecall();
     }
     void ESkillInput()
     {
-        if(m_ESkill.GetLevel()<=0)
+        if(m_ESkillLevel<=0)
         {
             Debug.Log("E STILL LOCKED BOBI");
         }
@@ -391,7 +463,7 @@ public class CharacterMaster : MonoBehaviour, ITakeDamage
         {
             Debug.Log("E STILL ON COOLDOWN BOBI");
         }
-        else if(m_CharacterStats.GetCurrentMana()<m_ESkill.GetMana())
+        else if(m_CharacterStats.GetCurrentMana()<m_ESkill.GetMana(m_ESkillLevel))
         {
             Debug.Log("NOT ENOUGH MANA TO USE E");
         }
@@ -405,14 +477,14 @@ public class CharacterMaster : MonoBehaviour, ITakeDamage
         m_ESkill.SetTimer(m_ESkill.GetCd());
         m_CharacterUI.m_ESkillCdImage.fillAmount=1.0f;
         m_CharacterUI.m_ESkillCdText.enabled=true;
-        m_CharacterStats.SetCurrentMana(m_CharacterStats.GetCurrentMana()-m_ESkill.GetMana());
+        m_CharacterStats.SetCurrentManaRpc(m_CharacterStats.GetCurrentMana()-m_ESkill.GetMana(m_ESkillLevel));
         m_ESkill.SetIsOnCd(true);
         StartCoroutine(PowersCooldown(m_ESkill));
         StopRecall();
     }
     void RSkillInput()
     {
-        if(m_RSkill.GetLevel()<=0)
+        if(m_RSkillLevel<=0)
         {
             Debug.Log("R STILL LOCKED BOBI");
         }
@@ -420,7 +492,7 @@ public class CharacterMaster : MonoBehaviour, ITakeDamage
         {
             Debug.Log("R STILL ON COOLDOWN BOBI");
         }
-        else if(m_CharacterStats.GetCurrentMana()<m_RSkill.GetMana())
+        else if(m_CharacterStats.GetCurrentMana()<m_RSkill.GetMana(m_RSkillLevel))
         {
             Debug.Log("NOT ENOUGH MANA TO USE R");
         }
@@ -434,7 +506,7 @@ public class CharacterMaster : MonoBehaviour, ITakeDamage
 		m_RSkill.SetTimer(m_RSkill.GetCd());
 		m_CharacterUI.m_RSkillCdImage.fillAmount=1.0f;
         m_CharacterUI.m_RSkillCdText.enabled=true;
-        m_CharacterStats.SetCurrentMana(m_CharacterStats.GetCurrentMana()-m_RSkill.GetMana());
+        m_CharacterStats.SetCurrentManaRpc(m_CharacterStats.GetCurrentMana()-m_RSkill.GetMana(m_RSkillLevel));
         m_RSkill.SetIsOnCd(true);
         StartCoroutine(PowersCooldown(m_RSkill));
         StopRecall();
@@ -516,11 +588,14 @@ public class CharacterMaster : MonoBehaviour, ITakeDamage
         m_Recalling=false;
         m_CharacterUI.HideCastingUI();
     }
-    public virtual void LevelUp()
+
+    [Rpc(SendTo.Everyone)]
+    public virtual void LevelUpRpc()
     {
         m_CharacterStats.LevelUp();
         if(m_CharacterStats.GetCurrentLevel()>=18)
             m_CharacterUI.UpdateExpBar(1.0f, 1.0f);
+        m_IngameCharacterUI.UpdateCharacterLevel(m_CharacterStats.GetCurrentLevel());
         m_CharacterUI.ShowLevelUpSkillButtons();
         m_CharacterUI.UpdateCharacterLevel(m_CharacterStats.GetCurrentLevel());
     }
@@ -534,32 +609,31 @@ public class CharacterMaster : MonoBehaviour, ITakeDamage
         m_RSkill.SetInitStats();
         m_SummSpell1.SetInitStats();
         m_SummSpell2.SetInitStats();
+        m_QSkillLevel=0;
+        m_WSkillLevel=0;
+        m_ESkillLevel=0;
+        m_RSkillLevel=0;
 
-        m_CharacterUI.SetPlayer(this);
-        m_CharacterUI.SetPlayerName(m_CharacterStats.GetPlayerName());
         m_CharacterUI.SetPowersImages(m_QSkill.m_Sprite, m_WSkill.m_Sprite, m_ESkill.m_Sprite, m_RSkill.m_Sprite, m_SummSpell1.m_Sprite, m_SummSpell2.m_Sprite);
         m_CharacterUI.UpdateCharacterLevel(m_CharacterStats.GetCurrentLevel());
         m_CharacterUI.ResetSkillLevelPoints();
         m_CharacterUI.HideLevelUpSkillButtons();
         m_CharacterUI.ShowLevelUpSkillButtons();
+        m_IngameCharacterUI.UpdateCharacterLevel(m_CharacterStats.GetCurrentLevel());
+        m_IngameCharacterUI.SetPlayerName(m_CharacterStats.GetPlayerName());
     }
 	public void TakeDamage(float PhysDamage, float MagicDamage)
     {
         float l_TotalPhysDamage=PhysDamage/(1.0f+m_CharacterStats.GetArmor()/100.0f);
         float l_TotalMagicDamage=MagicDamage/(1.0f+m_CharacterStats.GetMagicRes()/100.0f);
         if(PhysDamage>0.0f)
-        {
-            m_CharacterStats.SetCurrentHealth(m_CharacterStats.GetCurrentHealth()-l_TotalPhysDamage);
             Debug.Log("Taking "+PhysDamage+" physical damage, reduced to "+(PhysDamage/(1.0f+m_CharacterStats.GetArmor()/100.0f))+" damage");
-        }
         if(MagicDamage>0.0f)
-        {
-            m_CharacterStats.SetCurrentHealth(m_CharacterStats.GetCurrentHealth()-l_TotalMagicDamage);
             Debug.Log("Taking "+MagicDamage+" magical damage, reduced to "+(MagicDamage/(1.0f+m_CharacterStats.GetMagicRes()/100.0f))+" damage");
-        }
+        m_CharacterStats.SetCurrentHealthRpc(m_CharacterStats.GetCurrentHealth()-(l_TotalPhysDamage+l_TotalMagicDamage));
         if(m_CurrentRecallTime>0.2f)
             StopRecall();
-        m_CharacterUI.SpawnDamageNumbers(l_TotalPhysDamage, l_TotalMagicDamage);
+        m_IngameCharacterUI.SpawnDamageNumbers(l_TotalPhysDamage, l_TotalMagicDamage);
 	}
     public bool IsAnySkillBeingUsed()
     {
@@ -672,5 +746,41 @@ public class CharacterMaster : MonoBehaviour, ITakeDamage
     public void SetUseSkillGizmos(bool True) 
     {
         m_UseSkillGizmos=True;
+    }
+    public int GetQSkillLevel() 
+    {
+        return m_QSkillLevel;
+    }
+    [Rpc(SendTo.Everyone)]
+    public void SetQSkillLevelRpc() 
+    {
+        m_QSkillLevel++;
+    }
+    public int GetWSkillLevel() 
+    {
+        return m_WSkillLevel;
+    }
+    [Rpc(SendTo.Everyone)]
+    public void SetWSkillLevelRpc() 
+    {
+        m_WSkillLevel++;
+    }
+    public int GetESkillLevel() 
+    {
+        return m_ESkillLevel;
+    }
+    [Rpc(SendTo.Everyone)]
+    public void SetESkillLevelRpc() 
+    {
+        m_ESkillLevel++;
+    }
+    public int GetRSkillLevel() 
+    {
+        return m_RSkillLevel;
+    }
+    [Rpc(SendTo.Everyone)]
+    public void SetRSkillLevelRpc() 
+    {
+        m_RSkillLevel++;
     }
 }

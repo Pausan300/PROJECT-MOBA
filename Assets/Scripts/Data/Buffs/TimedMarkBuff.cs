@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Netcode;
 using UnityEngine;
 
 public class TimedMarkBuff : TimedBuff
@@ -11,7 +12,7 @@ public class TimedMarkBuff : TimedBuff
     public TimedMarkBuff(float Duration, Buff buff, GameObject obj) : base(buff, obj)
     {
         buff.m_Duration=Duration;
-        m_Canvas=obj.GetComponent<EnemyDummy>().m_Canvas.gameObject;
+        m_Canvas=obj.GetComponent<EnemyDummy>().GetIngameCharacterUI().gameObject;
     }
     protected override void ApplyEffect()
     {
@@ -31,7 +32,9 @@ public class TimedMarkBuff : TimedBuff
             {
                 if(m_EffectStacks==1)
                 {
-                    GameObject l_MarkObject=Object.Instantiate(l_MarkBuff.m_MarkObject, Vector3.zero, l_MarkBuff.m_MarkObject.transform.rotation, m_Canvas.transform);
+                    GameObject l_MarkObject=Object.Instantiate(l_MarkBuff.m_MarkObject, Vector3.zero, l_MarkBuff.m_MarkObject.transform.rotation, null);
+                    l_MarkObject.GetComponent<NetworkObject>().Spawn();
+                    l_MarkObject.GetComponent<NetworkObject>().TrySetParent(m_Canvas.transform, false);
                     m_MarkTransform=l_MarkObject.GetComponent<RectTransform>();
                     m_MarkTransform.localPosition=l_MarkBuff.m_MarkObject.transform.position;
                     m_MarkTransform.localRotation=l_MarkBuff.m_MarkObject.transform.rotation;

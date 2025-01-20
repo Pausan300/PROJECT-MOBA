@@ -122,7 +122,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 7465630259861853430}
         m_TargetAssemblyTypeName: PracticeModeUI, Assembly-CSharp
-        m_MethodName: EraseEnemies
+        m_MethodName: EraseEnemiesRpc
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -273,13 +273,14 @@ Animation:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1040386920456320636}
   m_Enabled: 1
-  serializedVersion: 3
+  serializedVersion: 4
   m_Animation: {fileID: 7400000, guid: 68ad5a2c4c4954b4f9df122cecbf8de9, type: 2}
   m_Animations:
   - {fileID: 7400000, guid: 68ad5a2c4c4954b4f9df122cecbf8de9, type: 2}
   m_WrapMode: 0
   m_PlayAutomatically: 0
   m_AnimatePhysics: 0
+  m_UpdateMode: 0
   m_CullingType: 0
 --- !u!1 &1065656423272768724
 GameObject:
@@ -422,13 +423,14 @@ Animation:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1065656423272768724}
   m_Enabled: 1
-  serializedVersion: 3
+  serializedVersion: 4
   m_Animation: {fileID: 7400000, guid: 68ad5a2c4c4954b4f9df122cecbf8de9, type: 2}
   m_Animations:
   - {fileID: 7400000, guid: 68ad5a2c4c4954b4f9df122cecbf8de9, type: 2}
   m_WrapMode: 0
   m_PlayAutomatically: 0
   m_AnimatePhysics: 0
+  m_UpdateMode: 0
   m_CullingType: 0
 --- !u!1 &1557839522407617894
 GameObject:
@@ -442,6 +444,7 @@ GameObject:
   - component: {fileID: 1572696053889196483}
   - component: {fileID: 8633257724458769698}
   - component: {fileID: 6893576194406036041}
+  - component: {fileID: 1450820105685610650}
   - component: {fileID: 7465630259861853430}
   - component: {fileID: 2838187816049574167}
   m_Layer: 5
@@ -525,6 +528,31 @@ MonoBehaviour:
   m_EffectColor: {r: 0.6784314, g: 0.50370383, b: 0.30588236, a: 0.5}
   m_EffectDistance: {x: 5, y: 5}
   m_UseGraphicAlpha: 1
+--- !u!114 &1450820105685610650
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1557839522407617894}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  GlobalObjectIdHash: 0
+  InScenePlacedSourceGlobalObjectIdHash: 0
+  DeferredDespawnTick: 0
+  Ownership: 1
+  AlwaysReplicateAsRoot: 0
+  SynchronizeTransform: 1
+  ActiveSceneSynchronization: 0
+  SceneMigrationSynchronization: 1
+  SpawnWithObservers: 1
+  DontDestroyWithOwner: 0
+  AutoObjectParentSync: 1
+  SyncOwnerTransformWhenParented: 1
+  AllowOwnerToParent: 0
 --- !u!114 &7465630259861853430
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -537,12 +565,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 02651c533838657408015b7d7efe9dd1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Character: {fileID: 0}
+  ShowTopMostFoldoutHeaderGroup: 1
   m_OpenUIAnim: {fileID: 7400000, guid: 872c0809ea5628a469602526f3ffc28e, type: 2}
   m_CloseUIAnim: {fileID: 7400000, guid: e612a242d69ba6940b6c474a3f75e08d, type: 2}
   m_EnemyDummyPrefab: {fileID: 6438156489008617800, guid: 238cbe48cfd1f4c468c2c83bef64960b, type: 3}
-  m_EnemiesList:
-  - {fileID: 0}
+  m_EnemiesList: []
   m_CooldownsButtonAnim: {fileID: 7007353984581233465}
   m_HealthButtonAnim: {fileID: 4825948967870632626}
   m_ManaButtonAnim: {fileID: 6586906872560704174}
@@ -559,7 +586,7 @@ Animation:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1557839522407617894}
   m_Enabled: 1
-  serializedVersion: 3
+  serializedVersion: 4
   m_Animation: {fileID: 7400000, guid: 872c0809ea5628a469602526f3ffc28e, type: 2}
   m_Animations:
   - {fileID: 7400000, guid: 872c0809ea5628a469602526f3ffc28e, type: 2}
@@ -567,6 +594,7 @@ Animation:
   m_WrapMode: 0
   m_PlayAutomatically: 0
   m_AnimatePhysics: 0
+  m_UpdateMode: 0
   m_CullingType: 0
 --- !u!1 &1819827544050020546
 GameObject:
@@ -709,13 +737,14 @@ Animation:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1819827544050020546}
   m_Enabled: 1
-  serializedVersion: 3
+  serializedVersion: 4
   m_Animation: {fileID: 7400000, guid: 68ad5a2c4c4954b4f9df122cecbf8de9, type: 2}
   m_Animations:
   - {fileID: 7400000, guid: 68ad5a2c4c4954b4f9df122cecbf8de9, type: 2}
   m_WrapMode: 0
   m_PlayAutomatically: 0
   m_AnimatePhysics: 0
+  m_UpdateMode: 0
   m_CullingType: 0
 --- !u!1 &1951753706132662192
 GameObject:
@@ -931,13 +960,14 @@ Animation:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3277214406279331464}
   m_Enabled: 1
-  serializedVersion: 3
+  serializedVersion: 4
   m_Animation: {fileID: 7400000, guid: 68ad5a2c4c4954b4f9df122cecbf8de9, type: 2}
   m_Animations:
   - {fileID: 7400000, guid: 68ad5a2c4c4954b4f9df122cecbf8de9, type: 2}
   m_WrapMode: 0
   m_PlayAutomatically: 0
   m_AnimatePhysics: 0
+  m_UpdateMode: 0
   m_CullingType: 0
 --- !u!1 &3521920823119549691
 GameObject:
@@ -1080,13 +1110,14 @@ Animation:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3521920823119549691}
   m_Enabled: 1
-  serializedVersion: 3
+  serializedVersion: 4
   m_Animation: {fileID: 7400000, guid: 68ad5a2c4c4954b4f9df122cecbf8de9, type: 2}
   m_Animations:
   - {fileID: 7400000, guid: 68ad5a2c4c4954b4f9df122cecbf8de9, type: 2}
   m_WrapMode: 0
   m_PlayAutomatically: 0
   m_AnimatePhysics: 0
+  m_UpdateMode: 0
   m_CullingType: 0
 --- !u!1 &4298137178831020507
 GameObject:
@@ -1510,13 +1541,14 @@ Animation:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5127743023740462070}
   m_Enabled: 1
-  serializedVersion: 3
+  serializedVersion: 4
   m_Animation: {fileID: 7400000, guid: 68ad5a2c4c4954b4f9df122cecbf8de9, type: 2}
   m_Animations:
   - {fileID: 7400000, guid: 68ad5a2c4c4954b4f9df122cecbf8de9, type: 2}
   m_WrapMode: 0
   m_PlayAutomatically: 0
   m_AnimatePhysics: 0
+  m_UpdateMode: 0
   m_CullingType: 0
 --- !u!1 &5629387199569341787
 GameObject:
@@ -1734,13 +1766,14 @@ Animation:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6644988152655830503}
   m_Enabled: 1
-  serializedVersion: 3
+  serializedVersion: 4
   m_Animation: {fileID: 7400000, guid: 68ad5a2c4c4954b4f9df122cecbf8de9, type: 2}
   m_Animations:
   - {fileID: 7400000, guid: 68ad5a2c4c4954b4f9df122cecbf8de9, type: 2}
   m_WrapMode: 0
   m_PlayAutomatically: 0
   m_AnimatePhysics: 0
+  m_UpdateMode: 0
   m_CullingType: 0
 --- !u!1 &7408819570351096423
 GameObject:
@@ -2015,11 +2048,12 @@ Animation:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 9170437252003327231}
   m_Enabled: 1
-  serializedVersion: 3
+  serializedVersion: 4
   m_Animation: {fileID: 7400000, guid: 68ad5a2c4c4954b4f9df122cecbf8de9, type: 2}
   m_Animations:
   - {fileID: 7400000, guid: 68ad5a2c4c4954b4f9df122cecbf8de9, type: 2}
   m_WrapMode: 0
   m_PlayAutomatically: 0
   m_AnimatePhysics: 0
+  m_UpdateMode: 0
   m_CullingType: 0

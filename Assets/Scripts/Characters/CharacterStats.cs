@@ -1,9 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.Netcode;
 using UnityEngine;
 
-public class CharacterStats : MonoBehaviour
+public class CharacterStats : NetworkBehaviour
 {
     public CharacterBaseStatsBlock m_CharacterBaseStats;
 
@@ -14,6 +15,7 @@ public class CharacterStats : MonoBehaviour
     float m_AttackDamage;
     float m_AbilityPower;
     float m_AttackSpeed;
+    float m_AttackRange;
     float m_CooldownReduction;
     float m_CriticalChance;
     float m_CriticalDamage;
@@ -54,22 +56,16 @@ public class CharacterStats : MonoBehaviour
     }
 	void Update()
 	{
-		UpdateMovement();
-        ResourceRestoring();
+		UpdateMovementRpc();
+        ResourceRestoringRpc();
 	}
-	public void UpdateMovement()
-    {
-        m_MovementSpeed=m_CharacterBaseStats.m_BaseMovementSpeed+m_MoveSpeedBonusFlat;
-        m_MovementSpeed*=1.0f+(m_MoveSpeedBonusAddi/100.0f);
-        if(m_MoveSpeedBonusMulti!=0.0f)
-            m_MovementSpeed*=m_MoveSpeedBonusMulti;
-    }
     public void SetInitStats()
     {
         m_MaxHealth=m_CharacterBaseStats.m_BaseHealth;
         m_MaxMana=m_CharacterBaseStats.m_BaseMana;
         m_AttackDamage=m_CharacterBaseStats.m_BaseAttackDamage;
         m_AttackSpeed=m_CharacterBaseStats.m_BaseAttackSpeed;
+        m_AttackRange=m_CharacterBaseStats.m_AttackRange;
         m_Armor=m_CharacterBaseStats.m_BaseArmor;
         m_MagicResistance=m_CharacterBaseStats.m_BaseMagicResist;
         m_HealthRegen=m_CharacterBaseStats.m_BaseHealthRegen;
@@ -121,7 +117,16 @@ public class CharacterStats : MonoBehaviour
     {
         StatRef=BaseStat+Bonus+LevelIncr*(m_CurrentLevel-1.0f)*(0.7025f+0.0175f*(m_CurrentLevel-1.0f));
     }
-    public void ResourceRestoring()
+    [Rpc(SendTo.Everyone)]
+	public void UpdateMovementRpc()
+    {
+        m_MovementSpeed=m_CharacterBaseStats.m_BaseMovementSpeed+m_MoveSpeedBonusFlat;
+        m_MovementSpeed*=1.0f+(m_MoveSpeedBonusAddi/100.0f);
+        if(m_MoveSpeedBonusMulti!=0.0f)
+            m_MovementSpeed*=m_MoveSpeedBonusMulti;
+    }
+    [Rpc(SendTo.Everyone)]
+    public void ResourceRestoringRpc()
     {
         if(m_CurrentMana<m_MaxMana)
         {
@@ -196,7 +201,11 @@ public class CharacterStats : MonoBehaviour
     }
     public float GetAttackRange()
     {
-        return m_CharacterBaseStats.m_AttackRange;
+        return m_AttackRange;
+    }
+    public void SetAttackRange(float Range) 
+    {
+        m_AttackRange=Range;
     }
     public float GetLifeSteal()
     {
@@ -230,7 +239,8 @@ public class CharacterStats : MonoBehaviour
     {
         return m_CurrentHealth;
     }
-    public void SetCurrentHealth(float Health)
+    [Rpc(SendTo.Everyone)]
+    public void SetCurrentHealthRpc(float Health)
     {
         m_CurrentHealth=Health;
     }
@@ -246,7 +256,8 @@ public class CharacterStats : MonoBehaviour
     {
         return m_CurrentMana;
     }
-    public void SetCurrentMana(float Mana)
+    [Rpc(SendTo.Everyone)]
+    public void SetCurrentManaRpc(float Mana)
     {
         m_CurrentMana=Mana;
     }

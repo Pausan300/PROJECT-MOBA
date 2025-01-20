@@ -1,8 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Netcode;
 using UnityEngine;
 
-public class HirasuQProjectile : MonoBehaviour
+public class HirasuQProjectile : NetworkBehaviour
 {
     public BoxCollider m_Collider;
     HirasuCharacterController m_Player;
@@ -68,6 +69,11 @@ public class HirasuQProjectile : MonoBehaviour
     }
 	private void OnTriggerEnter(Collider other)
 	{
+        if(!IsSpawned||!HasAuthority)
+        {
+            return;
+        }
+
 		if(other.CompareTag("Enemy"))
         {
             if(other.TryGetComponent(out ITakeDamage Enemy))
@@ -77,22 +83,40 @@ public class HirasuQProjectile : MonoBehaviour
                 {
                     if(m_SplintersLeft<=0)
                         break;
-                    SpawnSplinter(other.transform.position, transform.forward, other.transform, Enemy);
+                    SpawnSplinter(other.transform.position, transform.forward, other.transform, other.gameObject);
                 }
                 if(m_SplintersLeft>0)
                     CalcDistancePerSplinter();
-			    if(m_Player.m_WSkill.GetLevel()>0 && m_Player.m_RSkill.GetLevel()>0 && other.TryGetComponent(out BuffableEntity Buffs))
-				    Buffs.AddBuff(m_Player.m_WMarksDebuff.InitializeBuff(m_Player.m_WMarksDuration, other.gameObject));
+			    if(m_Player.GetWSkillLevel()>0 && m_Player.GetRSkillLevel()>0)
+                    AddBuffMarkRpc(other.GetComponent<NetworkObject>());
                 m_EnemyHit=true;
             }
         }
 	}
-    void SpawnSplinter(Vector3 Position, Vector3 Forward, Transform Parent, ITakeDamage AttachedEnemy)
+    void SpawnSplinter(Vector3 Position, Vector3 Forward, Transform Parent, GameObject AttachedEnemy)
     {   
         GameObject l_Splinter=Instantiate(m_Splinter, Position, m_Splinter.transform.rotation, Parent);
         l_Splinter.transform.forward=Forward;
-        l_Splinter.GetComponent<HirasuQSplinter>().SetStats(m_Player, AttachedEnemy, m_SplintersDuration);
+        NetworkObject l_SplinterNetwork=l_Splinter.GetComponent<NetworkObject>();
+        l_SplinterNetwork.Spawn();
+        if(AttachedEnemy)
+            SetSplinterStatsRpc(l_SplinterNetwork, AttachedEnemy.GetComponent<NetworkObject>());
+        else
+            SetSplinterStatsRpc(l_SplinterNetwork);
         m_SplintersLeft--;
+    }
+    [Rpc(SendTo.Everyone)]
+    void SetSplinterStatsRpc(NetworkObjectReference Splinter) 
+    {
+        NetworkObject l_Splinter=Splinter;
+        l_Splinter.GetComponent<HirasuQSplinter>().SetStats(m_Player, null, m_SplintersDuration);
+    }
+    [Rpc(SendTo.Everyone)]
+    void SetSplinterStatsRpc(NetworkObjectReference Splinter, NetworkObjectReference AttachedEnemy) 
+    {
+        NetworkObject l_Splinter=Splinter;
+        NetworkObject l_AttachedEnemy=AttachedEnemy;
+        l_Splinter.GetComponent<HirasuQSplinter>().SetStats(m_Player, l_AttachedEnemy.GetComponent<ITakeDamage>(), m_SplintersDuration);
     }
     void CalcDistancePerSplinter()
     {
@@ -101,4 +125,11 @@ public class HirasuQProjectile : MonoBehaviour
         m_DistancePerSplinterTraveled=0.0f;
         m_DropSplinters=true;
     }
+	[Rpc(SendTo.Everyone)]
+	void AddBuffMarkRpc(NetworkObjectReference Enemy) 
+	{
+		NetworkObject l_Enemy=Enemy;
+		if(l_Enemy.TryGetComponent(out BuffableEntity Buffs))
+			Buffs.AddBuff(m_Player.m_WMarksDebuff.InitializeBuff(m_Player.m_WMarksDuration, l_Enemy.gameObject));
+	}
 }

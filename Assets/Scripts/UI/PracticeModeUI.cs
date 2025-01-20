@@ -1,11 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Net.NetworkInformation;
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class PracticeModeUI : MonoBehaviour
+public class PracticeModeUI : NetworkBehaviour
 {
-    public CharacterMaster m_Character;
+    CharacterMaster m_Character;
     Animation m_Animation;
     public AnimationClip m_OpenUIAnim;
     public AnimationClip m_CloseUIAnim;
@@ -35,8 +37,9 @@ public class PracticeModeUI : MonoBehaviour
     float m_TimerSinceLastDummyAttack;
     float m_Tick;
 
-    void Start()
+    public override void OnNetworkSpawn()
     {
+        base.OnNetworkSpawn();
         m_Animation=gameObject.GetComponent<Animation>();
     }
     void Update()
@@ -89,9 +92,9 @@ public class PracticeModeUI : MonoBehaviour
     void ButtonUpdateActions()
     {
         if(m_HealthButtonActive)
-            m_Character.m_CharacterStats.SetCurrentHealth(m_Character.m_CharacterStats.GetMaxHealth());
+            m_Character.m_CharacterStats.SetCurrentHealthRpc(m_Character.m_CharacterStats.GetMaxHealth());
         if(m_ManaButtonActive)
-            m_Character.m_CharacterStats.SetCurrentMana(m_Character.m_CharacterStats.GetMaxMana());
+            m_Character.m_CharacterStats.SetCurrentManaRpc(m_Character.m_CharacterStats.GetMaxMana());
         m_Tick=0.0f;
     }
     public void OpenCloseUI()
@@ -162,7 +165,7 @@ public class PracticeModeUI : MonoBehaviour
     }
     public void LevelUpButton()
     {
-        m_Character.LevelUp();
+        m_Character.LevelUpRpc();
     }
     public void ResetLevelButton()
     {
@@ -221,33 +224,39 @@ public class PracticeModeUI : MonoBehaviour
         CameraController l_CameraController=m_Character.GetCameraController();
         Vector3 l_MousePosition=Input.mousePosition;
         l_MousePosition.z=10.0f;
-        Vector3 l_MouseDirection=l_CameraController.m_Camera.ScreenToWorldPoint(l_MousePosition)-l_CameraController.m_Camera.transform.position;
+        Vector3 l_MouseDirection=l_CameraController.GetCamera().ScreenToWorldPoint(l_MousePosition)-l_CameraController.GetCamera().transform.position;
         RaycastHit l_CameraRaycastHit;
-        if(Physics.Raycast(l_CameraController.m_Camera.transform.position, l_MouseDirection, out l_CameraRaycastHit, 1000.0f, l_CameraController.m_CameraLayerMask))
+        if(Physics.Raycast(l_CameraController.GetCamera().transform.position, l_MouseDirection, out l_CameraRaycastHit, 1000.0f, l_CameraController.m_CameraLayerMask))
         {
-            Debug.DrawLine(l_CameraController.m_Camera.transform.position, l_CameraRaycastHit.point, Color.red);
+            Debug.DrawLine(l_CameraController.GetCamera().transform.position, l_CameraRaycastHit.point, Color.red);
             if(l_CameraRaycastHit.transform.CompareTag("Terrain"))
             {
-                GameObject l_Enemy=Instantiate(m_EnemyDummyPrefab, l_CameraRaycastHit.point+new Vector3(0.0f, 1.0f, 0.0f), m_EnemyDummyPrefab.transform.rotation);
-                EnemyDummy l_EnemyScript=l_Enemy.GetComponent<EnemyDummy>();
-                l_EnemyScript.SetCanvasCamera(m_Character.GetCameraController().m_Camera);
-                m_EnemiesList.Add(l_EnemyScript);
+                AddEnemyToListRpc(l_CameraRaycastHit.point);
                 EnemySpawnButton();
             }
         }
+    }
+    //[Rpc(SendTo.Everyone)]
+    void AddEnemyToListRpc(Vector3 Pos) 
+    {
+        GameObject l_Enemy=Instantiate(m_EnemyDummyPrefab, Pos+new Vector3(0.0f, 1.0f, 0.0f), m_EnemyDummyPrefab.transform.rotation);
+        l_Enemy.GetComponent<NetworkObject>().Spawn();
+        EnemyDummy l_EnemyScript=l_Enemy.GetComponent<EnemyDummy>();
+        //l_EnemyScript.SetCanvasCamera(m_Character.GetCameraController().GetCamera());
+        m_EnemiesList.Add(l_Enemy.GetComponent<EnemyDummy>());
     }
     void AddHealthToEnemy()
     {
         CameraController l_CameraController=m_Character.GetCameraController();
         Vector3 l_MousePosition=Input.mousePosition;
         l_MousePosition.z=10.0f;
-        Vector3 l_MouseDirection=l_CameraController.m_Camera.ScreenToWorldPoint(l_MousePosition)-l_CameraController.m_Camera.transform.position;
+        Vector3 l_MouseDirection=l_CameraController.GetCamera().ScreenToWorldPoint(l_MousePosition)-l_CameraController.GetCamera().transform.position;
         RaycastHit l_CameraRaycastHit;
-        if(Physics.Raycast(l_CameraController.m_Camera.transform.position, l_MouseDirection, out l_CameraRaycastHit, 1000.0f, l_CameraController.m_CameraLayerMask))
+        if(Physics.Raycast(l_CameraController.GetCamera().transform.position, l_MouseDirection, out l_CameraRaycastHit, 1000.0f, l_CameraController.m_CameraLayerMask))
         {
-            Debug.DrawLine(l_CameraController.m_Camera.transform.position, l_CameraRaycastHit.point, Color.red);
+            Debug.DrawLine(l_CameraController.GetCamera().transform.position, l_CameraRaycastHit.point, Color.red);
             if(l_CameraRaycastHit.transform.CompareTag("Enemy"))
-                l_CameraRaycastHit.transform.GetComponent<EnemyDummy>().AddHealth(100.0f);
+                l_CameraRaycastHit.transform.GetComponent<EnemyDummy>().AddHealthRpc(100.0f);
         }
     }
     void AddResistsToEnemy()
@@ -255,16 +264,15 @@ public class PracticeModeUI : MonoBehaviour
         CameraController l_CameraController=m_Character.GetCameraController();
         Vector3 l_MousePosition=Input.mousePosition;
         l_MousePosition.z=10.0f;
-        Vector3 l_MouseDirection=l_CameraController.m_Camera.ScreenToWorldPoint(l_MousePosition)-l_CameraController.m_Camera.transform.position;
+        Vector3 l_MouseDirection=l_CameraController.GetCamera().ScreenToWorldPoint(l_MousePosition)-l_CameraController.GetCamera().transform.position;
         RaycastHit l_CameraRaycastHit;
-        if(Physics.Raycast(l_CameraController.m_Camera.transform.position, l_MouseDirection, out l_CameraRaycastHit, 1000.0f, l_CameraController.m_CameraLayerMask))
+        if(Physics.Raycast(l_CameraController.GetCamera().transform.position, l_MouseDirection, out l_CameraRaycastHit, 1000.0f, l_CameraController.m_CameraLayerMask))
         {
-            Debug.DrawLine(l_CameraController.m_Camera.transform.position, l_CameraRaycastHit.point, Color.red);
+            Debug.DrawLine(l_CameraController.GetCamera().transform.position, l_CameraRaycastHit.point, Color.red);
             if(l_CameraRaycastHit.transform.CompareTag("Enemy"))
             {
                 EnemyDummy l_Enemy=l_CameraRaycastHit.transform.GetComponent<EnemyDummy>();
-                l_Enemy.m_CharacterStats.SetArmor(l_Enemy.m_CharacterStats.GetArmor()+10.0f);
-                l_Enemy.m_CharacterStats.SetMagicRes(l_Enemy.m_CharacterStats.GetMagicRes()+10.0f);
+                l_Enemy.AddResistsRpc();
             }
         }
     }
@@ -285,10 +293,14 @@ public class PracticeModeUI : MonoBehaviour
             m_TimerSinceLastDummyAttack=0.0f;
         }
     }
-    public void EraseEnemies()
+    //[Rpc(SendTo.Everyone)]
+    public void EraseEnemiesRpc()
     {
-        foreach(EnemyDummy Enemy in m_EnemiesList)
+        foreach(EnemyDummy Enemy in FindObjectsByType<EnemyDummy>(FindObjectsSortMode.None)) 
+        {
+            //Enemy.GetComponent<NetworkObject>().Despawn();
             Destroy(Enemy.gameObject);
+        }
         m_EnemiesList.Clear();
     }
     public void ShowGizmosButton()
@@ -308,5 +320,9 @@ public class PracticeModeUI : MonoBehaviour
             m_ShowGizmosButtonAnim.Play();
             m_Character.SetUseSkillGizmos(true);
         }
+    }
+    public void SetPlayer(CharacterMaster Player)
+    {
+        m_Character=Player;
     }
 }

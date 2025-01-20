@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -82,34 +83,6 @@ public class CharacterUI : MonoBehaviour
     public TextMeshProUGUI m_CastingAbilityText;
     public TextMeshProUGUI m_CastingTimeText;
 
-    [Header("INGAME PLAYER UI")]
-    public GameObject m_WorldCanvas;
-    public Slider m_IngameHealthBar;
-    public Slider m_IngameManaBar;
-    public TextMeshProUGUI m_IngameLevelText;
-    public TextMeshProUGUI m_PlayerNameText;
-    public GameObject m_DamageNumbers;
-    public Vector3 m_DamageNumbersPosOffset;
-    public TMP_FontAsset m_PhysDamageFont;
-    public TMP_FontAsset m_MagicDamageFont;
-
-	[Header("SKILLS INDICATOR UI")]
-	public Transform m_SkillIndicatorParent;
-    RectTransform m_ArrowSkillIndicatorRect;
-    List<RectTransform> m_DeletableSkillIndicatorList=new List<RectTransform>();
-    List<RectTransform> m_NormalSkillIndicatorList=new List<RectTransform>();
-    public struct TargetSkillIndicator 
-    {
-        public Transform m_TargetObject;
-        public RectTransform m_SkillIndicator;
-        public TargetSkillIndicator(Transform TargetObject, RectTransform SkillIndicator) 
-        {
-            m_TargetObject=TargetObject;
-            m_SkillIndicator=SkillIndicator;
-        }
-    }
-    List<TargetSkillIndicator> m_TargetSkillIndicatorList=new List<TargetSkillIndicator>();
-
     [Header("TARGET INFO UI")]
     public GameObject m_TargetInfoUI;
     CharacterStats m_TargetStats;
@@ -138,9 +111,6 @@ public class CharacterUI : MonoBehaviour
         HideCdTexts();
         HideTargetInfoUI();
         HidePopup();
-        ClearDeletableSkillIndicatorUI();
-        ClearNormalSkillIndicatorUI();
-        ClearTargetSkillIndicatorUI();
     }
 	private void Update()
 	{
@@ -151,12 +121,8 @@ public class CharacterUI : MonoBehaviour
 
         if(m_TargetInfoUI.activeSelf)
             UpdateTargetInfoUI(m_TargetStats);
-
-        if(m_ArrowSkillIndicatorRect!=null)
-            MoveArrowSkillIndicator();
-        if(m_TargetSkillIndicatorList.Count>0)
-            UpdateTargetSkillIndicatorUI();
 	}
+
 	public void UpdateHealthManaBars(float Health, float MaxHealth, float Mana, float MaxMana)
     {
         float l_HealthRounded=Mathf.Round(Health);
@@ -165,8 +131,7 @@ public class CharacterUI : MonoBehaviour
         m_ManaBar.value=l_ManaRounded/MaxMana;
         m_HealthText.text=l_HealthRounded+"/"+Mathf.Round(MaxHealth);
         m_ManaText.text=l_ManaRounded+"/"+Mathf.Round(MaxMana);
-        m_IngameHealthBar.value=l_HealthRounded/MaxHealth;
-        m_IngameManaBar.value=l_ManaRounded/MaxMana;
+        m_Character.m_IngameCharacterUI.UpdateHealthManaBars(l_HealthRounded, MaxHealth, l_ManaRounded, MaxMana);
     }
     public void UpdatePrimStats(float AtkDmg, float Armor, float AtkSpd, float CritChance, float AbPower, float MagResist, float Cdr, float MovSpeed)
     {
@@ -198,7 +163,6 @@ public class CharacterUI : MonoBehaviour
     public void UpdateCharacterLevel(int Level)
     {
         m_LevelText.text=Level.ToString();
-        m_IngameLevelText.text=Level.ToString();
     }
     public void UpdateCastingUI(float CurrentRecallTime, float MaxRecallTime)
     {
@@ -269,8 +233,8 @@ public class CharacterUI : MonoBehaviour
     {
         m_QLevelPoints.value+=1;
         m_Character.m_CharacterStats.SetSkillPoints(m_Character.m_CharacterStats.GetSkillPoints()-1);   
-        m_Character.m_QSkill.LevelUp();
-        if(m_Character.m_QSkill.GetLevel()>=5)
+        m_Character.SetQSkillLevelRpc();
+        if(m_Character.GetQSkillLevel()>=5)
             m_QLevelUpButton.gameObject.SetActive(false);
         if(m_Character.m_CharacterStats.GetSkillPoints()<=0)
             HideLevelUpSkillButtons();
@@ -279,8 +243,8 @@ public class CharacterUI : MonoBehaviour
     {
         m_WLevelPoints.value+=1;
         m_Character.m_CharacterStats.SetSkillPoints(m_Character.m_CharacterStats.GetSkillPoints()-1);
-        m_Character.m_WSkill.LevelUp();
-        if(m_Character.m_WSkill.GetLevel()>=5)
+        m_Character.SetWSkillLevelRpc();
+        if(m_Character.GetWSkillLevel()>=5)
             m_WLevelUpButton.gameObject.SetActive(false);
         if(m_Character.m_CharacterStats.GetSkillPoints()<=0)
             HideLevelUpSkillButtons();
@@ -289,8 +253,8 @@ public class CharacterUI : MonoBehaviour
     {
         m_ELevelPoints.value+=1;
         m_Character.m_CharacterStats.SetSkillPoints(m_Character.m_CharacterStats.GetSkillPoints()-1);
-        m_Character.m_ESkill.LevelUp();
-        if(m_Character.m_ESkill.GetLevel()>=5)
+        m_Character.SetESkillLevelRpc();
+        if(m_Character.GetESkillLevel()>=5)
             m_ELevelUpButton.gameObject.SetActive(false);
         if(m_Character.m_CharacterStats.GetSkillPoints()<=0)
             HideLevelUpSkillButtons();
@@ -299,9 +263,9 @@ public class CharacterUI : MonoBehaviour
     {
         m_RLevelPoints.value+=1;
         m_Character.m_CharacterStats.SetSkillPoints(m_Character.m_CharacterStats.GetSkillPoints()-1);
-        m_Character.m_RSkill.LevelUp();
-        if(m_Character.m_RSkill.GetLevel()>=3 || (m_Character.m_CharacterStats.GetCurrentLevel()<11 && m_Character.m_RSkill.GetLevel()>=1) || 
-            (m_Character.m_CharacterStats.GetCurrentLevel()<16 && m_Character.m_RSkill.GetLevel()>=2))
+        m_Character.SetRSkillLevelRpc();
+        if(m_Character.GetRSkillLevel()>=3 || (m_Character.m_CharacterStats.GetCurrentLevel()<11 && m_Character.GetRSkillLevel()>=1) || 
+            (m_Character.m_CharacterStats.GetCurrentLevel()<16 && m_Character.GetRSkillLevel()>=2))
             m_RLevelUpButton.gameObject.SetActive(false);
         if(m_Character.m_CharacterStats.GetSkillPoints()<=0)
             HideLevelUpSkillButtons();
@@ -312,27 +276,6 @@ public class CharacterUI : MonoBehaviour
         m_WLevelPoints.value=0;
         m_ELevelPoints.value=0;
         m_RLevelPoints.value=0;
-    }
-    public void SpawnDamageNumbers(float PhysDamage, float MagicDamage)
-    {
-        Vector3 l_PosOffset=m_DamageNumbersPosOffset;
-        if(PhysDamage>0.0f)
-        {
-            GameObject l_PhysDamageText=Instantiate(m_DamageNumbers, m_WorldCanvas.transform);
-            l_PhysDamageText.GetComponent<RectTransform>().localPosition=Vector3.zero+l_PosOffset;
-            l_PosOffset.y-=0.5f;
-            TextMeshProUGUI l_TextMesh=l_PhysDamageText.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
-            l_TextMesh.font=m_PhysDamageFont;
-            l_TextMesh.text=PhysDamage.ToString("f0");
-        }
-        if(MagicDamage>0.0f)
-        {
-            GameObject l_MagicDamageText=Instantiate(m_DamageNumbers, m_WorldCanvas.transform);
-            l_MagicDamageText.GetComponent<RectTransform>().localPosition=Vector3.zero+l_PosOffset;
-            TextMeshProUGUI l_TextMesh=l_MagicDamageText.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
-            l_TextMesh.font=m_MagicDamageFont;
-            l_TextMesh.text=MagicDamage.ToString("f0");
-        }
     }
     public void CreateBuffObject(TimedBuff TimedBuff)
     {
@@ -366,19 +309,19 @@ public class CharacterUI : MonoBehaviour
                 break;
             case InspectableElementUI.PopupType.QSKILL:
                 m_PopupUI.UpdatePowerPopupInfo(m_Character.m_QSkill.m_Description, m_Character.m_QSkill.m_PowerName, m_Character.m_QSkillKey.ToString(), 
-                    m_Character.m_QSkill.GetCd().ToString(), m_Character.m_QSkill.GetMana().ToString(), m_Character.m_QSkill.m_Sprite);
+                    m_Character.m_QSkill.GetCd().ToString(), m_Character.m_QSkill.GetMana(m_Character.GetQSkillLevel()).ToString(), m_Character.m_QSkill.m_Sprite);
 			    break;
 			case InspectableElementUI.PopupType.WSKILL:
                 m_PopupUI.UpdatePowerPopupInfo(m_Character.m_WSkill.m_Description, m_Character.m_WSkill.m_PowerName, m_Character.m_WSkillKey.ToString(), 
-                    m_Character.m_WSkill.GetCd().ToString(), m_Character.m_WSkill.GetMana().ToString(), m_Character.m_WSkill.m_Sprite);
+                    m_Character.m_WSkill.GetCd().ToString(), m_Character.m_WSkill.GetMana(m_Character.GetWSkillLevel()).ToString(), m_Character.m_WSkill.m_Sprite);
 			    break;
 			case InspectableElementUI.PopupType.ESKILL:
                 m_PopupUI.UpdatePowerPopupInfo(m_Character.m_ESkill.m_Description, m_Character.m_ESkill.m_PowerName, m_Character.m_ESkillKey.ToString(), 
-                    m_Character.m_ESkill.GetCd().ToString(), m_Character.m_ESkill.GetMana().ToString(), m_Character.m_ESkill.m_Sprite);
+                    m_Character.m_ESkill.GetCd().ToString(), m_Character.m_ESkill.GetMana(m_Character.GetESkillLevel()).ToString(), m_Character.m_ESkill.m_Sprite);
 			    break;
 			case InspectableElementUI.PopupType.RSKILL:
                 m_PopupUI.UpdatePowerPopupInfo(m_Character.m_RSkill.m_Description, m_Character.m_RSkill.m_PowerName, m_Character.m_RSkillKey.ToString(), 
-                    m_Character.m_RSkill.GetCd().ToString(), m_Character.m_RSkill.GetMana().ToString(), m_Character.m_RSkill.m_Sprite);
+                    m_Character.m_RSkill.GetCd().ToString(), m_Character.m_RSkill.GetMana(m_Character.GetRSkillLevel()).ToString(), m_Character.m_RSkill.m_Sprite);
 			    break;
 			case InspectableElementUI.PopupType.SUMMONER1:
                 m_PopupUI.UpdatePowerPopupInfo(m_Character.m_SummSpell1.m_Description, m_Character.m_SummSpell1.m_PowerName, m_Character.m_SummSpell1Key.ToString(), 
@@ -394,90 +337,6 @@ public class CharacterUI : MonoBehaviour
 		}
         ShowPopup();
 	}
-
-    //SKILL INDICATOR METHODS
-    public void CreateArrowSkillIndicator(GameObject Arrow, float Width, float Range, Vector3 Position, bool DeleteOnMouseClick)
-    {
-        GameObject l_Arrow=Instantiate(Arrow, m_SkillIndicatorParent);
-        RectTransform l_ArrowRect=l_Arrow.GetComponent<RectTransform>();
-        l_ArrowRect.sizeDelta=new Vector2(Width, Range);
-        l_ArrowRect.position=Position;
-        m_ArrowSkillIndicatorRect=l_ArrowRect;
-        m_ArrowSkillIndicatorRect.position=new Vector3(m_ArrowSkillIndicatorRect.position.x, 0.05f, m_ArrowSkillIndicatorRect.position.z);
-        if(DeleteOnMouseClick)
-            m_DeletableSkillIndicatorList.Add(m_ArrowSkillIndicatorRect);
-        else
-            m_NormalSkillIndicatorList.Add(m_ArrowSkillIndicatorRect);
-    }
-    public void ChangeArrowSkillIndicatorSize(float Width, float Range)
-    {
-        m_ArrowSkillIndicatorRect.sizeDelta=new Vector2(Width, Range);
-    }
-    public void MoveArrowSkillIndicator()
-    {
-        Vector3 l_MouseDirection=m_Character.GetMouseDir();
-        RaycastHit l_CameraRaycastHit;
-        if(Physics.Raycast(m_Character.GetCameraController().m_Camera.transform.position, l_MouseDirection, out l_CameraRaycastHit, 1000.0f, m_Character.GetCameraController().m_TerrainLayerMask))
-		{
-			Quaternion a=Quaternion.LookRotation(l_CameraRaycastHit.point-m_Character.transform.position);
-			a.eulerAngles=new Vector3(90.0f, a.eulerAngles.y, a.eulerAngles.z);
-			m_ArrowSkillIndicatorRect.transform.rotation=Quaternion.Lerp(a, m_ArrowSkillIndicatorRect.transform.rotation, 0.0f);
-		}
-    }
-    public void CreateCircleSkillIndicator(GameObject Circle, float Radius, Transform Target, bool FollowTargetPos)
-    {
-        GameObject l_Circle=Instantiate(Circle, m_SkillIndicatorParent);
-        RectTransform l_CircleRect=l_Circle.GetComponent<RectTransform>();
-        l_CircleRect.sizeDelta=new Vector2(Radius/100.0f*2.0f, Radius/100.0f*2.0f);
-        l_CircleRect.position=Target.position;
-        l_CircleRect.position=new Vector3(l_CircleRect.position.x, 0.05f, l_CircleRect.position.z);
-        if(FollowTargetPos)
-            m_TargetSkillIndicatorList.Add(new TargetSkillIndicator(Target, l_CircleRect));
-        else
-            m_DeletableSkillIndicatorList.Add(l_CircleRect);
-
-    }
-    public void UpdateTargetSkillIndicatorUI()
-    {
-        for(int i=m_TargetSkillIndicatorList.Count-1; i>=0; --i) 
-        {
-            if(m_TargetSkillIndicatorList[i].m_TargetObject==null) 
-            {
-                Destroy(m_TargetSkillIndicatorList[i].m_SkillIndicator.gameObject);
-                m_TargetSkillIndicatorList.Remove(m_TargetSkillIndicatorList[i]);
-            }
-            else
-                m_TargetSkillIndicatorList[i].m_SkillIndicator.position=new Vector3(m_TargetSkillIndicatorList[i].m_TargetObject.position.x, 0.05f, 
-                    m_TargetSkillIndicatorList[i].m_TargetObject.position.z);
-        }
-    }
-    public void ClearDeletableSkillIndicatorUI()
-    {
-        if(m_DeletableSkillIndicatorList.Count>0)
-        {
-            for(int i=0; i<m_DeletableSkillIndicatorList.Count; ++i)
-                Destroy(m_DeletableSkillIndicatorList[i].gameObject);
-        }
-        m_DeletableSkillIndicatorList.Clear();
-    }
-    public void ClearNormalSkillIndicatorUI()
-    {
-        if(m_NormalSkillIndicatorList.Count>0)
-        {
-            for(int i=0; i<m_NormalSkillIndicatorList.Count; ++i)
-                Destroy(m_NormalSkillIndicatorList[i].gameObject);
-        }
-        m_NormalSkillIndicatorList.Clear();
-    }
-    public void ClearTargetSkillIndicatorUI() 
-    {
-        if(m_TargetSkillIndicatorList.Count>0)
-        {
-            for(int i=0; i<m_TargetSkillIndicatorList.Count; ++i)
-                Destroy(m_TargetSkillIndicatorList[i].m_SkillIndicator.gameObject);
-        }
-        m_TargetSkillIndicatorList.Clear();
-    }
     
     //SHOW & HIDE METHODS
     public void ShowSeconStatsPanel()
@@ -525,14 +384,14 @@ public class CharacterUI : MonoBehaviour
     }
     public void ShowLevelUpSkillButtons()
     {
-        if(m_Character.m_QSkill.GetLevel()<5)
+        if(m_Character.GetQSkillLevel()<5)
             m_QLevelUpButton.gameObject.SetActive(true);
-        if(m_Character.m_WSkill.GetLevel()<5)
+        if(m_Character.GetWSkillLevel()<5)
             m_WLevelUpButton.gameObject.SetActive(true);
-        if(m_Character.m_ESkill.GetLevel()<5)
+        if(m_Character.GetESkillLevel()<5)
             m_ELevelUpButton.gameObject.SetActive(true);
-        if((m_Character.m_CharacterStats.GetCurrentLevel()>=6 && m_Character.m_RSkill.GetLevel()<1) || (m_Character.m_CharacterStats.GetCurrentLevel()>=11 && m_Character.m_RSkill.GetLevel()<2) || 
-            (m_Character.m_CharacterStats.GetCurrentLevel()>=16 && m_Character.m_RSkill.GetLevel()<3))    
+        if((m_Character.m_CharacterStats.GetCurrentLevel()>=6 && m_Character.GetRSkillLevel()<1) || (m_Character.m_CharacterStats.GetCurrentLevel()>=11 && m_Character.GetRSkillLevel()<2) || 
+            (m_Character.m_CharacterStats.GetCurrentLevel()>=16 && m_Character.GetRSkillLevel()<3))    
             m_RLevelUpButton.gameObject.SetActive(true);
     }
     public void HideLevelUpSkillButtons()
@@ -555,10 +414,6 @@ public class CharacterUI : MonoBehaviour
     public void SetPlayer(CharacterMaster Player)
     {
         m_Character=Player;
-    }
-    public void SetPlayerName(string Name)
-    {
-        m_PlayerNameText.text=Name;
     }
     public void SetCastingUIAbilityText(string Text)
     {

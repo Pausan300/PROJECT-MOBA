@@ -4,7 +4,8 @@ using UnityEngine;
 
 public class CameraController : MonoBehaviour
 {
-    public Camera m_Camera;
+    Camera m_Camera;
+    Transform m_FollowTarget;
     public LayerMask m_CameraLayerMask;
     public LayerMask m_TerrainLayerMask;
     public LayerMask m_SelectHitboxLayerMask;
@@ -21,8 +22,9 @@ public class CameraController : MonoBehaviour
     public float m_HeightLimitOffset;
     bool m_Locked;
 
-	private void Start()
+	private void Awake()
 	{
+        m_Camera=GetComponent<Camera>();
         Cursor.lockState=CursorLockMode.Confined;
 	    m_Locked=true;
         m_CameraLerpPct=1.0f;
@@ -35,7 +37,7 @@ public class CameraController : MonoBehaviour
 	}
     void CameraMovement()
     {
-        Vector3 l_DesiredPosition=transform.position+m_CharacterOffset;
+        Vector3 l_DesiredPosition=m_FollowTarget.position+m_CharacterOffset;
 
         if(Input.mouseScrollDelta.y!=0)
         {
@@ -68,5 +70,13 @@ public class CameraController : MonoBehaviour
                 m_FreeCameraOffset.z+=m_CameraSpeed*Time.deltaTime;
             m_Camera.transform.position=m_FreeCameraOffset+m_ZoomOffset;
         }   
+    }
+    public Camera GetCamera() 
+    {
+        return m_Camera;
+    }
+    public void SetFollowTarget(Transform Target) 
+    {
+        m_FollowTarget=Target;
     }
 }

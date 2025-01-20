@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Netcode;
 using UnityEngine;
 
 public class HirasuCharacterController : CharacterMaster
@@ -9,12 +10,14 @@ public class HirasuCharacterController : CharacterMaster
 	public float m_MinExtraDamage;
 	public float m_MaxExtraDamage;
 	float m_PassiveExtraDamage;
+	public float m_PassiveRange;
 	public GameObject m_Staff;
 	public GameObject m_StaffFlames;
 	public GameObject m_StaffFlames2;
 	public float m_MaxSecondAttackTime;
 	bool m_SecondAttack;
 	float m_SecondAttackTimer;
+
     [Header("Q SKILL")]
 	public float[] m_QDamagePerLevel;
 	public float m_QAdditionalDamage;
@@ -30,6 +33,7 @@ public class HirasuCharacterController : CharacterMaster
 	public float m_QSplintersDuration;
 	List<HirasuQSplinter> m_ActiveSplinters=new List<HirasuQSplinter>();
 	float m_QCurrentHoldTime;
+
     [Header("W SKILL")]
 	public float[] m_WDamagePerLevel;
 	public float m_WAdditionalDamageSplinter;
@@ -43,12 +47,14 @@ public class HirasuCharacterController : CharacterMaster
 	public MarkBuff m_WMarksDebuff;
 	public float m_WMarksDuration;
 	public float m_WMarksExtraDamage;
+
     [Header("E SKILL")]
 	public float m_ERange;
 	public float m_EDuration;
 	public SpeedBuff m_EBuff;
 	public float[] m_EBuffDuration;
 	public float[] m_EBuffSpeed;
+
     [Header("R SKILL")]
 	public float[] m_RDamagePerLevel;
 	public float m_RAdditionalDamage;
@@ -59,24 +65,24 @@ public class HirasuCharacterController : CharacterMaster
 	public float m_RSecondExplosionDelay;
 	public AudioClip m_RSound;
 
-	public GameObject m_IndicatorCanvas;
-
-    protected override void Start()
+    public override void OnNetworkSpawn()
     {
-        base.Start();
+        base.OnNetworkSpawn();
+
 		m_Staff.SetActive(false);
 		m_StaffFlames.SetActive(false);
+		m_StaffFlames2.SetActive(false);
     }
     protected override void Update()
     {
+		if(!IsSpawned||!HasAuthority)
+        {
+            return;
+        }
+
         base.Update();
 		
-		if(m_RSkill.GetLevel()>=1 && !m_Staff.activeSelf)
-			m_Staff.SetActive(true);
-		if(m_RSkill.GetLevel()>=2 && !m_StaffFlames.activeSelf)
-			m_StaffFlames.SetActive(true);
-		if(m_RSkill.GetLevel()>=3 && !m_StaffFlames2.activeSelf)
-			m_StaffFlames2.SetActive(true);
+		UpdateHirasuStaffRpc();
 
 		if(m_SecondAttackTimer>0.0f)
 		{
@@ -101,7 +107,7 @@ public class HirasuCharacterController : CharacterMaster
 		if(GetUseSkillGizmos()) 
 		{
 			if(m_ESkill.GetUsingSkill())
-				GetCharacterUI().ChangeArrowSkillIndicatorSize(100.0f, Mathf.Min(m_ERange, Vector3.Distance(GetPositionWithMouse(), transform.position)*100.0f));
+				m_SkillIndicatorUI.ChangeArrowSkillIndicatorSize(100.0f, Mathf.Min(m_ERange, Vector3.Distance(GetPositionWithMouse(), transform.position)*100.0f));
 
 			if(Input.GetMouseButtonDown(0))
 			{
@@ -114,17 +120,36 @@ public class HirasuCharacterController : CharacterMaster
 			}
 		}
     }
+	[Rpc(SendTo.Everyone)]
+	void UpdateHirasuStaffRpc() 
+	{
+		if(GetRSkillLevel()<=0 && m_Staff.activeSelf) 
+		{
+			m_Staff.SetActive(false);
+			m_StaffFlames.SetActive(false);
+			m_StaffFlames2.SetActive(false);
+		}
+		else if(GetRSkillLevel()>=1 && !m_Staff.activeSelf) 
+		{
+			m_Staff.SetActive(true);
+			m_CharacterStats.SetAttackRange(m_PassiveRange);
+		}
+		else if(GetRSkillLevel()>=2 && !m_StaffFlames.activeSelf)
+			m_StaffFlames.SetActive(true);
+		else if(GetRSkillLevel()>=3 && !m_StaffFlames2.activeSelf)
+			m_StaffFlames2.SetActive(true);
+	}
 
 	//Q SKILL
 	protected override void QSkill()
 	{
 		if(GetShowingGizmos())
 		{
-			m_CharacterUI.ClearDeletableSkillIndicatorUI();
-			m_CharacterUI.ClearNormalSkillIndicatorUI();
-			m_CharacterUI.ClearTargetSkillIndicatorUI();
+			m_SkillIndicatorUI.ClearDeletableSkillIndicatorUI();
+			m_SkillIndicatorUI.ClearNormalSkillIndicatorUI();
+			m_SkillIndicatorUI.ClearTargetSkillIndicatorUI();
 		}
-		GetCharacterUI().CreateArrowSkillIndicator(m_QSkill.m_IndicatorUIObject, m_QTapWidth, m_QTapRange, transform.position, false);
+		m_SkillIndicatorUI.CreateArrowSkillIndicator(m_QSkill.m_IndicatorUIObject, m_QTapWidth, m_QTapRange, transform.position, false);
 		
 		StopAttacking();
 		GetCharacterUI().SetCastingUIAbilityText("Marcaje");
@@ -144,7 +169,7 @@ public class HirasuCharacterController : CharacterMaster
 			GetCharacterUI().UpdateCastingUI(m_QCurrentHoldTime, m_QMaxHoldTime);
 			
 			if(m_QCurrentHoldTime>m_QMinHoldTime)
-				GetCharacterUI().ChangeArrowSkillIndicatorSize(m_QTapWidth, m_QHoldRange);
+				m_SkillIndicatorUI.ChangeArrowSkillIndicatorSize(m_QTapWidth, m_QHoldRange);
 		}
 		else if(Input.GetKeyUp(KeyCode.Q) || m_QCurrentHoldTime>m_QMaxHoldTime)
 		{
@@ -155,12 +180,12 @@ public class HirasuCharacterController : CharacterMaster
 			float l_ExtraPhysDamage=0.0f;
 			float l_ExtraMagicDamage=0.0f;
 			bool l_ReducedCooldown=false;
-			if(m_RSkill.GetLevel()>=2)
+			if(GetRSkillLevel()>=2)
 			{
 				l_ExtraPhysDamage=m_PassiveExtraDamage;
 				l_ExtraMagicDamage=m_PassiveExtraDamage;
 			}
-			else if(m_RSkill.GetLevel()>=1)
+			else if(GetRSkillLevel()>=1)
 				l_ExtraPhysDamage=m_PassiveExtraDamage;
 
 			if(m_QCurrentHoldTime<=m_QMinHoldTime)
@@ -172,15 +197,15 @@ public class HirasuCharacterController : CharacterMaster
 				{
 					if(Entity.TryGetComponent(out ITakeDamage Enemy))
 					{
-						Enemy.TakeDamage(m_QDamagePerLevel[m_QSkill.GetLevel()-1]+(m_QAdditionalDamage/100.0f*m_CharacterStats.GetBonusAttackDamage())+l_ExtraPhysDamage, l_ExtraMagicDamage);
+						Enemy.TakeDamage(m_QDamagePerLevel[GetQSkillLevel()-1]+(m_QAdditionalDamage/100.0f*m_CharacterStats.GetBonusAttackDamage())+l_ExtraPhysDamage, l_ExtraMagicDamage);
 						for(int i=0; i<2; i++)
 						{
 							SpawnSplinter(Entity.transform.position, transform.forward, Entity.transform, Enemy);
-							if(m_QSkill.GetLevel()<=1)
+							if(GetQSkillLevel()<=1)
 								break;
 						}
-						if(m_WSkill.GetLevel()>0 && m_RSkill.GetLevel()>0 && Entity.TryGetComponent(out BuffableEntity Buffs))
-							Buffs.AddBuff(m_WMarksDebuff.InitializeBuff(m_WMarksDuration, Entity.gameObject));
+						if(GetWSkillLevel()>0 && GetRSkillLevel()>0)
+							AddBuffMarkRpc(Entity.GetComponent<NetworkObject>());
 						break;
 					}
 				}
@@ -192,25 +217,34 @@ public class HirasuCharacterController : CharacterMaster
 				SetAnimatorTrigger("IsUsingQHold");
 				float l_Range=m_QHoldRange/100.0f;
 				GameObject l_Projectile=Instantiate(m_QProjectile, transform.position, m_QProjectile.transform.rotation);
-				HirasuQProjectile l_ProjectileScript=l_Projectile.GetComponent<HirasuQProjectile>();
-				l_ProjectileScript.SetStats(this, l_Range, m_QDuration, l_Direction, m_QDamagePerLevel[m_QSkill.GetLevel()-1]+(m_QAdditionalDamage/100.0f*m_CharacterStats.GetBonusAttackDamage()), 
-					l_ExtraPhysDamage, l_ExtraMagicDamage, m_QSkill.GetLevel(), m_QSplinter, m_QSplintersDuration, m_QHoldWidth);
+				NetworkObject l_ProjectileNetwork=l_Projectile.GetComponent<NetworkObject>();
+				l_ProjectileNetwork.SpawnWithOwnership(GetComponent<NetworkObject>().OwnerClientId);
+				SetProjectileStatsRpc(l_ProjectileNetwork, l_Range, l_Direction, l_ExtraPhysDamage, l_ExtraMagicDamage);
 				StartCoroutine(DisableForDuration(m_QSkill.m_SkillDisabledTime));
 			}
 			base.QSkill();
 			if(l_ReducedCooldown)
 				m_QSkill.SetTimer(m_QSkill.GetCd()/2.0f);
 			GetCharacterUI().HideCastingUI();
-			GetCharacterUI().ClearNormalSkillIndicatorUI();
+			m_SkillIndicatorUI.ClearNormalSkillIndicatorUI();
 			SetShowingGizmos(false);
 			m_QSkill.SetUsingSkill(false);
 		}
 	}
+    [Rpc(SendTo.Everyone)]
+    void SetProjectileStatsRpc(NetworkObjectReference Projectile, float Range, Vector3 Direction, float PhysDamage, float MagDamage) 
+    {
+        NetworkObject l_Projectile=Projectile;
+		HirasuQProjectile l_ProjectileScript=l_Projectile.GetComponent<HirasuQProjectile>();
+		l_ProjectileScript.SetStats(this, Range, m_QDuration, Direction, m_QDamagePerLevel[GetQSkillLevel()-1]+(m_QAdditionalDamage/100.0f*m_CharacterStats.GetBonusAttackDamage()), 
+			PhysDamage, MagDamage, GetQSkillLevel(), m_QSplinter, m_QSplintersDuration, m_QHoldWidth);
+    }
     void SpawnSplinter(Vector3 Position, Vector3 Forward, Transform Parent, ITakeDamage Enemy)
     {   
         GameObject l_Splinter=Instantiate(m_QSplinter, Position, m_QSplinter.transform.rotation, Parent);
         l_Splinter.transform.forward=Forward;
         l_Splinter.GetComponent<HirasuQSplinter>().SetStats(this, Enemy, m_QSplintersDuration);
+		l_Splinter.GetComponent<NetworkObject>().SpawnWithOwnership(GetComponent<NetworkObject>().OwnerClientId);
     }
 	public void AddSplinterToList(HirasuQSplinter Splinter)
 	{
@@ -234,12 +268,12 @@ public class HirasuCharacterController : CharacterMaster
 				{
 					if(GetShowingGizmos())
 					{
-						m_CharacterUI.ClearDeletableSkillIndicatorUI();
-						m_CharacterUI.ClearNormalSkillIndicatorUI();
-						m_CharacterUI.ClearTargetSkillIndicatorUI();
+						m_SkillIndicatorUI.ClearDeletableSkillIndicatorUI();
+						m_SkillIndicatorUI.ClearNormalSkillIndicatorUI();
+						m_SkillIndicatorUI.ClearTargetSkillIndicatorUI();
 					}
 					foreach(HirasuQSplinter Splinter in m_ActiveSplinters)
-						GetCharacterUI().CreateCircleSkillIndicator(m_WSkill.m_IndicatorUIObject, m_WExplosionRadius, Splinter.transform, true);
+						m_SkillIndicatorUI.CreateCircleSkillIndicator(m_WSkill.m_IndicatorUIObject, m_WExplosionRadius, Splinter.transform, true);
 					SetShowingGizmos(true);
 				} 
 				else
@@ -262,8 +296,8 @@ public class HirasuCharacterController : CharacterMaster
 				if(!Splinter.GetAlreadyExploded())
 				{
 					StartCoroutine(Splinter.WSpawnExplosion(m_RExplosion, Splinter.transform.position, m_WExplosionRadius, m_WExplosionRadius*2.0f/100.0f, m_WTimeToExpand,
-						m_WDamagePerLevel[m_WSkill.GetLevel()-1]+(m_WAdditionalDamageSplinter/100.0f*m_CharacterStats.GetBonusAttackDamage()), 
-						m_WDamagePerLevel[m_WSkill.GetLevel()-1]+(m_WAdditionalDamageExplosion/100.0f*m_CharacterStats.GetBonusAttackDamage()), m_DamageLayerMask));
+						m_WDamagePerLevel[GetWSkillLevel()-1]+(m_WAdditionalDamageSplinter/100.0f*m_CharacterStats.GetBonusAttackDamage()), 
+						m_WDamagePerLevel[GetWSkillLevel()-1]+(m_WAdditionalDamageExplosion/100.0f*m_CharacterStats.GetBonusAttackDamage()), m_DamageLayerMask));
 				}
 			}
 			base.WSkill();
@@ -282,11 +316,11 @@ public class HirasuCharacterController : CharacterMaster
 			{
 				if(GetShowingGizmos())
 				{
-					m_CharacterUI.ClearDeletableSkillIndicatorUI();
-					m_CharacterUI.ClearNormalSkillIndicatorUI();
-					m_CharacterUI.ClearTargetSkillIndicatorUI();
+					m_SkillIndicatorUI.ClearDeletableSkillIndicatorUI();
+					m_SkillIndicatorUI.ClearNormalSkillIndicatorUI();
+					m_SkillIndicatorUI.ClearTargetSkillIndicatorUI();
 				}
-				GetCharacterUI().CreateArrowSkillIndicator(m_ESkill.m_IndicatorUIObject, 100.0f, m_ERange, transform.position, true);
+				m_SkillIndicatorUI.CreateArrowSkillIndicator(m_ESkill.m_IndicatorUIObject, 100.0f, m_ERange, transform.position, true);
 				SetShowingGizmos(true);
 			}
 			else
@@ -318,15 +352,15 @@ public class HirasuCharacterController : CharacterMaster
 			transform.position+=l_Speed*l_Direction*Time.deltaTime;
 			yield return null;
 		}
-		if(m_RSkill.GetLevel()>=3)
+		if(GetRSkillLevel()>=3)
 		{
 			GetComponent<BuffableEntity>().AddBuff(m_EBuff.InitializeBuff(m_EBuffDuration[1], m_EBuffSpeed[1], gameObject));
 		}
-		else if(m_RSkill.GetLevel()>=2)
+		else if(GetRSkillLevel()>=2)
 		{
 			GetComponent<BuffableEntity>().AddBuff(m_EBuff.InitializeBuff(m_EBuffDuration[0], m_EBuffSpeed[1], gameObject));
 		}
-		else if(m_RSkill.GetLevel()>=1)
+		else if(GetRSkillLevel()>=1)
 		{
 			GetComponent<BuffableEntity>().AddBuff(m_EBuff.InitializeBuff(m_EBuffDuration[0], m_EBuffSpeed[0], gameObject));
 		}
@@ -343,11 +377,11 @@ public class HirasuCharacterController : CharacterMaster
 			{
 				if(GetShowingGizmos())
 				{
-					m_CharacterUI.ClearDeletableSkillIndicatorUI();
-					m_CharacterUI.ClearNormalSkillIndicatorUI();
-					m_CharacterUI.ClearTargetSkillIndicatorUI();
+					m_SkillIndicatorUI.ClearDeletableSkillIndicatorUI();
+					m_SkillIndicatorUI.ClearNormalSkillIndicatorUI();
+					m_SkillIndicatorUI.ClearTargetSkillIndicatorUI();
 				}
-				GetCharacterUI().CreateCircleSkillIndicator(m_RSkill.m_IndicatorUIObject, GetCharacterStats().GetAttackRange(), transform, false);
+				m_SkillIndicatorUI.CreateCircleSkillIndicator(m_RSkill.m_IndicatorUIObject, GetCharacterStats().GetAttackRange(), transform, false);
 				SetShowingGizmos(true);
 			}
 			else
@@ -364,14 +398,14 @@ public class HirasuCharacterController : CharacterMaster
 		SetAnimatorBool("IsAAttacking2", false);
 		GetAudioSource().clip=m_RSound;
 		GetAudioSource().Play();
-		float l_Damage=m_RDamagePerLevel[m_RSkill.GetLevel()-1]+(m_RAdditionalDamage/100.0f*m_CharacterStats.GetBonusAttackDamage());
+		float l_Damage=m_RDamagePerLevel[GetRSkillLevel()-1]+(m_RAdditionalDamage/100.0f*m_CharacterStats.GetBonusAttackDamage());
 		Vector3 l_EnemyPos=m_DesiredEnemy.position;
 		l_EnemyPos.y=0.0f;
 		Vector3 l_DesiredPos=l_EnemyPos-transform.position;
 		l_DesiredPos.Normalize();
 		float l_ExplosionRadius=m_CharacterStats.GetCurrentLevel()>=11 ? m_RExplosionRadius[1]/100.0f : m_RExplosionRadius[0]/100.0f;
 		float l_Scale=l_ExplosionRadius*2.0f;
-		if(m_RSkill.GetLevel()>=3)
+		if(GetRSkillLevel()>=3)
 			StartCoroutine(RSpawnExplosion(l_EnemyPos, l_DesiredPos, l_ExplosionRadius, l_Scale, l_Damage, true));
 		else
 			StartCoroutine(RSpawnExplosion(l_EnemyPos, l_DesiredPos, l_ExplosionRadius, l_Scale, l_Damage, false));
@@ -382,6 +416,7 @@ public class HirasuCharacterController : CharacterMaster
 	IEnumerator RSpawnExplosion(Vector3 EnemyPos, Vector3 DesiredPos, float Radius, float Scale, float Damage, bool SecondExplosion)
 	{
 		GameObject l_Explosion=Instantiate(m_RExplosion, EnemyPos, m_RExplosion.transform.rotation);
+		l_Explosion.GetComponent<NetworkObject>().SpawnWithOwnership(GetComponent<NetworkObject>().OwnerClientId);
 		if(SecondExplosion)
 			l_Explosion.GetComponent<MeshRenderer>().material=m_RExplosionBlueMaterial;
 		Vector3 l_DesiredPos=DesiredPos*Radius;
@@ -418,9 +453,9 @@ public class HirasuCharacterController : CharacterMaster
 	}
 
 
-	public override void LevelUp()
+	public override void LevelUpRpc()
 	{
-		base.LevelUp();
+		base.LevelUpRpc();
 		m_PassiveExtraDamage=(m_CharacterStats.GetCurrentLevel()-1)*(m_MaxExtraDamage-m_MinExtraDamage)/(18-1)+m_MinExtraDamage;
 	}
 	protected override void StartAttacking()
@@ -454,26 +489,30 @@ public class HirasuCharacterController : CharacterMaster
 	}
 	protected override void PerformAutoAttack()
 	{
+		if(!IsSpawned||!HasAuthority)
+        {
+            return;
+        }
+
 #if UNITY_EDITOR
         Debug.Log("ATTACKING - Since last auto: "+m_TimeSinceLastAuto);
         m_TimeSinceLastAuto=0.0f;
 #endif
 		float l_ExtraPhysDamage=0.0f;
 		float l_ExtraMagicDamage=0.0f;
-		if(m_RSkill.GetLevel()>=2)
+		if(GetRSkillLevel()>=2)
 		{
 			l_ExtraPhysDamage=m_PassiveExtraDamage;
 			l_ExtraMagicDamage=m_PassiveExtraDamage;
 		}
-		else if(m_RSkill.GetLevel()>=1)
+		else if(GetRSkillLevel()>=1)
 			l_ExtraPhysDamage=m_PassiveExtraDamage;
 
-		if(m_RSkill.GetLevel()>=1 && m_WSkill.GetLevel()>0)
+		if(GetRSkillLevel()>=1 && GetWSkillLevel()>0)
 		{
-			if(m_DesiredEnemy.TryGetComponent(out BuffableEntity Buffs))
-				Buffs.AddBuff(m_WMarksDebuff.InitializeBuff(m_WMarksDuration, m_DesiredEnemy.gameObject));
+			AddBuffMarkRpc(m_DesiredEnemy.GetComponent<NetworkObject>());
 		}
-		if(m_RSkill.GetLevel()>=3)
+		if(GetRSkillLevel()>=3)
 		{
 			if(!m_SecondAttack)
 			{
@@ -491,12 +530,11 @@ public class HirasuCharacterController : CharacterMaster
 		}
 		m_DesiredEnemy.GetComponent<ITakeDamage>().TakeDamage(m_CharacterStats.GetAttackDamage()+l_ExtraPhysDamage, l_ExtraMagicDamage);
 	}
-	public override void SetInitStats()
+    [Rpc(SendTo.Everyone)]
+	void AddBuffMarkRpc(NetworkObjectReference Enemy) 
 	{
-		base.SetInitStats();
-		m_Staff.SetActive(false);
-		m_StaffFlames.SetActive(false);
-		m_StaffFlames2.SetActive(false);
-		m_PassiveExtraDamage=(m_CharacterStats.GetCurrentLevel()-1)*(m_MaxExtraDamage-m_MinExtraDamage)/(18-1)+m_MinExtraDamage;
+		NetworkObject l_Enemy=Enemy;
+		if(l_Enemy.TryGetComponent(out BuffableEntity Buffs))
+			Buffs.AddBuff(m_WMarksDebuff.InitializeBuff(m_WMarksDuration, l_Enemy.gameObject));
 	}
 }
