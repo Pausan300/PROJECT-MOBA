@@ -22,7 +22,7 @@ public class PracticeModeUI : NetworkBehaviour
     public Animation m_EnemyAttacksButtonAnim;
     public Animation m_EnemyResistsButtonAnim;
     public Animation m_EnemyHealthButtonAnim;
-    public Animation m_ShowGizmosButtonAnim;
+    public Animation m_UseKeyboardMovementButtonAnim;
 
     bool m_Opened;
     bool m_CooldownsButtonActive;
@@ -32,7 +32,8 @@ public class PracticeModeUI : NetworkBehaviour
     bool m_EnemyAttacksButtonActive;
     bool m_EnemyResistsButtonActive;
     bool m_EnemyHealthButtonActive;
-    bool m_ShowGizmosButtonActive;
+    bool m_UseKeyboardMovementButtonActive;
+
     float m_ButtonAnimTime;
     float m_TimerSinceLastDummyAttack;
     float m_Tick;
@@ -74,8 +75,6 @@ public class PracticeModeUI : NetworkBehaviour
             m_ButtonAnimTime=m_EnemyResistsButtonAnim[m_EnemyResistsButtonAnim.clip.name].time;
         if(m_EnemyHealthButtonActive)
             m_ButtonAnimTime=m_EnemyHealthButtonAnim[m_EnemyHealthButtonAnim.clip.name].time;
-        if(m_ShowGizmosButtonActive)
-            m_ButtonAnimTime=m_ShowGizmosButtonAnim[m_ShowGizmosButtonAnim.clip.name].time;
 
         if(m_EnemyAttacksButtonActive)
         {
@@ -236,7 +235,6 @@ public class PracticeModeUI : NetworkBehaviour
             }
         }
     }
-    //[Rpc(SendTo.Everyone)]
     void AddEnemyToListRpc(Vector3 Pos) 
     {
         GameObject l_Enemy=Instantiate(m_EnemyDummyPrefab, Pos+new Vector3(0.0f, 1.0f, 0.0f), m_EnemyDummyPrefab.transform.rotation);
@@ -293,34 +291,32 @@ public class PracticeModeUI : NetworkBehaviour
             m_TimerSinceLastDummyAttack=0.0f;
         }
     }
-    //[Rpc(SendTo.Everyone)]
     public void EraseEnemiesRpc()
     {
         foreach(EnemyDummy Enemy in FindObjectsByType<EnemyDummy>(FindObjectsSortMode.None)) 
-        {
-            //Enemy.GetComponent<NetworkObject>().Despawn();
             Destroy(Enemy.gameObject);
-        }
         m_EnemiesList.Clear();
     }
-    public void ShowGizmosButton()
+    public void UseKeyboardMovement() 
     {
-        m_ShowGizmosButtonActive=!m_ShowGizmosButtonActive;
-        if(m_ShowGizmosButtonAnim.isPlaying)
+        m_UseKeyboardMovementButtonActive=!m_UseKeyboardMovementButtonActive;
+        if(m_UseKeyboardMovementButtonAnim.isPlaying)
         {
-            m_ShowGizmosButtonAnim[m_ShowGizmosButtonAnim.clip.name].time=0.0f;
-            m_ShowGizmosButtonAnim.Sample();
-            m_ShowGizmosButtonAnim.Stop();
-            m_Character.SetUseSkillGizmos(false);
+            m_UseKeyboardMovementButtonAnim[m_UseKeyboardMovementButtonAnim.clip.name].time=0.0f;
+            m_UseKeyboardMovementButtonAnim.Sample();
+            m_UseKeyboardMovementButtonAnim.Stop();
+            m_Character.SetUseKeyboardMovement(false);
         }
         else
         { 
-            m_ShowGizmosButtonAnim[m_ShowGizmosButtonAnim.clip.name].time=m_ButtonAnimTime;
-            m_ShowGizmosButtonAnim.Sample();
-            m_ShowGizmosButtonAnim.Play();
-            m_Character.SetUseSkillGizmos(true);
+            m_UseKeyboardMovementButtonAnim[m_UseKeyboardMovementButtonAnim.clip.name].time=m_ButtonAnimTime;
+            m_UseKeyboardMovementButtonAnim.Sample();
+            m_UseKeyboardMovementButtonAnim.Play();
+            m_Character.SetUseKeyboardMovement(true);
         }
     }
+
+    //GETTERS AND SETTERS
     public void SetPlayer(CharacterMaster Player)
     {
         m_Character=Player;

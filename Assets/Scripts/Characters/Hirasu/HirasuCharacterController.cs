@@ -462,6 +462,10 @@ public class HirasuCharacterController : CharacterMaster
 	{
         if(m_DesiredEnemy)
         {
+            Vector3 l_Dir=m_DesiredEnemy.position-transform.position;
+            l_Dir.y=0.0f;
+            l_Dir.Normalize();
+            transform.forward=l_Dir;
             SetIsAttacking(true);
 			if(!m_RSkill.GetUsingSkill())
 			{

@@ -29,11 +29,6 @@ public class ConnectionManager : MonoBehaviour
         m_NetworkManager.OnSessionOwnerPromoted += OnSessionOwnerPromoted;
         await UnityServices.InitializeAsync();
     }
-    private void Start()
-    {
-        //QualitySettings.vSyncCount=0;
-        Application.targetFrameRate=120;
-    }
 
     private void OnSessionOwnerPromoted(ulong sessionOwnerPromoted)
     {

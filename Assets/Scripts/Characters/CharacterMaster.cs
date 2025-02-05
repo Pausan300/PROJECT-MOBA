@@ -1,10 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.InputSystem;
 using Unity.Netcode;
 using Unity.Netcode.Components;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UIElements;
 
 public class CharacterMaster : NetworkBehaviour, ITakeDamage
 {
@@ -20,6 +22,8 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
     CharacterUI m_CharacterUI;
     public GameObject m_PracticeModeUIPrefab;
     PracticeModeUI m_PracticeModeUI;
+    public GameObject m_OptionsUIPrefab;
+    OptionsUI m_OptionsUI;
     public IngameCharacterUI m_IngameCharacterUI;
     public SkillIndicatorUI m_SkillIndicatorUI;
 
@@ -76,7 +80,39 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
     public InputDelegate m_Summ1InputDelegate;
     public InputDelegate m_Summ2InputDelegate;
 
-	public override void OnNetworkSpawn()
+    PlayerInputs m_PlayerInputActions;
+    InputAction m_MovementAction;
+    float m_TimeSinceLastMovement;
+
+    //SETTINGS
+    public bool m_UseKeyboardMovement;
+    
+
+    private void Awake()
+    {
+        m_PlayerInputActions=InputManager.m_InputActions;
+    }
+    private void OnEnable()
+    {
+        m_MovementAction=m_PlayerInputActions.Player.Movement;
+        m_MovementAction.Enable();
+
+        m_PlayerInputActions.Player.QSkill.performed+=QSkillInput;
+        m_PlayerInputActions.Player.QSkill.Enable();
+        m_PlayerInputActions.Player.WSkill.performed+=WSkillInput;
+        m_PlayerInputActions.Player.WSkill.Enable();
+        m_PlayerInputActions.Player.ESkill.performed+=ESkillInput;
+        m_PlayerInputActions.Player.ESkill.Enable();
+        m_PlayerInputActions.Player.RSkill.performed+=RSkillInput;
+        m_PlayerInputActions.Player.RSkill.Enable();
+        m_PlayerInputActions.Player.DSummoner.performed+=SummonerSpell1Input;
+        m_PlayerInputActions.Player.DSummoner.Enable();
+        m_PlayerInputActions.Player.FSummoner.performed+=SummonerSpell2Input;
+        m_PlayerInputActions.Player.FSummoner.Enable();
+        m_PlayerInputActions.Player.Back.performed+=UseRecall;
+        m_PlayerInputActions.Player.Back.Enable();
+    }
+    public override void OnNetworkSpawn()
 	{
         base.OnNetworkSpawn();
 
@@ -87,6 +123,9 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
         if(m_CharacterUI==null)
             m_CharacterUI=Instantiate(m_CharacterUIPrefab, GameObject.Find("UI").transform).GetComponent<CharacterUI>();
         m_CharacterUI.SetPlayer(this);
+
+        if(m_OptionsUI==null)
+            m_OptionsUI=Instantiate(m_OptionsUIPrefab, GameObject.Find("UI").transform).GetComponent<OptionsUI>();
 
         m_IngameCharacterUI.SetCamera(m_CharacterCamera.GetCamera());
         m_SkillIndicatorUI.SetPlayer(this);
@@ -120,6 +159,7 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
         {
             m_CharacterCamera.GetCamera().gameObject.SetActive(false);
             m_CharacterUI.gameObject.SetActive(false);
+            m_OptionsUI.gameObject.SetActive(false);
             return;
         }
         if(m_PracticeModeUI==null)
@@ -140,6 +180,7 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
             l_PracticeUI.gameObject.SetActive(false);
         }
     }
+
     protected virtual void Update()
     {
         if(!IsSpawned||!HasAuthority)
@@ -150,7 +191,11 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
         MouseTargeting();
         if(!m_Disabled)
         {
+            if(m_UseKeyboardMovement)
+                KeyboardMovement();
             CharacterMovement();
+
+            m_InputBufferController.CheckInputBuffer();
         }
 
         m_CharacterUI.UpdateHealthManaBars(m_CharacterStats.GetCurrentHealth(), m_CharacterStats.GetMaxHealth(), m_CharacterStats.GetCurrentMana(), m_CharacterStats.GetMaxMana());
@@ -160,6 +205,7 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
             m_CharacterStats.GetAttackRange(), m_CharacterStats.GetManaRegen(), m_CharacterStats.GetMagicPenFixed(), m_CharacterStats.GetMagicPenPct(), m_CharacterStats.GetOmniDrain(), 
             m_CharacterStats.GetTenacity(), m_CharacterStats.GetShieldsHealsPower());
         UpdateBarsRpc();
+
         if(m_Recalling)
         {
             m_CharacterUI.UpdateCastingUI(m_CurrentRecallTime, m_RecallTime);
@@ -180,36 +226,21 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
         if(m_CharacterStats.GetCurrentLevel()<18)
             m_CharacterUI.UpdateExpBar(m_CharacterStats.GetCurrentExp(), m_CharacterStats.m_CharacterBaseStats.m_ExpPerLevel[m_CharacterStats.GetCurrentLevel()]);
 
-        if(!m_Disabled)
-        {
-            if(Input.GetKeyDown(KeyCode.B))
-                UseRecall();
-
-            m_InputBufferController.CheckInputBuffer();
-        }
-
-        if(Input.GetKeyDown(m_QSkillKey))
-            QSkillInput();
-        if(Input.GetKeyDown(m_WSkillKey))
-            WSkillInput();
-        if(Input.GetKeyDown(m_ESkillKey))
-            ESkillInput();
-        if(Input.GetKeyDown(m_RSkillKey))
-            RSkillInput();
-
-        if(Input.GetKeyDown(m_SummSpell1Key))
-            UseSummonerSpell1();
-        if(Input.GetKeyDown(m_SummSpell2Key))
-            UseSummonerSpell2();
-
         if(Input.GetKeyDown(KeyCode.Escape))
-            Application.Quit();
+        {
+            if(!m_OptionsUI.gameObject.activeSelf)
+                m_OptionsUI.ShowOptionsUI();
+            else
+                m_OptionsUI.HideOptionsUI();
+        }
     }
+
     [Rpc(SendTo.Everyone)]
     public void UpdateBarsRpc() 
     {
         m_IngameCharacterUI.UpdateHealthManaBars(m_CharacterStats.GetCurrentHealth(), m_CharacterStats.GetMaxHealth(), m_CharacterStats.GetCurrentMana(), m_CharacterStats.GetMaxMana());
     }
+
     public Vector3 GetMouseDir()
     {
         Vector3 l_MousePosition=Input.mousePosition;
@@ -272,7 +303,8 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
                     m_GoingToDesiredPosition=true;
                     StopRecall();
                 }
-                m_LookingForNextPosition=true;
+                if(!m_UseKeyboardMovement)
+                    m_LookingForNextPosition=true;
             }
         }
         else if(Input.GetMouseButtonUp(1))
@@ -312,21 +344,28 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
     }
     void CharacterMovement()
     {
+        float l_MinDistance;
+        if(m_DesiredEnemy!=null)
+            l_MinDistance=m_CharacterStats.GetAttackRange()/100.0f;
+        else
+            l_MinDistance=0.1f;
+
         if(m_GoingToDesiredPosition)
         {
             Vector3 l_CharacterDirection=m_DesiredPosition-transform.position;
             l_CharacterDirection.Normalize();
+
             if(Input.GetKeyDown(KeyCode.S))
             {
                 StopMovement();
                 return;
             }   
-            float l_MinDistance;
-            if(m_DesiredEnemy!=null)
-                l_MinDistance=m_CharacterStats.GetAttackRange()/100.0f;
+
+            if(Vector3.Dot(transform.forward, l_CharacterDirection)<0.0f)
+                transform.forward=Vector3.RotateTowards(transform.forward, l_CharacterDirection, Time.deltaTime*16.0f, 0.0f);
             else
-                l_MinDistance=0.1f;
-            transform.forward=l_CharacterDirection;
+                transform.forward=l_CharacterDirection;
+
             if(Vector3.Distance(transform.position, m_DesiredPosition)>l_MinDistance)
             {
                 transform.position+=l_CharacterDirection*(m_CharacterStats.GetMovSpeed()/100.0f)*Time.deltaTime;
@@ -339,6 +378,75 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
                 StartAttacking();
             }
         }
+        else if(m_OptionsUI.m_GameMenu.IsAutoAttackEnabled() && !m_Attacking)  
+        {
+            GameObject l_ClosestEnemy=GetClosestEnemyInRange(m_CharacterStats.GetAttackRange()/100.0f);
+            if(l_ClosestEnemy)
+            {
+                m_DesiredEnemy=l_ClosestEnemy.transform;
+                StartAttacking();
+            }
+        }
+    }
+    void KeyboardMovement() 
+    {
+        m_TimeSinceLastMovement+=Time.deltaTime;
+        Vector2 l_MovementInput=m_MovementAction.ReadValue<Vector2>();
+        Vector3 l_CharacterDirection=Vector3.zero;
+        bool l_IsPressingKey=false;
+        if(l_MovementInput.x>0.0f) 
+        {
+            l_CharacterDirection+=Vector3.right;
+            l_IsPressingKey=true;
+        }
+        else if(l_MovementInput.x<0.0f) 
+        {
+            l_CharacterDirection-=Vector3.right;
+            l_IsPressingKey=true;
+        }
+        if(l_MovementInput.y>0.0f) 
+        {
+            l_CharacterDirection+=Vector3.forward;
+            l_IsPressingKey=true;
+        }
+        else if(l_MovementInput.y<0.0f) 
+        {
+            l_CharacterDirection-=Vector3.forward;
+            l_IsPressingKey=true;
+        }
+
+        if(l_IsPressingKey)
+            m_TimeSinceLastMovement=0.0f;
+
+        l_CharacterDirection.Normalize();
+        if(Vector3.Dot(transform.forward, l_CharacterDirection)<0.0f)
+            transform.forward=Vector3.RotateTowards(transform.forward, l_CharacterDirection, Time.deltaTime*16.0f, 0.0f);
+        else
+            transform.forward=Vector3.Lerp(transform.forward, l_CharacterDirection, Time.deltaTime*8.0f);
+        transform.position+=l_CharacterDirection*(m_CharacterStats.GetMovSpeed()/100.0f)*Time.deltaTime;
+        if(l_CharacterDirection!=Vector3.zero)
+            m_CharacterAnimator.SetBool("IsMoving", true);
+        else if(!l_IsPressingKey && m_TimeSinceLastMovement>0.05f)
+            m_CharacterAnimator.SetBool("IsMoving", false);
+    }
+    public GameObject GetClosestEnemyInRange(float Range) 
+    {
+        GameObject[] l_Targets=GameObject.FindGameObjectsWithTag("Enemy");
+        if(l_Targets.Length==0) 
+            return null;
+
+        float l_Dist=0.0f;
+        GameObject l_ClosestTarget=null;
+
+        for (int i=0; i<l_Targets.Length; ++i)
+        {
+            l_Dist=(l_Targets[i].transform.position-transform.position).magnitude;
+            if(l_Dist<=Range)
+            {
+                l_ClosestTarget=l_Targets[i];
+            }
+        }
+        return l_ClosestTarget;
     }
     public void GetEnemyWithMouse()
     {
@@ -383,6 +491,10 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
     {
         if(m_DesiredEnemy)
         {
+            Vector3 l_Dir=m_DesiredEnemy.position-transform.position;
+            l_Dir.y=0.0f;
+            l_Dir.Normalize();
+            transform.forward=l_Dir;
             m_Attacking=true;
             m_CharacterAnimator.SetBool("IsAAttacking", true);
         } 
@@ -395,7 +507,8 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
             m_CharacterAnimator.SetBool("IsAAttacking", false);
         }
     }
-	void QSkillInput()
+
+	void QSkillInput(InputAction.CallbackContext obj)
     {
         if(m_QSkillLevel<=0)
         {
@@ -424,7 +537,8 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
         StartCoroutine(PowersCooldown(m_QSkill));
         StopRecall();
     }
-    void WSkillInput()
+
+    void WSkillInput(InputAction.CallbackContext obj)
     {
         if(m_WSkillLevel<=0)
         {
@@ -453,7 +567,8 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
         StartCoroutine(PowersCooldown(m_WSkill));
         StopRecall();
     }
-    void ESkillInput()
+
+    void ESkillInput(InputAction.CallbackContext obj)
     {
         if(m_ESkillLevel<=0)
         {
@@ -482,7 +597,8 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
         StartCoroutine(PowersCooldown(m_ESkill));
         StopRecall();
     }
-    void RSkillInput()
+
+    void RSkillInput(InputAction.CallbackContext obj)
     {
         if(m_RSkillLevel<=0)
         {
@@ -511,7 +627,8 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
         StartCoroutine(PowersCooldown(m_RSkill));
         StopRecall();
     }
-    void UseSummonerSpell1()
+
+    void SummonerSpell1Input(InputAction.CallbackContext obj)
     {
         if(m_SummSpell1.GetIsOnCd())
         {
@@ -531,7 +648,8 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
         StartCoroutine(PowersCooldown(m_SummSpell1));
         StopRecall();
     }
-    void UseSummonerSpell2()
+
+    void SummonerSpell2Input(InputAction.CallbackContext obj)
     {
         if(m_SummSpell2.GetIsOnCd())
         {
@@ -561,9 +679,9 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
             yield return null;
         }
     }    
-    void UseRecall()
+    void UseRecall(InputAction.CallbackContext obj)
     {
-        if(!m_Recalling)
+        if(!m_Recalling && !m_Disabled)
         {
             m_CharacterUI.SetCastingUIAbilityText("Recall");
             m_CharacterUI.ShowCastingTime();
@@ -741,11 +859,15 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
     }
     public bool GetUseSkillGizmos() 
     {
-        return m_UseSkillGizmos;
+        return m_OptionsUI.m_GameMenu.IsSkillGizmosEnabled();
     }
-    public void SetUseSkillGizmos(bool True) 
+    public bool GetUseKeyboardMovement() 
     {
-        m_UseSkillGizmos=True;
+        return m_UseKeyboardMovement;
+    }
+    public void SetUseKeyboardMovement(bool True) 
+    {
+        m_UseKeyboardMovement=True;
     }
     public int GetQSkillLevel() 
     {
