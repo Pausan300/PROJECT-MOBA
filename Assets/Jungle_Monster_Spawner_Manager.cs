@@ -3,6 +3,7 @@ using UnityEngine;
 public class Jungle_Monster_Spawner_Manager : MonoBehaviour
 {
     public GameObject[] jungleMonsterSpawnerPrefabs;
+    
     public Vector3[] desiredSpawnerPositions;
     public float[] campsTimers;
    
@@ -53,5 +54,5 @@ public class Jungle_Monster_Spawner_Manager : MonoBehaviour
 
         }
 
-    }
+    }*/
  }
