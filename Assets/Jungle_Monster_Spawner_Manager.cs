@@ -25,6 +25,7 @@ public class Jungle_Monster_Spawner_Manager : MonoBehaviour
     {
         GetChildsPositions();
         SetSpawnerTimer();
+        AssignSpawnerProperties();
         SpawnSpawners();
     }
 
@@ -44,6 +45,7 @@ public class Jungle_Monster_Spawner_Manager : MonoBehaviour
         {
             Transform childTransform = gameObject.transform.GetChild(i);
             desiredSpawnerPositions[childTransform.name] = childTransform.position;
+            Debug.Log($"Child {i} position: {desiredSpawnerPositions[childTransform.name]}");
         }
     }
 
@@ -56,28 +58,44 @@ public class Jungle_Monster_Spawner_Manager : MonoBehaviour
             {
                 case "WingedCamp":
                     spawnerTimers[spawner.spawnerName] = 10f;
-                    desiredSpawnerPositions[spawner.spawnerName] = desiredSpawnerPositions["WingedCamp"];
+                   // desiredSpawnerPositions[spawner.spawnerName] = desiredSpawnerPositions["WingedCamp"];
+                    //spawner.position[0] = desiredSpawnerPositions["WingedCamp"];
                     break;
                 // Añade más casos según sea necesario
                 case "WolfCamp":
                     spawnerTimers[spawner.spawnerName] = 15f;
-                    desiredSpawnerPositions[spawner.spawnerName] = desiredSpawnerPositions["WolfCamp"];
+                   // desiredSpawnerPositions[spawner.spawnerName] = desiredSpawnerPositions["WolfCamp"];
                     break;
                 case "LizardCamp":
                     spawnerTimers[spawner.spawnerName] = 20f;
-                    desiredSpawnerPositions[spawner.spawnerName] = desiredSpawnerPositions["LizardCamp"];
+                   // desiredSpawnerPositions[spawner.spawnerName] = desiredSpawnerPositions["LizardCamp"];
                     break;
                 case "FungusCamp":
                     spawnerTimers[spawner.spawnerName] = 25f;
-                    desiredSpawnerPositions[spawner.spawnerName] = desiredSpawnerPositions["FungusCamp"];
+                   // desiredSpawnerPositions[spawner.spawnerName] = desiredSpawnerPositions["FungusCamp"];
                     break;
                 case "WildBoarsCamp":
                     spawnerTimers[spawner.spawnerName] = 30f;
-                    desiredSpawnerPositions[spawner.spawnerName] = desiredSpawnerPositions["WildBoarsCamp"];
+                    //desiredSpawnerPositions[spawner.spawnerName] = desiredSpawnerPositions["WildBoarsCamp"];
                     break;
                 default: // el Hornitorrinco
                     spawnerTimers[spawner.spawnerName] = 5f;
                     break;
+            }
+        }
+    }
+    private void AssignSpawnerProperties()
+    {
+        foreach (Base_Spawner spawner in jungleMonsterSpawnerPrefabs)
+        {
+            if (desiredSpawnerPositions.ContainsKey(spawner.spawnerName))
+            {
+                spawner.position = new Vector3[] { desiredSpawnerPositions[spawner.spawnerName] };
+            }
+
+            if (spawnerTimers.ContainsKey(spawner.spawnerName))
+            {
+                spawner.spawnInterval = spawnerTimers[spawner.spawnerName];
             }
         }
     }
