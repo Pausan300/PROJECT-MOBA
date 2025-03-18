@@ -16,7 +16,7 @@ public class CameraController : MonoBehaviour
     Vector3 m_ZoomOffset;
     Vector3 m_FreeCameraOffset;
     float m_OffsetMultiplier;
-    float m_CameraLerpPct;
+    float m_CameraZoomPct;
     public float m_CameraSpeed;
     public float m_WidthLimitOffset;
     public float m_HeightLimitOffset;
@@ -27,7 +27,7 @@ public class CameraController : MonoBehaviour
         m_Camera=GetComponent<Camera>();
         Cursor.lockState=CursorLockMode.Confined;
 	    m_Locked=true;
-        m_CameraLerpPct=1.0f;
+        m_CameraZoomPct=0.0f;
         m_ZoomOffset=-m_Camera.transform.forward*m_MaxZoom;
         m_OffsetMultiplier=m_MaxZoom;
 	}
@@ -41,9 +41,9 @@ public class CameraController : MonoBehaviour
 
         if(Input.mouseScrollDelta.y!=0)
         {
-            m_CameraLerpPct+=Input.mouseScrollDelta.y*0.2f;
-            m_CameraLerpPct=Mathf.Clamp(m_CameraLerpPct, 0.0f, 1.0f);
-            m_OffsetMultiplier=Mathf.Lerp(m_MaxZoom, m_MinZoom, m_CameraLerpPct);
+            m_CameraZoomPct+=Input.mouseScrollDelta.y*0.2f;
+            m_CameraZoomPct=Mathf.Clamp(m_CameraZoomPct, 0.0f, 1.0f);
+            m_OffsetMultiplier=Mathf.Lerp(m_MaxZoom, m_MinZoom, m_CameraZoomPct);
         }
         m_ZoomOffset=Vector3.Lerp(m_ZoomOffset, -m_Camera.transform.forward*m_OffsetMultiplier, Time.deltaTime*m_ZoomSpeed);
 
@@ -64,10 +64,12 @@ public class CameraController : MonoBehaviour
                 m_FreeCameraOffset.x-=m_CameraSpeed*Time.deltaTime;
             else if(Input.mousePosition.x>=Screen.width-m_WidthLimitOffset)
                 m_FreeCameraOffset.x+=m_CameraSpeed*Time.deltaTime;
+
             if(Input.mousePosition.y<=m_HeightLimitOffset)
                 m_FreeCameraOffset.z-=m_CameraSpeed*Time.deltaTime;
             else if(Input.mousePosition.y>=Screen.height-m_HeightLimitOffset)
                 m_FreeCameraOffset.z+=m_CameraSpeed*Time.deltaTime;
+
             m_Camera.transform.position=m_FreeCameraOffset+m_ZoomOffset;
         }   
     }
@@ -78,5 +80,17 @@ public class CameraController : MonoBehaviour
     public void SetFollowTarget(Transform Target) 
     {
         m_FollowTarget=Target;
+    }
+    public float GetCameraSpeed() 
+    {
+        return m_CameraSpeed;
+    }
+    public void SetCameraSpeed(float Speed)
+    {
+        m_CameraSpeed=Speed;
+    }
+    public float GetZoomPct() 
+    {
+        return m_CameraZoomPct;
     }
 }

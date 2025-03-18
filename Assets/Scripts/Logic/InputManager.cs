@@ -29,7 +29,7 @@ public class InputManager : MonoBehaviour
         if(l_Action.bindings[BindingIndex].isComposite) 
         {
             var l_FirstPartIndex=BindingIndex+1;
-            if(l_FirstPartIndex<l_Action.bindings.Count &&l_Action.bindings[l_FirstPartIndex].isComposite)
+            if(l_FirstPartIndex<l_Action.bindings.Count && l_Action.bindings[l_FirstPartIndex].isComposite)
                 DoRebind(l_Action, BindingIndex, StatusText, true);
         }
         else
@@ -51,13 +51,22 @@ public class InputManager : MonoBehaviour
             ActionToRebind.Enable();
             operation.Dispose();
 
+
+            if(IsBindingDuplicated(ActionToRebind, BindingIndex, AllCompositeParts))
+            {
+                Debug.Log("Cosas");
+                ActionToRebind.RemoveBindingOverride(BindingIndex);
+                DoRebind(ActionToRebind, BindingIndex, StatusText, AllCompositeParts);
+                return;
+            }
+
             if(AllCompositeParts) 
             {
                 var l_NextBindingIndex=BindingIndex+1;
-                if(l_NextBindingIndex<ActionToRebind.bindings.Count &&ActionToRebind.bindings[l_NextBindingIndex].isComposite)
+                if(l_NextBindingIndex<ActionToRebind.bindings.Count && ActionToRebind.bindings[l_NextBindingIndex].isComposite)
                     DoRebind(ActionToRebind, l_NextBindingIndex, StatusText, AllCompositeParts);
             }
-
+            Debug.Log(l_Rebind.action.GetBindingDisplayString());
             SaveBindingOverride(ActionToRebind);
             m_RebindComplete?.Invoke();
         });
@@ -77,6 +86,26 @@ public class InputManager : MonoBehaviour
 
         m_RebindStarted?.Invoke(ActionToRebind, BindingIndex);
         l_Rebind.Start(); 
+    }
+    static bool IsBindingDuplicated(InputAction ActionToRebind, int BindingIndex, bool AllCompositeParts) 
+    {
+        InputBinding l_NewBinding=ActionToRebind.bindings[BindingIndex];
+        foreach(InputBinding Binding in ActionToRebind.actionMap.bindings) 
+        {
+            if(Binding.action==l_NewBinding.action) 
+            {
+                continue;
+            }
+            if(Binding.effectivePath==l_NewBinding.effectivePath) 
+            {
+                Debug.Log("DUPLICATE FOUND: "+Binding.effectivePath);
+                InputAction l_OldBinding;
+                m_InputActions.asset.FindBinding(Binding, out l_OldBinding);
+                l_OldBinding.RemoveBindingOverride(BindingIndex);
+                return true;
+            }
+        }
+        return false;
     }
     public static string GetBindingName(string ActionName, int BindingIndex) 
     {

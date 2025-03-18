@@ -7,11 +7,14 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UIElements;
+using System.Runtime.InteropServices;
+using System;
 
 public class CharacterMaster : NetworkBehaviour, ITakeDamage
 {
     Animator m_CharacterAnimator;
     AudioSource m_AudioSource;
+    GameManager m_GameManager;
 
     [Header("CAMERA")]
     public GameObject m_CameraPrefab;
@@ -80,13 +83,18 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
     public InputDelegate m_Summ1InputDelegate;
     public InputDelegate m_Summ2InputDelegate;
 
+    float m_TimeSinceLastMovement;
+
     PlayerInputs m_PlayerInputActions;
     InputAction m_MovementAction;
-    float m_TimeSinceLastMovement;
 
     //SETTINGS
     public bool m_UseKeyboardMovement;
-    
+
+    //public int m_MouseSpeed=10;
+    //[DllImport("user32.dll")]
+    //public static extern int SystemParametersInfo( int uAction, int uParam, IntPtr lpvParam, int fuWinIni);
+    //public const int SPI_SETMOUSESPEED = 113;
 
     private void Awake()
     {
@@ -94,8 +102,8 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
     }
     private void OnEnable()
     {
-        m_MovementAction=m_PlayerInputActions.Player.Movement;
-        m_MovementAction.Enable();
+        //m_MovementAction=m_PlayerInputActions.Player.Movement;
+        //m_MovementAction.Enable();
 
         m_PlayerInputActions.Player.QSkill.performed+=QSkillInput;
         m_PlayerInputActions.Player.QSkill.Enable();
@@ -116,6 +124,10 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
 	{
         base.OnNetworkSpawn();
 
+        if(m_GameManager==null)
+            m_GameManager=GameManager.m_GameManagerInstance;
+        m_GameManager.AddToPlayerList(this);
+
         if(m_CharacterCamera==null)
             m_CharacterCamera=Instantiate(m_CameraPrefab, null).GetComponent<CameraController>();
         m_CharacterCamera.SetFollowTarget(transform);
@@ -126,8 +138,18 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
 
         if(m_OptionsUI==null)
             m_OptionsUI=Instantiate(m_OptionsUIPrefab, GameObject.Find("UI").transform).GetComponent<OptionsUI>();
+        m_OptionsUI.SetPlayer(this);
 
-        m_IngameCharacterUI.SetCamera(m_CharacterCamera.GetCamera());
+        m_IngameCharacterUI.SetCamera(m_CharacterCamera);
+
+        if(!IsSpawned || !HasAuthority) 
+        {
+        }
+        else
+        {
+            m_OptionsUI.InitSettings();
+        }
+
         m_SkillIndicatorUI.SetPlayer(this);
 
         m_CharacterAnimator=GetComponent<Animator>();
@@ -162,12 +184,11 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
             m_OptionsUI.gameObject.SetActive(false);
             return;
         }
+
         if(m_PracticeModeUI==null)
             m_PracticeModeUI=Instantiate(m_PracticeModeUIPrefab, null).GetComponent<PracticeModeUI>();
         m_PracticeModeUI.SetPlayer(this);
         m_PracticeModeUI.GetComponent<NetworkObject>().SpawnWithOwnership(GetComponent<NetworkObject>().OwnerClientId);
-        //m_PracticeModeUI.transform.SetParent(GameObject.Find("UI").transform, false);
-        //m_PracticeModeUI.SetPlayer(this);
         SpawnCanvasRpc(m_PracticeModeUI.GetComponent<NetworkObject>());
     }
     [Rpc(SendTo.Everyone)]
@@ -181,12 +202,34 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
         }
     }
 
+    //public static void SetMouseSpeed(int intSpeed )
+    //{
+    //    IntPtr ptr = new IntPtr(intSpeed);
+
+    //    int b = SystemParametersInfo(SPI_SETMOUSESPEED, 0, ptr, 0);
+
+    //    if (b == 0)
+    //    {
+    //        Console.WriteLine("Not able to set speed");
+    //    }
+    //    else if ( b == 1 )
+    //    {
+    //        Console.WriteLine("Successfully done");
+    //    }
+
+    //}
+
     protected virtual void Update()
     {
         if(!IsSpawned||!HasAuthority)
         {
             return;
         }
+
+        //if(Input.GetKeyDown(KeyCode.N)) 
+        //{
+        //    SetMouseSpeed(m_MouseSpeed);
+        //}
 
         MouseTargeting();
         if(!m_Disabled)
@@ -198,13 +241,13 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
             m_InputBufferController.CheckInputBuffer();
         }
 
-        m_CharacterUI.UpdateHealthManaBars(m_CharacterStats.GetCurrentHealth(), m_CharacterStats.GetMaxHealth(), m_CharacterStats.GetCurrentMana(), m_CharacterStats.GetMaxMana());
         m_CharacterUI.UpdatePrimStats(m_CharacterStats.GetAttackDamage(), m_CharacterStats.GetArmor(), m_CharacterStats.GetAttackSpeed(), m_CharacterStats.GetCritChance(), 
             m_CharacterStats.GetAbilityPower(), m_CharacterStats.GetMagicRes(), m_CharacterStats.GetCdr(), m_CharacterStats.GetMovSpeed());
         m_CharacterUI.UpdateSeconStats(m_CharacterStats.GetHealthRegen(), m_CharacterStats.GetArmorPenFixed(), m_CharacterStats.GetArmorPenPct(), m_CharacterStats.GetLifeSteal(), 
             m_CharacterStats.GetAttackRange(), m_CharacterStats.GetManaRegen(), m_CharacterStats.GetMagicPenFixed(), m_CharacterStats.GetMagicPenPct(), m_CharacterStats.GetOmniDrain(), 
             m_CharacterStats.GetTenacity(), m_CharacterStats.GetShieldsHealsPower());
-        UpdateBarsRpc();
+        m_CharacterUI.UpdateHealthManaBars(m_CharacterStats.GetCurrentHealth(), m_CharacterStats.GetMaxHealth(), m_CharacterStats.GetCurrentMana(), m_CharacterStats.GetMaxMana());
+        UpdateIngameBarsRpc();
 
         if(m_Recalling)
         {
@@ -236,7 +279,7 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
     }
 
     [Rpc(SendTo.Everyone)]
-    public void UpdateBarsRpc() 
+    public void UpdateIngameBarsRpc() 
     {
         m_IngameCharacterUI.UpdateHealthManaBars(m_CharacterStats.GetCurrentHealth(), m_CharacterStats.GetMaxHealth(), m_CharacterStats.GetCurrentMana(), m_CharacterStats.GetMaxMana());
     }
@@ -740,18 +783,18 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
         m_IngameCharacterUI.UpdateCharacterLevel(m_CharacterStats.GetCurrentLevel());
         m_IngameCharacterUI.SetPlayerName(m_CharacterStats.GetPlayerName());
     }
-	public void TakeDamage(float PhysDamage, float MagicDamage)
+	public void TakeDamage(float PhysDamage, float MagicDamage, string SourceId)
     {
         float l_TotalPhysDamage=PhysDamage/(1.0f+m_CharacterStats.GetArmor()/100.0f);
         float l_TotalMagicDamage=MagicDamage/(1.0f+m_CharacterStats.GetMagicRes()/100.0f);
         if(PhysDamage>0.0f)
-            Debug.Log("Taking "+PhysDamage+" physical damage, reduced to "+(PhysDamage/(1.0f+m_CharacterStats.GetArmor()/100.0f))+" damage");
+            Debug.Log("Taking "+PhysDamage+" physical damage, reduced to "+l_TotalPhysDamage+" damage");
         if(MagicDamage>0.0f)
-            Debug.Log("Taking "+MagicDamage+" magical damage, reduced to "+(MagicDamage/(1.0f+m_CharacterStats.GetMagicRes()/100.0f))+" damage");
+            Debug.Log("Taking "+MagicDamage+" magical damage, reduced to "+l_TotalMagicDamage+" damage");
         m_CharacterStats.SetCurrentHealthRpc(m_CharacterStats.GetCurrentHealth()-(l_TotalPhysDamage+l_TotalMagicDamage));
         if(m_CurrentRecallTime>0.2f)
             StopRecall();
-        m_IngameCharacterUI.SpawnDamageNumbers(l_TotalPhysDamage, l_TotalMagicDamage);
+        m_IngameCharacterUI.AddDamageInstance(l_TotalPhysDamage, l_TotalMagicDamage, SourceId);
 	}
     public bool IsAnySkillBeingUsed()
     {
@@ -784,10 +827,18 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
         Debug.Log("ATTACKING - Since last auto: "+m_TimeSinceLastAuto);
         m_TimeSinceLastAuto=0.0f;
 #endif
-        m_DesiredEnemy.GetComponent<ITakeDamage>().TakeDamage(m_CharacterStats.GetAttackDamage(), m_CharacterStats.GetAbilityPower());
+        m_DesiredEnemy.GetComponent<ITakeDamage>().TakeDamage(m_CharacterStats.GetAttackDamage(), m_CharacterStats.GetAbilityPower(), m_CharacterStats.GetPlayerName());
     }
 
     //GETTERS & SETTERS
+    public GameManager GetGameManager() 
+    {
+        return m_GameManager;
+    }
+    public OptionsUI GetOptionsUI() 
+    {
+        return m_OptionsUI;
+    }
     public CharacterStats GetCharacterStats()
     {
         return m_CharacterStats;

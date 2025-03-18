@@ -41,12 +41,41 @@ public class HirasuQProjectile : NetworkBehaviour
             m_TravelTimer+=Time.deltaTime;
             if(m_TravelTimer>=m_Duration)
             {
-                if(m_SplintersLeft>0 && m_EnemyHit)
-                    SpawnSplinter(transform.position, transform.up, null, null);
+                if(m_SplintersLeft>0 && m_EnemyHit) 
+                {
+                    for(int i=(int)m_SplintersLeft; i>0; --i)
+                        SpawnSplinter(transform.position, transform.up, null, null);
+                }
                 Destroy(gameObject);
             }
         }
     }
+	private void OnTriggerEnter(Collider other)
+	{
+        if(!IsSpawned||!HasAuthority)
+        {
+            return;
+        }
+
+		if(other.CompareTag("Enemy"))
+        {
+            if(other.TryGetComponent(out ITakeDamage Enemy))
+			{
+				Enemy.TakeDamage(m_Damage+m_ExtraPhysDamage, m_ExtraMagicDamage, m_Player.m_CharacterStats.GetPlayerName());
+                for(int i=0; i<2; i++)
+                {
+                    if(m_SplintersLeft<=0)
+                        break;
+                    SpawnSplinter(other.transform.position, transform.forward, other.transform, other.gameObject);
+                }
+                if(m_SplintersLeft>0)
+                    CalcDistancePerSplinter();
+			    if(m_Player.GetWSkillLevel()>0 && m_Player.GetRSkillLevel()>0)
+                    AddBuffMarkRpc(other.GetComponent<NetworkObject>());
+                m_EnemyHit=true;
+            }
+        }
+	}
     public void SetStats(HirasuCharacterController Player, float Range, float Duration, Vector3 Direction, float Damage, float ExtraPhysDamage, float ExtraMagicDamage,
         int TotalSplinters, GameObject SplinterObject, float SplintersDuration, float Width)
     {
@@ -67,32 +96,6 @@ public class HirasuQProjectile : NetworkBehaviour
         m_Traveling=true;
         m_Collider.size=new Vector3(Width/100.0f, m_Collider.size.y, m_Collider.size.z);
     }
-	private void OnTriggerEnter(Collider other)
-	{
-        if(!IsSpawned||!HasAuthority)
-        {
-            return;
-        }
-
-		if(other.CompareTag("Enemy"))
-        {
-            if(other.TryGetComponent(out ITakeDamage Enemy))
-			{
-				Enemy.TakeDamage(m_Damage+m_ExtraPhysDamage, m_ExtraMagicDamage);
-                for(int i=0; i<2; i++)
-                {
-                    if(m_SplintersLeft<=0)
-                        break;
-                    SpawnSplinter(other.transform.position, transform.forward, other.transform, other.gameObject);
-                }
-                if(m_SplintersLeft>0)
-                    CalcDistancePerSplinter();
-			    if(m_Player.GetWSkillLevel()>0 && m_Player.GetRSkillLevel()>0)
-                    AddBuffMarkRpc(other.GetComponent<NetworkObject>());
-                m_EnemyHit=true;
-            }
-        }
-	}
     void SpawnSplinter(Vector3 Position, Vector3 Forward, Transform Parent, GameObject AttachedEnemy)
     {   
         GameObject l_Splinter=Instantiate(m_Splinter, Position, m_Splinter.transform.rotation, Parent);

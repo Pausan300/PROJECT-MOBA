@@ -23,25 +23,34 @@ public class EnemyDummy : NetworkBehaviour, ITakeDamage
     public float m_TimeToStartRegen;
     float m_TimerLeftToRegen;
 
-    public GameObject m_DamageNumbers;
-    public Vector3 m_DamageNumbersPosOffset;
-    public TMP_FontAsset m_PhysDamageFont;
-    public TMP_FontAsset m_MagicDamageFont;
-
 
     public override void OnNetworkSpawn()
     {
         base.OnNetworkSpawn();
         m_CharacterStats.SetInitStats();
+        GameManager.m_GameManagerInstance.AddToEnemyList(this);
         if(!IsSpawned || !HasAuthority)
         {
             return;
         }
+
         GameObject l_WorldCanvas=Instantiate(m_WorldCanvasPrefab, null);
         l_WorldCanvas.GetComponent<NetworkObject>().Spawn();
         GameObject l_IngameUIObject=Instantiate(m_IngameUIPrefab, null);
         l_IngameUIObject.GetComponent<NetworkObject>().Spawn();
         SpawnCanvasRpc(l_WorldCanvas.GetComponent<NetworkObject>(), l_IngameUIObject.GetComponent<NetworkObject>());
+    }
+    private void Start()
+    {
+        if(!IsSpawned || !HasAuthority)
+        {
+            return;
+        }
+        foreach(CharacterMaster Player in GameManager.m_GameManagerInstance.GetPlayersList()) 
+        {
+            Player.GetOptionsUI().m_VideoMenu.ChangeColorblindMode();
+            //Debug.Log(Player.GetOptionsUI().m_VideoMenu)
+        }
     }
     [Rpc(SendTo.Everyone)]
     void SpawnCanvasRpc(NetworkObjectReference WorldCanvas, NetworkObjectReference IngameUIObject) 
@@ -73,7 +82,7 @@ public class EnemyDummy : NetworkBehaviour, ITakeDamage
         foreach(Collider Entity in l_HitColliders)
         {
             if(Entity.TryGetComponent(out ITakeDamage Enemy))
-                Enemy.TakeDamage(m_CharacterStats.GetAttackDamage(), m_CharacterStats.GetAbilityPower());
+                Enemy.TakeDamage(m_CharacterStats.GetAttackDamage(), m_CharacterStats.GetAbilityPower(), "PracticeDummy");
         }
         m_CharacterStats.SetCurrentManaRpc(m_CharacterStats.GetCurrentMana()-10.0f);
         m_ShowGizmos=true;
@@ -88,31 +97,12 @@ public class EnemyDummy : NetworkBehaviour, ITakeDamage
             Gizmos.DrawSphere(transform.position, m_AttackRadius/100.0f);
         }
     }
-    public void TakeDamage(float PhysDamage, float MagicDamage)
+    public void TakeDamage(float PhysDamage, float MagicDamage, string SourceId)
     {
         float l_TotalPhysDamage=PhysDamage/(1.0f+m_CharacterStats.GetArmor()/100.0f);
         float l_TotalMagicDamage=MagicDamage/(1.0f+m_CharacterStats.GetMagicRes()/100.0f);
         UpdateCurrentHealthRpc(m_CharacterStats.GetCurrentHealth()-l_TotalPhysDamage-l_TotalMagicDamage, true);
-
-        //UI Display
-        Vector3 l_PosOffset=m_DamageNumbersPosOffset;
-        if(l_TotalPhysDamage>0.0f)
-        {
-            GameObject l_PhysDamageText=Instantiate(m_DamageNumbers, m_IngameUI.transform);
-            l_PhysDamageText.GetComponent<RectTransform>().localPosition=Vector3.zero+l_PosOffset;
-            l_PosOffset.y-=l_PhysDamageText.GetComponent<RectTransform>().sizeDelta.y;
-            TextMeshProUGUI l_TextMesh=l_PhysDamageText.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
-            l_TextMesh.font=m_PhysDamageFont;
-            l_TextMesh.text=l_TotalPhysDamage.ToString("f0");
-        }
-        if(l_TotalMagicDamage>0.0f)
-        {
-            GameObject l_MagicDamageText=Instantiate(m_DamageNumbers, m_IngameUI.transform);
-            l_MagicDamageText.GetComponent<RectTransform>().localPosition=Vector3.zero+l_PosOffset;
-            TextMeshProUGUI l_TextMesh=l_MagicDamageText.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
-            l_TextMesh.font=m_MagicDamageFont;
-            l_TextMesh.text=l_TotalMagicDamage.ToString("f0");
-        }
+        m_IngameUI.AddDamageInstance(l_TotalPhysDamage, l_TotalMagicDamage, SourceId);
     }
 
     [Rpc(SendTo.Everyone)]
@@ -142,7 +132,7 @@ public class EnemyDummy : NetworkBehaviour, ITakeDamage
     {
         return m_CharacterStats;
     }
-    public void SetCanvasCamera(Camera CanvasCamera)
+    public void SetCanvasCamera(CameraController CanvasCamera)
     {
         m_IngameUI.SetCamera(CanvasCamera);
     }

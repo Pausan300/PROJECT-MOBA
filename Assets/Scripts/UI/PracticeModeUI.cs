@@ -230,12 +230,12 @@ public class PracticeModeUI : NetworkBehaviour
             Debug.DrawLine(l_CameraController.GetCamera().transform.position, l_CameraRaycastHit.point, Color.red);
             if(l_CameraRaycastHit.transform.CompareTag("Terrain"))
             {
-                AddEnemyToListRpc(l_CameraRaycastHit.point);
+                AddEnemyToList(l_CameraRaycastHit.point);
                 EnemySpawnButton();
             }
         }
     }
-    void AddEnemyToListRpc(Vector3 Pos) 
+    void AddEnemyToList(Vector3 Pos) 
     {
         GameObject l_Enemy=Instantiate(m_EnemyDummyPrefab, Pos+new Vector3(0.0f, 1.0f, 0.0f), m_EnemyDummyPrefab.transform.rotation);
         l_Enemy.GetComponent<NetworkObject>().Spawn();
@@ -293,8 +293,12 @@ public class PracticeModeUI : NetworkBehaviour
     }
     public void EraseEnemiesRpc()
     {
-        foreach(EnemyDummy Enemy in FindObjectsByType<EnemyDummy>(FindObjectsSortMode.None)) 
+        //foreach(EnemyDummy Enemy in FindObjectsByType<EnemyDummy>(FindObjectsSortMode.None))
+        //    Destroy(Enemy.gameObject);
+        List<EnemyDummy> l_Enemies=GameManager.m_GameManagerInstance.GetEnemiesList();
+        foreach(EnemyDummy Enemy in l_Enemies)
             Destroy(Enemy.gameObject);
+        l_Enemies.Clear();
         m_EnemiesList.Clear();
     }
     public void UseKeyboardMovement() 

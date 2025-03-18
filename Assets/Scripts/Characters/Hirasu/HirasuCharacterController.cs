@@ -197,7 +197,8 @@ public class HirasuCharacterController : CharacterMaster
 				{
 					if(Entity.TryGetComponent(out ITakeDamage Enemy))
 					{
-						Enemy.TakeDamage(m_QDamagePerLevel[GetQSkillLevel()-1]+(m_QAdditionalDamage/100.0f*m_CharacterStats.GetBonusAttackDamage())+l_ExtraPhysDamage, l_ExtraMagicDamage);
+						Enemy.TakeDamage(m_QDamagePerLevel[GetQSkillLevel()-1]+(m_QAdditionalDamage/100.0f*m_CharacterStats.GetBonusAttackDamage())+l_ExtraPhysDamage, l_ExtraMagicDamage, 
+							m_CharacterStats.GetPlayerName());
 						for(int i=0; i<2; i++)
 						{
 							SpawnSplinter(Entity.transform.position, transform.forward, Entity.transform, Enemy);
@@ -397,6 +398,7 @@ public class HirasuCharacterController : CharacterMaster
 		SetAnimatorBool("IsAAttacking", false);
 		SetAnimatorBool("IsAAttacking2", false);
 		GetAudioSource().clip=m_RSound;
+		GetAudioSource().outputAudioMixerGroup=GetOptionsUI().m_AudioMenu.m_SFXMixerGroup;
 		GetAudioSource().Play();
 		float l_Damage=m_RDamagePerLevel[GetRSkillLevel()-1]+(m_RAdditionalDamage/100.0f*m_CharacterStats.GetBonusAttackDamage());
 		Vector3 l_EnemyPos=m_DesiredEnemy.position;
@@ -438,7 +440,7 @@ public class HirasuCharacterController : CharacterMaster
 							Damage*=(1.0f+m_WMarksExtraDamage/100.0f);
 					}
 					Debug.Log("TAKEN "+Damage+" DAMAGE");
-					Enemy.TakeDamage(Damage, 0.0f);
+					Enemy.TakeDamage(Damage, 0.0f, m_CharacterStats.GetPlayerName());
 					l_CollidersHit.Add(Entity);
 				}
 			}
@@ -532,7 +534,7 @@ public class HirasuCharacterController : CharacterMaster
 				m_SecondAttack=false;
 			}
 		}
-		m_DesiredEnemy.GetComponent<ITakeDamage>().TakeDamage(m_CharacterStats.GetAttackDamage()+l_ExtraPhysDamage, l_ExtraMagicDamage);
+		m_DesiredEnemy.GetComponent<ITakeDamage>().TakeDamage(m_CharacterStats.GetAttackDamage()+l_ExtraPhysDamage, l_ExtraMagicDamage, m_CharacterStats.GetPlayerName());
 	}
     [Rpc(SendTo.Everyone)]
 	void AddBuffMarkRpc(NetworkObjectReference Enemy) 

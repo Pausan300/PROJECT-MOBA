@@ -28,15 +28,6 @@ public partial class @PlayerInputs: IInputActionCollection2, IDisposable
             ""id"": ""a0b9385b-0b46-4af4-aff3-ddb90e92d18d"",
             ""actions"": [
                 {
-                    ""name"": ""Movement"",
-                    ""type"": ""Value"",
-                    ""id"": ""7f90bf8c-eba7-4a56-8d53-4cd9bf9ffdbe"",
-                    ""expectedControlType"": """",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": true
-                },
-                {
                     ""name"": ""QSkill"",
                     ""type"": ""Button"",
                     ""id"": ""ae385a1b-6f8b-4f41-b3ae-244437bfb70c"",
@@ -101,61 +92,6 @@ public partial class @PlayerInputs: IInputActionCollection2, IDisposable
                 }
             ],
             ""bindings"": [
-                {
-                    ""name"": ""WASD"",
-                    ""id"": ""78f9cf5e-dc0d-4f6c-a256-37f047003c97"",
-                    ""path"": ""2DVector"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Movement"",
-                    ""isComposite"": true,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": ""up"",
-                    ""id"": ""0419e1fb-cd4f-4df2-9af7-c566abafd1bf"",
-                    ""path"": ""<Keyboard>/w"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Movement"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": true
-                },
-                {
-                    ""name"": ""down"",
-                    ""id"": ""8d0ebfa5-9b22-4ece-9673-68f5ce015ae0"",
-                    ""path"": ""<Keyboard>/s"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Movement"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": true
-                },
-                {
-                    ""name"": ""left"",
-                    ""id"": ""5729381a-3e6a-4bf0-b127-67b97df9753b"",
-                    ""path"": ""<Keyboard>/a"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Movement"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": true
-                },
-                {
-                    ""name"": ""right"",
-                    ""id"": ""349880e7-43f2-4a15-afe8-8924e9d2a511"",
-                    ""path"": ""<Keyboard>/d"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Movement"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": true
-                },
                 {
                     ""name"": """",
                     ""id"": ""99718b57-60f3-433f-b8b2-ceef674c3fd7"",
@@ -240,7 +176,6 @@ public partial class @PlayerInputs: IInputActionCollection2, IDisposable
 }");
         // Player
         m_Player = asset.FindActionMap("Player", throwIfNotFound: true);
-        m_Player_Movement = m_Player.FindAction("Movement", throwIfNotFound: true);
         m_Player_QSkill = m_Player.FindAction("QSkill", throwIfNotFound: true);
         m_Player_WSkill = m_Player.FindAction("WSkill", throwIfNotFound: true);
         m_Player_ESkill = m_Player.FindAction("ESkill", throwIfNotFound: true);
@@ -314,7 +249,6 @@ public partial class @PlayerInputs: IInputActionCollection2, IDisposable
     // Player
     private readonly InputActionMap m_Player;
     private List<IPlayerActions> m_PlayerActionsCallbackInterfaces = new List<IPlayerActions>();
-    private readonly InputAction m_Player_Movement;
     private readonly InputAction m_Player_QSkill;
     private readonly InputAction m_Player_WSkill;
     private readonly InputAction m_Player_ESkill;
@@ -326,7 +260,6 @@ public partial class @PlayerInputs: IInputActionCollection2, IDisposable
     {
         private @PlayerInputs m_Wrapper;
         public PlayerActions(@PlayerInputs wrapper) { m_Wrapper = wrapper; }
-        public InputAction @Movement => m_Wrapper.m_Player_Movement;
         public InputAction @QSkill => m_Wrapper.m_Player_QSkill;
         public InputAction @WSkill => m_Wrapper.m_Player_WSkill;
         public InputAction @ESkill => m_Wrapper.m_Player_ESkill;
@@ -343,9 +276,6 @@ public partial class @PlayerInputs: IInputActionCollection2, IDisposable
         {
             if (instance == null || m_Wrapper.m_PlayerActionsCallbackInterfaces.Contains(instance)) return;
             m_Wrapper.m_PlayerActionsCallbackInterfaces.Add(instance);
-            @Movement.started += instance.OnMovement;
-            @Movement.performed += instance.OnMovement;
-            @Movement.canceled += instance.OnMovement;
             @QSkill.started += instance.OnQSkill;
             @QSkill.performed += instance.OnQSkill;
             @QSkill.canceled += instance.OnQSkill;
@@ -371,9 +301,6 @@ public partial class @PlayerInputs: IInputActionCollection2, IDisposable
 
         private void UnregisterCallbacks(IPlayerActions instance)
         {
-            @Movement.started -= instance.OnMovement;
-            @Movement.performed -= instance.OnMovement;
-            @Movement.canceled -= instance.OnMovement;
             @QSkill.started -= instance.OnQSkill;
             @QSkill.performed -= instance.OnQSkill;
             @QSkill.canceled -= instance.OnQSkill;
@@ -414,7 +341,6 @@ public partial class @PlayerInputs: IInputActionCollection2, IDisposable
     public PlayerActions @Player => new PlayerActions(this);
     public interface IPlayerActions
     {
-        void OnMovement(InputAction.CallbackContext context);
         void OnQSkill(InputAction.CallbackContext context);
         void OnWSkill(InputAction.CallbackContext context);
         void OnESkill(InputAction.CallbackContext context);

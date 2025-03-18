@@ -58,9 +58,8 @@ public class HirasuQSplinter : NetworkBehaviour
                         AddDebuffRpc(Entity.GetComponent<NetworkObject>(), l_SlowAmount);
 						if(Buffs.IsMarkBuffActive(m_Player.m_WMarksDebuff))
 						    l_TotalDamage*=(1.0f+m_Player.m_WMarksExtraDamage/100.0f);
-					    Debug.Log("TAKEN "+l_TotalDamage+" DAMAGE");
                     }
-					Enemy.TakeDamage(l_TotalDamage, 0.0f);
+					Enemy.TakeDamage(l_TotalDamage, 0.0f, m_Player.m_CharacterStats.GetPlayerName());
 					l_CollidersHit.Add(Entity);
 				}
 			}

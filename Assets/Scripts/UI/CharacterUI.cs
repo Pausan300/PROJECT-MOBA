@@ -77,13 +77,13 @@ public class CharacterUI : MonoBehaviour
     public RectTransform m_BuffsDebuffsParent;
     public List<BuffDebuffObjectUI> m_BuffDebuffUIList=new List<BuffDebuffObjectUI>();
 
-    [Header("CASTING UI")]
+    [Header("CASTING")]
     public RectTransform m_CastingUI;
     public Slider m_CastingBar;
     public TextMeshProUGUI m_CastingAbilityText;
     public TextMeshProUGUI m_CastingTimeText;
 
-    [Header("TARGET INFO UI")]
+    [Header("TARGET INFO")]
     public GameObject m_TargetInfoUI;
     CharacterStats m_TargetStats;
     public TextMeshProUGUI m_TargetAttackDamageText;
@@ -101,6 +101,9 @@ public class CharacterUI : MonoBehaviour
     public Slider m_TargetManaBar;
     public RectTransform m_TargetBuffsDebuffsParent;
 
+    [Header("EMOTE WHEEL")]
+    public EmoteUI m_EmoteUI;
+
     [Header("SKILL POPUP")]
     public PopupUI m_PopupUI;
 
@@ -114,10 +117,13 @@ public class CharacterUI : MonoBehaviour
     }
 	private void Update()
 	{
-        if(Input.GetKey(KeyCode.C))
+        if(Input.GetKeyDown(KeyCode.C))
             ShowSeconStatsPanel();
         else if(Input.GetKeyUp(KeyCode.C))
             HideSeconStatsPanel();
+
+        if(Input.GetKeyDown(KeyCode.T))
+            m_EmoteUI.ShowEmoteWheel();
 
         if(m_TargetInfoUI.activeSelf)
             UpdateTargetInfoUI(m_TargetStats);
@@ -131,7 +137,7 @@ public class CharacterUI : MonoBehaviour
         m_ManaBar.value=l_ManaRounded/MaxMana;
         m_HealthText.text=l_HealthRounded+"/"+Mathf.Round(MaxHealth);
         m_ManaText.text=l_ManaRounded+"/"+Mathf.Round(MaxMana);
-        m_Character.m_IngameCharacterUI.UpdateHealthManaBars(l_HealthRounded, MaxHealth, l_ManaRounded, MaxMana);
+        //m_Character.m_IngameCharacterUI.UpdateHealthManaBars(l_HealthRounded, MaxHealth, l_ManaRounded, MaxMana);
     }
     public void UpdatePrimStats(float AtkDmg, float Armor, float AtkSpd, float CritChance, float AbPower, float MagResist, float Cdr, float MovSpeed)
     {
@@ -414,6 +420,7 @@ public class CharacterUI : MonoBehaviour
     public void SetPlayer(CharacterMaster Player)
     {
         m_Character=Player;
+        m_EmoteUI.SetPlayer(Player);
     }
     public void SetCastingUIAbilityText(string Text)
     {

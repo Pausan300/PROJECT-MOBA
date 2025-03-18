@@ -5,6 +5,7 @@ using NUnit.Framework;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using System;
+using UnityEngine.Events;
 
 public class VideoUI : MonoBehaviour
 {
@@ -21,16 +22,33 @@ public class VideoUI : MonoBehaviour
     public List<string> m_FrameRateList;
     [Header("COLORBLIND MODE")]
     public TMP_Dropdown m_ColorblindModeDropdown;
+    public Color m_DefaultOwnHealthColor;
+    public Color m_DefaultAlliesHealthColor;
+    public Color m_DefaultEnemiesHealthColor;
+    public Color m_DeuteranopiaOwnHealthColor;
+    public Color m_DeuteranopiaAlliesHealthColor;
+    public Color m_DeuteranopiaEnemiesHealthColor;
+    public Color m_TritanopiaOwnHealthColor;
+    public Color m_TritanopiaAlliesHealthColor;
+    public Color m_TritanopiaEnemiesHealthColor;
+    public Color m_ProtanopiaOwnHealthColor;
+    public Color m_ProtanopiaAlliesHealthColor;
+    public Color m_ProtanopiaEnemiesHealthColor;
+    public enum ColorblindType 
+    {
+        NONE,
+        DEUTERANOPIA,
+        TRITANOPIA,
+        PROTANOPIA
+    }
+    ColorblindType m_ColorblindSelected;
 
-    void Start()
+
+    public void InitSettings()
     {
         SetResolutionsDropdown();
         SetFrameRateDropdown();
-    }
-
-    void Update()
-    {
-        
+        SetColorblindModeDropdown();
     }
 
     void SetResolutionsDropdown() 
@@ -89,22 +107,85 @@ public class VideoUI : MonoBehaviour
         PlayerPrefs.SetInt("FrameRate", m_FrameRateDropdown.value);
     }
 
+    void SetColorblindModeDropdown() 
+    {
+        m_ColorblindModeDropdown.value=PlayerPrefs.GetInt("Colorblind");
+        ChangeColorblindMode();
+    }
     public void ChangeColorblindMode() 
     {
         switch(m_ColorblindModeDropdown.value)
         {
             case 0:
-                Debug.Log("Colorblind off");
+                m_ColorblindSelected=ColorblindType.NONE;
                 break;
             case 1:
-                //Deuteranopia
+                m_ColorblindSelected=ColorblindType.DEUTERANOPIA;
                 break;
             case 2:
-                //Tritanopia
+                m_ColorblindSelected=ColorblindType.TRITANOPIA;
                 break;
             case 3:
-                //Protanopia
+                m_ColorblindSelected=ColorblindType.PROTANOPIA;
                 break;
         }
+        PlayerPrefs.SetInt("Colorblind", m_ColorblindModeDropdown.value);
+        foreach(CharacterMaster Player in m_Character.GetGameManager().GetPlayersList()) 
+        {
+            if(Player!=m_Character)
+                Player.m_IngameCharacterUI.ChangeHealthColor(GetColor(false, false));
+            else
+                Player.m_IngameCharacterUI.ChangeHealthColor(GetColor(true, false));
+        }
+        foreach(EnemyDummy Enemy in m_Character.GetGameManager().GetEnemiesList()) 
+        {
+            Enemy.m_IngameUI.ChangeHealthColor(GetColor(true, true));
+        }
+    }
+    public Color GetColor(bool Own, bool Enemy) 
+    {
+        switch(m_ColorblindSelected)
+        {
+            case ColorblindType.NONE:
+                if(Enemy)
+                    return m_DefaultEnemiesHealthColor;
+                else if(Own)
+                    return m_DefaultOwnHealthColor;
+                else
+                    return m_DefaultAlliesHealthColor;
+            case ColorblindType.DEUTERANOPIA:
+                if(Enemy)
+                    return m_DeuteranopiaEnemiesHealthColor;
+                else if(Own)
+                    return m_DeuteranopiaOwnHealthColor;
+                else
+                    return m_DeuteranopiaAlliesHealthColor;
+            case ColorblindType.TRITANOPIA:
+                if(Enemy)
+                    return m_TritanopiaEnemiesHealthColor;
+                else if(Own)
+                    return m_TritanopiaOwnHealthColor;
+                else
+                    return m_TritanopiaAlliesHealthColor;
+            case ColorblindType.PROTANOPIA:
+                if(Enemy)
+                    return m_ProtanopiaEnemiesHealthColor;
+                else if(Own)
+                    return m_ProtanopiaOwnHealthColor;
+                else
+                    return m_ProtanopiaAlliesHealthColor;
+            default:
+                return m_DefaultOwnHealthColor;
+        }
+    }
+
+    //GETTERS AND SETTERS
+    public CharacterMaster GetPlayer() 
+    {
+        return m_Character;
+    }
+    public void SetPlayer(CharacterMaster Player)
+    {
+        m_Character=Player;
     }
 }

@@ -22,6 +22,12 @@ public class OptionsUI : MonoBehaviour
         HideAllSubmenus();
     }
 
+    public void InitSettings() 
+    {
+        m_VideoMenu.InitSettings();
+        m_AudioMenu.InitSettings();
+        m_GameMenu.InitSettings();
+    }
     public void ExitGame() 
     {
 #if UNITY_EDITOR
@@ -86,8 +92,13 @@ public class OptionsUI : MonoBehaviour
     }
 
     //GETTERS AND SETTERS
+    public CharacterMaster GetPlayer() 
+    {
+        return m_Character;
+    }
     public void SetPlayer(CharacterMaster Player)
     {
         m_Character=Player;
+        m_VideoMenu.SetPlayer(Player);
     }
 }
