@@ -23,6 +23,10 @@ public class EnemyDummy : NetworkBehaviour, ITakeDamage
     public float m_TimeToStartRegen;
     float m_TimerLeftToRegen;
 
+    [Header("MOVEMENT TEST")]
+    bool m_MoveToPoint;
+    Transform m_TargetPoint;
+
 
     public override void OnNetworkSpawn()
     {
@@ -63,6 +67,7 @@ public class EnemyDummy : NetworkBehaviour, ITakeDamage
             l_IngameUIObject.TrySetParent(l_WorldCanvas.transform, false);
         m_IngameUI=l_IngameUIObject.GetComponent<IngameCharacterUI>();
         m_IngameUI.m_WorldCanvas=l_WorldCanvas.gameObject;
+        SetIngameUICamera(GameManager.m_GameManagerInstance.GetPlayersList()[0].GetCameraController());
     }
     void Update()
     {
@@ -73,6 +78,18 @@ public class EnemyDummy : NetworkBehaviour, ITakeDamage
             {
                 UpdateCurrentHealthRpc(m_CharacterStats.GetMaxHealth(), false);
                 m_CharacterStats.SetCurrentManaRpc(m_CharacterStats.GetMaxMana());
+            }
+        }
+
+        if(m_MoveToPoint)
+        {
+            if(Vector3.Distance(transform.position, m_TargetPoint.position) > 1.0f) 
+            {
+                Vector3 l_Dir=m_TargetPoint.position-transform.position;
+                l_Dir.Normalize();
+                l_Dir.y=0.0f;
+                transform.position+=l_Dir*(m_CharacterStats.GetMovSpeed()/100.0f)*Time.deltaTime;
+                transform.forward=l_Dir;
             }
         }
     }
@@ -104,6 +121,20 @@ public class EnemyDummy : NetworkBehaviour, ITakeDamage
         UpdateCurrentHealthRpc(m_CharacterStats.GetCurrentHealth()-l_TotalPhysDamage-l_TotalMagicDamage, true);
         m_IngameUI.AddDamageInstance(l_TotalPhysDamage, l_TotalMagicDamage, SourceId);
     }
+    public void OnDeath() 
+    {
+        m_IngameUI.m_WorldCanvas.GetComponent<NetworkObject>().Despawn();
+        m_IngameUI.GetComponent<NetworkObject>().Despawn();
+        Destroy(gameObject);
+    }
+    public void SetMovement(bool Move) 
+    {
+        m_MoveToPoint=Move;
+    }
+    public void SetMovementTarget(Transform Target) 
+    {
+        m_TargetPoint=Target;
+    }
 
     [Rpc(SendTo.Everyone)]
     void UpdateCurrentHealthRpc(float Amount, bool TookDamage) 
@@ -128,13 +159,15 @@ public class EnemyDummy : NetworkBehaviour, ITakeDamage
         m_CharacterStats.SetMagicRes(m_CharacterStats.GetMagicRes()+10.0f);
     }
 
+
+
     public CharacterStats GetCharacterStats()
     {
         return m_CharacterStats;
     }
-    public void SetCanvasCamera(CameraController CanvasCamera)
+    public void SetIngameUICamera(CameraController CanvasCamera)
     {
-        m_IngameUI.SetCamera(CanvasCamera);
+        m_IngameUI.SetCameraController(CanvasCamera);
     }
     public IngameCharacterUI GetIngameCharacterUI() 
     {

@@ -83,6 +83,9 @@ public class CharacterUI : MonoBehaviour
     public TextMeshProUGUI m_CastingAbilityText;
     public TextMeshProUGUI m_CastingTimeText;
 
+    [Header("GAME TIMER")]
+    public TextMeshProUGUI m_GameTimerText;
+
     [Header("TARGET INFO")]
     public GameObject m_TargetInfoUI;
     CharacterStats m_TargetStats;
@@ -127,6 +130,8 @@ public class CharacterUI : MonoBehaviour
 
         if(m_TargetInfoUI.activeSelf)
             UpdateTargetInfoUI(m_TargetStats);
+
+        m_GameTimerText.text=m_Character.GetGameManager().GetGameTimerFormated();
 	}
 
 	public void UpdateHealthManaBars(float Health, float MaxHealth, float Mana, float MaxMana)

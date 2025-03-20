@@ -1,15 +1,10 @@
 using System;
 using System.Collections.Generic;
 using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.InputSystem.Utilities;
-using UnityEngine.Rendering;
 using UnityEngine.UI;
-using static Unity.VisualScripting.Member;
 
 
-[Serializable]
 public class DamageInstance 
 {
     public float m_PhysDamage;
@@ -151,11 +146,11 @@ public class IngameCharacterUI : MonoBehaviour
     }
 
     //GETTERS AND SETTERS
-    public void SetCamera(CameraController _Camera) 
+    public void SetCameraController(CameraController _Camera) 
     {
         m_CameraController=_Camera;
     }
-    public CameraController GetCamera() 
+    public CameraController GetCameraController() 
     {
         return m_CameraController;
     }

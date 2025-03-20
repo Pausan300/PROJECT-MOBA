@@ -140,7 +140,9 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
             m_OptionsUI=Instantiate(m_OptionsUIPrefab, GameObject.Find("UI").transform).GetComponent<OptionsUI>();
         m_OptionsUI.SetPlayer(this);
 
-        m_IngameCharacterUI.SetCamera(m_CharacterCamera);
+        m_IngameCharacterUI.SetCameraController(m_CharacterCamera);
+
+        m_RecallTpPoint=GameObject.Find("AllySpawnPoint").transform;
 
         if(!IsSpawned || !HasAuthority) 
         {

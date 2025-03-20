@@ -54,7 +54,6 @@ public class InputManager : MonoBehaviour
 
             if(IsBindingDuplicated(ActionToRebind, BindingIndex, AllCompositeParts))
             {
-                Debug.Log("Cosas");
                 ActionToRebind.RemoveBindingOverride(BindingIndex);
                 DoRebind(ActionToRebind, BindingIndex, StatusText, AllCompositeParts);
                 return;

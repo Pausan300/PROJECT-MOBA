@@ -240,7 +240,7 @@ public class PracticeModeUI : NetworkBehaviour
         GameObject l_Enemy=Instantiate(m_EnemyDummyPrefab, Pos+new Vector3(0.0f, 1.0f, 0.0f), m_EnemyDummyPrefab.transform.rotation);
         l_Enemy.GetComponent<NetworkObject>().Spawn();
         EnemyDummy l_EnemyScript=l_Enemy.GetComponent<EnemyDummy>();
-        //l_EnemyScript.SetCanvasCamera(m_Character.GetCameraController().GetCamera());
+        l_EnemyScript.SetMovement(false);
         m_EnemiesList.Add(l_Enemy.GetComponent<EnemyDummy>());
     }
     void AddHealthToEnemy()
@@ -291,13 +291,11 @@ public class PracticeModeUI : NetworkBehaviour
             m_TimerSinceLastDummyAttack=0.0f;
         }
     }
-    public void EraseEnemiesRpc()
+    public void EraseEnemies()
     {
-        //foreach(EnemyDummy Enemy in FindObjectsByType<EnemyDummy>(FindObjectsSortMode.None))
-        //    Destroy(Enemy.gameObject);
         List<EnemyDummy> l_Enemies=GameManager.m_GameManagerInstance.GetEnemiesList();
         foreach(EnemyDummy Enemy in l_Enemies)
-            Destroy(Enemy.gameObject);
+            Enemy.OnDeath();
         l_Enemies.Clear();
         m_EnemiesList.Clear();
     }
