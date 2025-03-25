@@ -2,35 +2,14 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-#if UNITY_EDITOR
-using UnityEditor;
 
-[CustomEditor(typeof(SkillAttribute))]
-public class SkillAttributeCustomEditor : Editor
+[Serializable]
+public class SkillAttribute 
 {
-    public override void OnInspectorGUI()
-    {
-        SerializedProperty l_PopupType=serializedObject.FindProperty("m_AttributeId");
-        SerializedProperty l_CharacterUI=serializedObject.FindProperty("m_LevelScaling");
-
-        EditorGUILayout.PropertyField(l_PopupType);
-        //l_Inspector.m_PopupType=(InspectableElementUI.PopupType)EditorGUILayout.EnumPopup("Group", l_Inspector.m_PopupType);
-        EditorGUILayout.PropertyField(l_CharacterUI);
-        //l_Inspector.m_CharacterUI=(CharacterUI)EditorGUILayout.ObjectField("CharacterUI", l_Inspector.m_CharacterUI, typeof(CharacterUI), true);
-
-        //if(l_Inspector.m_PopupType==InspectableElementUI.PopupType.STAT)
-        //{
-        //    SerializedProperty l_StatName=serializedObject.FindProperty("m_StatName");
-        //    EditorGUILayout.PropertyField(l_StatName);
-        //    //l_Inspector.m_StatName=EditorGUILayout.TextField("Stat Name", l_Inspector.m_StatName);
-        //    SerializedProperty l_StatDescription = serializedObject.FindProperty("m_StatDescription");
-        //    EditorGUILayout.PropertyField(l_StatDescription, GUILayout.Height(80));
-        //    //l_Inspector.m_StatDescription=EditorGUILayout.TextArea(l_Inspector.m_StatDescription, GUILayout.Height(60));
-        //}
-        serializedObject.ApplyModifiedProperties();
-    }
+    public string m_AttributeId;
+    public bool m_IsPct;
+    public List<float> m_LevelScaling;
 }
-#endif
 
 [CreateAssetMenu(menuName="Powers/Skill")]
 public class Skill : Power
@@ -45,9 +24,8 @@ public class Skill : Power
     public override void SetInitStats()
     {
         base.SetInitStats();
-        //m_SkillLevel=0;
         //m_SkillMana=m_SkillManaPerLevel[0];
-        SetCd(m_SkillCooldownPerLevel[0]);
+        SetCooldown(0);
         SetUsingSkill(false);
     }
 
@@ -67,19 +45,17 @@ public class Skill : Power
     //}
     public float GetMana(int Level)
     {
-        if(Level-1<=0)
-            return m_SkillManaPerLevel[0];
-        else
-            return m_SkillManaPerLevel[Level-1];
+        return GetAttribute("Coste de Mana", Level);
     }
     //public void SetMana(int Level)
     //{
     //    m_SkillMana=m_SkillManaPerLevel[Level-1];
     //}
-    public void SetCd(int Level)
+    public void SetCooldown(int Level)
     {
-        SetCd(m_SkillCooldownPerLevel[Level-1]);
+        SetCd(GetAttribute("Enfriamiento", Level));
     }
+
     public bool GetUsingSkill()
     {
         return m_UsingSkill;
@@ -88,11 +64,17 @@ public class Skill : Power
     {
         m_UsingSkill=True;
     }
-}
 
-[Serializable]
-public class SkillAttribute 
-{
-    public string m_AttributeId;
-    public List<float> m_LevelScaling;
+    public float GetAttribute(string Id, int Level) 
+    {
+        int l_Index=Level-1;
+        if(l_Index<0)
+            l_Index=0;
+        foreach(SkillAttribute Attribute in m_AttributeList) 
+        {
+            if(Attribute.m_AttributeId==Id)
+                return Attribute.m_LevelScaling[l_Index];
+        }
+        return 0.0f;
+    }
 }

@@ -34,3 +34,20 @@ MonoBehaviour:
   - 20
   m_SkillDisabledTime: 0
   m_CancelableWithMouseClick: 1
+  m_AttributeList:
+  - m_AttributeId: Enfriamiento
+    m_IsPct: 0
+    m_LevelScaling:
+    - 8
+    - 7.5
+    - 7
+    - 6.5
+    - 6
+  - m_AttributeId: Coste de Mana
+    m_IsPct: 0
+    m_LevelScaling:
+    - 40
+    - 35
+    - 30
+    - 25
+    - 20
