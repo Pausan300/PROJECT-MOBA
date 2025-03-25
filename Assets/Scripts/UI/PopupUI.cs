@@ -63,7 +63,7 @@ public class PopupUI : MonoBehaviour
                 {
                     i++;
                     string l_Stat = "";
-                    if (i == SkillLV)
+                    if (i == SkillLV || (SkillLV == 0 && i == 1))
                     {
                         l_Stat = "<b><color=#FFFFFF>" + Stat.ToString() + "</color></b>";
                     }
