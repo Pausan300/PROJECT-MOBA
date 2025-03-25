@@ -29,7 +29,7 @@ public class CharacterUI : MonoBehaviour
     public Image m_ESkillCdImage;
     public Image m_RSkillCdImage;
     public Image m_SumSpell1CdImage;
-    public Image m_SumSpell2CdImage; 
+    public Image m_SumSpell2CdImage;
 
     public TextMeshProUGUI m_QSkillCdText;
     public TextMeshProUGUI m_WSkillCdText;
@@ -75,7 +75,7 @@ public class CharacterUI : MonoBehaviour
     [Header("BUFFS/DEBUFFS")]
     public GameObject m_BuffUIPrefab;
     public RectTransform m_BuffsDebuffsParent;
-    public List<BuffDebuffObjectUI> m_BuffDebuffUIList=new List<BuffDebuffObjectUI>();
+    public List<BuffDebuffObjectUI> m_BuffDebuffUIList = new List<BuffDebuffObjectUI>();
 
     [Header("CASTING")]
     public RectTransform m_CastingUI;
@@ -118,184 +118,184 @@ public class CharacterUI : MonoBehaviour
         HideTargetInfoUI();
         HidePopup();
     }
-	private void Update()
-	{
-        if(Input.GetKeyDown(KeyCode.C))
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.C))
             ShowSeconStatsPanel();
-        else if(Input.GetKeyUp(KeyCode.C))
+        else if (Input.GetKeyUp(KeyCode.C))
             HideSeconStatsPanel();
 
-        if(Input.GetKeyDown(KeyCode.T))
+        if (Input.GetKeyDown(KeyCode.T))
             m_EmoteUI.ShowEmoteWheel();
 
-        if(m_TargetInfoUI.activeSelf)
+        if (m_TargetInfoUI.activeSelf)
             UpdateTargetInfoUI(m_TargetStats);
 
-        m_GameTimerText.text=m_Character.GetGameManager().GetGameTimerFormated();
-	}
+        m_GameTimerText.text = m_Character.GetGameManager().GetGameTimerFormated();
+    }
 
-	public void UpdateHealthManaBars(float Health, float MaxHealth, float Mana, float MaxMana)
+    public void UpdateHealthManaBars(float Health, float MaxHealth, float Mana, float MaxMana)
     {
-        float l_HealthRounded=Mathf.Round(Health);
-        float l_ManaRounded=Mathf.Round(Mana);
-        m_HealthBar.value=l_HealthRounded/MaxHealth;
-        m_ManaBar.value=l_ManaRounded/MaxMana;
-        m_HealthText.text=l_HealthRounded+"/"+Mathf.Round(MaxHealth);
-        m_ManaText.text=l_ManaRounded+"/"+Mathf.Round(MaxMana);
+        float l_HealthRounded = Mathf.Round(Health);
+        float l_ManaRounded = Mathf.Round(Mana);
+        m_HealthBar.value = l_HealthRounded / MaxHealth;
+        m_ManaBar.value = l_ManaRounded / MaxMana;
+        m_HealthText.text = l_HealthRounded + "/" + Mathf.Round(MaxHealth);
+        m_ManaText.text = l_ManaRounded + "/" + Mathf.Round(MaxMana);
         //m_Character.m_IngameCharacterUI.UpdateHealthManaBars(l_HealthRounded, MaxHealth, l_ManaRounded, MaxMana);
     }
     public void UpdatePrimStats(float AtkDmg, float Armor, float AtkSpd, float CritChance, float AbPower, float MagResist, float Cdr, float MovSpeed)
     {
-        m_AttackDamageText.text=Mathf.Round(AtkDmg).ToString();
-        m_ArmorText.text=Mathf.Round(Armor).ToString();
-        m_AttackSpeedText.text=AtkSpd.ToString("f2");
-        m_CriticalChanceText.text=CritChance.ToString();
-        m_AbilityPowerText.text=AbPower.ToString();
-        m_MagicResistanceText.text=Mathf.Round(MagResist).ToString();
-        m_CooldownReductionText.text=Cdr.ToString();
-        m_MovementSpeedText.text=MovSpeed.ToString();
+        m_AttackDamageText.text = Mathf.Round(AtkDmg).ToString();
+        m_ArmorText.text = Mathf.Round(Armor).ToString();
+        m_AttackSpeedText.text = AtkSpd.ToString("f2");
+        m_CriticalChanceText.text = CritChance.ToString();
+        m_AbilityPowerText.text = AbPower.ToString();
+        m_MagicResistanceText.text = Mathf.Round(MagResist).ToString();
+        m_CooldownReductionText.text = Cdr.ToString();
+        m_MovementSpeedText.text = MovSpeed.ToString();
     }
-    public void UpdateSeconStats(float HealthRegen, float ArmorPenFix, float ArmorPenPct, float Lifesteal, float AttackRange, float ManaRegen, 
+    public void UpdateSeconStats(float HealthRegen, float ArmorPenFix, float ArmorPenPct, float Lifesteal, float AttackRange, float ManaRegen,
         float MagicPenFix, float MagicPenPct, float Omnidrain, float Tenacity, float HealsShieldsPower)
     {
-        m_HealthManaRegenText.text=Mathf.Round(HealthRegen).ToString()+"|"+Mathf.Round(ManaRegen).ToString();
-        m_ArmorPenText.text=ArmorPenFix.ToString()+"|"+ArmorPenPct.ToString()+"%";
-        m_LifestealText.text=Lifesteal.ToString()+"%";
-        m_AttackRangeText.text=AttackRange.ToString();
-        m_HealsShieldsPowerText.text=HealsShieldsPower.ToString()+"%";
-        m_MagicPenText.text=MagicPenFix.ToString()+"|"+MagicPenPct.ToString()+"%";
-        m_OmnidrainText.text=Omnidrain.ToString()+"%";
-        m_TenacityText.text=Tenacity.ToString()+"%";
+        m_HealthManaRegenText.text = Mathf.Round(HealthRegen).ToString() + "|" + Mathf.Round(ManaRegen).ToString();
+        m_ArmorPenText.text = ArmorPenFix.ToString() + "|" + ArmorPenPct.ToString() + "%";
+        m_LifestealText.text = Lifesteal.ToString() + "%";
+        m_AttackRangeText.text = AttackRange.ToString();
+        m_HealsShieldsPowerText.text = HealsShieldsPower.ToString() + "%";
+        m_MagicPenText.text = MagicPenFix.ToString() + "|" + MagicPenPct.ToString() + "%";
+        m_OmnidrainText.text = Omnidrain.ToString() + "%";
+        m_TenacityText.text = Tenacity.ToString() + "%";
     }
     public void UpdateExpBar(float CurrentExp, float NeededExp)
     {
-        m_ExpBar.value=CurrentExp/NeededExp;
+        m_ExpBar.value = CurrentExp / NeededExp;
     }
     public void UpdateCharacterLevel(int Level)
     {
-        m_LevelText.text=Level.ToString();
+        m_LevelText.text = Level.ToString();
     }
     public void UpdateCastingUI(float CurrentRecallTime, float MaxRecallTime)
     {
-        m_CastingBar.value=CurrentRecallTime/MaxRecallTime;
-        m_CastingTimeText.text=CurrentRecallTime.ToString("f1");
+        m_CastingBar.value = CurrentRecallTime / MaxRecallTime;
+        m_CastingTimeText.text = CurrentRecallTime.ToString("f1");
     }
     public void UpdateTargetInfoUI(CharacterStats Stats)
     {
-        if(Stats!=null)
+        if (Stats != null)
         {
-            m_TargetAttackDamageText.text=Mathf.Round(Stats.GetAttackDamage()).ToString();
-            m_TargetArmorText.text=Mathf.Round(Stats.GetArmor()).ToString();
-            m_TargetAttackSpeedText.text=Stats.GetAttackSpeed().ToString("f2");
-            m_TargetCriticalChanceText.text=Stats.GetCritChance().ToString();
-            m_TargetAbilityPowerText.text=Stats.GetAbilityPower().ToString();
-            m_TargetMagicResistanceText.text=Mathf.Round(Stats.GetMagicRes()).ToString();
-            m_TargetCooldownReductionText.text=Stats.GetCdr().ToString();
-            m_TargetMovementSpeedText.text=Stats.GetMovSpeed().ToString();
-            float l_HealthRounded=Mathf.Round(Stats.GetCurrentHealth());
-            float l_ManaRounded=Mathf.Round(Stats.GetCurrentMana());
-            m_TargetHealthBar.value=l_HealthRounded/Stats.GetMaxHealth();
-            m_TargetManaBar.value=l_ManaRounded/Stats.GetMaxMana();
-            m_TargetHealthText.text=l_HealthRounded+"/"+Mathf.Round(Stats.GetMaxHealth());
-            m_TargetManaText.text=l_ManaRounded+"/"+Mathf.Round(Stats.GetMaxMana());
-            m_TargetLevelText.text=Stats.GetCurrentLevel().ToString();
+            m_TargetAttackDamageText.text = Mathf.Round(Stats.GetAttackDamage()).ToString();
+            m_TargetArmorText.text = Mathf.Round(Stats.GetArmor()).ToString();
+            m_TargetAttackSpeedText.text = Stats.GetAttackSpeed().ToString("f2");
+            m_TargetCriticalChanceText.text = Stats.GetCritChance().ToString();
+            m_TargetAbilityPowerText.text = Stats.GetAbilityPower().ToString();
+            m_TargetMagicResistanceText.text = Mathf.Round(Stats.GetMagicRes()).ToString();
+            m_TargetCooldownReductionText.text = Stats.GetCdr().ToString();
+            m_TargetMovementSpeedText.text = Stats.GetMovSpeed().ToString();
+            float l_HealthRounded = Mathf.Round(Stats.GetCurrentHealth());
+            float l_ManaRounded = Mathf.Round(Stats.GetCurrentMana());
+            m_TargetHealthBar.value = l_HealthRounded / Stats.GetMaxHealth();
+            m_TargetManaBar.value = l_ManaRounded / Stats.GetMaxMana();
+            m_TargetHealthText.text = l_HealthRounded + "/" + Mathf.Round(Stats.GetMaxHealth());
+            m_TargetManaText.text = l_ManaRounded + "/" + Mathf.Round(Stats.GetMaxMana());
+            m_TargetLevelText.text = Stats.GetCurrentLevel().ToString();
         }
     }
     public void UpdatePowerUI(Power.PowerType Type, float PowerTimer, float PowerCd, bool ZeroCd)
     {
-        TextMeshProUGUI l_PowerCdText=null;
-        Image l_PowerCdImage=null;
-        switch(Type)
+        TextMeshProUGUI l_PowerCdText = null;
+        Image l_PowerCdImage = null;
+        switch (Type)
         {
             case Power.PowerType.QSKILL:
-                l_PowerCdText=m_QSkillCdText;
-                l_PowerCdImage=m_QSkillCdImage;
+                l_PowerCdText = m_QSkillCdText;
+                l_PowerCdImage = m_QSkillCdImage;
                 break;
             case Power.PowerType.WSKILL:
-                l_PowerCdText=m_WSkillCdText;
-                l_PowerCdImage=m_WSkillCdImage;
+                l_PowerCdText = m_WSkillCdText;
+                l_PowerCdImage = m_WSkillCdImage;
                 break;
             case Power.PowerType.ESKILL:
-                l_PowerCdText=m_ESkillCdText;
-                l_PowerCdImage=m_ESkillCdImage;
+                l_PowerCdText = m_ESkillCdText;
+                l_PowerCdImage = m_ESkillCdImage;
                 break;
             case Power.PowerType.RSKILL:
-                l_PowerCdText=m_RSkillCdText;
-                l_PowerCdImage=m_RSkillCdImage;
+                l_PowerCdText = m_RSkillCdText;
+                l_PowerCdImage = m_RSkillCdImage;
                 break;
             case Power.PowerType.SUMMONER1:
-                l_PowerCdText=m_SumSpell1CdText;
-                l_PowerCdImage=m_SumSpell1CdImage;
+                l_PowerCdText = m_SumSpell1CdText;
+                l_PowerCdImage = m_SumSpell1CdImage;
                 break;
             case Power.PowerType.SUMMONER2:
-                l_PowerCdText=m_SumSpell2CdText;
-                l_PowerCdImage=m_SumSpell2CdImage;
+                l_PowerCdText = m_SumSpell2CdText;
+                l_PowerCdImage = m_SumSpell2CdImage;
                 break;
         }
-        if(PowerTimer>=1.0f)
-			l_PowerCdText.text=PowerTimer.ToString("f0");
-        else if(PowerTimer<=0.0f)
-			l_PowerCdText.text="";
-		else
-			l_PowerCdText.text=PowerTimer.ToString("f1");
-		l_PowerCdImage.fillAmount=PowerTimer/PowerCd;
-	}
+        if (PowerTimer >= 1.0f)
+            l_PowerCdText.text = PowerTimer.ToString("f0");
+        else if (PowerTimer <= 0.0f)
+            l_PowerCdText.text = "";
+        else
+            l_PowerCdText.text = PowerTimer.ToString("f1");
+        l_PowerCdImage.fillAmount = PowerTimer / PowerCd;
+    }
     public void LevelUpQSkill()
     {
-        m_QLevelPoints.value+=1;
-        m_Character.m_CharacterStats.SetSkillPoints(m_Character.m_CharacterStats.GetSkillPoints()-1);   
+        m_QLevelPoints.value += 1;
+        m_Character.m_CharacterStats.SetSkillPoints(m_Character.m_CharacterStats.GetSkillPoints() - 1);
         m_Character.SetQSkillLevelRpc();
-        if(m_Character.GetQSkillLevel()>=5)
+        if (m_Character.GetQSkillLevel() >= 5)
             m_QLevelUpButton.gameObject.SetActive(false);
-        if(m_Character.m_CharacterStats.GetSkillPoints()<=0)
+        if (m_Character.m_CharacterStats.GetSkillPoints() <= 0)
             HideLevelUpSkillButtons();
     }
     public void LevelUpWSkill()
     {
-        m_WLevelPoints.value+=1;
-        m_Character.m_CharacterStats.SetSkillPoints(m_Character.m_CharacterStats.GetSkillPoints()-1);
+        m_WLevelPoints.value += 1;
+        m_Character.m_CharacterStats.SetSkillPoints(m_Character.m_CharacterStats.GetSkillPoints() - 1);
         m_Character.SetWSkillLevelRpc();
-        if(m_Character.GetWSkillLevel()>=5)
+        if (m_Character.GetWSkillLevel() >= 5)
             m_WLevelUpButton.gameObject.SetActive(false);
-        if(m_Character.m_CharacterStats.GetSkillPoints()<=0)
+        if (m_Character.m_CharacterStats.GetSkillPoints() <= 0)
             HideLevelUpSkillButtons();
     }
     public void LevelUpESkill()
     {
-        m_ELevelPoints.value+=1;
-        m_Character.m_CharacterStats.SetSkillPoints(m_Character.m_CharacterStats.GetSkillPoints()-1);
+        m_ELevelPoints.value += 1;
+        m_Character.m_CharacterStats.SetSkillPoints(m_Character.m_CharacterStats.GetSkillPoints() - 1);
         m_Character.SetESkillLevelRpc();
-        if(m_Character.GetESkillLevel()>=5)
+        if (m_Character.GetESkillLevel() >= 5)
             m_ELevelUpButton.gameObject.SetActive(false);
-        if(m_Character.m_CharacterStats.GetSkillPoints()<=0)
+        if (m_Character.m_CharacterStats.GetSkillPoints() <= 0)
             HideLevelUpSkillButtons();
     }
     public void LevelUpRSkill()
     {
-        m_RLevelPoints.value+=1;
-        m_Character.m_CharacterStats.SetSkillPoints(m_Character.m_CharacterStats.GetSkillPoints()-1);
+        m_RLevelPoints.value += 1;
+        m_Character.m_CharacterStats.SetSkillPoints(m_Character.m_CharacterStats.GetSkillPoints() - 1);
         m_Character.SetRSkillLevelRpc();
-        if(m_Character.GetRSkillLevel()>=3 || (m_Character.m_CharacterStats.GetCurrentLevel()<11 && m_Character.GetRSkillLevel()>=1) || 
-            (m_Character.m_CharacterStats.GetCurrentLevel()<16 && m_Character.GetRSkillLevel()>=2))
+        if (m_Character.GetRSkillLevel() >= 3 || (m_Character.m_CharacterStats.GetCurrentLevel() < 11 && m_Character.GetRSkillLevel() >= 1) ||
+            (m_Character.m_CharacterStats.GetCurrentLevel() < 16 && m_Character.GetRSkillLevel() >= 2))
             m_RLevelUpButton.gameObject.SetActive(false);
-        if(m_Character.m_CharacterStats.GetSkillPoints()<=0)
+        if (m_Character.m_CharacterStats.GetSkillPoints() <= 0)
             HideLevelUpSkillButtons();
     }
     public void ResetSkillLevelPoints()
     {
-        m_QLevelPoints.value=0;
-        m_WLevelPoints.value=0;
-        m_ELevelPoints.value=0;
-        m_RLevelPoints.value=0;
+        m_QLevelPoints.value = 0;
+        m_WLevelPoints.value = 0;
+        m_ELevelPoints.value = 0;
+        m_RLevelPoints.value = 0;
     }
     public void CreateBuffObject(TimedBuff TimedBuff)
     {
-        GameObject l_BuffObject=Instantiate(m_BuffUIPrefab, m_BuffsDebuffsParent);
-        BuffDebuffObjectUI l_BuffObjectUI=l_BuffObject.GetComponent<BuffDebuffObjectUI>();
-        l_BuffObjectUI.m_BuffImage.sprite=TimedBuff.m_Buff.m_BuffSprite;
-        l_BuffObjectUI.m_BuffDurationImage.sprite=TimedBuff.m_Buff.m_BuffSprite;
-        l_BuffObjectUI.m_BuffDurationImage.fillAmount=1.0f;
-        l_BuffObjectUI.m_TimedBuff=TimedBuff;
+        GameObject l_BuffObject = Instantiate(m_BuffUIPrefab, m_BuffsDebuffsParent);
+        BuffDebuffObjectUI l_BuffObjectUI = l_BuffObject.GetComponent<BuffDebuffObjectUI>();
+        l_BuffObjectUI.m_BuffImage.sprite = TimedBuff.m_Buff.m_BuffSprite;
+        l_BuffObjectUI.m_BuffDurationImage.sprite = TimedBuff.m_Buff.m_BuffSprite;
+        l_BuffObjectUI.m_BuffDurationImage.fillAmount = 1.0f;
+        l_BuffObjectUI.m_TimedBuff = TimedBuff;
         //m_BuffDebuffUIList.Add(l_BuffObjectUI);
     }
     //public void DeleteBuffObject(TimedBuff TimedBuff)
@@ -312,43 +312,36 @@ public class CharacterUI : MonoBehaviour
     //}
     public void SetPopupType(InspectableElementUI.PopupType PopupElement, string Description, string Name)
     {
-		switch(PopupElement)
-		{
+        switch (PopupElement)
+        {
             case InspectableElementUI.PopupType.PASSIVESKILL:
-                m_PopupUI.UpdatePowerPopupInfo(m_Character.m_PassiveSkill.m_Description, m_Character.m_PassiveSkill.m_PowerName, "P",
-                    null, null, m_Character.m_PassiveSkill.m_Sprite);
+                m_PopupUI.UpdatePowerPopupInfo(m_Character.m_PassiveSkill, "P", null);
                 break;
             case InspectableElementUI.PopupType.QSKILL:
-                m_PopupUI.UpdatePowerPopupInfo(m_Character.m_QSkill.m_Description, m_Character.m_QSkill.m_PowerName, m_Character.m_QSkillKey.ToString(), 
-                    m_Character.m_QSkill.GetCd().ToString(), m_Character.m_QSkill.GetMana(m_Character.GetQSkillLevel()).ToString(), m_Character.m_QSkill.m_Sprite);
-			    break;
-			case InspectableElementUI.PopupType.WSKILL:
-                m_PopupUI.UpdatePowerPopupInfo(m_Character.m_WSkill.m_Description, m_Character.m_WSkill.m_PowerName, m_Character.m_WSkillKey.ToString(), 
-                    m_Character.m_WSkill.GetCd().ToString(), m_Character.m_WSkill.GetMana(m_Character.GetWSkillLevel()).ToString(), m_Character.m_WSkill.m_Sprite);
-			    break;
-			case InspectableElementUI.PopupType.ESKILL:
-                m_PopupUI.UpdatePowerPopupInfo(m_Character.m_ESkill.m_Description, m_Character.m_ESkill.m_PowerName, m_Character.m_ESkillKey.ToString(), 
-                    m_Character.m_ESkill.GetCd().ToString(), m_Character.m_ESkill.GetMana(m_Character.GetESkillLevel()).ToString(), m_Character.m_ESkill.m_Sprite);
-			    break;
-			case InspectableElementUI.PopupType.RSKILL:
-                m_PopupUI.UpdatePowerPopupInfo(m_Character.m_RSkill.m_Description, m_Character.m_RSkill.m_PowerName, m_Character.m_RSkillKey.ToString(), 
-                    m_Character.m_RSkill.GetCd().ToString(), m_Character.m_RSkill.GetMana(m_Character.GetRSkillLevel()).ToString(), m_Character.m_RSkill.m_Sprite);
-			    break;
-			case InspectableElementUI.PopupType.SUMMONER1:
-                m_PopupUI.UpdatePowerPopupInfo(m_Character.m_SummSpell1.m_Description, m_Character.m_SummSpell1.m_PowerName, m_Character.m_SummSpell1Key.ToString(), 
-                    m_Character.m_SummSpell1.GetCd().ToString(), null, m_Character.m_SummSpell1.m_Sprite);
-			    break;
-			case InspectableElementUI.PopupType.SUMMONER2:
-                m_PopupUI.UpdatePowerPopupInfo(m_Character.m_SummSpell2.m_Description, m_Character.m_SummSpell2.m_PowerName, m_Character.m_SummSpell2Key.ToString(), 
-                    m_Character.m_SummSpell2.GetCd().ToString(), null, m_Character.m_SummSpell2.m_Sprite);
-			    break;
+                m_PopupUI.UpdatePowerPopupInfo(m_Character.m_QSkill, m_Character.m_QSkillKey.ToString(), m_Character.m_QSkill.GetMana(m_Character.GetQSkillLevel()).ToString());
+                break;
+            case InspectableElementUI.PopupType.WSKILL:
+                m_PopupUI.UpdatePowerPopupInfo(m_Character.m_WSkill, m_Character.m_WSkillKey.ToString(), m_Character.m_WSkill.GetMana(m_Character.GetWSkillLevel()).ToString());
+                break;
+            case InspectableElementUI.PopupType.ESKILL:
+                m_PopupUI.UpdatePowerPopupInfo(m_Character.m_ESkill, m_Character.m_ESkillKey.ToString(), m_Character.m_ESkill.GetMana(m_Character.GetESkillLevel()).ToString());
+                break;
+            case InspectableElementUI.PopupType.RSKILL:
+                m_PopupUI.UpdatePowerPopupInfo(m_Character.m_RSkill, m_Character.m_RSkillKey.ToString(),m_Character.m_RSkill.GetMana(m_Character.GetRSkillLevel()).ToString());
+                break;
+            case InspectableElementUI.PopupType.SUMMONER1:
+                m_PopupUI.UpdatePowerPopupInfo(m_Character.m_SummSpell1, m_Character.m_SummSpell1Key.ToString());
+                break;
+            case InspectableElementUI.PopupType.SUMMONER2:
+                m_PopupUI.UpdatePowerPopupInfo(m_Character.m_SummSpell2, m_Character.m_SummSpell2Key.ToString());
+                break;
             case InspectableElementUI.PopupType.STAT:
                 m_PopupUI.UpdateStatPopupInfo(Description, Name);
                 break;
-		}
+        }
         ShowPopup();
-	}
-    
+    }
+
     //SHOW & HIDE METHODS
     public void ShowSeconStatsPanel()
     {
@@ -360,13 +353,13 @@ public class CharacterUI : MonoBehaviour
     }
     public void ShowTargetInfoUI(CharacterStats Stats)
     {
-        m_TargetStats=Stats;
+        m_TargetStats = Stats;
         m_TargetInfoUI.gameObject.SetActive(true);
     }
     public void HideTargetInfoUI()
     {
         m_TargetInfoUI.gameObject.SetActive(false);
-        m_TargetStats=null;
+        m_TargetStats = null;
     }
     public void ShowCastingUI()
     {
@@ -386,23 +379,23 @@ public class CharacterUI : MonoBehaviour
     }
     public void HideCdTexts()
     {
-        m_QSkillCdText.enabled=false;
-        m_WSkillCdText.enabled=false;
-        m_ESkillCdText.enabled=false;
-        m_RSkillCdText.enabled=false;
-        m_SumSpell1CdText.enabled=false;
-        m_SumSpell2CdText.enabled=false;
+        m_QSkillCdText.enabled = false;
+        m_WSkillCdText.enabled = false;
+        m_ESkillCdText.enabled = false;
+        m_RSkillCdText.enabled = false;
+        m_SumSpell1CdText.enabled = false;
+        m_SumSpell2CdText.enabled = false;
     }
     public void ShowLevelUpSkillButtons()
     {
-        if(m_Character.GetQSkillLevel()<5)
+        if (m_Character.GetQSkillLevel() < 5)
             m_QLevelUpButton.gameObject.SetActive(true);
-        if(m_Character.GetWSkillLevel()<5)
+        if (m_Character.GetWSkillLevel() < 5)
             m_WLevelUpButton.gameObject.SetActive(true);
-        if(m_Character.GetESkillLevel()<5)
+        if (m_Character.GetESkillLevel() < 5)
             m_ELevelUpButton.gameObject.SetActive(true);
-        if((m_Character.m_CharacterStats.GetCurrentLevel()>=6 && m_Character.GetRSkillLevel()<1) || (m_Character.m_CharacterStats.GetCurrentLevel()>=11 && m_Character.GetRSkillLevel()<2) || 
-            (m_Character.m_CharacterStats.GetCurrentLevel()>=16 && m_Character.GetRSkillLevel()<3))    
+        if ((m_Character.m_CharacterStats.GetCurrentLevel() >= 6 && m_Character.GetRSkillLevel() < 1) || (m_Character.m_CharacterStats.GetCurrentLevel() >= 11 && m_Character.GetRSkillLevel() < 2) ||
+            (m_Character.m_CharacterStats.GetCurrentLevel() >= 16 && m_Character.GetRSkillLevel() < 3))
             m_RLevelUpButton.gameObject.SetActive(true);
     }
     public void HideLevelUpSkillButtons()
@@ -424,26 +417,26 @@ public class CharacterUI : MonoBehaviour
     //GETTERS & SETTERS
     public void SetPlayer(CharacterMaster Player)
     {
-        m_Character=Player;
+        m_Character = Player;
         m_EmoteUI.SetPlayer(Player);
     }
     public void SetCastingUIAbilityText(string Text)
     {
-        m_CastingAbilityText.text=Text;
+        m_CastingAbilityText.text = Text;
     }
     public void SetPowersImages(Sprite QSprite, Sprite WSprite, Sprite ESprite, Sprite RSprite, Sprite Summ1Sprite, Sprite Summ2Sprite)
     {
-        m_QSkillImage.sprite=QSprite;
-        m_QSkillCdImage.sprite=QSprite;
-        m_WSkillImage.sprite=WSprite;
-        m_WSkillCdImage.sprite=WSprite;
-        m_ESkillImage.sprite=ESprite;
-        m_ESkillCdImage.sprite=ESprite;
-        m_RSkillImage.sprite=RSprite;
-        m_RSkillCdImage.sprite=RSprite;
-        m_SumSpell1Image.sprite=Summ1Sprite;
-        m_SumSpell1CdImage.sprite=Summ1Sprite;
-        m_SumSpell2Image.sprite=Summ2Sprite;
-        m_SumSpell2CdImage.sprite=Summ2Sprite;
+        m_QSkillImage.sprite = QSprite;
+        m_QSkillCdImage.sprite = QSprite;
+        m_WSkillImage.sprite = WSprite;
+        m_WSkillCdImage.sprite = WSprite;
+        m_ESkillImage.sprite = ESprite;
+        m_ESkillCdImage.sprite = ESprite;
+        m_RSkillImage.sprite = RSprite;
+        m_RSkillCdImage.sprite = RSprite;
+        m_SumSpell1Image.sprite = Summ1Sprite;
+        m_SumSpell1CdImage.sprite = Summ1Sprite;
+        m_SumSpell2Image.sprite = Summ2Sprite;
+        m_SumSpell2CdImage.sprite = Summ2Sprite;
     }
 }
