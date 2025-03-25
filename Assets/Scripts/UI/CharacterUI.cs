@@ -315,19 +315,19 @@ public class CharacterUI : MonoBehaviour
         switch (PopupElement)
         {
             case InspectableElementUI.PopupType.PASSIVESKILL:
-                m_PopupUI.UpdatePowerPopupInfo(m_Character.m_PassiveSkill, "P", null);
+                m_PopupUI.UpdatePowerPopupInfo(m_Character.m_PassiveSkill, "P", null, 0);
                 break;
             case InspectableElementUI.PopupType.QSKILL:
-                m_PopupUI.UpdatePowerPopupInfo(m_Character.m_QSkill, m_Character.m_QSkillKey.ToString(), m_Character.m_QSkill.GetMana(m_Character.GetQSkillLevel()).ToString());
+                m_PopupUI.UpdatePowerPopupInfo(m_Character.m_QSkill, m_Character.m_QSkillKey.ToString(), m_Character.m_QSkill.GetMana(m_Character.GetQSkillLevel()).ToString(), m_Character.GetQSkillLevel());
                 break;
             case InspectableElementUI.PopupType.WSKILL:
-                m_PopupUI.UpdatePowerPopupInfo(m_Character.m_WSkill, m_Character.m_WSkillKey.ToString(), m_Character.m_WSkill.GetMana(m_Character.GetWSkillLevel()).ToString());
+                m_PopupUI.UpdatePowerPopupInfo(m_Character.m_WSkill, m_Character.m_WSkillKey.ToString(), m_Character.m_WSkill.GetMana(m_Character.GetWSkillLevel()).ToString(), m_Character.GetWSkillLevel());
                 break;
             case InspectableElementUI.PopupType.ESKILL:
-                m_PopupUI.UpdatePowerPopupInfo(m_Character.m_ESkill, m_Character.m_ESkillKey.ToString(), m_Character.m_ESkill.GetMana(m_Character.GetESkillLevel()).ToString());
+                m_PopupUI.UpdatePowerPopupInfo(m_Character.m_ESkill, m_Character.m_ESkillKey.ToString(), m_Character.m_ESkill.GetMana(m_Character.GetESkillLevel()).ToString(), m_Character.GetESkillLevel());
                 break;
             case InspectableElementUI.PopupType.RSKILL:
-                m_PopupUI.UpdatePowerPopupInfo(m_Character.m_RSkill, m_Character.m_RSkillKey.ToString(),m_Character.m_RSkill.GetMana(m_Character.GetRSkillLevel()).ToString());
+                m_PopupUI.UpdatePowerPopupInfo(m_Character.m_RSkill, m_Character.m_RSkillKey.ToString(),m_Character.m_RSkill.GetMana(m_Character.GetRSkillLevel()).ToString(), m_Character.GetRSkillLevel());
                 break;
             case InspectableElementUI.PopupType.SUMMONER1:
                 m_PopupUI.UpdatePowerPopupInfo(m_Character.m_SummSpell1, m_Character.m_SummSpell1Key.ToString());

@@ -26,7 +26,7 @@ public class PopupUI : MonoBehaviour
     [Header("STAT INFO")]
     public TextMeshProUGUI m_StatName;
 
-    public void UpdatePowerPopupInfo(Skill _Skill, string Key, string Mana)
+    public void UpdatePowerPopupInfo(Skill _Skill, string Key, string Mana, int SkillLV)
     {
         m_TopPowerInfoHolder.SetActive(true);
         m_BotPowerInfoHolder.SetActive(true);
@@ -47,24 +47,41 @@ public class PopupUI : MonoBehaviour
         m_PowerImage.sprite = _Skill.m_Sprite;
 
         foreach (GameObject Obj in m_OldSkillsSpecificationsList)
-        {
             if (Obj != null)
-            {
                 Destroy(Obj);
-            }
-        }
-
         m_OldSkillsSpecificationsList.Clear();
 
         foreach (SkillAttribute Attribute in _Skill.m_AttributeList)
         {
             SkillsSpecificationsPrefabUI l_SkillsSpecificationsPrefabUI = Instantiate(m_SkillsSpecificationsPrefab, m_SkillsSpecificationsContent.transform).GetComponent<SkillsSpecificationsPrefabUI>();
+            m_OldSkillsSpecificationsList.Add(l_SkillsSpecificationsPrefabUI.gameObject);
+            string SkillStatsLV = "";
+            if (Attribute.m_LevelScaling != null && Attribute.m_LevelScaling.Count > 0)
+            {
+                int i = 0;
+                foreach (float Stat in Attribute.m_LevelScaling)
+                {
+                    i++;
+                    string l_Stat = "";
+                    if (i == SkillLV)
+                    {
+                        l_Stat = "<b><color=#FFFFFF>" + Stat.ToString() + "</color></b>";
+                    }
+                    else
+                        l_Stat = Stat.ToString();
 
+                    if (SkillStatsLV == "")
+                        SkillStatsLV = l_Stat;
+                    else
+                        SkillStatsLV = SkillStatsLV + " / " + l_Stat;
+                }
+                SkillStatsLV = "[ " + SkillStatsLV + " ]";
+            }
 
-            l_SkillsSpecificationsPrefabUI.SetSkillsSpecificationsPrefabUI(Attribute.m_AttributeId, "");
+            l_SkillsSpecificationsPrefabUI.SetSkillsSpecificationsPrefabUI(Attribute.m_AttributeId, SkillStatsLV);
         }
     }
-    
+
     public void UpdatePowerPopupInfo(Summoner _Summoner, string Key)
     {
         m_TopPowerInfoHolder.SetActive(true);
@@ -82,6 +99,11 @@ public class PopupUI : MonoBehaviour
 
         m_SkillMana.text = "";
         m_PowerImage.sprite = _Summoner.m_Sprite;
+
+        foreach (GameObject Obj in m_OldSkillsSpecificationsList)
+            if (Obj != null)
+                Destroy(Obj);
+        m_OldSkillsSpecificationsList.Clear();
     }
 
     public void UpdateStatPopupInfo(string Description, string Name)
