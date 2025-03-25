@@ -930,6 +930,7 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
     public void SetQSkillLevelRpc() 
     {
         m_QSkillLevel++;
+        m_QSkill.SetCooldown(m_QSkillLevel);
     }
     public int GetWSkillLevel() 
     {
@@ -939,6 +940,7 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
     public void SetWSkillLevelRpc() 
     {
         m_WSkillLevel++;
+        m_WSkill.SetCooldown(m_WSkillLevel);
     }
     public int GetESkillLevel() 
     {
@@ -948,6 +950,7 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
     public void SetESkillLevelRpc() 
     {
         m_ESkillLevel++;
+        m_ESkill.SetCooldown(m_ESkillLevel);
     }
     public int GetRSkillLevel() 
     {
@@ -957,5 +960,6 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
     public void SetRSkillLevelRpc() 
     {
         m_RSkillLevel++;
+        m_RSkill.SetCooldown(m_RSkillLevel);
     }
 }

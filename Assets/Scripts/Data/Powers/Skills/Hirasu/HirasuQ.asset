@@ -39,7 +39,35 @@ MonoBehaviour:
   m_SkillDisabledTime: 0.3
   m_CancelableWithMouseClick: 0
   m_AttributeList:
-  - m_AttributeId: 
-    m_LevelScaling: []
-  - m_AttributeId: 
-    m_LevelScaling: []
+  - m_AttributeId: "Da\xF1o base"
+    m_IsPct: 0
+    m_LevelScaling:
+    - 70
+    - 100
+    - 150
+    - 180
+    - 200
+  - m_AttributeId: Enfriamiento
+    m_IsPct: 0
+    m_LevelScaling:
+    - 8
+    - 8
+    - 8
+    - 8
+    - 8
+  - m_AttributeId: Coste de Mana
+    m_IsPct: 0
+    m_LevelScaling:
+    - 30
+    - 35
+    - 40
+    - 45
+    - 50
+  - m_AttributeId: Astillas
+    m_IsPct: 0
+    m_LevelScaling:
+    - 1
+    - 2
+    - 3
+    - 4
+    - 5

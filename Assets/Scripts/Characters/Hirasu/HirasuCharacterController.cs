@@ -19,7 +19,6 @@ public class HirasuCharacterController : CharacterMaster
 	float m_SecondAttackTimer;
 
     [Header("Q SKILL")]
-	public float[] m_QDamagePerLevel;
 	public float m_QAdditionalDamage;
 	public GameObject m_QProjectile;
 	public GameObject m_QSplinter;
@@ -197,7 +196,7 @@ public class HirasuCharacterController : CharacterMaster
 				{
 					if(Entity.TryGetComponent(out ITakeDamage Enemy))
 					{
-						Enemy.TakeDamage(m_QDamagePerLevel[GetQSkillLevel()-1]+(m_QAdditionalDamage/100.0f*m_CharacterStats.GetBonusAttackDamage())+l_ExtraPhysDamage, l_ExtraMagicDamage, 
+						Enemy.TakeDamage(m_QSkill.GetAttribute("Daño base", GetQSkillLevel())+(m_QAdditionalDamage/100.0f*m_CharacterStats.GetBonusAttackDamage())+l_ExtraPhysDamage, l_ExtraMagicDamage, 
 							m_CharacterStats.GetPlayerName());
 						for(int i=0; i<2; i++)
 						{
@@ -237,7 +236,7 @@ public class HirasuCharacterController : CharacterMaster
     {
         NetworkObject l_Projectile=Projectile;
 		HirasuQProjectile l_ProjectileScript=l_Projectile.GetComponent<HirasuQProjectile>();
-		l_ProjectileScript.SetStats(this, Range, m_QDuration, Direction, m_QDamagePerLevel[GetQSkillLevel()-1]+(m_QAdditionalDamage/100.0f*m_CharacterStats.GetBonusAttackDamage()), 
+		l_ProjectileScript.SetStats(this, Range, m_QDuration, Direction, m_QSkill.GetAttribute("Daño base", GetQSkillLevel())+(m_QAdditionalDamage/100.0f*m_CharacterStats.GetBonusAttackDamage()), 
 			PhysDamage, MagDamage, GetQSkillLevel(), m_QSplinter, m_QSplintersDuration, m_QHoldWidth);
     }
     void SpawnSplinter(Vector3 Position, Vector3 Forward, Transform Parent, ITakeDamage Enemy)
