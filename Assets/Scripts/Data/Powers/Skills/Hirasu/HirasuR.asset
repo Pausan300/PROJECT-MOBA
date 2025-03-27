@@ -25,7 +25,7 @@ MonoBehaviour:
     m_ShowScalingInPopup: 1
     m_LevelScaling:
     - 250
-    - 200
+    - 300
     - 350
   - m_AttributeId: Enfriamiento
     m_IsPct: 0

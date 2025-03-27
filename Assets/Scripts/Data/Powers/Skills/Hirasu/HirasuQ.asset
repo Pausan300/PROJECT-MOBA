@@ -33,7 +33,7 @@ MonoBehaviour:
     - 200
   - m_AttributeId: Enfriamiento
     m_IsPct: 0
-    m_ShowScalingInPopup: 1
+    m_ShowScalingInPopup: 0
     m_LevelScaling:
     - 8
     - 8
@@ -63,6 +63,9 @@ MonoBehaviour:
     m_IsMagicDamage: 0
     m_BaseDamageMultiplier: 1
     m_BonusDamagePct: 80
+  m_ExtraSpecifications:
+  - Aplica efectos de impacto
+  - "Solo se puede clavar 1 astilla en s\xFAbditos"
   m_IndicatorUIObject: {fileID: 6649836915933689498, guid: 8caef782d2af9ec429b3465c5f423ec6, type: 3}
   m_SkillDisabledTime: 0.3
   m_CancelableWithMouseClick: 0

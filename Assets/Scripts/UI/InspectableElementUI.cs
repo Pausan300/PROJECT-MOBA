@@ -30,6 +30,11 @@ public class InspectableElementCustomEditor : Editor
             EditorGUILayout.PropertyField(l_StatDescription, GUILayout.Height(80));
             //l_Inspector.m_StatDescription=EditorGUILayout.TextArea(l_Inspector.m_StatDescription, GUILayout.Height(60));
         }
+        else if(l_Inspector.m_PopupType!=InspectableElementUI.PopupType.SUMMONER1 &&l_Inspector.m_PopupType!=InspectableElementUI.PopupType.SUMMONER2) 
+        {
+            SerializedProperty l_IsLevelUp=serializedObject.FindProperty("m_IsLevelUp");
+            EditorGUILayout.PropertyField(l_IsLevelUp);
+        }
         serializedObject.ApplyModifiedProperties();
     }
 }
@@ -52,16 +57,27 @@ public class InspectableElementUI : MonoBehaviour, IPointerEnterHandler, IPointe
 	public CharacterUI m_CharacterUI;
     public string m_StatName;
     public string m_StatDescription;
+    public bool m_IsLevelUp;
+
+    private void OnDisable()
+    {
+		m_CharacterUI.HidePopup();
+    }
 
 	public void OnPointerEnter(PointerEventData eventData)
 	{
-        if(m_PopupType==PopupType.STAT)
-		    m_CharacterUI.SetPopupType(m_PopupType, m_StatDescription, m_StatName);
-        else
-		    m_CharacterUI.SetPopupType(m_PopupType, null, null);
+        UpdatePopup(true);
 	}
 	public void OnPointerExit(PointerEventData eventData)
 	{
 		m_CharacterUI.HidePopup();
 	}
+
+    public void UpdatePopup(bool ShowPopup) 
+    {
+        if(m_PopupType==PopupType.STAT)
+		    m_CharacterUI.SetPopupType(m_PopupType, m_StatDescription, m_StatName, false, ShowPopup);
+        else
+		    m_CharacterUI.SetPopupType(m_PopupType, null, null, m_IsLevelUp, ShowPopup);
+    }
 }

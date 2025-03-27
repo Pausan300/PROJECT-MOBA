@@ -310,24 +310,32 @@ public class CharacterUI : MonoBehaviour
     //        }
     //    }
     //}
-    public void SetPopupType(InspectableElementUI.PopupType PopupElement, string Description, string Name)
+    public void SetPopupType(InspectableElementUI.PopupType PopupElement, string Description, string Name, bool IsLevelUp, bool _ShowPopup)
     {
         switch (PopupElement)
         {
             case InspectableElementUI.PopupType.PASSIVESKILL:
-                m_PopupUI.UpdatePowerPopupInfo(m_Character.m_PassiveSkill, "P", null, 0);
+                m_PopupUI.UpdatePowerPopupInfo(m_Character.m_PassiveSkill, "P", 0, IsLevelUp);
                 break;
             case InspectableElementUI.PopupType.QSKILL:
-                m_PopupUI.UpdatePowerPopupInfo(m_Character.m_QSkill, m_Character.m_QSkillKey.ToString(), m_Character.m_QSkill.GetMana(m_Character.GetQSkillLevel()).ToString(), m_Character.GetQSkillLevel());
+                if(m_Character.GetQSkillLevel()>=5 && !_ShowPopup)
+                    return;
+                m_PopupUI.UpdatePowerPopupInfo(m_Character.m_QSkill, m_Character.m_QSkillKey.ToString(), m_Character.GetQSkillLevel(), IsLevelUp);
                 break;
             case InspectableElementUI.PopupType.WSKILL:
-                m_PopupUI.UpdatePowerPopupInfo(m_Character.m_WSkill, m_Character.m_WSkillKey.ToString(), m_Character.m_WSkill.GetMana(m_Character.GetWSkillLevel()).ToString(), m_Character.GetWSkillLevel());
+                if(m_Character.GetWSkillLevel()>=5 && !_ShowPopup)
+                    return;
+                m_PopupUI.UpdatePowerPopupInfo(m_Character.m_WSkill, m_Character.m_WSkillKey.ToString(), m_Character.GetWSkillLevel(), IsLevelUp);
                 break;
             case InspectableElementUI.PopupType.ESKILL:
-                m_PopupUI.UpdatePowerPopupInfo(m_Character.m_ESkill, m_Character.m_ESkillKey.ToString(), m_Character.m_ESkill.GetMana(m_Character.GetESkillLevel()).ToString(), m_Character.GetESkillLevel());
+                if(m_Character.GetESkillLevel()>=5 && !_ShowPopup)
+                    return;
+                m_PopupUI.UpdatePowerPopupInfo(m_Character.m_ESkill, m_Character.m_ESkillKey.ToString(), m_Character.GetESkillLevel(), IsLevelUp);
                 break;
             case InspectableElementUI.PopupType.RSKILL:
-                m_PopupUI.UpdatePowerPopupInfo(m_Character.m_RSkill, m_Character.m_RSkillKey.ToString(),m_Character.m_RSkill.GetMana(m_Character.GetRSkillLevel()).ToString(), m_Character.GetRSkillLevel());
+                if(m_Character.GetRSkillLevel()>=3 && !_ShowPopup)
+                    return;
+                m_PopupUI.UpdatePowerPopupInfo(m_Character.m_RSkill, m_Character.m_RSkillKey.ToString(), m_Character.GetRSkillLevel(), IsLevelUp);
                 break;
             case InspectableElementUI.PopupType.SUMMONER1:
                 m_PopupUI.UpdatePowerPopupInfo(m_Character.m_SummSpell1, m_Character.m_SummSpell1Key.ToString());
@@ -339,7 +347,8 @@ public class CharacterUI : MonoBehaviour
                 m_PopupUI.UpdateStatPopupInfo(Description, Name);
                 break;
         }
-        ShowPopup();
+        if(_ShowPopup)
+            ShowPopup();
     }
 
     //SHOW & HIDE METHODS
@@ -412,6 +421,7 @@ public class CharacterUI : MonoBehaviour
     }
     public void HidePopup()
     {
+        m_PopupUI.StopAnimation();
         m_PopupUI.gameObject.SetActive(false);
     }
 

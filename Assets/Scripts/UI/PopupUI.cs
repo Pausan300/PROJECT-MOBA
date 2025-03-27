@@ -17,6 +17,7 @@ public class PopupUI : MonoBehaviour
     public GameObject m_TopSeparationImage;
     public GameObject m_BotSeparationImage;
     public TextMeshProUGUI m_MainDescription;
+    public TextMeshProUGUI m_ExtraSpecificationsText;
     [Header("POWER INFO")]
     public GameObject m_TopPowerInfoHolder;
     public Image m_PowerImage;
@@ -38,7 +39,7 @@ public class PopupUI : MonoBehaviour
         m_Animation=GetComponent<Animation>();
     }
 
-    public void UpdatePowerPopupInfo(Skill _Skill, string Key, string Mana, int SkillLV)
+    public void UpdatePowerPopupInfo(Skill _Skill, string Key, int SkillLV, bool LevelingUp)
     {
         m_TopPowerInfoHolder.SetActive(true);
         m_TopSeparationImage.SetActive(true);
@@ -50,8 +51,8 @@ public class PopupUI : MonoBehaviour
             m_PowerCd.text = _Skill.GetCd().ToString() + " s";
         else
             m_PowerCd.text = "";
-        if (Mana != null)
-            m_SkillMana.text = Mana + " Mana";
+        if (_Skill.GetMana(SkillLV) != 0.0f)
+            m_SkillMana.text = _Skill.GetMana(SkillLV).ToString() + " Mana";
         else
             m_SkillMana.text = "";
         m_PowerImage.sprite = _Skill.m_Sprite;
@@ -61,7 +62,7 @@ public class PopupUI : MonoBehaviour
                 Destroy(Obj);
         m_OldSkillsSpecificationsList.Clear();
 
-        if(SkillLV!=0)
+        if(!LevelingUp || (LevelingUp && SkillLV>0))
         {
             foreach (SkillAttribute Attribute in _Skill.m_AttributeList)
             {
@@ -71,28 +72,32 @@ public class PopupUI : MonoBehaviour
                     m_OldSkillsSpecificationsList.Add(l_SkillsSpecificationsPrefabUI.gameObject);
                     string SkillStatsLV = "";
 
-                    int i = 0;
-                    foreach (float Stat in Attribute.m_LevelScaling)
+                    if(!LevelingUp) 
                     {
-                        i++;
-                        string l_Stat = "";
-                        if (i == SkillLV || (SkillLV == 0 && i == 1))
+                        int i = 0;
+                        foreach (float Stat in Attribute.m_LevelScaling)
                         {
-                            l_Stat = "<b><color=#FFFFFF>" + Stat.ToString() + "</color></b>";
-                        }
-                        else
-                            l_Stat = Stat.ToString();
+                            i++;
+                            string l_Stat = "";
+                            if (i == SkillLV || (SkillLV == 0 && i == 1))
+                            {
+                                l_Stat = "<b><color=#FFFFFF>" + Stat.ToString() + "</color></b>";
+                            }
+                            else
+                                l_Stat = Stat.ToString();
 
-                        if (SkillStatsLV == "")
-                            SkillStatsLV = l_Stat;
-                        else
-                            SkillStatsLV = SkillStatsLV + " / " + l_Stat;
+                            if (SkillStatsLV == "")
+                                SkillStatsLV = l_Stat;
+                            else
+                                SkillStatsLV = SkillStatsLV + " / " + l_Stat;
+                        }
+                        SkillStatsLV = "[ " + SkillStatsLV + " ]";
                     }
-                    SkillStatsLV = "[ " + SkillStatsLV + " ]";
+                    else 
+                        SkillStatsLV = Attribute.m_LevelScaling[SkillLV-1].ToString() + " -> " + Attribute.m_LevelScaling[SkillLV].ToString();
                 
                     l_SkillsSpecificationsPrefabUI.SetSkillsSpecificationsPrefabUI(Attribute.m_AttributeId, SkillStatsLV);
                 }
-
             }
         }
 
@@ -125,10 +130,22 @@ public class PopupUI : MonoBehaviour
             
             string l_DescriptionText=l_TotalDamageText + " = (</color></b>" + l_BaseDamageText + l_BonusDamageText + l_TotalDamageColorText + l_DamageTypeText;
 
-            m_MainDescription.text = _Skill.m_Description.Replace(DamageDescription.m_DescriptionId, l_DescriptionText);
+            m_MainDescription.text = m_MainDescription.text.Replace(DamageDescription.m_DescriptionId, l_DescriptionText);
         }
 
-        if(m_OldSkillsSpecificationsList.Count<=0)
+        if(_Skill.m_ExtraSpecifications.Length>0) 
+        {
+            m_ExtraSpecificationsText.text = "";
+            m_ExtraSpecificationsText.gameObject.SetActive(true);
+            foreach(string Specification in _Skill.m_ExtraSpecifications) 
+            {
+                m_ExtraSpecificationsText.text = m_ExtraSpecificationsText.text + Specification + "\n";
+            }
+        }
+        else
+            m_ExtraSpecificationsText.gameObject.SetActive(false);
+
+        if(m_OldSkillsSpecificationsList.Count<=0 && _Skill.m_ExtraSpecifications.Length<=0)
             m_BotSeparationImage.SetActive(false);
         else
             m_BotSeparationImage.SetActive(true);
@@ -174,6 +191,10 @@ public class PopupUI : MonoBehaviour
         m_Rect.anchoredPosition=new Vector2(m_Rect.anchoredPosition.x, l_NewPos);
     }
 
+    public void StopAnimation() 
+    {
+        m_Animation.Stop();
+    }
     //LLAMADA POR EVENTO EN LA ANIMACION DE SHOWPOPUP
     public void PlayShowAnimation() 
     {

@@ -26,6 +26,7 @@ public class Skill : Power
 {
     public SkillAttribute[] m_AttributeList;
     public SkillDescriptionDamage[] m_DescriptionDamageList;
+    public string[] m_ExtraSpecifications;
     public GameObject m_IndicatorUIObject;
     public float m_SkillDisabledTime;
     public bool m_CancelableWithMouseClick;
