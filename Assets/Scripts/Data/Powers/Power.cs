@@ -19,7 +19,6 @@ public class Power : ScriptableObject
     public Sprite m_Sprite;
     [TextArea(3, 10)]
     public string m_Description;
-    public GameObject m_IndicatorUIObject;
     float m_Cooldown;
     float m_Timer;
     bool m_OnCd;
@@ -36,6 +35,7 @@ public class Power : ScriptableObject
         m_OnCd=false;
         m_Timer=0.0f;
     }
+
     public float GetTimer()
     {
         return m_Timer;
@@ -47,6 +47,7 @@ public class Power : ScriptableObject
         else
             m_Timer=0.5f;
     }
+
     public bool GetIsOnCd()
     {
         return m_OnCd;
@@ -55,6 +56,7 @@ public class Power : ScriptableObject
     {
         m_OnCd=IsOnCd;
     }
+
     public float GetCd()
     {
         return m_Cooldown;
@@ -63,6 +65,7 @@ public class Power : ScriptableObject
     {
         m_Cooldown=Cd;
     }
+
     public void SetZeroCooldown(bool IsZeroCd)
     {
         m_ZeroCd=IsZeroCd;

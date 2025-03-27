@@ -14696,7 +14696,7 @@ ParticleSystem:
   cullingMode: 3
   ringBufferMode: 0
   ringBufferLoopRange: {x: 0, y: 1}
-  emitterVelocityMode: 1
+  emitterVelocityMode: 0
   looping: 1
   prewarm: 0
   playOnAwake: 1
@@ -19551,7 +19551,7 @@ ParticleSystem:
   cullingMode: 3
   ringBufferMode: 0
   ringBufferLoopRange: {x: 0, y: 1}
-  emitterVelocityMode: 1
+  emitterVelocityMode: 0
   looping: 1
   prewarm: 0
   playOnAwake: 1
@@ -30651,12 +30651,6 @@ MonoBehaviour:
   m_StaffFlames: {fileID: 4195194976546961208}
   m_StaffFlames2: {fileID: 6401260905612993003}
   m_MaxSecondAttackTime: 2
-  m_QDamagePerLevel:
-  - 70
-  - 100
-  - 150
-  - 180
-  - 200
   m_QAdditionalDamage: 80
   m_QProjectile: {fileID: 8930208601889411723, guid: 9699a90c977bc09448beef67ba2c9b65, type: 3}
   m_QSplinter: {fileID: 7129751519554170862, guid: 1b5cdeb9bd2853d4ca4f5c91d8fe8c95, type: 3}
@@ -30668,12 +30662,6 @@ MonoBehaviour:
   m_QHoldRange: 1200
   m_QHoldWidth: 40
   m_QSplintersDuration: 4
-  m_WDamagePerLevel:
-  - 50
-  - 80
-  - 115
-  - 150
-  - 180
   m_WAdditionalDamageSplinter: 120
   m_WAdditionalDamageExplosion: 90
   m_WExplosionRadius: 100
@@ -30694,10 +30682,6 @@ MonoBehaviour:
   m_EBuffSpeed:
   - 20
   - 30
-  m_RDamagePerLevel:
-  - 250
-  - 300
-  - 350
   m_RAdditionalDamage: 120
   m_RExplosion: {fileID: 8270496605563521561, guid: cfc56e7e881192d4ba33aed8b187e431, type: 3}
   m_RExplosionBlueMaterial: {fileID: 2100000, guid: 06c9c633225fbe24883ab0cfb6a958f0, type: 2}

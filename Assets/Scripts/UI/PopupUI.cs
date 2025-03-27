@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Drawing;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -9,12 +10,15 @@ using UnityEngine.UI;
 
 public class PopupUI : MonoBehaviour
 {
+    RectTransform m_Rect;
+    Animation m_Animation;
+    CharacterMaster m_Player;
+
     public GameObject m_TopSeparationImage;
     public GameObject m_BotSeparationImage;
     public TextMeshProUGUI m_MainDescription;
     [Header("POWER INFO")]
     public GameObject m_TopPowerInfoHolder;
-    public GameObject m_BotPowerInfoHolder;
     public Image m_PowerImage;
     public TextMeshProUGUI m_PowerName;
     public TextMeshProUGUI m_PowerKey;
@@ -25,18 +29,24 @@ public class PopupUI : MonoBehaviour
     List<GameObject> m_OldSkillsSpecificationsList = new List<GameObject>();
     [Header("STAT INFO")]
     public TextMeshProUGUI m_StatName;
+    [Header("POSITION")]
+    public float m_BottomYPos;
+
+    private void Awake()
+    {
+        m_Rect=GetComponent<RectTransform>();
+        m_Animation=GetComponent<Animation>();
+    }
 
     public void UpdatePowerPopupInfo(Skill _Skill, string Key, string Mana, int SkillLV)
     {
         m_TopPowerInfoHolder.SetActive(true);
-        m_BotPowerInfoHolder.SetActive(true);
         m_TopSeparationImage.SetActive(true);
-        m_BotSeparationImage.SetActive(true);
         m_StatName.gameObject.SetActive(false);
-        m_MainDescription.text = _Skill.m_Description.Replace("X", "HOLA");
+        m_MainDescription.text = _Skill.m_Description;
         m_PowerName.text = _Skill.m_PowerName;
         m_PowerKey.text = "[" + Key + "]";
-        if (_Skill.GetCd().ToString() != null)
+        if (_Skill.GetCd().ToString() != null && _Skill.m_PowerType!=Power.PowerType.PASSIVESKILL)
             m_PowerCd.text = _Skill.GetCd().ToString() + " s";
         else
             m_PowerCd.text = "";
@@ -51,43 +61,84 @@ public class PopupUI : MonoBehaviour
                 Destroy(Obj);
         m_OldSkillsSpecificationsList.Clear();
 
-        foreach (SkillAttribute Attribute in _Skill.m_AttributeList)
+        if(SkillLV!=0)
         {
-            SkillsSpecificationsPrefabUI l_SkillsSpecificationsPrefabUI = Instantiate(m_SkillsSpecificationsPrefab, m_SkillsSpecificationsContent.transform).GetComponent<SkillsSpecificationsPrefabUI>();
-            m_OldSkillsSpecificationsList.Add(l_SkillsSpecificationsPrefabUI.gameObject);
-            string SkillStatsLV = "";
-            if (Attribute.m_LevelScaling != null && Attribute.m_LevelScaling.Count > 0)
+            foreach (SkillAttribute Attribute in _Skill.m_AttributeList)
             {
-                int i = 0;
-                foreach (float Stat in Attribute.m_LevelScaling)
+                if (Attribute.m_LevelScaling != null && Attribute.m_LevelScaling.Count > 0 && Attribute.m_ShowScalingInPopup)
                 {
-                    i++;
-                    string l_Stat = "";
-                    if (i == SkillLV || (SkillLV == 0 && i == 1))
-                    {
-                        l_Stat = "<b><color=#FFFFFF>" + Stat.ToString() + "</color></b>";
-                    }
-                    else
-                        l_Stat = Stat.ToString();
+                    SkillsSpecificationsPrefabUI l_SkillsSpecificationsPrefabUI = Instantiate(m_SkillsSpecificationsPrefab, m_SkillsSpecificationsContent.transform).GetComponent<SkillsSpecificationsPrefabUI>();
+                    m_OldSkillsSpecificationsList.Add(l_SkillsSpecificationsPrefabUI.gameObject);
+                    string SkillStatsLV = "";
 
-                    if (SkillStatsLV == "")
-                        SkillStatsLV = l_Stat;
-                    else
-                        SkillStatsLV = SkillStatsLV + " / " + l_Stat;
+                    int i = 0;
+                    foreach (float Stat in Attribute.m_LevelScaling)
+                    {
+                        i++;
+                        string l_Stat = "";
+                        if (i == SkillLV || (SkillLV == 0 && i == 1))
+                        {
+                            l_Stat = "<b><color=#FFFFFF>" + Stat.ToString() + "</color></b>";
+                        }
+                        else
+                            l_Stat = Stat.ToString();
+
+                        if (SkillStatsLV == "")
+                            SkillStatsLV = l_Stat;
+                        else
+                            SkillStatsLV = SkillStatsLV + " / " + l_Stat;
+                    }
+                    SkillStatsLV = "[ " + SkillStatsLV + " ]";
+                
+                    l_SkillsSpecificationsPrefabUI.SetSkillsSpecificationsPrefabUI(Attribute.m_AttributeId, SkillStatsLV);
                 }
-                SkillStatsLV = "[ " + SkillStatsLV + " ]";
+
+            }
+        }
+
+        float l_BaseDamage=_Skill.GetAttribute("Daño base", SkillLV);
+        foreach(SkillDescriptionDamage DamageDescription in _Skill.m_DescriptionDamageList) 
+        {
+            string l_BaseDamageText="<b><color=#FFFFFF>" + (l_BaseDamage*DamageDescription.m_BaseDamageMultiplier) + "</color></b>";
+
+            string l_BonusDamageText;
+            float l_BonusDamage;
+            string  l_TotalDamageColorText;
+            string l_DamageTypeText;
+            if(DamageDescription.m_IsMagicDamage) 
+            {
+                l_BonusDamage=m_Player.GetCharacterStats().GetAbilityPower()*(DamageDescription.m_BonusDamagePct/100.0f);
+                l_BonusDamageText="<b><color=#CBC3E3> +" + DamageDescription.m_BonusDamagePct + "% del daño magico adicional</color></b>";
+                l_TotalDamageColorText="<b><color=#ADD8E6>";
+                l_DamageTypeText=") de daño mágico</color></b>";
+            }
+            else 
+            {
+                l_BonusDamage=m_Player.GetCharacterStats().GetBonusAttackDamage()*(DamageDescription.m_BonusDamagePct/100.0f);
+                l_BonusDamageText="<b><color=#FFA500> +" + DamageDescription.m_BonusDamagePct + "% del daño de ataque adicional</color></b>"; 
+                l_TotalDamageColorText="<b><color=#FF0000>";
+                l_DamageTypeText=") de daño físico</color></b>";
             }
 
-            l_SkillsSpecificationsPrefabUI.SetSkillsSpecificationsPrefabUI(Attribute.m_AttributeId, SkillStatsLV);
+            float l_TotalDamage=l_BaseDamage*DamageDescription.m_BaseDamageMultiplier+l_BonusDamage;
+            string l_TotalDamageText=l_TotalDamageColorText + l_TotalDamage;
+            
+            string l_DescriptionText=l_TotalDamageText + " = (</color></b>" + l_BaseDamageText + l_BonusDamageText + l_TotalDamageColorText + l_DamageTypeText;
+
+            m_MainDescription.text = _Skill.m_Description.Replace(DamageDescription.m_DescriptionId, l_DescriptionText);
         }
+
+        if(m_OldSkillsSpecificationsList.Count<=0)
+            m_BotSeparationImage.SetActive(false);
+        else
+            m_BotSeparationImage.SetActive(true);
     }
 
     public void UpdatePowerPopupInfo(Summoner _Summoner, string Key)
     {
         m_TopPowerInfoHolder.SetActive(true);
-        m_BotPowerInfoHolder.SetActive(true);
         m_TopSeparationImage.SetActive(true);
-        m_BotSeparationImage.SetActive(true);
+        m_BotSeparationImage.SetActive(false);
         m_StatName.gameObject.SetActive(false);
         m_MainDescription.text = _Summoner.m_Description.Replace("X", "HOLA");
         m_PowerName.text = _Summoner.m_PowerName;
@@ -109,11 +160,29 @@ public class PopupUI : MonoBehaviour
     public void UpdateStatPopupInfo(string Description, string Name)
     {
         m_TopPowerInfoHolder.SetActive(false);
-        m_BotPowerInfoHolder.SetActive(false);
         m_TopSeparationImage.SetActive(true);
         m_BotSeparationImage.SetActive(false);
         m_StatName.gameObject.SetActive(true);
         m_MainDescription.text = Description;
         m_StatName.text = Name;
+    }
+    
+    public void ChangePopupPos() 
+    {
+        float l_Height=m_Rect.sizeDelta.y;
+        float l_NewPos=m_BottomYPos+(l_Height/2.0f);
+        m_Rect.anchoredPosition=new Vector2(m_Rect.anchoredPosition.x, l_NewPos);
+    }
+
+    //LLAMADA POR EVENTO EN LA ANIMACION DE SHOWPOPUP
+    public void PlayShowAnimation() 
+    {
+        m_Animation.Play();
+    }
+
+    //GETTERS & SETTERS
+    public void SetPlayer(CharacterMaster Player) 
+    {
+        m_Player=Player;
     }
 }

@@ -34,7 +34,6 @@ public class HirasuCharacterController : CharacterMaster
 	float m_QCurrentHoldTime;
 
     [Header("W SKILL")]
-	public float[] m_WDamagePerLevel;
 	public float m_WAdditionalDamageSplinter;
 	public float m_WAdditionalDamageExplosion;
 	public float m_WExplosionRadius;
@@ -55,7 +54,6 @@ public class HirasuCharacterController : CharacterMaster
 	public float[] m_EBuffSpeed;
 
     [Header("R SKILL")]
-	public float[] m_RDamagePerLevel;
 	public float m_RAdditionalDamage;
 	public GameObject m_RExplosion;
 	public Material m_RExplosionBlueMaterial;
@@ -296,8 +294,8 @@ public class HirasuCharacterController : CharacterMaster
 				if(!Splinter.GetAlreadyExploded())
 				{
 					StartCoroutine(Splinter.WSpawnExplosion(m_RExplosion, Splinter.transform.position, m_WExplosionRadius, m_WExplosionRadius*2.0f/100.0f, m_WTimeToExpand,
-						m_WDamagePerLevel[GetWSkillLevel()-1]+(m_WAdditionalDamageSplinter/100.0f*m_CharacterStats.GetBonusAttackDamage()), 
-						m_WDamagePerLevel[GetWSkillLevel()-1]+(m_WAdditionalDamageExplosion/100.0f*m_CharacterStats.GetBonusAttackDamage()), m_DamageLayerMask));
+						m_WSkill.GetAttribute("Daño base", GetWSkillLevel())+(m_WAdditionalDamageSplinter/100.0f*m_CharacterStats.GetBonusAttackDamage()), 
+						m_WSkill.GetAttribute("Daño base", GetWSkillLevel())+(m_WAdditionalDamageExplosion/100.0f*m_CharacterStats.GetBonusAttackDamage()), m_DamageLayerMask));
 				}
 			}
 			base.WSkill();
@@ -399,7 +397,7 @@ public class HirasuCharacterController : CharacterMaster
 		GetAudioSource().clip=m_RSound;
 		GetAudioSource().outputAudioMixerGroup=GetOptionsUI().m_AudioMenu.m_SFXMixerGroup;
 		GetAudioSource().Play();
-		float l_Damage=m_RDamagePerLevel[GetRSkillLevel()-1]+(m_RAdditionalDamage/100.0f*m_CharacterStats.GetBonusAttackDamage());
+		float l_Damage=m_RSkill.GetAttribute("Daño base", GetRSkillLevel())+(m_RAdditionalDamage/100.0f*m_CharacterStats.GetBonusAttackDamage());
 		Vector3 l_EnemyPos=m_DesiredEnemy.position;
 		l_EnemyPos.y=0.0f;
 		Vector3 l_DesiredPos=l_EnemyPos-transform.position;

@@ -102,8 +102,11 @@ public class HirasuQProjectile : NetworkBehaviour
         l_Splinter.transform.forward=Forward;
         NetworkObject l_SplinterNetwork=l_Splinter.GetComponent<NetworkObject>();
         l_SplinterNetwork.Spawn();
-        if(AttachedEnemy)
+        if(AttachedEnemy) 
+        {
+            l_Splinter.transform.SetParent(Parent);
             SetSplinterStatsRpc(l_SplinterNetwork, AttachedEnemy.GetComponent<NetworkObject>());
+        }
         else
             SetSplinterStatsRpc(l_SplinterNetwork);
         m_SplintersLeft--;

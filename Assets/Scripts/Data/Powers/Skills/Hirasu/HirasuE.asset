@@ -19,24 +19,10 @@ MonoBehaviour:
     6: Al acabar el salto, obtiene un 20% de velocidad de movimiento durante 1 s.\n\r\nNivel
     11: Al acabar el salto, obtiene un 30% de velocidad de movimiento durante 1 s.\n\r\nNivel
     16: Al acabar el salto, obtiene un 30% de velocidad de movimiento durante 3 s. "
-  m_IndicatorUIObject: {fileID: 6649836915933689498, guid: 8caef782d2af9ec429b3465c5f423ec6, type: 3}
-  m_SkillCooldownPerLevel:
-  - 8
-  - 7.5
-  - 7
-  - 6.5
-  - 6
-  m_SkillManaPerLevel:
-  - 40
-  - 35
-  - 30
-  - 25
-  - 20
-  m_SkillDisabledTime: 0
-  m_CancelableWithMouseClick: 1
   m_AttributeList:
   - m_AttributeId: Enfriamiento
     m_IsPct: 0
+    m_ShowScalingInPopup: 1
     m_LevelScaling:
     - 8
     - 7.5
@@ -45,9 +31,13 @@ MonoBehaviour:
     - 6
   - m_AttributeId: Coste de Mana
     m_IsPct: 0
+    m_ShowScalingInPopup: 1
     m_LevelScaling:
     - 40
     - 35
     - 30
     - 25
     - 20
+  m_IndicatorUIObject: {fileID: 6649836915933689498, guid: 8caef782d2af9ec429b3465c5f423ec6, type: 3}
+  m_SkillDisabledTime: 0
+  m_CancelableWithMouseClick: 1

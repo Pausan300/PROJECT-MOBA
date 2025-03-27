@@ -15,32 +15,16 @@ MonoBehaviour:
   m_PowerType: 1
   m_PowerName: Marcaje
   m_Sprite: {fileID: 21300000, guid: f6251a35b3515ec47a9e4e0e2c6a512c, type: 3}
-  m_Description: "Pulsar: Hirasu embiste con su bast\xF3n, lo que inflige X = (70
-    +80% del da\xF1o de ataque adicional) de da\xF1o f\xEDsico al primer enemigo
-    golpeado. Devuelve la mitad del enfriamiento si golpea a un enemigo.\r\n\r\nMantener:
-    Hirasu arroja el bast\xF3n, lo que inflige X = (70 +80% del da\xF1o de ataque
-    adicional) de da\xF1o f\xEDsico a cada enemigo golpeado.\r\n\r\nCuando el bast\xF3n
-    impacta con un enemigo le clava hasta 2 astillas del bast\xF3n y mantiene la
-    trayectoria. Si el bast\xF3n impacta con m\xE1s de 2 astillas, las deja clavadas
-    en el suelo tras el enemigo impactado.\r"
-  m_IndicatorUIObject: {fileID: 6649836915933689498, guid: 8caef782d2af9ec429b3465c5f423ec6, type: 3}
-  m_SkillCooldownPerLevel:
-  - 8
-  - 8
-  - 8
-  - 8
-  - 8
-  m_SkillManaPerLevel:
-  - 30
-  - 35
-  - 40
-  - 45
-  - 50
-  m_SkillDisabledTime: 0.3
-  m_CancelableWithMouseClick: 0
+  m_Description: "Pulsar: Hirasu embiste con su bast\xF3n, lo que inflige X al primer
+    enemigo golpeado. Devuelve la mitad del enfriamiento si golpea a un enemigo.\r\n\r\nMantener:
+    Hirasu arroja el bast\xF3n, lo que inflige X a cada enemigo golpeado.\r\n\r\nCuando
+    el bast\xF3n impacta con un enemigo le clava hasta 2 astillas del bast\xF3n y
+    mantiene la trayectoria. Si el bast\xF3n impacta con m\xE1s de 2 astillas, las
+    deja clavadas en el suelo tras el enemigo impactado.\r"
   m_AttributeList:
   - m_AttributeId: "Da\xF1o base"
     m_IsPct: 0
+    m_ShowScalingInPopup: 1
     m_LevelScaling:
     - 70
     - 100
@@ -49,6 +33,7 @@ MonoBehaviour:
     - 200
   - m_AttributeId: Enfriamiento
     m_IsPct: 0
+    m_ShowScalingInPopup: 1
     m_LevelScaling:
     - 8
     - 8
@@ -57,6 +42,7 @@ MonoBehaviour:
     - 8
   - m_AttributeId: Coste de Mana
     m_IsPct: 0
+    m_ShowScalingInPopup: 1
     m_LevelScaling:
     - 30
     - 35
@@ -65,9 +51,18 @@ MonoBehaviour:
     - 50
   - m_AttributeId: Astillas
     m_IsPct: 0
+    m_ShowScalingInPopup: 1
     m_LevelScaling:
     - 1
     - 2
     - 3
     - 4
     - 5
+  m_DescriptionDamageList:
+  - m_DescriptionId: X
+    m_IsMagicDamage: 0
+    m_BaseDamageMultiplier: 1
+    m_BonusDamagePct: 80
+  m_IndicatorUIObject: {fileID: 6649836915933689498, guid: 8caef782d2af9ec429b3465c5f423ec6, type: 3}
+  m_SkillDisabledTime: 0.3
+  m_CancelableWithMouseClick: 0

@@ -8,49 +8,41 @@ public class SkillAttribute
 {
     public string m_AttributeId;
     public bool m_IsPct;
+    public bool m_ShowScalingInPopup;
     public List<float> m_LevelScaling;
+}
+
+[Serializable]
+public class SkillDescriptionDamage 
+{
+    public string m_DescriptionId;
+    public bool m_IsMagicDamage;
+    public float m_BaseDamageMultiplier;
+    public float m_BonusDamagePct;
 }
 
 [CreateAssetMenu(menuName="Powers/Skill")]
 public class Skill : Power
 {
-    public float[] m_SkillCooldownPerLevel;
-    public float[] m_SkillManaPerLevel;
+    public SkillAttribute[] m_AttributeList;
+    public SkillDescriptionDamage[] m_DescriptionDamageList;
+    public GameObject m_IndicatorUIObject;
     public float m_SkillDisabledTime;
     public bool m_CancelableWithMouseClick;
     bool m_UsingSkill;
-    public SkillAttribute[] m_AttributeList;
 
     public override void SetInitStats()
     {
         base.SetInitStats();
-        //m_SkillMana=m_SkillManaPerLevel[0];
         SetCooldown(0);
         SetUsingSkill(false);
     }
 
-    //public void LevelUp()
-    //{
-    //    m_SkillLevel++;
-    //    SetCd(m_SkillLevel);
-    //    SetMana(m_SkillLevel);
-    //}
-    //public int GetLevel()
-    //{
-    //    return m_SkillLevel;
-    //}
-    //public void SetLevel(int Level)
-    //{
-    //    m_SkillLevel=Level;
-    //}
     public float GetMana(int Level)
     {
         return GetAttribute("Coste de Mana", Level);
     }
-    //public void SetMana(int Level)
-    //{
-    //    m_SkillMana=m_SkillManaPerLevel[Level-1];
-    //}
+
     public void SetCooldown(int Level)
     {
         SetCd(GetAttribute("Enfriamiento", Level));

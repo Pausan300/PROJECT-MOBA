@@ -408,6 +408,7 @@ public class CharacterUI : MonoBehaviour
     public void ShowPopup()
     {
         m_PopupUI.gameObject.SetActive(true);
+        m_PopupUI.PlayShowAnimation();
     }
     public void HidePopup()
     {
@@ -419,6 +420,7 @@ public class CharacterUI : MonoBehaviour
     {
         m_Character = Player;
         m_EmoteUI.SetPlayer(Player);
+        m_PopupUI.SetPlayer(Player);
     }
     public void SetCastingUIAbilityText(string Text)
     {
