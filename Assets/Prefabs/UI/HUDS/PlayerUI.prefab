@@ -6112,6 +6112,8 @@ MonoBehaviour:
   m_ManaBar: {fileID: 1087493172730351253}
   m_HealthText: {fileID: 3507662172597384143}
   m_ManaText: {fileID: 802050528081568469}
+  m_CharacterImage: {fileID: 2975329459707562163}
+  m_PSkillImage: {fileID: 3490701061183128921}
   m_QSkillImage: {fileID: 5074794788064057250}
   m_WSkillImage: {fileID: 3939528301121655923}
   m_ESkillImage: {fileID: 4460657042154152100}

@@ -1,0 +1,58 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1b99bce7ea32ac459c70144bb0096a3, type: 3}
+  m_Name: ShunsoQ
+  m_EditorClassIdentifier: 
+  m_PowerType: 1
+  m_PowerName: Tanteo
+  m_Sprite: {fileID: 21300000, guid: 985ff76b270054843990d7d8681cadec, type: 3}
+  m_Description: "Shunso dispara un proyectil de sangre corrupta con energ\xEDa del
+    Yin y Yang que al golpear a un enemigo o llegar al rango m\xE1ximo, desde el
+    proyectil, Baihu realiza un ara\xF1azo que inflige X y otorga visi\xF3n de los
+    Sinluz golpeados durante 3 segundos.\r"
+  m_AttributeList:
+  - m_AttributeId: "Da\xF1o base"
+    m_IsPct: 0
+    m_ShowScalingInPopup: 1
+    m_LevelScaling:
+    - 20
+    - 40
+    - 60
+    - 90
+    - 130
+  - m_AttributeId: Enfriamiento
+    m_IsPct: 0
+    m_ShowScalingInPopup: 1
+    m_LevelScaling:
+    - 5.5
+    - 5.25
+    - 5
+    - 4.75
+    - 4.5
+  - m_AttributeId: Coste de Mana
+    m_IsPct: 0
+    m_ShowScalingInPopup: 1
+    m_LevelScaling:
+    - 30
+    - 32
+    - 35
+    - 38
+    - 40
+  m_DescriptionDamageList:
+  - m_DescriptionId: X
+    m_IsMagicDamage: 0
+    m_BaseDamageMultiplier: 1
+    m_BonusDamagePct: 125
+  m_ExtraSpecifications: []
+  m_IndicatorUIObject: {fileID: 6649836915933689498, guid: 8caef782d2af9ec429b3465c5f423ec6, type: 3}
+  m_SkillDisabledTime: 0
+  m_CancelableWithMouseClick: 0

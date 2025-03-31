@@ -6,6 +6,7 @@ public class CharacterBaseStatsBlock : ScriptableObject
 {
     [Header("PLAYER INFO")]
     public string m_PlayerName;
+    public Sprite m_CharacterIcon;
 
     [Header("BASE STATS")]
     public float m_BaseHealth;

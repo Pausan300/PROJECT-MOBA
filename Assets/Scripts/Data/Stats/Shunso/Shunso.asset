@@ -10,28 +10,28 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 75660bcf83fc7884a9f9daa7109d1cc3, type: 3}
-  m_Name: HirasuStats
+  m_Name: Shunso
   m_EditorClassIdentifier: 
-  m_PlayerName: Hirasu
-  m_CharacterIcon: {fileID: 21300000, guid: 682b19cc7c0b1944aa3220b1fa18412b, type: 3}
-  m_BaseHealth: 670
-  m_BaseMana: 250
-  m_BaseAttackDamage: 65
-  m_BaseAttackSpeed: 0.68
-  m_BaseArmor: 33
-  m_BaseMagicResist: 32
-  m_BaseHealthRegen: 8
-  m_BaseManaRegen: 7
-  m_AttackRange: 175
-  m_BaseMovementSpeed: 350
-  m_HealthPerLevel: 100
-  m_ManaPerLevel: 52
-  m_AttackDamagePerLevel: 4
-  m_AttackSpeedPerLevel: 0.022
+  m_PlayerName: Shunso
+  m_CharacterIcon: {fileID: 21300000, guid: 4e17230ca1aa92c46b6be1d582c64d04, type: 3}
+  m_BaseHealth: 605
+  m_BaseMana: 325
+  m_BaseAttackDamage: 58
+  m_BaseAttackSpeed: 0.64
+  m_BaseArmor: 24
+  m_BaseMagicResist: 30
+  m_BaseHealthRegen: 4
+  m_BaseManaRegen: 8
+  m_AttackRange: 525
+  m_BaseMovementSpeed: 330
+  m_HealthPerLevel: 105
+  m_ManaPerLevel: 60
+  m_AttackDamagePerLevel: 2
+  m_AttackSpeedPerLevel: 0.016
   m_ArmorPerLevel: 5
-  m_MagicResistPerLevel: 2
-  m_HealthRegenPerLevel: 0.55
-  m_ManaRegenPerLevel: 0.68
+  m_MagicResistPerLevel: 1
+  m_HealthRegenPerLevel: 0.35
+  m_ManaRegenPerLevel: 0.7
   m_ExpPerLevel:
   - 0
   - 280

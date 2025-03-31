@@ -777,7 +777,8 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
         m_ESkillLevel=0;
         m_RSkillLevel=0;
 
-        m_CharacterUI.SetPowersImages(m_QSkill.m_Sprite, m_WSkill.m_Sprite, m_ESkill.m_Sprite, m_RSkill.m_Sprite, m_SummSpell1.m_Sprite, m_SummSpell2.m_Sprite);
+        m_CharacterUI.SetCharacterSprite(m_CharacterStats.GetCharacterIcon());
+        m_CharacterUI.SetPowersSprites(m_PassiveSkill.m_Sprite, m_QSkill.m_Sprite, m_WSkill.m_Sprite, m_ESkill.m_Sprite, m_RSkill.m_Sprite, m_SummSpell1.m_Sprite, m_SummSpell2.m_Sprite);
         m_CharacterUI.UpdateCharacterLevel(m_CharacterStats.GetCurrentLevel());
         m_CharacterUI.ResetSkillLevelPoints();
         m_CharacterUI.HideLevelUpSkillButtons();

@@ -16,7 +16,11 @@ public class CharacterUI : MonoBehaviour
     public TextMeshProUGUI m_HealthText;
     public TextMeshProUGUI m_ManaText;
 
+    [Header("CHARACTER ICON")]
+    public Image m_CharacterImage;
+
     [Header("SKILLS")]
+    public Image m_PSkillImage;
     public Image m_QSkillImage;
     public Image m_WSkillImage;
     public Image m_ESkillImage;
@@ -436,8 +440,13 @@ public class CharacterUI : MonoBehaviour
     {
         m_CastingAbilityText.text = Text;
     }
-    public void SetPowersImages(Sprite QSprite, Sprite WSprite, Sprite ESprite, Sprite RSprite, Sprite Summ1Sprite, Sprite Summ2Sprite)
+    public void SetCharacterSprite(Sprite CharacterIcon) 
     {
+        m_CharacterImage.sprite=CharacterIcon;
+    }
+    public void SetPowersSprites(Sprite PSprite, Sprite QSprite, Sprite WSprite, Sprite ESprite, Sprite RSprite, Sprite Summ1Sprite, Sprite Summ2Sprite)
+    {
+        m_PSkillImage.sprite = PSprite;
         m_QSkillImage.sprite = QSprite;
         m_QSkillCdImage.sprite = QSprite;
         m_WSkillImage.sprite = WSprite;

@@ -147,6 +147,10 @@ public class CharacterStats : NetworkBehaviour
     {
         return m_CharacterBaseStats.m_PlayerName;
     }
+    public Sprite GetCharacterIcon() 
+    {
+        return m_CharacterBaseStats.m_CharacterIcon;
+    }
     public int GetCurrentLevel()
     {
         return m_CurrentLevel;
