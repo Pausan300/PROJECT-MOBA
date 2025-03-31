@@ -16,13 +16,13 @@ MonoBehaviour:
   m_PowerName: "Curaci\xF3n Rebosante"
   m_Sprite: {fileID: 21300000, guid: 8ac145c8b7b5ccc4dba1dd3eba755798, type: 3}
   m_Description: "Rapatu segrega durante 3 s una sustancia curativa alrededor suya,
-    restaura X = (40 +50% del poder de habilidad +7% de la vida adicional) de vida
-    por segundo a s\xED mismo y a los aliados cercanos.\r\n\r\nBioluminiscencia:
+    restaura X de vida por segundo a s\xED mismo y a los aliados cercanos.\r\n\r\nBioluminiscencia:
     Aumenta el rango de visi\xF3n de los aliados curados durante 5 s."
   m_AttributeList:
   - m_AttributeId: "Curaci\xF3n"
     m_IsPct: 0
     m_ShowScalingInPopup: 1
+    m_ValueFormat: s
     m_LevelScaling:
     - 50
     - 80
@@ -32,6 +32,7 @@ MonoBehaviour:
   - m_AttributeId: Enfriamiento
     m_IsPct: 0
     m_ShowScalingInPopup: 1
+    m_ValueFormat: 
     m_LevelScaling:
     - 14
     - 13.5
@@ -41,22 +42,24 @@ MonoBehaviour:
   - m_AttributeId: "Man\xE1"
     m_IsPct: 0
     m_ShowScalingInPopup: 1
+    m_ValueFormat: 
     m_LevelScaling:
     - 40
     - 60
     - 80
     - 90
     - 100
-  - m_AttributeId: "Man\xE1"
-    m_IsPct: 0
-    m_ShowScalingInPopup: 1
-    m_LevelScaling:
-    - 500
   m_DescriptionDamageList:
   - m_DescriptionId: X
-    m_IsMagicDamage: 1
-    m_BaseDamageMultiplier: 1
-    m_BonusDamagePct: 50
+    m_Color: 0
+    m_AttributeId: "Man\xE1"
+    m_SkillDescriptionTooltips:
+    - m_ToolTip: +50% del poder de habilidad
+      m_Value: 50
+      m_Color: 6
+    - m_ToolTip: +7% de la vida adicional
+      m_Value: 7
+      m_Color: 3
   m_ExtraSpecifications: []
   m_IndicatorUIObject: {fileID: 0}
   m_SkillDisabledTime: 0

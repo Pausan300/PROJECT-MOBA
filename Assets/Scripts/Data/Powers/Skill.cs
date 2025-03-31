@@ -9,16 +9,30 @@ public class SkillAttribute
     public string m_AttributeId;
     public bool m_IsPct;
     public bool m_ShowScalingInPopup;
+    [Tooltip("Ej: Si el valor son segundos poner -> s || no poner espacios || si no tiene formato dejar vacío")]
+    public string m_ValueFormat = "";
     public List<float> m_LevelScaling;
 }
+
+
 
 [Serializable]
 public class SkillDescriptionDamage 
 {
     public string m_DescriptionId;
-    public bool m_IsMagicDamage;
-    public float m_BaseDamageMultiplier;
-    public float m_BonusDamagePct;
+    public TextColors.TextColorTypes m_Color;
+    public string m_AttributeId;
+    public float m_MultiplyValue = 1;
+    public SkillDescriptionTooltip[] m_SkillDescriptionTooltips;
+}
+
+[Serializable]
+public class SkillDescriptionTooltip
+{
+    public string m_ToolTip;
+    public float m_Value;
+    public TextColors.TextColorTypes m_Color;
+    
 }
 
 [CreateAssetMenu(menuName="Powers/Skill")]

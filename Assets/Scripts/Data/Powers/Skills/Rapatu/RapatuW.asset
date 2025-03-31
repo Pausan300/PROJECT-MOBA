@@ -15,20 +15,19 @@ MonoBehaviour:
   m_PowerType: 2
   m_PowerName: Bote / Rebote
   m_Sprite: {fileID: 21300000, guid: 8c42c262388d20a4ca5a7f9a8e50d43c, type: 3}
-  m_Description: "Pulsar: Rapatu salta una gran distancia, al caer inflige X = (50
-    +50% del poder de habilidad +5% de la vida adicional) de da\xF1o m\xE1gico y
-    ralentiza un 40% durante que decae durante 2 s en \xE1rea a su alrededor.\r\n\r\nReactivaci\xF3n:
+  m_Description: "Pulsar: Rapatu salta una gran distancia, al caer inflige X de da\xF1o
+    m\xE1gico  y ralentiza un 40% durante que decae durante 2 s en \xE1rea a su alrededor.\r\n\r\nReactivaci\xF3n:
     En el momento que Rapatu aterriza, puede saltar una vez m\xE1s aumentando el
-    enfriamiento un 30%. Al caer inflige Y = (50 +30% del poder de habilidad +3%
-    de la vida adicional) de da\xF1o m\xE1gico y ralentiza un 30% durante que decae
-    durante 2 s en \xE1rea a su alrededor.\r\n\r\nMantener: Rapatu permite que un
-    aliado se monte y salta una gran distancia. (No se puede reactivar)\r\n\r\nBioluminiscencia:
+    enfriamiento un 30%. Al caer inflige Y  de da\xF1o m\xE1gico y ralentiza un 30%
+    durante que decae durante 2 s en \xE1rea a su alrededor.\r\n\r\nMantener: Rapatu
+    permite que un aliado se monte y salta una gran distancia. (No se puede reactivar)\r\n\r\nBioluminiscencia:
     Al acabar el salto, aumenta el rango de visi\xF3n del aliado montado durante
     5 s.\r"
   m_AttributeList:
   - m_AttributeId: Enfriamiento
     m_IsPct: 0
     m_ShowScalingInPopup: 1
+    m_ValueFormat: s
     m_LevelScaling:
     - 18
     - 16.5
@@ -38,17 +37,30 @@ MonoBehaviour:
   - m_AttributeId: Rango
     m_IsPct: 0
     m_ShowScalingInPopup: 0
+    m_ValueFormat: 
     m_LevelScaling:
     - 1000
   m_DescriptionDamageList:
   - m_DescriptionId: X
-    m_IsMagicDamage: 1
-    m_BaseDamageMultiplier: 1
-    m_BonusDamagePct: 50
+    m_Color: 1
+    m_AttributeId: Enfriamiento
+    m_SkillDescriptionTooltips:
+    - m_ToolTip: +50% del poder de habilidad
+      m_Value: 50
+      m_Color: 5
+    - m_ToolTip: +5% de la vida adicional
+      m_Value: 5
+      m_Color: 3
   - m_DescriptionId: Y
-    m_IsMagicDamage: 1
-    m_BaseDamageMultiplier: 1
-    m_BonusDamagePct: 30
+    m_Color: 1
+    m_AttributeId: Enfriamiento
+    m_SkillDescriptionTooltips:
+    - m_ToolTip: +30% del poder de habilidad
+      m_Value: 30
+      m_Color: 6
+    - m_ToolTip: +3% de la vida adicional
+      m_Value: 3
+      m_Color: 3
   m_ExtraSpecifications:
   - "Tiempo m\xE1ximo para \u201CReactivaci\xF3n\u201D: 0,4 s. "
   - "Tiempo m\xE1ximo de \u201CMantener\u201D: 2 s."

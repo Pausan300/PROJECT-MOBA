@@ -23,6 +23,7 @@ MonoBehaviour:
   - m_AttributeId: Enfriamiento
     m_IsPct: 0
     m_ShowScalingInPopup: 1
+    m_ValueFormat: s
     m_LevelScaling:
     - 70
     - 55
@@ -30,21 +31,17 @@ MonoBehaviour:
   - m_AttributeId: Rango
     m_IsPct: 0
     m_ShowScalingInPopup: 0
+    m_ValueFormat: 
     m_LevelScaling:
     - 1000
   - m_AttributeId: Cantidad de saltos
     m_IsPct: 0
     m_ShowScalingInPopup: 1
+    m_ValueFormat: 
     m_LevelScaling:
     - 3
     - 4
     - 5
-  - m_AttributeId: Cantidad de saltos
-    m_IsPct: 0
-    m_ShowScalingInPopup: 1
-    m_LevelScaling:
-    - 3
-    - 4
   m_DescriptionDamageList: []
   m_ExtraSpecifications:
   - 'Empieza a saltar cuando: han pasado 2 segundos, se ha montado un aliado o se

@@ -16,15 +16,17 @@ MonoBehaviour:
   m_PowerName: Detonacion
   m_Sprite: {fileID: 21300000, guid: 8c42c262388d20a4ca5a7f9a8e50d43c, type: 3}
   m_Description: "Hirasu explota las astillas clavadas en enemigos y el suelo, inflige
-    X y ralentiza un 30% durante 2 s a los enemigos con astillas clavadas. Adem\xE1s
-    inflige Y y ralentiza un 20% durante 2 s a los afectados por la explosi\xF3n.\r\n\r\nPasiva
-    - Nivel 6: Al golpear 3 veces con ataques b\xE1sicos o Marcaje, marca a los enemigos
-    para que reciban 5% da\xF1o m\xE1gico adicional de la Detonaci\xF3n y la Palmada
-    Solar durante 5 s."
+    X de da\xF1o f\xEDsico y ralentiza un 30% durante 2 s a los enemigos con astillas
+    clavadas. Adem\xE1s inflige Y de da\xF1o f\xEDsico y ralentiza un 20% durante
+    2 s a los afectados por la explosi\xF3n.\r\n\r\nPasiva - Nivel 6: Al golpear
+    3 veces con ataques b\xE1sicos o Marcaje, marca a los enemigos para que reciban
+    5% da\xF1o m\xE1gico adicional de la Detonaci\xF3n y la Palmada Solar durante
+    5 s."
   m_AttributeList:
   - m_AttributeId: "Da\xF1o base"
     m_IsPct: 0
     m_ShowScalingInPopup: 1
+    m_ValueFormat: 
     m_LevelScaling:
     - 50
     - 80
@@ -34,6 +36,7 @@ MonoBehaviour:
   - m_AttributeId: Enfriamiento
     m_IsPct: 0
     m_ShowScalingInPopup: 1
+    m_ValueFormat: 
     m_LevelScaling:
     - 10
     - 9.5
@@ -43,6 +46,7 @@ MonoBehaviour:
   - m_AttributeId: Coste de Mana
     m_IsPct: 0
     m_ShowScalingInPopup: 0
+    m_ValueFormat: 
     m_LevelScaling:
     - 50
     - 50
@@ -51,13 +55,22 @@ MonoBehaviour:
     - 50
   m_DescriptionDamageList:
   - m_DescriptionId: X
-    m_IsMagicDamage: 0
-    m_BaseDamageMultiplier: 1
-    m_BonusDamagePct: 120
+    m_Color: 5
+    m_AttributeId: "Da\xF1o base"
+    m_MultiplyValue: 1
+    m_SkillDescriptionTooltips:
+    - m_ToolTip: "+120% del da\xF1o de ataque adicional"
+      m_Value: 120
+      m_Color: 4
   - m_DescriptionId: Y
-    m_IsMagicDamage: 0
-    m_BaseDamageMultiplier: 1
-    m_BonusDamagePct: 90
+    m_Color: 5
+    m_AttributeId: "Da\xF1o base"
+    m_MultiplyValue: 1
+    m_SkillDescriptionTooltips:
+    - m_ToolTip: "+90% del da\xF1o de ataque adicional"
+      m_Value: 90
+      m_Color: 4
+  m_ExtraSpecifications: []
   m_IndicatorUIObject: {fileID: 5078714052237607800, guid: 83f81966102af0341a86559624a7f892, type: 3}
   m_SkillDisabledTime: 0.3
   m_CancelableWithMouseClick: 1
