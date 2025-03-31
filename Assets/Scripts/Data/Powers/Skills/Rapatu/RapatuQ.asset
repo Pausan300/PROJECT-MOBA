@@ -1,0 +1,54 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1b99bce7ea32ac459c70144bb0096a3, type: 3}
+  m_Name: RapatuQ
+  m_EditorClassIdentifier: 
+  m_PowerType: 1
+  m_PowerName: Agarre Pegajoso
+  m_Sprite: {fileID: 21300000, guid: f6251a35b3515ec47a9e4e0e2c6a512c, type: 3}
+  m_Description: "Rapatu estira su lengua que al impactar con un enemigo engancha
+    a todos los enemigos en una peque\xF1a \xE1rea, los inmoviliza durante 1 s y
+    les inflige  X = (95 +50% del poder de habilidad) de da\xF1o m\xE1gico.\r\n\r\nReactivaci\xF3n:
+    Rapatu lanza los enemigos enganchados en cualquier direcci\xF3n. Al colisionar
+    con otros enemigos o una estructura, inflige X = (95 +50% del poder de habilidad)
+    de da\xF1o m\xE1gico y aturde durante 0,5 s a los enemigos golpeados y al enemigo
+    lanzado.\r\n\r\nBioluminiscencia: Otorga visi\xF3n verdadera de los enemigos
+    golpeados durante 10 s."
+  m_AttributeList:
+  - m_AttributeId: "Da\xF1o base"
+    m_IsPct: 0
+    m_ShowScalingInPopup: 1
+    m_LevelScaling:
+    - 95
+    - 155
+    - 195
+    - 230
+    - 255
+  - m_AttributeId: Rango
+    m_IsPct: 0
+    m_ShowScalingInPopup: 0
+    m_LevelScaling:
+    - 900
+  - m_AttributeId: Ancho hitbox
+    m_IsPct: 0
+    m_ShowScalingInPopup: 0
+    m_LevelScaling:
+    - 50
+  m_DescriptionDamageList:
+  - m_DescriptionId: X
+    m_IsMagicDamage: 1
+    m_BaseDamageMultiplier: 1
+    m_BonusDamagePct: 50
+  m_ExtraSpecifications: []
+  m_IndicatorUIObject: {fileID: 0}
+  m_SkillDisabledTime: 0
+  m_CancelableWithMouseClick: 0

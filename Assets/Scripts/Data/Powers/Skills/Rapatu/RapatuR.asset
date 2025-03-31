@@ -1,0 +1,55 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1b99bce7ea32ac459c70144bb0096a3, type: 3}
+  m_Name: RapatuR
+  m_EditorClassIdentifier: 
+  m_PowerType: 4
+  m_PowerName: Viaje Turbulento
+  m_Sprite: {fileID: 21300000, guid: 313aa9af13a3858498db7195c5a3e1f8, type: 3}
+  m_Description: "Rapatu se prepara para saltar, permitiendo que un aliado se monte
+    durante un breve periodo de tiempo. \r\n\r\nRapatu salta una gran distancia hasta
+    3 veces.\r\n\r\nBioluminiscencia: Al acabar los saltos, aumenta el rango de visi\xF3n
+    del aliado montado durante 5 s.\r"
+  m_AttributeList:
+  - m_AttributeId: Enfriamiento
+    m_IsPct: 0
+    m_ShowScalingInPopup: 1
+    m_LevelScaling:
+    - 70
+    - 55
+    - 45
+  - m_AttributeId: Rango
+    m_IsPct: 0
+    m_ShowScalingInPopup: 0
+    m_LevelScaling:
+    - 1000
+  - m_AttributeId: Cantidad de saltos
+    m_IsPct: 0
+    m_ShowScalingInPopup: 1
+    m_LevelScaling:
+    - 3
+    - 4
+    - 5
+  - m_AttributeId: Cantidad de saltos
+    m_IsPct: 0
+    m_ShowScalingInPopup: 1
+    m_LevelScaling:
+    - 3
+    - 4
+  m_DescriptionDamageList: []
+  m_ExtraSpecifications:
+  - 'Empieza a saltar cuando: han pasado 2 segundos, se ha montado un aliado o se
+    reactiva. '
+  - 'Se puede interrumpir en cualquier momento. '
+  m_IndicatorUIObject: {fileID: 0}
+  m_SkillDisabledTime: 0
+  m_CancelableWithMouseClick: 0
