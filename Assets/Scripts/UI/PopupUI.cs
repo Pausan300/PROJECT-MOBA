@@ -7,6 +7,8 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.TextCore.Text;
 using UnityEngine.UI;
+using Color = UnityEngine.Color;
+using ColorUtility = UnityEngine.ColorUtility;
 
 public class PopupUI : MonoBehaviour
 {
@@ -32,6 +34,14 @@ public class PopupUI : MonoBehaviour
     public TextMeshProUGUI m_StatName;
     [Header("POSITION")]
     public float m_BottomYPos;
+    [Header("TEXT COLORS")]
+    public Color m_SelectedTextColor = new Color32(255, 255, 255, 255);
+    public Color m_TotalMagicDamageTextColor = new Color32(173, 216, 230, 255);
+    public Color m_BonusMagicDamageTextColor = new Color32(203, 195, 227, 255);
+    public Color m_TotalFisicDamageTextColor = new Color32(255, 165, 0, 255);
+    public Color m_BonusFisicDamageTextColor = new Color32(255, 0, 0, 255);
+
+
 
     private void Awake()
     {
@@ -81,7 +91,7 @@ public class PopupUI : MonoBehaviour
                             string l_Stat = "";
                             if (i == SkillLV || (SkillLV == 0 && i == 1))
                             {
-                                l_Stat = "<b><color=#FFFFFF>" + Stat.ToString() + "</color></b>";
+                                l_Stat = $"<b><color=#{ColorUtility.ToHtmlStringRGB(m_SelectedTextColor)}>" + Stat.ToString() + "</color></b>";
                             }
                             else
                                 l_Stat = Stat.ToString();
@@ -104,7 +114,7 @@ public class PopupUI : MonoBehaviour
         float l_BaseDamage=_Skill.GetAttribute("Daño base", SkillLV);
         foreach(SkillDescriptionDamage DamageDescription in _Skill.m_DescriptionDamageList) 
         {
-            string l_BaseDamageText="<b><color=#FFFFFF>" + (l_BaseDamage*DamageDescription.m_BaseDamageMultiplier) + "</color></b>";
+            string l_BaseDamageText= $"<b><color=#{ColorUtility.ToHtmlStringRGB(m_SelectedTextColor)}>" + (l_BaseDamage*DamageDescription.m_BaseDamageMultiplier) + "</color></b>";
 
             string l_BonusDamageText;
             float l_BonusDamage;
@@ -113,15 +123,15 @@ public class PopupUI : MonoBehaviour
             if(DamageDescription.m_IsMagicDamage) 
             {
                 l_BonusDamage=m_Player.GetCharacterStats().GetAbilityPower()*(DamageDescription.m_BonusDamagePct/100.0f);
-                l_BonusDamageText="<b><color=#CBC3E3> +" + DamageDescription.m_BonusDamagePct + "% del daño magico adicional</color></b>";
-                l_TotalDamageColorText="<b><color=#ADD8E6>";
+                l_BonusDamageText=$"<b><color=#{ColorUtility.ToHtmlStringRGB(m_BonusMagicDamageTextColor)}> +" + DamageDescription.m_BonusDamagePct + "% del daño magico adicional</color></b>";
+                l_TotalDamageColorText=$"<b><color=#{ColorUtility.ToHtmlStringRGB(m_TotalMagicDamageTextColor)}>";
                 l_DamageTypeText=") de daño mágico</color></b>";
             }
             else 
             {
                 l_BonusDamage=m_Player.GetCharacterStats().GetBonusAttackDamage()*(DamageDescription.m_BonusDamagePct/100.0f);
-                l_BonusDamageText="<b><color=#FFA500> +" + DamageDescription.m_BonusDamagePct + "% del daño de ataque adicional</color></b>"; 
-                l_TotalDamageColorText="<b><color=#FF0000>";
+                l_BonusDamageText=$"<b><color=#{ColorUtility.ToHtmlStringRGB(m_BonusFisicDamageTextColor)}> +" + DamageDescription.m_BonusDamagePct + "% del daño de ataque adicional</color></b>"; 
+                l_TotalDamageColorText=$"<b><color=#{ColorUtility.ToHtmlStringRGB(m_TotalFisicDamageTextColor)}>";
                 l_DamageTypeText=") de daño físico</color></b>";
             }
 

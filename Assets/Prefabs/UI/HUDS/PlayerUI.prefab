@@ -2930,6 +2930,11 @@ MonoBehaviour:
   m_SkillsSpecificationsContent: {fileID: 9210542160247898700}
   m_StatName: {fileID: 1744029572126699537}
   m_BottomYPos: -250
+  m_SelectedTextColor: {r: 1, g: 1, b: 1, a: 1}
+  m_TotalMagicDamageTextColor: {r: 0.6784314, g: 0.84705883, b: 0.9019608, a: 1}
+  m_BonusMagicDamageTextColor: {r: 0.79607844, g: 0.7647059, b: 0.8901961, a: 1}
+  m_TotalFisicDamageTextColor: {r: 1, g: 0.64705884, b: 0, a: 1}
+  m_BonusFisicDamageTextColor: {r: 1, g: 0, b: 0, a: 1}
 --- !u!111 &5753567343606684754
 Animation:
   m_ObjectHideFlags: 0
@@ -21338,7 +21343,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1120299833569307024, guid: 1e7ee6d7c23ed86439fb947dc5984886, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7075147868303029249, guid: 1e7ee6d7c23ed86439fb947dc5984886, type: 3}
       propertyPath: m_Pivot.x
