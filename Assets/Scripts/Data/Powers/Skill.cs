@@ -29,10 +29,18 @@ public class SkillDescriptionDamage
 [Serializable]
 public class SkillDescriptionTooltip
 {
+    public enum SkillDescriptionTooltipTypes
+    {
+        TOTALATTACK,
+        ADDITIONALATTACK,
+        ADDITIONALLIFE,
+        SKILLPOWER
+    }
     public float m_Value;
     [Tooltip("Ej: Si el valor es porcentaje poner -> % || no poner espacios || si no tiene formato dejar vacío")]
     public string m_Format = "%";
     public string m_ToolTip;
+    public SkillDescriptionTooltipTypes m_AtributeType;
     public TextColors.TextColorTypes m_Color;
     
 }

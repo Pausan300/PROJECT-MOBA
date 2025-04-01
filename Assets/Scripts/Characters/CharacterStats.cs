@@ -252,6 +252,10 @@ public class CharacterStats : NetworkBehaviour
     {
         return m_HealthRegen;
     }
+    public float GetBonusHealth()
+    {
+        return m_HealthBonus;
+    }
     public float GetMaxMana()
     {
         return m_MaxMana;

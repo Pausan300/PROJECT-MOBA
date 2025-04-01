@@ -38,7 +38,7 @@ public static class TextColors
 
     public static string GetColorHEX(TextColorTypes ColorType)
     {
-        return ColorUtility.ToHtmlStringRGB(GetColor(ColorType));
+        return "#" + ColorUtility.ToHtmlStringRGB(GetColor(ColorType));
     }
     public static Color GetColor(TextColorTypes ColorType)
     {

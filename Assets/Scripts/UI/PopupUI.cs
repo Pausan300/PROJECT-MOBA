@@ -35,7 +35,7 @@ public class PopupUI : MonoBehaviour
     public TextMeshProUGUI m_StatName;
     [Header("POSITION")]
     public float m_BottomYPos;
-    
+
 
 
     private void Awake()
@@ -87,7 +87,7 @@ public class PopupUI : MonoBehaviour
                             string l_Stat = "";
                             if (i == SkillLV || (SkillLV == 0 && i == 1))
                             {
-                                l_Stat = $"<b><color=#{TextColors.GetColorHEX(TextColors.TextColorTypes.NORMAL)}>" + Stat.ToString() + " " + Attribute.m_ValueFormat + " </color></b>";
+                                l_Stat = $"<b><color={TextColors.GetColorHEX(TextColors.TextColorTypes.NORMAL)}>" + Stat.ToString() + " " + Attribute.m_ValueFormat + " </color></b>";
                             }
                             else
                                 l_Stat = Stat.ToString() + " " + Attribute.m_ValueFormat + " ";
@@ -111,19 +111,37 @@ public class PopupUI : MonoBehaviour
         foreach (SkillDescriptionDamage DamageDescription in _Skill.m_DescriptionDamageList)
         {
             string l_TooltipsText = "";
-            foreach (var _Tooltips in DamageDescription.m_SkillDescriptionTooltips)
+            float l_Total = (_Skill.GetAttribute(DamageDescription.m_AttributeId, SkillLV)) * DamageDescription.m_MultiplyValue;
+            foreach (var _Tooltip in DamageDescription.m_SkillDescriptionTooltips)
             {
-                l_TooltipsText = l_TooltipsText + $"<color=#{TextColors.GetColorHEX(_Tooltips.m_Color)}> {(_Tooltips.m_Value < 0 ? "" : "+") + _Tooltips.m_Value + _Tooltips.m_Format + " " + _Tooltips.m_ToolTip} </color>";
+                l_TooltipsText = l_TooltipsText + $"<color={TextColors.GetColorHEX(_Tooltip.m_Color)}> {(_Tooltip.m_Value < 0 ? "" : "+") + _Tooltip.m_Value + _Tooltip.m_Format + " " + _Tooltip.m_ToolTip} </color>";
+                switch (_Tooltip.m_AtributeType)
+                {
+                    case SkillDescriptionTooltip.SkillDescriptionTooltipTypes.TOTALATTACK:
+                        l_Total = l_Total + (_Tooltip.m_Value / 100) * m_Player.GetCharacterStats().GetAttackDamage();
+                        break;
+                    case SkillDescriptionTooltip.SkillDescriptionTooltipTypes.ADDITIONALATTACK:
+                        l_Total = l_Total + (_Tooltip.m_Value / 100) * m_Player.GetCharacterStats().GetBonusAttackDamage();
+                        break;
+                    case SkillDescriptionTooltip.SkillDescriptionTooltipTypes.ADDITIONALLIFE:
+                        l_Total = l_Total + (_Tooltip.m_Value / 100) * m_Player.GetCharacterStats().GetBonusHealth();
+                        break;
+                    case SkillDescriptionTooltip.SkillDescriptionTooltipTypes.SKILLPOWER:
+                        l_Total = l_Total + (_Tooltip.m_Value / 100) * m_Player.GetCharacterStats().GetAbilityPower();
+                        break;
 
+                }
             }
 
-            string l_DescriptionText = $"<color=#{TextColors.GetColorHEX(DamageDescription.m_Color)}>X = (</color><color=#{TextColors.GetColorHEX(TextColors.TextColorTypes.NORMAL)}><b> {(_Skill.GetAttribute(DamageDescription.m_AttributeId, SkillLV)) * DamageDescription.m_MultiplyValue} </b></color>{l_TooltipsText} <color=#{TextColors.GetColorHEX(DamageDescription.m_Color)}>)</color>";
 
+
+            string l_DescriptionText = $"<color={TextColors.GetColorHEX(DamageDescription.m_Color)}>{l_Total} = (</color><color={TextColors.GetColorHEX(TextColors.TextColorTypes.NORMAL)}><b> {(_Skill.GetAttribute(DamageDescription.m_AttributeId, SkillLV)) * DamageDescription.m_MultiplyValue} </b></color>{l_TooltipsText} <color={TextColors.GetColorHEX(DamageDescription.m_Color)}>)</color>";
+            l_Total = 0;
             m_MainDescription.text = m_MainDescription.text.Replace(DamageDescription.m_DescriptionId, l_DescriptionText);
 
 
 
-            /*string l_BaseDamageText = $"<b><color=#{ColorUtility.ToHtmlStringRGB(m_SelectedTextColor)}>" + (l_BaseDamage * DamageDescription.m_BaseDamageMultiplier) + "</color></b>";
+            /*string l_BaseDamageText = $"<b><color={ColorUtility.ToHtmlStringRGB(m_SelectedTextColor)}>" + (l_BaseDamage * DamageDescription.m_BaseDamageMultiplier) + "</color></b>";
 
             string l_BonusDamageText;
             float l_BonusDamage;
@@ -132,15 +150,15 @@ public class PopupUI : MonoBehaviour
             if (DamageDescription.m_IsMagicDamage)
             {
                 l_BonusDamage = m_Player.GetCharacterStats().GetAbilityPower() * (DamageDescription.m_BonusDamagePct / 100.0f);
-                l_BonusDamageText = $"<b><color=#{ColorUtility.ToHtmlStringRGB(m_BonusMagicDamageTextColor)}> +" + DamageDescription.m_BonusDamagePct + "% del daño magico adicional</color></b>";
-                l_TotalDamageColorText = $"<b><color=#{ColorUtility.ToHtmlStringRGB(m_TotalMagicDamageTextColor)}>";
+                l_BonusDamageText = $"<b><color={ColorUtility.ToHtmlStringRGB(m_BonusMagicDamageTextColor)}> +" + DamageDescription.m_BonusDamagePct + "% del daño magico adicional</color></b>";
+                l_TotalDamageColorText = $"<b><color={ColorUtility.ToHtmlStringRGB(m_TotalMagicDamageTextColor)}>";
                 l_DamageTypeText = ") de daño mágico</color></b>";
             }
             else
             {
                 l_BonusDamage = m_Player.GetCharacterStats().GetBonusAttackDamage() * (DamageDescription.m_BonusDamagePct / 100.0f);
-                l_BonusDamageText = $"<b><color=#{ColorUtility.ToHtmlStringRGB(m_BonusFisicDamageTextColor)}> +" + DamageDescription.m_BonusDamagePct + "% del daño de ataque adicional</color></b>";
-                l_TotalDamageColorText = $"<b><color=#{ColorUtility.ToHtmlStringRGB(m_TotalFisicDamageTextColor)}>";
+                l_BonusDamageText = $"<b><color={ColorUtility.ToHtmlStringRGB(m_BonusFisicDamageTextColor)}> +" + DamageDescription.m_BonusDamagePct + "% del daño de ataque adicional</color></b>";
+                l_TotalDamageColorText = $"<b><color={ColorUtility.ToHtmlStringRGB(m_TotalFisicDamageTextColor)}>";
                 l_DamageTypeText = ") de daño físico</color></b>";
             }
 
