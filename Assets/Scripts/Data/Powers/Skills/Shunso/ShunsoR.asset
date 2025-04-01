@@ -15,9 +15,60 @@ MonoBehaviour:
   m_PowerType: 4
   m_PowerName: Colmillos de Bahu
   m_Sprite: {fileID: 21300000, guid: 73bb67b75f4260e4e87329b1ec36c788, type: 3}
-  m_Description: 
-  m_AttributeList: []
-  m_DescriptionDamageList: []
+  m_Description: "Shunso dispara una gran bola de sangre corrupta con energ\xEDa
+    de Yin y Yang que al golpear a un Sinluz o llegar al lugar seleccionado, invoca
+    a Baihu para que muerda a los enemigos infligiendo X <color=FISICDAMAGE>+ 5 por
+    cada 100 unidades viajadas como da\xF1o f\xEDsico</color>.\r\n\r\nEsta habilidad
+    otorga el doble de acumulaciones de Fuerza Corrupta si el enemigo tiene <color=FISICDAMAGE>Vida
+    Corrupta</color>.\r"
+  m_AttributeList:
+  - m_AttributeId: "Da\xF1o base"
+    m_IsPct: 0
+    m_ShowScalingInPopup: 1
+    m_ValueFormat: 
+    m_LevelScaling:
+    - 250
+    - 400
+    - 550
+  - m_AttributeId: Enfriamiento
+    m_IsPct: 0
+    m_ShowScalingInPopup: 1
+    m_ValueFormat: s
+    m_LevelScaling:
+    - 80
+    - 60
+    - 40
+  - m_AttributeId: Coste de Mana
+    m_IsPct: 0
+    m_ShowScalingInPopup: 0
+    m_ValueFormat: 
+    m_LevelScaling:
+    - 100
+    - 100
+    - 100
+  - m_AttributeId: Rango
+    m_IsPct: 0
+    m_ShowScalingInPopup: 0
+    m_ValueFormat: 
+    m_LevelScaling:
+    - 8000
+  - m_AttributeId: Ancho
+    m_IsPct: 0
+    m_ShowScalingInPopup: 0
+    m_ValueFormat: 
+    m_LevelScaling:
+    - 200
+  m_DescriptionDamageList:
+  - m_DescriptionId: X
+    m_Color: 5
+    m_AttributeId: "Da\xF1o base"
+    m_MultiplyValue: 1
+    m_SkillDescriptionTooltips:
+    - m_Value: 160
+      m_Format: '%'
+      m_ToolTip: "del da\xF1o de ataque adicional"
+      m_AtributeType: 1
+      m_Color: 4
   m_ExtraSpecifications: []
   m_IndicatorUIObject: {fileID: 0}
   m_SkillDisabledTime: 0

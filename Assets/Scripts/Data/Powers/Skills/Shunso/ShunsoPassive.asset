@@ -15,7 +15,13 @@ MonoBehaviour:
   m_PowerType: 0
   m_PowerName: Equilibrio Espiritual
   m_Sprite: {fileID: 21300000, guid: 3212a6782c4f948488eff191da95aa98, type: 3}
-  m_Description: 
+  m_Description: "Shunso posee la marca del Yin. Al golpear a un Sinluz con un ataque
+    b\xE1sico o una habilidad le pone la marca del Yang durante 5 segundos para drenarle
+    5 de man\xE1 por segundo, creando una \xE1rea alrededor de Shunso que le proporciona
+    a s\xED misma y sus compa\xF1eros el man\xE1 drenado. Puede haber m\xFAltiples
+    Sinluz con la marca del Yang, permitiendo drenar a varios objetivos a la vez.\r\n\r\nPor
+    cada 3 Sinluz con la marca del Yang, Shunso recupera cada segundo 0,5 s de enfriamiento
+    de sus habilidades b\xE1sicas por segundo."
   m_AttributeList: []
   m_DescriptionDamageList: []
   m_ExtraSpecifications: []

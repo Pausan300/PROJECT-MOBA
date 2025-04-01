@@ -17,8 +17,8 @@ MonoBehaviour:
   m_Sprite: {fileID: 21300000, guid: 985ff76b270054843990d7d8681cadec, type: 3}
   m_Description: "Shunso dispara un proyectil de sangre corrupta con energ\xEDa del
     Yin y Yang que al golpear a un enemigo o llegar al rango m\xE1ximo, desde el
-    proyectil, Baihu realiza un ara\xF1azo que inflige X de da\xF1o f\xEDsico y otorga
-    visi\xF3n de los Sinluz golpeados durante 3 segundos.\r"
+    proyectil, Baihu realiza un ara\xF1azo que inflige X <color=FISICDAMAGE>de da\xF1o
+    f\xEDsico </color>y otorga visi\xF3n de los Sinluz golpeados durante 3 segundos.\r"
   m_AttributeList:
   - m_AttributeId: "Da\xF1o base"
     m_IsPct: 0
@@ -50,6 +50,18 @@ MonoBehaviour:
     - 35
     - 38
     - 40
+  - m_AttributeId: Rango
+    m_IsPct: 0
+    m_ShowScalingInPopup: 0
+    m_ValueFormat: 
+    m_LevelScaling:
+    - 900
+  - m_AttributeId: Ancho
+    m_IsPct: 0
+    m_ShowScalingInPopup: 0
+    m_ValueFormat: 
+    m_LevelScaling:
+    - 80
   m_DescriptionDamageList:
   - m_DescriptionId: X
     m_Color: 5
@@ -59,8 +71,10 @@ MonoBehaviour:
     - m_Value: 125
       m_Format: '%'
       m_ToolTip: "del da\xF1o de ataque total"
+      m_AtributeType: 0
       m_Color: 4
-  m_ExtraSpecifications: []
+  m_ExtraSpecifications:
+  - Aplica efectos de impacto
   m_IndicatorUIObject: {fileID: 6649836915933689498, guid: 8caef782d2af9ec429b3465c5f423ec6, type: 3}
   m_SkillDisabledTime: 0
   m_CancelableWithMouseClick: 0

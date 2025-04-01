@@ -63,7 +63,7 @@ public class IngameCharacterUI : MonoBehaviour
             for(int i=m_DamageInstanceList.Count-1; i>=0; --i) 
             {
                 m_DamageInstanceList[i].m_Timer+=Time.deltaTime;
-                if(m_DamageInstanceList[i].m_Timer>=0.2f) 
+                if(m_DamageInstanceList[i].m_Timer>=0.1f) 
                 {
                     SpawnDamageNumbers(m_DamageInstanceList[i].m_PhysDamage, m_DamageInstanceList[i].m_MagicDamage);
                     m_DamageInstanceList.Remove(m_DamageInstanceList[i]);

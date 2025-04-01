@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 75660bcf83fc7884a9f9daa7109d1cc3, type: 3}
-  m_Name: Shunso
+  m_Name: ShunsoStats
   m_EditorClassIdentifier: 
   m_PlayerName: Shunso
   m_CharacterIcon: {fileID: 21300000, guid: 4e17230ca1aa92c46b6be1d582c64d04, type: 3}
@@ -28,7 +28,7 @@ MonoBehaviour:
   m_ManaPerLevel: 60
   m_AttackDamagePerLevel: 2
   m_AttackSpeedPerLevel: 0.016
-  m_ArmorPerLevel: 5
+  m_ArmorPerLevel: 4
   m_MagicResistPerLevel: 1
   m_HealthRegenPerLevel: 0.35
   m_ManaRegenPerLevel: 0.7

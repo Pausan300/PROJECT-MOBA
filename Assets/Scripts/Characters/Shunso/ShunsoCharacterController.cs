@@ -65,24 +65,6 @@ public class ShunsoCharacterController : CharacterMaster
 	{
 		base.LevelUpRpc();
 	}
-	protected override void StartAttacking()
-	{
-        if(m_DesiredEnemy)
-        {
-            Vector3 l_Dir=m_DesiredEnemy.position-transform.position;
-            l_Dir.y=0.0f;
-            l_Dir.Normalize();
-            transform.forward=l_Dir;
-            SetIsAttacking(true);
-        } 
-	}
-	protected override void StopAttacking()
-	{
-        if(GetIsAttacking())
-        {
-            SetIsAttacking(false);
-        }
-	}
 	IEnumerator DisableForDuration(float Duration)
 	{
 		SetDisabled(true);

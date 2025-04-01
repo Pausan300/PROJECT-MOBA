@@ -189,6 +189,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 6731746495747362446, guid: 64e30abc3e803fb4289c7c0c6666d352, type: 3}
+      propertyPath: selectedCharacterIndex
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6731746495747362446, guid: 64e30abc3e803fb4289c7c0c6666d352, type: 3}
+      propertyPath: m_Characters.Array.data[0].m_Name
+      value: Hirasu
+      objectReference: {fileID: 0}
     - target: {fileID: 7957594359614859703, guid: 64e30abc3e803fb4289c7c0c6666d352, type: 3}
       propertyPath: m_Name
       value: NetworkManager

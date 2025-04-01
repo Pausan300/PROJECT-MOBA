@@ -15,9 +15,74 @@ MonoBehaviour:
   m_PowerType: 2
   m_PowerName: "Corrupci\xF3n Sangu\xEDnea"
   m_Sprite: {fileID: 21300000, guid: da747fb81093fd24a949c6311a0e2852, type: 3}
-  m_Description: 
-  m_AttributeList: []
-  m_DescriptionDamageList: []
+  m_Description: "Shunso dispara 5 proyectiles de sangre corrupta transformando X
+    puntos vida en <color=FISICDAMAGE>Vida Corrupta</color> por cada proyectil que
+    impacte.\r\n\r\n<color=FISICDAMAGE>Vida Corrupta:</color> El enemigo pierde Y
+    puntos de <color=FISICDAMAGE>Vida Corrupta</color> por segundo.\r"
+  m_AttributeList:
+  - m_AttributeId: Puntos de Vida Corrupta
+    m_IsPct: 0
+    m_ShowScalingInPopup: 1
+    m_ValueFormat: 
+    m_LevelScaling:
+    - 25
+    - 35
+    - 40
+    - 50
+    - 60
+  - m_AttributeId: "Da\xF1o de Vida Corrupta"
+    m_IsPct: 0
+    m_ShowScalingInPopup: 1
+    m_ValueFormat: 
+    m_LevelScaling:
+    - 10
+    - 15
+    - 20
+    - 30
+    - 35
+  - m_AttributeId: Enfriamiento
+    m_IsPct: 0
+    m_ShowScalingInPopup: 1
+    m_ValueFormat: s
+    m_LevelScaling:
+    - 8
+    - 7.5
+    - 7
+    - 6.5
+    - 6
+  - m_AttributeId: Coste de Mana
+    m_IsPct: 0
+    m_ShowScalingInPopup: 0
+    m_ValueFormat: 
+    m_LevelScaling:
+    - 55
+    - 55
+    - 55
+    - 55
+    - 55
+  - m_AttributeId: Rango
+    m_IsPct: 0
+    m_ShowScalingInPopup: 0
+    m_ValueFormat: 
+    m_LevelScaling:
+    - 750
+  - m_AttributeId: Ancho
+    m_IsPct: 0
+    m_ShowScalingInPopup: 0
+    m_ValueFormat: 
+    m_LevelScaling:
+    - 35
+  m_DescriptionDamageList:
+  - m_DescriptionId: X
+    m_Color: 0
+    m_AttributeId: Puntos de Vida Corrupta
+    m_MultiplyValue: 1
+    m_SkillDescriptionTooltips: []
+  - m_DescriptionId: Y
+    m_Color: 0
+    m_AttributeId: "Da\xF1o de Vida Corrupta"
+    m_MultiplyValue: 1
+    m_SkillDescriptionTooltips: []
   m_ExtraSpecifications: []
   m_IndicatorUIObject: {fileID: 0}
   m_SkillDisabledTime: 0

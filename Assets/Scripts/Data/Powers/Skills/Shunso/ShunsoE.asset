@@ -15,9 +15,71 @@ MonoBehaviour:
   m_PowerType: 3
   m_PowerName: Fuerza Corrupta
   m_Sprite: {fileID: 21300000, guid: bb2238797c1885143893bf69a0b9ddb2, type: 3}
-  m_Description: 
-  m_AttributeList: []
-  m_DescriptionDamageList: []
+  m_Description: "Pasiva: Golpear a un enemigo con un ataque b\xE1sico o una habilidad
+    otorga 1 acumulaci\xF3n de Fuerza Corrupta durante 2,5 s, si el enemigo golpeado
+    tiene <color=FISICDAMAGE>Vida Corrupta</color> otorga 2 acumulaciones. Cada acumulaci\xF3n
+    otorga 0,5% de velocidad de movimiento, hasta un m\xE1ximo de 10 acumulaciones.
+    Mientras tenga el m\xE1ximo de acumulaciones, su fuerza se ve potenciada y obtiene
+    X <color=ATTACKDAMAGE>de da\xF1o de ataque adicional</color>.\r\n\r\nActiva:
+    Shunso consume las 10 acumulaciones de sangre corrupta y restaura Y <color=LIFE>puntos
+    de vida</color>.\r"
+  m_AttributeList:
+  - m_AttributeId: "Curaci\xF3n"
+    m_IsPct: 0
+    m_ShowScalingInPopup: 1
+    m_ValueFormat: 
+    m_LevelScaling:
+    - 80
+    - 100
+    - 130
+    - 145
+    - 160
+  - m_AttributeId: "Da\xF1o de ataque adicional"
+    m_IsPct: 0
+    m_ShowScalingInPopup: 1
+    m_ValueFormat: 
+    m_LevelScaling:
+    - 30
+    - 40
+    - 50
+    - 60
+    - 70
+  - m_AttributeId: Coste de Mana
+    m_IsPct: 0
+    m_ShowScalingInPopup: 0
+    m_ValueFormat: 
+    m_LevelScaling:
+    - 20
+    - 20
+    - 20
+    - 20
+    - 20
+  - m_AttributeId: Enfriamiento
+    m_IsPct: 0
+    m_ShowScalingInPopup: 0
+    m_ValueFormat: 
+    m_LevelScaling:
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0
+  m_DescriptionDamageList:
+  - m_DescriptionId: X
+    m_Color: 4
+    m_AttributeId: "Da\xF1o de ataque adicional"
+    m_MultiplyValue: 1
+    m_SkillDescriptionTooltips: []
+  - m_DescriptionId: Y
+    m_Color: 2
+    m_AttributeId: "Curaci\xF3n"
+    m_MultiplyValue: 1
+    m_SkillDescriptionTooltips:
+    - m_Value: 80
+      m_Format: '%'
+      m_ToolTip: "del da\xF1o de ataque adicional"
+      m_AtributeType: 1
+      m_Color: 4
   m_ExtraSpecifications: []
   m_IndicatorUIObject: {fileID: 0}
   m_SkillDisabledTime: 0

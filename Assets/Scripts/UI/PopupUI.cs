@@ -129,17 +129,17 @@ public class PopupUI : MonoBehaviour
                     case SkillDescriptionTooltip.SkillDescriptionTooltipTypes.SKILLPOWER:
                         l_Total = l_Total + (_Tooltip.m_Value / 100) * m_Player.GetCharacterStats().GetAbilityPower();
                         break;
-
                 }
             }
 
-
-
-            string l_DescriptionText = $"<color={TextColors.GetColorHEX(DamageDescription.m_Color)}>{l_Total} = (</color><color={TextColors.GetColorHEX(TextColors.TextColorTypes.NORMAL)}><b> {(_Skill.GetAttribute(DamageDescription.m_AttributeId, SkillLV)) * DamageDescription.m_MultiplyValue} </b></color>{l_TooltipsText} <color={TextColors.GetColorHEX(DamageDescription.m_Color)}>)</color>";
+            string l_DescriptionText;
+            if(l_TooltipsText!="")
+                l_DescriptionText = $"<color={TextColors.GetColorHEX(DamageDescription.m_Color)}>{l_Total} = (</color><color={TextColors.GetColorHEX(TextColors.TextColorTypes.NORMAL)}><b> " +
+                    $"{(_Skill.GetAttribute(DamageDescription.m_AttributeId, SkillLV)) * DamageDescription.m_MultiplyValue} </b></color>{l_TooltipsText} <color={TextColors.GetColorHEX(DamageDescription.m_Color)}>)</color>";
+            else
+                l_DescriptionText = $"<color={TextColors.GetColorHEX(DamageDescription.m_Color)}>{l_Total}</color>"; 
             l_Total = 0;
             m_MainDescription.text = m_MainDescription.text.Replace(DamageDescription.m_DescriptionId, l_DescriptionText);
-
-
 
             /*string l_BaseDamageText = $"<b><color={ColorUtility.ToHtmlStringRGB(m_SelectedTextColor)}>" + (l_BaseDamage * DamageDescription.m_BaseDamageMultiplier) + "</color></b>";
 
@@ -197,6 +197,7 @@ public class PopupUI : MonoBehaviour
         m_TopSeparationImage.SetActive(true);
         m_BotSeparationImage.SetActive(false);
         m_StatName.gameObject.SetActive(false);
+        m_ExtraSpecificationsText.gameObject.SetActive(false);
         m_MainDescription.text = _Summoner.m_Description.Replace("X", "HOLA");
         m_PowerName.text = _Summoner.m_PowerName;
         m_PowerKey.text = "[" + Key + "]";
@@ -220,6 +221,7 @@ public class PopupUI : MonoBehaviour
         m_TopSeparationImage.SetActive(true);
         m_BotSeparationImage.SetActive(false);
         m_StatName.gameObject.SetActive(true);
+        m_ExtraSpecificationsText.gameObject.SetActive(false);
         m_MainDescription.text = Description;
         m_StatName.text = Name;
     }
