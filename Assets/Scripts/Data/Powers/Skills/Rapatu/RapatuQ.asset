@@ -33,18 +33,6 @@ MonoBehaviour:
     - 195
     - 230
     - 255
-  - m_AttributeId: Rango
-    m_IsPct: 0
-    m_ShowScalingInPopup: 0
-    m_ValueFormat: 
-    m_LevelScaling:
-    - 900
-  - m_AttributeId: Ancho hitbox
-    m_IsPct: 0
-    m_ShowScalingInPopup: 0
-    m_ValueFormat: 
-    m_LevelScaling:
-    - 50
   m_DescriptionDamageList:
   - m_DescriptionId: X
     m_Color: 1
@@ -54,6 +42,7 @@ MonoBehaviour:
     - m_Value: 50
       m_Format: '%'
       m_ToolTip: del poder de habilidad
+      m_AtributeType: 3
       m_Color: 6
   m_ExtraSpecifications: []
   m_IndicatorUIObject: {fileID: 0}

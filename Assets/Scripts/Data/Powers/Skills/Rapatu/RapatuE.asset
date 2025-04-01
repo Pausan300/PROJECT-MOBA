@@ -22,7 +22,7 @@ MonoBehaviour:
   - m_AttributeId: "Curaci\xF3n"
     m_IsPct: 0
     m_ShowScalingInPopup: 1
-    m_ValueFormat: s
+    m_ValueFormat: 
     m_LevelScaling:
     - 50
     - 80
@@ -32,7 +32,7 @@ MonoBehaviour:
   - m_AttributeId: Enfriamiento
     m_IsPct: 0
     m_ShowScalingInPopup: 1
-    m_ValueFormat: 
+    m_ValueFormat: s
     m_LevelScaling:
     - 14
     - 13.5
@@ -52,16 +52,18 @@ MonoBehaviour:
   m_DescriptionDamageList:
   - m_DescriptionId: X
     m_Color: 0
-    m_AttributeId: "Man\xE1"
+    m_AttributeId: "Curaci\xF3n"
     m_MultiplyValue: 1
     m_SkillDescriptionTooltips:
     - m_Value: 50
       m_Format: '%'
       m_ToolTip: del poder de habilidad
+      m_AtributeType: 3
       m_Color: 6
     - m_Value: 7
       m_Format: '%'
       m_ToolTip: de la vida adicional
+      m_AtributeType: 2
       m_Color: 3
   m_ExtraSpecifications: []
   m_IndicatorUIObject: {fileID: 0}

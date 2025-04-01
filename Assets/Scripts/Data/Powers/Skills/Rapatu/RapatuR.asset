@@ -28,12 +28,6 @@ MonoBehaviour:
     - 70
     - 55
     - 45
-  - m_AttributeId: Rango
-    m_IsPct: 0
-    m_ShowScalingInPopup: 0
-    m_ValueFormat: 
-    m_LevelScaling:
-    - 1000
   - m_AttributeId: Cantidad de saltos
     m_IsPct: 0
     m_ShowScalingInPopup: 1
@@ -43,10 +37,7 @@ MonoBehaviour:
     - 4
     - 5
   m_DescriptionDamageList: []
-  m_ExtraSpecifications:
-  - 'Empieza a saltar cuando: han pasado 2 segundos, se ha montado un aliado o se
-    reactiva. '
-  - 'Se puede interrumpir en cualquier momento. '
+  m_ExtraSpecifications: []
   m_IndicatorUIObject: {fileID: 0}
   m_SkillDisabledTime: 0
   m_CancelableWithMouseClick: 0
