@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_PowerType: 2
   m_PowerName: Bote / Rebote
-  m_Sprite: {fileID: 21300000, guid: 8c42c262388d20a4ca5a7f9a8e50d43c, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 64147efb5e045ef4e926af4964547da4, type: 3}
   m_Description: "Pulsar: Rapatu salta una gran distancia, al caer inflige X <color=MAGICDAMAGE>de
     da\xF1o m\xE1gico</color>  y ralentiza un 40% durante que decae durante 2 s en
     \xE1rea a su alrededor.\r\n\r\nReactivaci\xF3n: En el momento que Rapatu aterriza,
@@ -75,11 +75,7 @@ MonoBehaviour:
       m_ToolTip: de la vida adicional
       m_AtributeType: 2
       m_Color: 3
-  m_ExtraSpecifications:
-  - "Tiempo m\xE1ximo para \u201CReactivaci\xF3n\u201D: 0,4 s. "
-  - "Tiempo m\xE1ximo de \u201CMantener\u201D: 2 s."
-  - "Si el rat\xF3n est\xE1 en rango m\xE1ximo o m\xE1s lejos salta la m\xE1xima
-    cantidad  posible, si no, salta donde est\xE1 el rat\xF3n. "
+  m_ExtraSpecifications: []
   m_IndicatorUIObject: {fileID: 0}
   m_SkillDisabledTime: 0
   m_CancelableWithMouseClick: 0

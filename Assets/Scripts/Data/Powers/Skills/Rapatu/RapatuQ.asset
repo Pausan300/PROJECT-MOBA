@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_PowerType: 1
   m_PowerName: Agarre Pegajoso
-  m_Sprite: {fileID: 21300000, guid: f6251a35b3515ec47a9e4e0e2c6a512c, type: 3}
+  m_Sprite: {fileID: 21300000, guid: d7c9aecf01ed56a44b2e556922e42c63, type: 3}
   m_Description: "Rapatu estira su lengua que al impactar con un enemigo engancha
     a todos los enemigos en una peque\xF1a \xE1rea, los inmoviliza durante 1 s y
     les inflige X de da\xF1o m\xE1gico.\r\n\r\nReactivaci\xF3n: Rapatu lanza los

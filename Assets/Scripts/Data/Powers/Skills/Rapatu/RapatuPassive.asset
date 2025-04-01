@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_PowerType: 0
   m_PowerName: Camino Seguro
-  m_Sprite: {fileID: 21300000, guid: d701992e566d51a408d2d2a8b003e723, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 2985853d29b94ab4c8d627135f8a1acd, type: 3}
   m_Description: "Rapatu dispone de un mayor rango de visi\xF3n gracias a las sustancias
     bioluminiscentes de su interior. \r\n\r\nSus habilidades se ven potenciadas con
     Bioluminiscencia.\r"

@@ -40,12 +40,21 @@ public class RapatuCharacterController : CharacterMaster
     //Q SKILL
     protected override void QSkill()
     {
-
+        Debug.LogError("Hi Q");
+        StopSkills();
+        m_QSkill.SetUsingSkill(true);
+        StartCoroutine(DisableForDuration(m_QSkill.m_SkillDisabledTime));
+        m_QSkill.SetUsingSkill(false);
     }
 
     //W SKILL
     protected override void WSkill()
     {
+        Debug.LogError("Hi W");
+        StopSkills();
+        m_WSkill.SetUsingSkill(true);
+        StartCoroutine(DisableForDuration(m_WSkill.m_SkillDisabledTime));
+        m_WSkill.SetUsingSkill(false);
 
     }
 
@@ -54,22 +63,34 @@ public class RapatuCharacterController : CharacterMaster
     //E SKILL
     protected override void ESkill()
     {
+        Debug.LogError("Hi E");
+        StopSkills();
+        m_ESkill.SetUsingSkill(true);
+        StartCoroutine(DisableForDuration(m_ESkill.m_SkillDisabledTime));
+        m_ESkill.SetUsingSkill(false);
 
     }
-
+    
     //R SKILL
     protected override void RSkill()
     {
+        Debug.LogError("Hi R");
+        StopSkills();
+        m_RSkill.SetUsingSkill(true);
+        StartCoroutine(DisableForDuration(m_RSkill.m_SkillDisabledTime));
+        m_RSkill.SetUsingSkill(false);
 
     }
 
     public override void LevelUpRpc()
     {
         base.LevelUpRpc();
+        Debug.LogError("Hi LVUP");
     }
     protected override void StartAttacking()
     {
         SetIsAttacking(true);
+        Debug.LogError("Hi Start Attack");
 
 
     }
@@ -77,6 +98,7 @@ public class RapatuCharacterController : CharacterMaster
     {
         if (GetIsAttacking())
         {
+            Debug.LogError("Hi Stop Attack");
             SetIsAttacking(false);
         }
     }

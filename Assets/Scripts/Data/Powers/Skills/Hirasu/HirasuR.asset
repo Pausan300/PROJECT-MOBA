@@ -54,6 +54,7 @@ MonoBehaviour:
     - m_Value: 120
       m_Format: '%'
       m_ToolTip: "del da\xF1o de ataque adicional"
+      m_AtributeType: 1
       m_Color: 4
   - m_DescriptionId: Y
     m_Color: 5
@@ -63,6 +64,7 @@ MonoBehaviour:
     - m_Value: 60
       m_Format: '%'
       m_ToolTip: "del da\xF1o de ataque adicional"
+      m_AtributeType: 1
       m_Color: 4
   m_ExtraSpecifications: []
   m_IndicatorUIObject: {fileID: 5078714052237607800, guid: 83f81966102af0341a86559624a7f892, type: 3}
