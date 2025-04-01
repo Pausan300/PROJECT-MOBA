@@ -9,16 +9,13 @@ public class RapatuCharacterController : CharacterMaster
     [Header("PASSIVE SKILL")]
 
     [Header("Q SKILL")]
-    public float m_QAdditionalDamage;
 
     [Header("W SKILL")]
-    public float m_WAdditionalDamageSplinter;
 
     [Header("E SKILL")]
-    public float m_ERange;
 
     [Header("R SKILL")]
-    public float m_RAdditionalDamage;
+    public float m_Delete;
 
     public override void OnNetworkSpawn()
     {
@@ -41,20 +38,12 @@ public class RapatuCharacterController : CharacterMaster
     protected override void QSkill()
     {
         Debug.LogError("Hi Q");
-        StopSkills();
-        m_QSkill.SetUsingSkill(true);
-        StartCoroutine(DisableForDuration(m_QSkill.m_SkillDisabledTime));
-        m_QSkill.SetUsingSkill(false);
     }
 
     //W SKILL
     protected override void WSkill()
     {
         Debug.LogError("Hi W");
-        StopSkills();
-        m_WSkill.SetUsingSkill(true);
-        StartCoroutine(DisableForDuration(m_WSkill.m_SkillDisabledTime));
-        m_WSkill.SetUsingSkill(false);
 
     }
 
@@ -64,21 +53,15 @@ public class RapatuCharacterController : CharacterMaster
     protected override void ESkill()
     {
         Debug.LogError("Hi E");
-        StopSkills();
-        m_ESkill.SetUsingSkill(true);
+        base.ESkill();
         StartCoroutine(DisableForDuration(m_ESkill.m_SkillDisabledTime));
-        m_ESkill.SetUsingSkill(false);
-
+        SetAnimatorTrigger("IsUsingE");
     }
-    
+
     //R SKILL
     protected override void RSkill()
     {
         Debug.LogError("Hi R");
-        StopSkills();
-        m_RSkill.SetUsingSkill(true);
-        StartCoroutine(DisableForDuration(m_RSkill.m_SkillDisabledTime));
-        m_RSkill.SetUsingSkill(false);
 
     }
 

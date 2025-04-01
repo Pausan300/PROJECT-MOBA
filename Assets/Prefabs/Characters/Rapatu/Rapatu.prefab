@@ -1622,7 +1622,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 898872989
+  GlobalObjectIdHash: 419589164
   InScenePlacedSourceGlobalObjectIdHash: 1219962804
   DeferredDespawnTick: 0
   Ownership: 0
@@ -1692,10 +1692,7 @@ MonoBehaviour:
     m_Bits: 128
   m_InputBufferController: {fileID: 7683495954015566684}
   m_UseKeyboardMovement: 0
-  m_QAdditionalDamage: 0
-  m_WAdditionalDamageSplinter: 0
-  m_ERange: 0
-  m_RAdditionalDamage: 0
+  m_Delete: 0
 --- !u!114 &7780092429937281219
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1730,7 +1727,7 @@ Animator:
   m_GameObject: {fileID: 8207142013517453575}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: acfde43d690c5af40863ecd05236a7ee, type: 2}
+  m_Controller: {fileID: 9100000, guid: bd6ea9afafe4d6f42893c5d297ab4332, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -1918,94 +1915,10 @@ MonoBehaviour:
     DestinationState: -726377838
     TransitionDuration: 0.1
     TriggerNameHash: 1143789982
-    TransitionIndex: 2
-  - IsCrossFadeExit: 0
-    Layer: 0
-    OriginatingState: 2081823275
-    DestinationState: 1466425173
-    TransitionDuration: 0
-    TriggerNameHash: -939565991
-    TransitionIndex: 3
-  - IsCrossFadeExit: 0
-    Layer: 0
-    OriginatingState: 2081823275
-    DestinationState: 695019728
-    TransitionDuration: 0.1
-    TriggerNameHash: -1109400204
-    TransitionIndex: 5
-  - IsCrossFadeExit: 0
-    Layer: 0
-    OriginatingState: 2081823275
-    DestinationState: 655174618
-    TransitionDuration: 0.1
-    TriggerNameHash: -1214928682
-    TransitionIndex: 6
-  - IsCrossFadeExit: 0
-    Layer: 0
-    OriginatingState: 2081823275
-    DestinationState: 607458286
-    TransitionDuration: 0.1
-    TriggerNameHash: -222088345
-    TransitionIndex: 7
-  - IsCrossFadeExit: 0
-    Layer: 0
-    OriginatingState: 1748754976
-    DestinationState: 1466425173
-    TransitionDuration: 0
-    TriggerNameHash: -939565991
-    TransitionIndex: 0
-  - IsCrossFadeExit: 0
-    Layer: 0
-    OriginatingState: 1748754976
-    DestinationState: -726377838
-    TransitionDuration: 0.1
-    TriggerNameHash: 1143789982
     TransitionIndex: 1
   - IsCrossFadeExit: 0
     Layer: 0
     OriginatingState: 1748754976
-    DestinationState: 695019728
-    TransitionDuration: 0.1
-    TriggerNameHash: -1109400204
-    TransitionIndex: 5
-  - IsCrossFadeExit: 0
-    Layer: 0
-    OriginatingState: 1748754976
-    DestinationState: 655174618
-    TransitionDuration: 0.1
-    TriggerNameHash: -1214928682
-    TransitionIndex: 6
-  - IsCrossFadeExit: 0
-    Layer: 0
-    OriginatingState: 1748754976
-    DestinationState: 607458286
-    TransitionDuration: 0.1
-    TriggerNameHash: -222088345
-    TransitionIndex: 7
-  - IsCrossFadeExit: 0
-    Layer: 0
-    OriginatingState: -726377838
-    DestinationState: 655174618
-    TransitionDuration: 0.1
-    TriggerNameHash: -1214928682
-    TransitionIndex: 0
-  - IsCrossFadeExit: 0
-    Layer: 0
-    OriginatingState: 695019728
-    DestinationState: -726377838
-    TransitionDuration: 0.1
-    TriggerNameHash: 1143789982
-    TransitionIndex: 2
-  - IsCrossFadeExit: 0
-    Layer: 0
-    OriginatingState: 695019728
-    DestinationState: 655174618
-    TransitionDuration: 0.1
-    TriggerNameHash: -1214928682
-    TransitionIndex: 3
-  - IsCrossFadeExit: 0
-    Layer: 0
-    OriginatingState: 655174618
     DestinationState: -726377838
     TransitionDuration: 0.1
     TriggerNameHash: 1143789982
@@ -2237,7 +2150,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 898872989
+  GlobalObjectIdHash: 1333982354
   InScenePlacedSourceGlobalObjectIdHash: 0
   DeferredDespawnTick: 0
   Ownership: 1

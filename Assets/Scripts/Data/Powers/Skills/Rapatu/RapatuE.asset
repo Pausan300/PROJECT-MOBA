@@ -67,5 +67,5 @@ MonoBehaviour:
       m_Color: 3
   m_ExtraSpecifications: []
   m_IndicatorUIObject: {fileID: 0}
-  m_SkillDisabledTime: 0
+  m_SkillDisabledTime: 1
   m_CancelableWithMouseClick: 0
