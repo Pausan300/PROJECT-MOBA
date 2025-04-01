@@ -49,9 +49,11 @@ MonoBehaviour:
   - m_DescriptionId: X
     m_Color: 1
     m_AttributeId: "Da\xF1o base"
+    m_MultiplyValue: 1
     m_SkillDescriptionTooltips:
-    - m_ToolTip: +50% del poder de habilidad
-      m_Value: 50
+    - m_Value: 50
+      m_Format: '%'
+      m_ToolTip: del poder de habilidad
       m_Color: 6
   m_ExtraSpecifications: []
   m_IndicatorUIObject: {fileID: 0}

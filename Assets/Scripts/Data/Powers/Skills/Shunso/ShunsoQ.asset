@@ -56,8 +56,9 @@ MonoBehaviour:
     m_AttributeId: "Da\xF1o base"
     m_MultiplyValue: 1
     m_SkillDescriptionTooltips:
-    - m_ToolTip: "+125% del da\xF1o de ataque total"
-      m_Value: 125
+    - m_Value: 125
+      m_Format: '%'
+      m_ToolTip: "del da\xF1o de ataque total"
       m_Color: 4
   m_ExtraSpecifications: []
   m_IndicatorUIObject: {fileID: 6649836915933689498, guid: 8caef782d2af9ec429b3465c5f423ec6, type: 3}

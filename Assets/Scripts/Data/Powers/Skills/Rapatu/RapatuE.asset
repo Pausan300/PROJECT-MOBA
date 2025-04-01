@@ -53,12 +53,15 @@ MonoBehaviour:
   - m_DescriptionId: X
     m_Color: 0
     m_AttributeId: "Man\xE1"
+    m_MultiplyValue: 1
     m_SkillDescriptionTooltips:
-    - m_ToolTip: +50% del poder de habilidad
-      m_Value: 50
+    - m_Value: 50
+      m_Format: '%'
+      m_ToolTip: del poder de habilidad
       m_Color: 6
-    - m_ToolTip: +7% de la vida adicional
-      m_Value: 7
+    - m_Value: 7
+      m_Format: '%'
+      m_ToolTip: de la vida adicional
       m_Color: 3
   m_ExtraSpecifications: []
   m_IndicatorUIObject: {fileID: 0}

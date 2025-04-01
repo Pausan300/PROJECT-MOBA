@@ -44,22 +44,28 @@ MonoBehaviour:
   - m_DescriptionId: X
     m_Color: 1
     m_AttributeId: Enfriamiento
+    m_MultiplyValue: 1
     m_SkillDescriptionTooltips:
-    - m_ToolTip: +50% del poder de habilidad
-      m_Value: 50
+    - m_Value: 50
+      m_Format: '%'
+      m_ToolTip: del poder de habilidad
       m_Color: 5
-    - m_ToolTip: +5% de la vida adicional
-      m_Value: 5
+    - m_Value: 5
+      m_Format: '%'
+      m_ToolTip: de la vida adicional
       m_Color: 3
   - m_DescriptionId: Y
     m_Color: 1
     m_AttributeId: Enfriamiento
+    m_MultiplyValue: 1
     m_SkillDescriptionTooltips:
-    - m_ToolTip: +30% del poder de habilidad
-      m_Value: 30
+    - m_Value: 30
+      m_Format: '%'
+      m_ToolTip: del poder de habilidad
       m_Color: 6
-    - m_ToolTip: +3% de la vida adicional
-      m_Value: 3
+    - m_Value: -3
+      m_Format: '%'
+      m_ToolTip: de la vida adicional
       m_Color: 3
   m_ExtraSpecifications:
   - "Tiempo m\xE1ximo para \u201CReactivaci\xF3n\u201D: 0,4 s. "

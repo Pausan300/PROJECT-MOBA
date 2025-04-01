@@ -113,7 +113,8 @@ public class PopupUI : MonoBehaviour
             string l_TooltipsText = "";
             foreach (var _Tooltips in DamageDescription.m_SkillDescriptionTooltips)
             {
-                l_TooltipsText = l_TooltipsText + $"<color=#{TextColors.GetColorHEX(_Tooltips.m_Color)}> {_Tooltips.m_ToolTip} </color>";
+                l_TooltipsText = l_TooltipsText + $"<color=#{TextColors.GetColorHEX(_Tooltips.m_Color)}> {(_Tooltips.m_Value < 0 ? "" : "+") + _Tooltips.m_Value + _Tooltips.m_Format + " " + _Tooltips.m_ToolTip} </color>";
+
             }
 
             string l_DescriptionText = $"<color=#{TextColors.GetColorHEX(DamageDescription.m_Color)}>X = (</color><color=#{TextColors.GetColorHEX(TextColors.TextColorTypes.NORMAL)}><b> {(_Skill.GetAttribute(DamageDescription.m_AttributeId, SkillLV)) * DamageDescription.m_MultiplyValue} </b></color>{l_TooltipsText} <color=#{TextColors.GetColorHEX(DamageDescription.m_Color)}>)</color>";

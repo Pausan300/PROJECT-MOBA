@@ -69,8 +69,9 @@ MonoBehaviour:
     m_AttributeId: "Da\xF1o base"
     m_MultiplyValue: 1
     m_SkillDescriptionTooltips:
-    - m_ToolTip: "+80% del da\xF1o de ataque adicional"
-      m_Value: 80
+    - m_Value: 80
+      m_Format: '%'
+      m_ToolTip: "del da\xF1o de ataque adicional"
       m_Color: 4
   m_ExtraSpecifications:
   - Aplica efectos de impacto
