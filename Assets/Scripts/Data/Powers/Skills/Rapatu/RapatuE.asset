@@ -39,7 +39,7 @@ MonoBehaviour:
     - 12
     - 11.5
     - 11
-  - m_AttributeId: "Man\xE1"
+  - m_AttributeId: Coste de Mana
     m_IsPct: 0
     m_ShowScalingInPopup: 1
     m_ValueFormat: 
@@ -49,6 +49,12 @@ MonoBehaviour:
     - 80
     - 90
     - 100
+  - m_AttributeId: Radio
+    m_IsPct: 0
+    m_ShowScalingInPopup: 0
+    m_ValueFormat: 
+    m_LevelScaling:
+    - 500
   m_DescriptionDamageList:
   - m_DescriptionId: X
     m_Color: 0
@@ -67,5 +73,5 @@ MonoBehaviour:
       m_Color: 3
   m_ExtraSpecifications: []
   m_IndicatorUIObject: {fileID: 0}
-  m_SkillDisabledTime: 1
+  m_SkillDisabledTime: 0.8
   m_CancelableWithMouseClick: 0

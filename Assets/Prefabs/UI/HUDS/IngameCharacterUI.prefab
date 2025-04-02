@@ -560,6 +560,9 @@ MonoBehaviour:
   m_DamageNumbersPosOffset: {x: 0, y: -130, z: 0}
   m_PhysDamageFont: {fileID: 11400000, guid: e3d0864645595034488de38b50201788, type: 2}
   m_MagicDamageFont: {fileID: 11400000, guid: aa836847ff1cd414298bd3382ba63fb0, type: 2}
+  m_HealthNumbers: {fileID: 5019070121339474210, guid: f55598f530f49284bb9e6fbec7bb38dd, type: 3}
+  m_HealthNumbersPosOffset: {x: 0, y: -130, z: 0}
+  m_HealthFont: {fileID: 11400000, guid: f22cedcd0f0f00a43835c472730492f6, type: 2}
 --- !u!114 &5780009118952098308
 MonoBehaviour:
   m_ObjectHideFlags: 0

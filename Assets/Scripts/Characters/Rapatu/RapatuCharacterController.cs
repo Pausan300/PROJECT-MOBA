@@ -13,6 +13,13 @@ public class RapatuCharacterController : CharacterMaster
     [Header("W SKILL")]
 
     [Header("E SKILL")]
+    public RapatuEHealingArea m_HealingAreaE;
+    [Tooltip("Cuantas veces cura")]
+    public int m_HealingTimes = 4;
+    [Tooltip("Cada cuanto cura")]
+    public float m_HealingTimeSpace = 1f;
+    public float m_XCSkillPower = 50;
+    public float m_XCAdditionalLife = 7;
 
     [Header("R SKILL")]
     public float m_Delete;
@@ -20,6 +27,7 @@ public class RapatuCharacterController : CharacterMaster
     public override void OnNetworkSpawn()
     {
         base.OnNetworkSpawn();
+        m_HealingAreaE.gameObject.SetActive(false);
     }
     protected override void Update()
     {
@@ -37,13 +45,11 @@ public class RapatuCharacterController : CharacterMaster
     //Q SKILL
     protected override void QSkill()
     {
-        Debug.LogError("Hi Q");
     }
 
     //W SKILL
     protected override void WSkill()
     {
-        Debug.LogError("Hi W");
 
     }
 
@@ -52,28 +58,46 @@ public class RapatuCharacterController : CharacterMaster
     //E SKILL
     protected override void ESkill()
     {
-        Debug.LogError("Hi E");
         base.ESkill();
-        StartCoroutine(DisableForDuration(m_ESkill.m_SkillDisabledTime));
+        m_ESkill.SetUsingSkill(true);
         SetAnimatorTrigger("IsUsingE");
-    }
+        StartCoroutine(DisableForDuration(m_ESkill.m_SkillDisabledTime));
+        StartCoroutine(ESkillCoroutine());
 
+    }
+    IEnumerator ESkillCoroutine()
+    {
+        yield return new WaitForSeconds(m_ESkill.m_SkillDisabledTime);
+        m_HealingAreaE.gameObject.SetActive(true);
+        m_ESkill.SetUsingSkill(false);
+        m_HealingAreaE.transform.localScale = new Vector3(1 * ((m_ESkill.GetAttribute("Radio", GetESkillLevel()) / 100) * 2), m_HealingAreaE.transform.localScale.y, 1 * ((m_ESkill.GetAttribute("Radio", GetESkillLevel()) / 100) * 2));
+
+        float l_HealLifeValue = (m_ESkill.GetAttribute("Curación", GetESkillLevel())) + (m_XCSkillPower / 100) * GetCharacterStats().GetAbilityPower() + (m_XCAdditionalLife / 100) * GetCharacterStats().GetBonusHealth();
+
+        m_HealingAreaE.Heal(l_HealLifeValue);
+        for (int i = 0; i < m_HealingTimes - 1; i++)
+        {
+            yield return new WaitForSeconds(m_HealingTimeSpace);
+            m_HealingAreaE.Heal(l_HealLifeValue);
+
+        }
+
+
+        m_HealingAreaE.gameObject.SetActive(false);
+    }
     //R SKILL
     protected override void RSkill()
     {
-        Debug.LogError("Hi R");
 
     }
 
     public override void LevelUpRpc()
     {
         base.LevelUpRpc();
-        Debug.LogError("Hi LVUP");
     }
     protected override void StartAttacking()
     {
         SetIsAttacking(true);
-        Debug.LogError("Hi Start Attack");
 
 
     }
@@ -81,7 +105,6 @@ public class RapatuCharacterController : CharacterMaster
     {
         if (GetIsAttacking())
         {
-            Debug.LogError("Hi Stop Attack");
             SetIsAttacking(false);
         }
     }

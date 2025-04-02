@@ -87,10 +87,10 @@ public class PopupUI : MonoBehaviour
                             string l_Stat = "";
                             if (i == SkillLV || (SkillLV == 0 && i == 1))
                             {
-                                l_Stat = $"<b><color={TextColors.GetColorHEX(TextColors.TextColorTypes.NORMAL)}>" + Stat.ToString() + " " + Attribute.m_ValueFormat + " </color></b>";
+                                l_Stat = $"<b><color={TextColors.GetColorHEX(TextColors.TextColorTypes.NORMAL)}>" + Stat.ToString() + Attribute.m_ValueFormat + "</color></b>";
                             }
                             else
-                                l_Stat = Stat.ToString() + " " + Attribute.m_ValueFormat + " ";
+                                l_Stat = Stat.ToString() + Attribute.m_ValueFormat;
 
                             if (SkillStatsLV == "")
                                 SkillStatsLV = l_Stat;
