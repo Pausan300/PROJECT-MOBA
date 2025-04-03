@@ -5,6 +5,7 @@ using UnityEngine;
 public class RapatuEHealingArea : MonoBehaviour
 {
     private bool m_ShowGizmo = false;
+    Transform m_Target;
 
 #if UNITY_EDITOR
     private void OnDrawGizmos()
@@ -20,6 +21,17 @@ public class RapatuEHealingArea : MonoBehaviour
         }
     }
 #endif
+    public void SetHealingAria(Transform _Target, float Radius)
+    {
+        m_Target = _Target;
+        transform.localScale = new Vector3(Radius * 2, transform.localScale.y, Radius * 2);
+    }
+    private void Update()
+    {
+        if (m_Target != null)
+            transform.position = m_Target.position;
+    }
+
     public void Heal(float HealXSec)
     {
         StartCoroutine(ShowGizmoTemporarily());

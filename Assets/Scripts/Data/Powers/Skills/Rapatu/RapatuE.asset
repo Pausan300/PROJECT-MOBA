@@ -49,12 +49,6 @@ MonoBehaviour:
     - 80
     - 90
     - 100
-  - m_AttributeId: Radio
-    m_IsPct: 0
-    m_ShowScalingInPopup: 0
-    m_ValueFormat: 
-    m_LevelScaling:
-    - 500
   m_DescriptionDamageList:
   - m_DescriptionId: X
     m_Color: 0

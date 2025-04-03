@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Netcode;
@@ -6,6 +7,9 @@ using UnityEngine;
 public class RapatuCharacterController : CharacterMaster
 {
     [Header("--- RAPATU ---")]
+
+
+
     [Header("PASSIVE SKILL")]
 
     [Header("Q SKILL")]
@@ -13,21 +17,23 @@ public class RapatuCharacterController : CharacterMaster
     [Header("W SKILL")]
 
     [Header("E SKILL")]
-    public RapatuEHealingArea m_HealingAreaE;
+
+    public GameObject m_HealingAreaEPrefab;
     [Tooltip("Cuantas veces cura")]
     public int m_HealingTimes = 4;
     [Tooltip("Cada cuanto cura")]
     public float m_HealingTimeSpace = 1f;
-    public float m_XCSkillPower = 50;
-    public float m_XCAdditionalLife = 7;
+    public float m_HealingAreaRadius = 500;
+    public float m_PercentageSkillPower = 50;
+    public float m_PercentageAdditionalLife = 7;
 
     [Header("R SKILL")]
-    public float m_Delete;
+    public float m_RangeR = 1000;
+    public float m_AutoJumpSecondsR = 2;
 
     public override void OnNetworkSpawn()
     {
         base.OnNetworkSpawn();
-        m_HealingAreaE.gameObject.SetActive(false);
     }
     protected override void Update()
     {
@@ -38,6 +44,10 @@ public class RapatuCharacterController : CharacterMaster
 
         base.Update();
 
+        if (m_RSkill.GetUsingSkill())
+        {
+            RHoldTimeCheck();
+        }
 
     }
 
@@ -67,58 +77,98 @@ public class RapatuCharacterController : CharacterMaster
     }
     IEnumerator ESkillCoroutine()
     {
+        RapatuEHealingArea l_HealingAreaE;
         yield return new WaitForSeconds(m_ESkill.m_SkillDisabledTime);
-        m_HealingAreaE.gameObject.SetActive(true);
+        l_HealingAreaE = Instantiate(m_HealingAreaEPrefab, transform.position, Quaternion.identity).GetComponent<RapatuEHealingArea>();
+        l_HealingAreaE.SetHealingAria(transform, m_HealingAreaRadius / 100);
         m_ESkill.SetUsingSkill(false);
-        m_HealingAreaE.transform.localScale = new Vector3(1 * ((m_ESkill.GetAttribute("Radio", GetESkillLevel()) / 100) * 2), m_HealingAreaE.transform.localScale.y, 1 * ((m_ESkill.GetAttribute("Radio", GetESkillLevel()) / 100) * 2));
 
-        float l_HealLifeValue = (m_ESkill.GetAttribute("Curación", GetESkillLevel())) + (m_XCSkillPower / 100) * GetCharacterStats().GetAbilityPower() + (m_XCAdditionalLife / 100) * GetCharacterStats().GetBonusHealth();
 
-        m_HealingAreaE.Heal(l_HealLifeValue);
+        float l_HealLifeValue = (m_ESkill.GetAttribute("Curación", GetESkillLevel())) + (m_PercentageSkillPower / 100) * GetCharacterStats().GetAbilityPower() + (m_PercentageAdditionalLife / 100) * GetCharacterStats().GetBonusHealth();
+
+        l_HealingAreaE.Heal(l_HealLifeValue);
         for (int i = 0; i < m_HealingTimes - 1; i++)
         {
             yield return new WaitForSeconds(m_HealingTimeSpace);
-            m_HealingAreaE.Heal(l_HealLifeValue);
+            l_HealingAreaE.Heal(l_HealLifeValue);
 
         }
 
-
-        m_HealingAreaE.gameObject.SetActive(false);
+        Destroy(l_HealingAreaE.gameObject);
     }
     //R SKILL
     protected override void RSkill()
     {
+        m_RSkill.SetUsingSkill(true);
+        SetDisabled(true);
+        SetAnimatorTrigger("IsUsingR");
+        if (!GetIsLookingForPosition())
+            StopMovement();
+        m_TimerR = 0;
+    }
+    float m_TimerR;
+    public float m_MinTimeToBeRedy = 1f;
+    bool m_Jumping = false;
+    void RHoldTimeCheck()
+    {
+        if (!m_Jumping)
+        {
+            if (Input.GetKey(KeyCode.R))
+            {
+                m_TimerR += Time.deltaTime;
+                Debug.LogError("Cargando...");
+                if (m_TimerR >= m_AutoJumpSecondsR)
+                {
+                    StartJumpingR();
+                }
+            }
+            else if (Input.GetKeyUp(KeyCode.R) && m_TimerR >= m_MinTimeToBeRedy)
+            {
+                Debug.LogError("R Up");
+                StartJumpingR();
+            }
+            else
+            {
+                Debug.LogError("R Jump because you Up R");
+                StartJumpingR();
+            }
+        }
+    }
+    void StartJumpingR()
+    {
+        base.RSkill();
+        m_Jumping = true;
+        SetAnimatorTrigger("RJump");
+        JumpR();
+    }
+    public void EndJump()
+    {
+        Debug.LogError("Floor");
+        EndRSkill();
 
+    }
+
+    void JumpR()
+    {
+        Debug.LogError("Jumping");
+    }
+    void EndRSkill()
+    {
+        SetAnimatorTrigger("RJumpStop");
+        m_RSkill.SetUsingSkill(false);
+        SetDisabled(false);
+        m_Jumping = false;
     }
 
     public override void LevelUpRpc()
     {
         base.LevelUpRpc();
     }
-    protected override void StartAttacking()
-    {
-        SetIsAttacking(true);
 
-
-    }
-    protected override void StopAttacking()
-    {
-        if (GetIsAttacking())
-        {
-            SetIsAttacking(false);
-        }
-    }
     IEnumerator DisableForDuration(float Duration)
     {
         SetDisabled(true);
         yield return new WaitForSeconds(Duration);
         SetDisabled(false);
-    }
-    protected override void PerformAutoAttack()
-    {
-        if (!IsSpawned || !HasAuthority)
-        {
-            return;
-        }
     }
 }
