@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Netcode;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class RapatuCharacterController : CharacterMaster
@@ -48,6 +49,13 @@ public class RapatuCharacterController : CharacterMaster
         {
             RHoldTimeCheck();
         }
+        if (m_ESkill.GetUsingSkill() && m_CanStopE)
+        {
+            if (Input.GetKeyDown(m_ESkillKey))
+            {
+                StartCoroutine(StopESkill());
+            }
+        }
 
     }
 
@@ -55,12 +63,19 @@ public class RapatuCharacterController : CharacterMaster
     //Q SKILL
     protected override void QSkill()
     {
+        if (m_ESkill.GetUsingSkill())
+            return;
+        if (m_RSkill.GetUsingSkill())
+            return;
     }
 
     //W SKILL
     protected override void WSkill()
     {
-
+        if (m_ESkill.GetUsingSkill())
+            return;
+        if (m_RSkill.GetUsingSkill())
+            return;
     }
 
 
@@ -68,37 +83,66 @@ public class RapatuCharacterController : CharacterMaster
     //E SKILL
     protected override void ESkill()
     {
+        if (m_ESkill.GetUsingSkill())
+            return;
+        if (m_RSkill.GetUsingSkill())
+            return;
+
         base.ESkill();
         m_ESkill.SetUsingSkill(true);
         SetAnimatorTrigger("IsUsingE");
-        StartCoroutine(DisableForDuration(m_ESkill.m_SkillDisabledTime));
+        SetDisabled(true);
+        m_CanStopE = false;
+        if (!GetIsLookingForPosition())
+            StopMovement();
         StartCoroutine(ESkillCoroutine());
 
     }
+    IEnumerator StopESkill()
+    {
+        SetAnimatorTrigger("EStop");
+        if (!GetIsLookingForPosition())
+            StopMovement();
+        SetDisabled(false);
+        StopCoroutine(ESkillCoroutine());
+        Destroy(m_HealingAreaE.gameObject);
+        yield return new WaitForSeconds(0.1f);
+        m_CanStopE = false;
+        m_ESkill.SetUsingSkill(false);
+    }
+    RapatuEHealingArea m_HealingAreaE;
+    bool m_CanStopE = false;
+    public float m_AmimDelayE = 0.5f;
     IEnumerator ESkillCoroutine()
     {
-        RapatuEHealingArea l_HealingAreaE;
-        yield return new WaitForSeconds(m_ESkill.m_SkillDisabledTime);
-        l_HealingAreaE = Instantiate(m_HealingAreaEPrefab, transform.position, Quaternion.identity).GetComponent<RapatuEHealingArea>();
-        l_HealingAreaE.SetHealingAria(transform, m_HealingAreaRadius / 100);
-        m_ESkill.SetUsingSkill(false);
+        yield return new WaitForSeconds(m_AmimDelayE);
+        m_HealingAreaE = Instantiate(m_HealingAreaEPrefab, transform.position, Quaternion.identity).GetComponent<RapatuEHealingArea>();
+        m_HealingAreaE.SetHealingAria(transform, m_HealingAreaRadius / 100);
+        m_CanStopE = true;
 
 
         float l_HealLifeValue = (m_ESkill.GetAttribute("Curación", GetESkillLevel())) + (m_PercentageSkillPower / 100) * GetCharacterStats().GetAbilityPower() + (m_PercentageAdditionalLife / 100) * GetCharacterStats().GetBonusHealth();
 
-        l_HealingAreaE.Heal(l_HealLifeValue);
+        m_HealingAreaE.Heal(l_HealLifeValue);
         for (int i = 0; i < m_HealingTimes - 1; i++)
         {
             yield return new WaitForSeconds(m_HealingTimeSpace);
-            l_HealingAreaE.Heal(l_HealLifeValue);
+            if (!m_HealingAreaE.IsDestroyed())
+                m_HealingAreaE.Heal(l_HealLifeValue);
 
         }
 
-        Destroy(l_HealingAreaE.gameObject);
+        if (!m_HealingAreaE.IsDestroyed())
+            StartCoroutine(StopESkill());
     }
     //R SKILL
     protected override void RSkill()
     {
+        if (m_RSkill.GetUsingSkill())
+            return;
+        if (m_ESkill.GetUsingSkill())
+            return;
+
         m_RSkill.SetUsingSkill(true);
         SetDisabled(true);
         SetAnimatorTrigger("IsUsingR");
