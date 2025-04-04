@@ -87,7 +87,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 843303199036862829}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 09e9db27bd44ad44db4a506217d01ad6, type: 3}
+  m_Script: {fileID: 11500000, guid: 18dbc8ec0dbceca43a059022c231bcc3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_ShowEmoteClip: {fileID: 7400000, guid: bcbae67b615be4f4bada7079de258b11, type: 2}
@@ -562,7 +562,6 @@ MonoBehaviour:
   m_MagicDamageFont: {fileID: 11400000, guid: aa836847ff1cd414298bd3382ba63fb0, type: 2}
   m_HealthNumbers: {fileID: 5019070121339474210, guid: f55598f530f49284bb9e6fbec7bb38dd, type: 3}
   m_HealthNumbersPosOffset: {x: 0, y: -130, z: 0}
-  m_HealthFont: {fileID: 11400000, guid: f22cedcd0f0f00a43835c472730492f6, type: 2}
 --- !u!114 &5780009118952098308
 MonoBehaviour:
   m_ObjectHideFlags: 0

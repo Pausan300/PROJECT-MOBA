@@ -41,7 +41,6 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
     bool m_Recalling;
 
     Vector3 m_DesiredPosition;
-    public Transform m_SelectedCharacter;
     public Transform m_DesiredEnemy;
     bool m_GoingToDesiredPosition;
     bool m_LookingForNextPosition;
@@ -96,6 +95,10 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
     //[DllImport("user32.dll")]
     //public static extern int SystemParametersInfo( int uAction, int uParam, IntPtr lpvParam, int fuWinIni);
     //public const int SPI_SETMOUSESPEED = 113;
+
+    [Header("AUTOATTACK")]
+    public GameObject m_RangedAutoAttack;
+    public Transform m_RangedAutoSpawnPoint;
 
     private void Awake()
     {
@@ -850,6 +853,20 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
         m_TimeSinceLastAuto = 0.0f;
 #endif
         m_DesiredEnemy.GetComponent<ITakeDamage>().TakeDamage(m_CharacterStats.GetAttackDamage(), m_CharacterStats.GetAbilityPower(), m_CharacterStats.GetPlayerName());
+    }
+    //LLAMADA POR EVENTO EN LA ANIMACION DE AUTOATAQUE
+    protected virtual void PerformRangedAutoAttack()
+    {
+        if(m_DesiredEnemy==null)
+            return;
+#if UNITY_EDITOR
+        Debug.Log("ATTACKING - Since last auto: " + m_TimeSinceLastAuto);
+        m_TimeSinceLastAuto = 0.0f;
+#endif
+        GameObject l_Projectile=Instantiate(m_RangedAutoAttack, m_RangedAutoSpawnPoint.position, transform.rotation);
+		NetworkObject l_ProjectileNetwork=l_Projectile.GetComponent<NetworkObject>();
+		l_ProjectileNetwork.SpawnWithOwnership(GetComponent<NetworkObject>().OwnerClientId);
+        l_Projectile.GetComponent<RangedAutoAttack>().SetStats(m_DesiredEnemy, m_CharacterStats.GetAttackDamage(), 0.0f);
     }
 
     //GETTERS & SETTERS

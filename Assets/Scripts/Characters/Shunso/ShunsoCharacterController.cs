@@ -57,7 +57,7 @@ public class ShunsoCharacterController : CharacterMaster
 	//R SKILL
 	protected override void RSkill()
 	{
-		
+		StartCoroutine(DisableForDuration(m_RSkill.m_SkillDisabledTime));
 	}
 
 

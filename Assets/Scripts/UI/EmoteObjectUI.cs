@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 
-public class EmoteObject : MonoBehaviour 
+public class EmoteObjectUI : MonoBehaviour 
 {
     RectTransform m_RectTransform;
     Image m_EmoteImage;

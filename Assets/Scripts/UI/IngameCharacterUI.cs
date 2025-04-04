@@ -49,7 +49,7 @@ public class IngameCharacterUI : MonoBehaviour
     public Slider m_IngameManaBar;
     public TextMeshProUGUI m_IngameLevelText;
     public TextMeshProUGUI m_PlayerNameText;
-    public EmoteObject m_CurrentEmote;
+    public EmoteObjectUI m_CurrentEmote;
     public Vector2 m_MinSize;
     public Vector2 m_MaxSize;
     float m_InitialPositionY;
