@@ -1,16 +1,16 @@
 using UnityEngine;
-using System.Collections.Generic;   
+using System.Collections.Generic;
 
 namespace BehaviorTree
 {
     public class Sequence : Node
     {
-        public Sequence() : base() { }
         public Sequence(List<Node> children) : base(children) { }
 
         public override NodeState Evaluate()
         {
             bool anyChildRunning = false;
+
             foreach (Node node in children)
             {
                 switch (node.Evaluate())
@@ -28,13 +28,11 @@ namespace BehaviorTree
                         return nodeState;
                 }
             }
+
             nodeState = anyChildRunning ? NodeState.RUNNING : NodeState.SUCCESS;
             return nodeState;
         }
     }
 }
 
-public class Sequence
-{
-    
-}
+

@@ -649,6 +649,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   target: {fileID: 1165386367}
   ownTransform: {fileID: 2062773197}
+  chaseSpeed: 5
+  attackRange: 1.5
+  isDamagedByPlayer: 0
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
