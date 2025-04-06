@@ -6,9 +6,12 @@ public class Jungle_Monster_Basic_Behaviour : BehaviorTree.Tree
 {
     public Transform target;
     public Transform ownTransform;
+    public Transform homeTransform;
     public float chaseSpeed = 5f;
     public float attackRange = 0.5f;
+    public float homeDistance = 10f;
     public bool isDamagedByPlayer = false;
+    public bool isBackingHome = false;
 
     protected override Node CreateTree()
     {
@@ -16,14 +19,18 @@ public class Jungle_Monster_Basic_Behaviour : BehaviorTree.Tree
         Jungle_Monster_Task_Chasing chase = new Jungle_Monster_Task_Chasing(ownTransform, target, chaseSpeed, attackRange);
         Jungle_Monster_Attack attack = new Jungle_Monster_Attack(ownTransform, target, attackRange);
         Jungle_Monster_CheckIfItDamage_By_Player checkIfDamaged = new Jungle_Monster_CheckIfItDamage_By_Player(this);
+        Jungle_Monster_Return_Home returnHome = new Jungle_Monster_Return_Home(this, ownTransform, homeTransform);
+        Jungle_Monster_Check_IfItFarFrom_Home checkIfFarFromHome = new Jungle_Monster_Check_IfItFarFrom_Home(this, ownTransform, homeDistance, homeTransform);
 
         Node root = new Selector(new List<Node>
         {
-             new Sequence(new List<Node> { checkIfDamaged, new Selector(new List<Node> { new Sequence(new List<Node> { chase, attack }), chase }) }),
+            new Sequence(new List<Node> { checkIfDamaged, new Selector(new List<Node> { new Sequence(new List<Node> { checkIfFarFromHome, returnHome }), new Sequence(new List<Node> { chase, attack }) }) }),
+            new Sequence(new List<Node> { new Jungle_Monster_Check_IsBackingHome(this), returnHome }),
             idle
         });
         return root;
     }
+
 
     private void OnDrawGizmos()
     {
