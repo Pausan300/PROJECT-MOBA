@@ -1,11 +1,11 @@
 using BehaviorTree;
 using UnityEngine;
 
-public class TaskIsDamage : Node
+/*public class TaskIsDamage : Node
 {
-    private Winged_Monster _wingedMonster;
+    private Winged_Monster_Main_Sequence _wingedMonster;
 
-    public TaskIsDamage(Winged_Monster wingedMonster)
+    public TaskIsDamage(Winged_Monster_Main_Sequence wingedMonster)
     {
         _wingedMonster = wingedMonster;
     }
@@ -23,3 +23,4 @@ public class TaskIsDamage : Node
         return nodeState;
     }
 }
+*/

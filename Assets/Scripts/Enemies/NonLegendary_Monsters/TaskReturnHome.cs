@@ -1,14 +1,16 @@
 using UnityEngine;
 using BehaviorTree;
 
-public class TaskReturnHome : Node
+/*public class TaskReturnHome : Node
 {
+    private Winged_Monster_Main_Sequence _wingedMonster;
     private Transform _transform;
     private Transform _homeTransform;
     private float _returnSpeed = 5f;
 
-    public TaskReturnHome(Transform transform, Transform homeTransform)
+    public TaskReturnHome(Winged_Monster_Main_Sequence wingedMonster, Transform transform, Transform homeTransform)
     {
+        _wingedMonster = wingedMonster;
         _transform = transform;
         _homeTransform = homeTransform;
     }
@@ -28,4 +30,4 @@ public class TaskReturnHome : Node
         }
         return nodeState;
     }
-}
+}*/

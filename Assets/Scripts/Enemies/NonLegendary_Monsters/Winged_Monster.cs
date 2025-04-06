@@ -2,7 +2,7 @@ using UnityEngine;
 using BehaviorTree;
 using System.Collections.Generic;
 
-public class Winged_Monster : BehaviorTree.Tree
+/*public class Winged_Monster : BehaviorTree.Tree
 {
     public Transform target;
     public Transform ownTransform;
@@ -44,4 +44,4 @@ public class Winged_Monster : BehaviorTree.Tree
         Gizmos.color = Color.blue;
         Gizmos.DrawWireSphere(homeTransform.position, sphereAreaHomeDistance); // Dibuja el área de la casa
     }
-}
+}*/

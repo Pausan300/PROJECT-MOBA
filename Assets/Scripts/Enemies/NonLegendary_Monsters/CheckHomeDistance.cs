@@ -2,16 +2,16 @@
 using UnityEngine;
 using BehaviorTree;
 
-public class CheckHomeDistance : Node
+/*public class CheckHomeDistance : Node
 {
-    private Winged_Monster _wingedMonster;
+    private Winged_Monster_Main_Sequence _wingedMonster;
     private Transform _wingedMonsterPosition;
     private float _sphereAreaHomeDistance;
     private Transform _homeTransform;
     private float _counter;
     private float _counterMax = 2f;
 
-    public CheckHomeDistance(Winged_Monster wingedMonster, Transform wingedMonsterPosition, float sphereAreaHomeDistance, Transform homeTransform)
+    public CheckHomeDistance(Winged_Monster_Main_Sequence wingedMonster, Transform wingedMonsterPosition, float sphereAreaHomeDistance, Transform homeTransform)
     {
         _wingedMonster = wingedMonster;
         _wingedMonsterPosition = wingedMonsterPosition;
@@ -41,4 +41,4 @@ public class CheckHomeDistance : Node
         }
         return nodeState;
     }
-}
+}*/
