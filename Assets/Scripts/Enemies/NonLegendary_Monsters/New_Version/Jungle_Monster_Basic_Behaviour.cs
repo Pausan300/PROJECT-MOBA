@@ -14,11 +14,12 @@ public class Jungle_Monster_Basic_Behaviour : BehaviorTree.Tree
     {
         Jungle_Monster_Task_Idle idle = new Jungle_Monster_Task_Idle();
         Jungle_Monster_Task_Chasing chase = new Jungle_Monster_Task_Chasing(ownTransform, target, chaseSpeed, attackRange);
+        Jungle_Monster_Attack attack = new Jungle_Monster_Attack(ownTransform, target, attackRange);
         Jungle_Monster_CheckIfItDamage_By_Player checkIfDamaged = new Jungle_Monster_CheckIfItDamage_By_Player(this);
 
         Node root = new Selector(new List<Node>
         {
-            new Sequence(new List<Node> { checkIfDamaged, chase }),
+             new Sequence(new List<Node> { checkIfDamaged, new Selector(new List<Node> { new Sequence(new List<Node> { chase, attack }), chase }) }),
             idle
         });
         return root;
