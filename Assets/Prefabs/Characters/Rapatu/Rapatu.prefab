@@ -1671,7 +1671,6 @@ MonoBehaviour:
   m_CharacterStats: {fileID: 7591410689033805986}
   m_RecallTime: 8
   m_RecallTpPoint: {fileID: 0}
-  m_SelectedCharacter: {fileID: 0}
   m_DesiredEnemy: {fileID: 0}
   m_TimeSinceLastAuto: 0
   m_SummSpell1: {fileID: 11400000, guid: ca8ff71d96317c541b37d751c8b81f3e, type: 2}
@@ -1692,12 +1691,21 @@ MonoBehaviour:
     m_Bits: 128
   m_InputBufferController: {fileID: 7683495954015566684}
   m_UseKeyboardMovement: 0
+  m_RangedAutoAttack: {fileID: 0}
+  m_RangedAutoSpawnPoint: {fileID: 0}
   m_HealingAreaEPrefab: {fileID: 6620525333772683988, guid: 02e54d4032ff1ad4faaf09f9f2ec28fe, type: 3}
   m_HealingTimes: 4
   m_HealingTimeSpace: 1
-  m_XCSkillPower: 50
-  m_XCAdditionalLife: 7
-  m_Delete: 0
+  m_HealingAreaRadius: 500
+  m_PercentageSkillPower: 50
+  m_PercentageAdditionalLife: 7
+  m_ECurrentHealingTime: 0
+  m_EMaxHealingTime: 0
+  m_RIndicatorPrefab: {fileID: 4231912645315949874, guid: 629ad86908967b24aa688dad332c88cf, type: 3}
+  m_RIndicator: {fileID: 0}
+  m_RangeR: 1000
+  m_AutoJumpSecondsR: 2
+  m_MinTimeToBeRedy: 1
 --- !u!114 &7780092429937281219
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1916,18 +1924,102 @@ MonoBehaviour:
   TransitionStateInfoList:
   - IsCrossFadeExit: 0
     Layer: 0
-    OriginatingState: 2081823275
-    DestinationState: -726377838
-    TransitionDuration: 0.1
-    TriggerNameHash: 1143789982
-    TransitionIndex: 1
-  - IsCrossFadeExit: 0
-    Layer: 0
     OriginatingState: 1748754976
     DestinationState: -726377838
     TransitionDuration: 0.1
     TriggerNameHash: 1143789982
     TransitionIndex: 0
+  - IsCrossFadeExit: 0
+    Layer: 0
+    OriginatingState: 1748754976
+    DestinationState: 806639367
+    TransitionDuration: 0.25
+    TriggerNameHash: -939565991
+    TransitionIndex: 3
+  - IsCrossFadeExit: 0
+    Layer: 0
+    OriginatingState: -1936938822
+    DestinationState: -726377838
+    TransitionDuration: 0.25
+    TriggerNameHash: 1143789982
+    TransitionIndex: 2
+  - IsCrossFadeExit: 0
+    Layer: 0
+    OriginatingState: -726377838
+    DestinationState: 1748754976
+    TransitionDuration: 0.25
+    TriggerNameHash: 1846625968
+    TransitionIndex: 0
+  - IsCrossFadeExit: 0
+    Layer: 0
+    OriginatingState: -726377838
+    DestinationState: 2081823275
+    TransitionDuration: 0.25
+    TriggerNameHash: 1846625968
+    TransitionIndex: 1
+  - IsCrossFadeExit: 0
+    Layer: 0
+    OriginatingState: 2081823275
+    DestinationState: -726377838
+    TransitionDuration: 0.1
+    TriggerNameHash: 1143789982
+    TransitionIndex: 2
+  - IsCrossFadeExit: 0
+    Layer: 0
+    OriginatingState: 2081823275
+    DestinationState: 806639367
+    TransitionDuration: 0.25
+    TriggerNameHash: -939565991
+    TransitionIndex: 3
+  - IsCrossFadeExit: 0
+    Layer: 0
+    OriginatingState: 806639367
+    DestinationState: 1748754976
+    TransitionDuration: 0.25
+    TriggerNameHash: -919026136
+    TransitionIndex: 1
+  - IsCrossFadeExit: 0
+    Layer: 0
+    OriginatingState: 806639367
+    DestinationState: 2081823275
+    TransitionDuration: 0.25
+    TriggerNameHash: -919026136
+    TransitionIndex: 2
+  - IsCrossFadeExit: 0
+    Layer: 0
+    OriginatingState: -975443871
+    DestinationState: -1102292126
+    TransitionDuration: 0.25
+    TriggerNameHash: -1573642878
+    TransitionIndex: 0
+  - IsCrossFadeExit: 0
+    Layer: 0
+    OriginatingState: -975443871
+    DestinationState: 1748754976
+    TransitionDuration: 0.25
+    TriggerNameHash: -919026136
+    TransitionIndex: 1
+  - IsCrossFadeExit: 0
+    Layer: 0
+    OriginatingState: -975443871
+    DestinationState: 2081823275
+    TransitionDuration: 0.25
+    TriggerNameHash: -919026136
+    TransitionIndex: 2
+  - IsCrossFadeExit: 0
+    Layer: 0
+    OriginatingState: -1102292126
+    DestinationState: 2081823275
+    TransitionDuration: 0.25
+    TriggerNameHash: -919026136
+    TransitionIndex: 0
+  - IsCrossFadeExit: 0
+    Layer: 0
+    OriginatingState: -1102292126
+    DestinationState: 1748754976
+    TransitionDuration: 0.25
+    TriggerNameHash: -919026136
+    TransitionIndex: 1
   m_Animator: {fileID: 9022364282410572717}
 --- !u!54 &3463638054193634300
 Rigidbody:

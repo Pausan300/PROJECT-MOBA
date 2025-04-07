@@ -45,6 +45,6 @@ MonoBehaviour:
       m_AtributeType: 3
       m_Color: 6
   m_ExtraSpecifications: []
-  m_IndicatorUIObject: {fileID: 0}
+  m_IndicatorUIObject: {fileID: 5078714052237607800, guid: 83f81966102af0341a86559624a7f892, type: 3}
   m_SkillDisabledTime: 0
   m_CancelableWithMouseClick: 0
