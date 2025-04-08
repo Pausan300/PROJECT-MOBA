@@ -94,4 +94,13 @@ public class Skill : Power
         }
         return 0.0f;
     }
+    public float GetAttribute(string Id) 
+    {
+        foreach(SkillAttribute Attribute in m_AttributeList) 
+        {
+            if(Attribute.m_AttributeId==Id)
+                return Attribute.m_LevelScaling[0];
+        }
+        return 0.0f;
+    }
 }

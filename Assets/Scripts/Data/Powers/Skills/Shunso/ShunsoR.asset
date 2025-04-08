@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: ShunsoR
   m_EditorClassIdentifier: 
   m_PowerType: 4
-  m_PowerName: Colmillos de Bahu
+  m_PowerName: Colmillos de Baihu
   m_Sprite: {fileID: 21300000, guid: 73bb67b75f4260e4e87329b1ec36c788, type: 3}
   m_Description: "Shunso dispara una gran bola de sangre corrupta con energ\xEDa
     de Yin y Yang que al golpear a un Sinluz o llegar al lugar seleccionado, invoca
@@ -52,12 +52,24 @@ MonoBehaviour:
     m_ValueFormat: 
     m_LevelScaling:
     - 8000
-  - m_AttributeId: Ancho
+  - m_AttributeId: Radio proyectil
     m_IsPct: 0
     m_ShowScalingInPopup: 0
     m_ValueFormat: 
     m_LevelScaling:
-    - 200
+    - 125
+  - m_AttributeId: Radio mordisco
+    m_IsPct: 0
+    m_ShowScalingInPopup: 0
+    m_ValueFormat: 
+    m_LevelScaling:
+    - 250
+  - m_AttributeId: Velocidad
+    m_IsPct: 0
+    m_ShowScalingInPopup: 0
+    m_ValueFormat: 
+    m_LevelScaling:
+    - 1200
   m_DescriptionDamageList:
   - m_DescriptionId: X
     m_Color: 5
@@ -71,5 +83,5 @@ MonoBehaviour:
       m_Color: 4
   m_ExtraSpecifications: []
   m_IndicatorUIObject: {fileID: 0}
-  m_SkillDisabledTime: 0
+  m_SkillDisabledTime: 0.5
   m_CancelableWithMouseClick: 0
