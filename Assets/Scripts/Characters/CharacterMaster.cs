@@ -530,6 +530,17 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
         }
         return m_CharacterCamera.GetCamera().ScreenToWorldPoint(l_MousePosition);
     }
+    public void LookAt(Vector3 TargetPosition)
+    {
+        Vector3 l_Direction = TargetPosition - transform.position;
+        l_Direction.y = 0f;
+
+        if (l_Direction != Vector3.zero)
+        {
+            Quaternion l_Rotation = Quaternion.LookRotation(l_Direction);
+            transform.rotation = l_Rotation;
+        }
+    }
     public void StopMovement()
     {
         m_GoingToDesiredPosition = false;
@@ -857,15 +868,15 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
     //LLAMADA POR EVENTO EN LA ANIMACION DE AUTOATAQUE
     protected virtual void PerformRangedAutoAttack()
     {
-        if(m_DesiredEnemy==null)
+        if (m_DesiredEnemy == null)
             return;
 #if UNITY_EDITOR
         Debug.Log("ATTACKING - Since last auto: " + m_TimeSinceLastAuto);
         m_TimeSinceLastAuto = 0.0f;
 #endif
-        GameObject l_Projectile=Instantiate(m_RangedAutoAttack, m_RangedAutoSpawnPoint.position, transform.rotation);
-		NetworkObject l_ProjectileNetwork=l_Projectile.GetComponent<NetworkObject>();
-		l_ProjectileNetwork.SpawnWithOwnership(GetComponent<NetworkObject>().OwnerClientId);
+        GameObject l_Projectile = Instantiate(m_RangedAutoAttack, m_RangedAutoSpawnPoint.position, transform.rotation);
+        NetworkObject l_ProjectileNetwork = l_Projectile.GetComponent<NetworkObject>();
+        l_ProjectileNetwork.SpawnWithOwnership(GetComponent<NetworkObject>().OwnerClientId);
         l_Projectile.GetComponent<RangedAutoAttack>().SetStats(m_DesiredEnemy, m_CharacterStats.GetAttackDamage(), 0.0f);
     }
 
@@ -909,6 +920,10 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
     public void SetAnimatorTrigger(string Name)
     {
         m_CharacterAnimator.SetTrigger(Name);
+    }
+    public void ResetAnimatorTrigger(string Name)
+    {
+        m_CharacterAnimator.ResetTrigger(Name);
     }
     public bool GetAnimatorBool(string Name)
     {

@@ -28,7 +28,7 @@ MonoBehaviour:
     - 70
     - 55
     - 45
-  - m_AttributeId: Cantidad de saltos
+  - m_AttributeId: Saltos
     m_IsPct: 0
     m_ShowScalingInPopup: 1
     m_ValueFormat: 

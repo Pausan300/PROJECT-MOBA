@@ -1622,7 +1622,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 898872989
+  GlobalObjectIdHash: 419589164
   InScenePlacedSourceGlobalObjectIdHash: 1219962804
   DeferredDespawnTick: 0
   Ownership: 0
@@ -1699,13 +1699,10 @@ MonoBehaviour:
   m_HealingAreaRadius: 500
   m_PercentageSkillPower: 50
   m_PercentageAdditionalLife: 7
-  m_ECurrentHealingTime: 0
-  m_EMaxHealingTime: 0
   m_RIndicatorPrefab: {fileID: 4231912645315949874, guid: 629ad86908967b24aa688dad332c88cf, type: 3}
-  m_RIndicator: {fileID: 0}
-  m_RangeR: 1000
+  m_MAXRangeR: 1000
   m_AutoJumpSecondsR: 2
-  m_MinTimeToBeRedy: 1
+  m_JumpRAirDuration: 0.6
 --- !u!114 &7780092429937281219
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2247,7 +2244,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 898872989
+  GlobalObjectIdHash: 1333982354
   InScenePlacedSourceGlobalObjectIdHash: 0
   DeferredDespawnTick: 0
   Ownership: 1
