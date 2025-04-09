@@ -315,7 +315,7 @@ public class RapatuCharacterController : CharacterMaster
             {
                 if (Entity.TryGetComponent(out BuffableEntity Buffs))
                 {
-
+                    Debug.LogError("You need to add buff T_T");
                 }
                 Debug.Log("TAKEN " + Damage + " DAMAGE");
                 Enemy.TakeDamage(0, Damage, m_CharacterStats.GetPlayerName());
