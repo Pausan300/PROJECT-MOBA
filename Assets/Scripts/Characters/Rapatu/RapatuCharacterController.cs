@@ -18,6 +18,8 @@ public class RapatuCharacterController : CharacterMaster
 
     [Header("W SKILL")]
     public GameObject m_WIndicatorPrefab;
+    public GameObject m_WExplosion;
+
     public float m_MAXRangeW = 1000;
     public float m_AutoJumpSecondsW = 2;
     public float m_JumpWAirDuration = 1f;
@@ -32,6 +34,7 @@ public class RapatuCharacterController : CharacterMaster
     [UnityEngine.Range(0f, 100f)]
     public float m_PercentageSlowsDownWFirstJump = 40;
     public float m_TimeSlowsDownWFirstJump = 2;
+    public float m_DamageRangeWFirstJump = 250;
 
     [Header("SECOND JUMP W")]
     [UnityEngine.Range(0f, 100f)]
@@ -41,6 +44,7 @@ public class RapatuCharacterController : CharacterMaster
     [UnityEngine.Range(0f, 100f)]
     public float m_PercentageSlowsDownWSecondJump = 30;
     public float m_TimeSlowsDownWSecondJump = 2;
+    public float m_DamageRangeWSecondJump = 250;
 
     [UnityEngine.Range(0f, 100f)]
     public float m_PercentageExtraCountdownW = 30f;
@@ -208,6 +212,7 @@ public class RapatuCharacterController : CharacterMaster
         m_WSkillStarted = true;
 
         m_WIndicator = Instantiate(m_WIndicatorPrefab, transform.position, Quaternion.identity);
+        m_WIndicator.transform.localScale = new Vector3(m_DamageRangeWFirstJump / 100, m_WIndicator.transform.localScale.y, m_DamageRangeWFirstJump / 100);
     }
     void WHoldTimeCheck()
     {
@@ -290,15 +295,37 @@ public class RapatuCharacterController : CharacterMaster
     void DoLandsDamageWFirstJump()
     {
         float l_Damage = (m_WSkill.GetAttribute("Daño base", GetWSkillLevel())) + (m_PercentageSkillPowerWFirstJump / 100) * GetCharacterStats().GetAbilityPower() + (m_PercentageAdditionalLifeWFirstJump / 100) * GetCharacterStats().GetBonusHealth();
-        DoLandsDamageW(l_Damage, m_PercentageSlowsDownWFirstJump, m_TimeSlowsDownWFirstJump);
+        StartCoroutine(DoLandsDamageW(l_Damage, m_PercentageSlowsDownWFirstJump, m_TimeSlowsDownWFirstJump, m_DamageRangeWFirstJump));
     }
     void DoLandsDamageWSecondJump()
     {
         float l_Damage = (m_WSkill.GetAttribute("Daño base", GetWSkillLevel())) + (m_PercentageSkillPowerWSecondJump / 100) * GetCharacterStats().GetAbilityPower() + (m_PercentageAdditionalLifeWSecondJump / 100) * GetCharacterStats().GetBonusHealth();
-        DoLandsDamageW(l_Damage, m_PercentageSlowsDownWSecondJump, m_TimeSlowsDownWSecondJump);
+        StartCoroutine(DoLandsDamageW(l_Damage, m_PercentageSlowsDownWSecondJump, m_TimeSlowsDownWSecondJump, m_DamageRangeWSecondJump));
     }
-    void DoLandsDamageW(float Damage, float PercentageSlowsDown, float TimeSlowsDown)
+    IEnumerator DoLandsDamageW(float Damage, float PercentageSlowsDown, float TimeSlowsDown, float DamageRange)
     {
+
+        GameObject l_Explosion = Instantiate(m_WExplosion, transform.position, Quaternion.identity);
+        l_Explosion.transform.localScale = new Vector3(DamageRange / 100, DamageRange / 100, DamageRange / 100);
+        List<Collider> l_CollidersHit = new List<Collider>();
+        Collider[] l_HitColliders = Physics.OverlapSphere(l_Explosion.transform.position, l_Explosion.transform.localScale.x / 2.0f, m_DamageLayerMask);
+        foreach (Collider Entity in l_HitColliders)
+        {
+            if (!l_CollidersHit.Contains(Entity) && Entity.TryGetComponent(out ITakeDamage Enemy))
+            {
+                if (Entity.TryGetComponent(out BuffableEntity Buffs))
+                {
+
+                }
+                Debug.Log("TAKEN " + Damage + " DAMAGE");
+                Enemy.TakeDamage(0, Damage, m_CharacterStats.GetPlayerName());
+                l_CollidersHit.Add(Entity);
+            }
+        }
+
+        yield return new WaitForSeconds(0.5f);
+
+        Destroy(l_Explosion);
     }
 
     IEnumerator JumpingW()
@@ -316,6 +343,7 @@ public class RapatuCharacterController : CharacterMaster
             yield return null;
         DoLandsDamageWFirstJump();
 
+        m_WIndicator.transform.localScale = new Vector3(m_DamageRangeWSecondJump / 100, m_WIndicator.transform.localScale.y, m_DamageRangeWSecondJump / 100);
         m_WIndicator.SetActive(true);
 
         m_OtherJumpW = false;
@@ -335,7 +363,7 @@ public class RapatuCharacterController : CharacterMaster
 
             while (m_JumpingW)
                 yield return null;
-            
+
             DoLandsDamageWSecondJump();
 
             SetAnimatorTrigger("WJumpStop");

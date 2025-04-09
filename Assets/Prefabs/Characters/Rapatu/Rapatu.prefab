@@ -1693,17 +1693,30 @@ MonoBehaviour:
   m_UseKeyboardMovement: 0
   m_RangedAutoAttack: {fileID: 0}
   m_RangedAutoSpawnPoint: {fileID: 0}
-  m_MAXRangeW: 1000
   m_WIndicatorPrefab: {fileID: 4231912645315949874, guid: 79575fab9db99f64594b17c863952490, type: 3}
+  m_WExplosion: {fileID: 8270496605563521561, guid: 11c5352ddb9b08f48995a3380924642e, type: 3}
+  m_MAXRangeW: 1000
   m_AutoJumpSecondsW: 2
   m_JumpWAirDuration: 0.6
   m_GetUpTimeW: 1
+  m_CanDoOtherJumpTimeW: 0.4
+  m_PercentageSkillPowerWFirstJump: 50
+  m_PercentageAdditionalLifeWFirstJump: 5
+  m_PercentageSlowsDownWFirstJump: 40
+  m_TimeSlowsDownWFirstJump: 2
+  m_DamageRangeWFirstJump: 250
+  m_PercentageSkillPowerWSecondJump: 30
+  m_PercentageAdditionalLifeWSecondJump: 3
+  m_PercentageSlowsDownWSecondJump: 30
+  m_TimeSlowsDownWSecondJump: 2
+  m_DamageRangeWSecondJump: 250
+  m_PercentageExtraCountdownW: 30
   m_HealingAreaEPrefab: {fileID: 6620525333772683988, guid: 02e54d4032ff1ad4faaf09f9f2ec28fe, type: 3}
   m_HealingTimes: 4
   m_HealingTimeSpace: 1
   m_HealingAreaRadius: 500
-  m_PercentageSkillPower: 50
-  m_PercentageAdditionalLife: 7
+  m_PercentageSkillPowerE: 50
+  m_PercentageAdditionalLifeE: 7
   m_RIndicatorPrefab: {fileID: 4231912645315949874, guid: 629ad86908967b24aa688dad332c88cf, type: 3}
   m_MAXRangeR: 1000
   m_AutoJumpSecondsR: 2
