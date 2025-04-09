@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 3ce0923097c15bf4f87afa5b31d4f9a4
+guid: ca6acf919ffe0864f9074e781049348e
 ModelImporter:
   serializedVersion: 22200
   internalIDToNameTable: []
@@ -31,7 +31,7 @@ ModelImporter:
     extraUserProperties: []
     clipAnimations:
     - serializedVersion: 16
-      name: RapatuRIdle
+      name: RapatuWPreparing
       takeName: mixamo.com
       internalID: -203655887218126122
       firstFrame: 0

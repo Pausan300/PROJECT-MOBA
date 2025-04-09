@@ -17,6 +17,47 @@ public class RapatuCharacterController : CharacterMaster
     [Header("Q SKILL")]
 
     [Header("W SKILL")]
+    public GameObject m_WIndicatorPrefab;
+    public float m_MAXRangeW = 1000;
+    public float m_AutoJumpSecondsW = 2;
+    public float m_JumpWAirDuration = 1f;
+    public float m_GetUpTimeW = 1f;
+    public float m_CanDoOtherJumpTimeW = 0.4f;
+
+    [Header("FIRST JUMP W")]
+    [UnityEngine.Range(0f, 100f)]
+    public float m_PercentageSkillPowerWFirstJump = 50;
+    [UnityEngine.Range(0f, 100f)]
+    public float m_PercentageAdditionalLifeWFirstJump = 5;
+    [UnityEngine.Range(0f, 100f)]
+    public float m_PercentageSlowsDownWFirstJump = 40;
+    public float m_TimeSlowsDownWFirstJump = 2;
+
+    [Header("SECOND JUMP W")]
+    [UnityEngine.Range(0f, 100f)]
+    public float m_PercentageSkillPowerWSecondJump = 30;
+    [UnityEngine.Range(0f, 100f)]
+    public float m_PercentageAdditionalLifeWSecondJump = 3;
+    [UnityEngine.Range(0f, 100f)]
+    public float m_PercentageSlowsDownWSecondJump = 30;
+    public float m_TimeSlowsDownWSecondJump = 2;
+
+    [UnityEngine.Range(0f, 100f)]
+    public float m_PercentageExtraCountdownW = 30f;
+
+
+
+    float m_TimerW;
+    bool m_WSkillStarted = false;
+    bool m_LoadingJumpW = false;
+    GameObject m_WIndicator;
+    bool m_JumpingW = false;
+    Vector3 m_JumpWStartPosition;
+    Vector3 m_JumpWEndPosition;
+    float m_WJumpSpeed;
+    bool m_SaverCanDoW = true;
+    bool m_OtherJumpW = true;
+    bool m_CanDoOtherJumpW = true;
 
     [Header("E SKILL")]
 
@@ -26,8 +67,10 @@ public class RapatuCharacterController : CharacterMaster
     [Tooltip("Cada cuanto cura")]
     public float m_HealingTimeSpace = 1f;
     public float m_HealingAreaRadius = 500;
-    public float m_PercentageSkillPower = 50;
-    public float m_PercentageAdditionalLife = 7;
+    [UnityEngine.Range(0f, 100f)]
+    public float m_PercentageSkillPowerE = 50;
+    [UnityEngine.Range(0f, 100f)]
+    public float m_PercentageAdditionalLifeE = 7;
     RapatuEHealingArea m_HealingAreaE;
     bool m_CanStopE = false;
     float m_ECurrentHealingTime = 0;
@@ -43,12 +86,12 @@ public class RapatuCharacterController : CharacterMaster
     public float m_MAXRangeR = 1000;
     public float m_AutoJumpSecondsR = 2;
     public float m_JumpRAirDuration = 1f;
-    public float m_GetUpTime = 1f;
+    public float m_GetUpTimeR = 1f;
     GameObject m_RIndicator;
     float m_TimerR;
     bool m_CanStopR = false;
-    bool m_LoadingJump = false;
-    bool m_Jumping = false;
+    bool m_LoadingJumpR = false;
+    bool m_JumpingR = false;
     bool m_SaverCanDoR = true;
     bool m_RSkillStarted = false;
     Vector3 m_JumpRStartPosition;
@@ -56,6 +99,7 @@ public class RapatuCharacterController : CharacterMaster
 
     Coroutine m_RSkillCoroutine;
     float m_RJumpSpeed;
+    bool m_RStopJumping = false;
 
     public override void OnNetworkSpawn()
     {
@@ -73,6 +117,10 @@ public class RapatuCharacterController : CharacterMaster
         if (m_RSkill.GetUsingSkill() && m_RSkillStarted)
         {
             RHoldTimeCheck();
+        }
+        if (m_WSkill.GetUsingSkill() && m_WSkillStarted)
+        {
+            WHoldTimeCheck();
         }
         if (m_ESkill.GetUsingSkill() && m_CanStopE)
         {
@@ -95,11 +143,14 @@ public class RapatuCharacterController : CharacterMaster
 
                 if (m_RSkill.GetUsingSkill() && !m_RSkillStarted)
                     StartRSkill();
+
+                if (m_WSkill.GetUsingSkill() && !m_WSkillStarted)
+                    StartWSkill();
             }
         }
     }
 
-
+    #region Q Skill
     //Q SKILL
     protected override void QSkill()
     {
@@ -108,17 +159,223 @@ public class RapatuCharacterController : CharacterMaster
         if (m_RSkill.GetUsingSkill())
             return;
     }
-
+    #endregion
+    #region W Skill
     //W SKILL
     protected override void WSkill()
     {
-        if (m_ESkill.GetUsingSkill())
-            return;
         if (m_RSkill.GetUsingSkill())
             return;
+        if (m_ESkill.GetUsingSkill())
+            return;
+        if (!m_SaverCanDoW)
+            return;
+
+        m_WSkill.SetUsingSkill(true);
+
+        if (GetUseSkillGizmos())
+        {
+            m_WSkillStarted = false;
+            if (GetShowingGizmos())
+            {
+                m_SkillIndicatorUI.ClearDeletableSkillIndicatorUI();
+                m_SkillIndicatorUI.ClearNormalSkillIndicatorUI();
+                m_SkillIndicatorUI.ClearTargetSkillIndicatorUI();
+            }
+            m_SkillIndicatorUI.CreateCircleSkillIndicator(m_WSkill.m_IndicatorUIObject, m_MAXRangeW, transform, false);
+            SetShowingGizmos(true);
+        }
+        else
+            StartWSkill();
+
+
     }
 
+    void StartWSkill()
+    {
+        SetShowingGizmos(false);
+        StopAttacking();
+        SetDisabled(true);
+        SetAnimatorTrigger("IsUsingW");
+        if (!GetIsLookingForPosition())
+            StopMovement();
+        m_TimerW = 0;
+        GetCharacterUI().SetCastingUIAbilityText("Cargando salto");
+        GetCharacterUI().HideCastingTime();
+        GetCharacterUI().UpdateCastingUI(0, 1);
+        GetCharacterUI().ShowCastingUI();
+        m_LoadingJumpW = true;
+        m_WSkillStarted = true;
 
+        m_WIndicator = Instantiate(m_WIndicatorPrefab, transform.position, Quaternion.identity);
+    }
+    void WHoldTimeCheck()
+    {
+
+        if (m_LoadingJumpW)
+        {
+            m_TimerW += Time.deltaTime;
+            if (m_TimerW >= m_AutoJumpSecondsW)
+            {
+                Debug.Log("Saltando por tiempo");
+                StartJumpingW();
+            }
+            GetCharacterUI().UpdateCastingUI(m_TimerW, m_AutoJumpSecondsW);
+
+            if (Input.GetKeyUp(m_WSkillKey))
+            {
+                Debug.Log("Saltando por activacion");
+                StartJumpingW();
+            }
+
+
+        }
+
+        if (Vector3.Distance(transform.position, GetPositionWithMouse()) <= m_MAXRangeW / 100)
+        {
+            m_WIndicator.transform.position = GetPositionWithMouse();
+        }
+        else
+        {
+            Vector3 l_Direction = (GetPositionWithMouse() - transform.position).normalized;
+            m_WIndicator.transform.position = transform.position + l_Direction * m_MAXRangeW / 100;
+        }
+
+        if (m_JumpingW)
+        {
+            transform.position = Vector3.MoveTowards(transform.position, m_JumpWEndPosition, m_WJumpSpeed * Time.deltaTime);
+
+            if (transform.position == m_JumpWEndPosition)
+            {
+                m_JumpingW = false;
+            }
+        }
+        else
+        {
+            LookAt(m_WIndicator.transform.position);
+
+        }
+
+        if (m_CanDoOtherJumpW)
+        {
+            if (Input.GetMouseButtonDown(0))
+                m_OtherJumpW = true;
+        }
+
+
+
+    }
+    void StartJumpingW()
+    {
+        GetCharacterUI().HideCastingUI();
+        m_LoadingJumpW = false;
+        SetAnimatorTrigger("WJump");
+        StartCoroutine(JumpingW());
+
+    }
+    public void StartJumpWAnim()
+    {
+        if (m_WIndicator == null)
+            return;
+
+        if (!m_WSkill.GetUsingSkill())
+            return;
+
+        m_JumpWEndPosition = m_WIndicator.transform.position;
+        m_JumpWStartPosition = transform.position;
+        float l_Distance = Vector3.Distance(m_JumpWStartPosition, m_JumpWEndPosition);
+        m_WJumpSpeed = l_Distance / m_JumpWAirDuration;
+        m_JumpingW = true;
+    }
+    void DoLandsDamageWFirstJump()
+    {
+        float l_Damage = (m_WSkill.GetAttribute("Daño base", GetWSkillLevel())) + (m_PercentageSkillPowerWFirstJump / 100) * GetCharacterStats().GetAbilityPower() + (m_PercentageAdditionalLifeWFirstJump / 100) * GetCharacterStats().GetBonusHealth();
+        DoLandsDamageW(l_Damage, m_PercentageSlowsDownWFirstJump, m_TimeSlowsDownWFirstJump);
+    }
+    void DoLandsDamageWSecondJump()
+    {
+        float l_Damage = (m_WSkill.GetAttribute("Daño base", GetWSkillLevel())) + (m_PercentageSkillPowerWSecondJump / 100) * GetCharacterStats().GetAbilityPower() + (m_PercentageAdditionalLifeWSecondJump / 100) * GetCharacterStats().GetBonusHealth();
+        DoLandsDamageW(l_Damage, m_PercentageSlowsDownWSecondJump, m_TimeSlowsDownWSecondJump);
+    }
+    void DoLandsDamageW(float Damage, float PercentageSlowsDown, float TimeSlowsDown)
+    {
+    }
+
+    IEnumerator JumpingW()
+    {
+
+
+        while (!m_JumpingW)
+        {
+            yield return null;
+        }
+
+        m_WIndicator.SetActive(false);
+
+        while (m_JumpingW)
+            yield return null;
+        DoLandsDamageWFirstJump();
+
+        m_WIndicator.SetActive(true);
+
+        m_OtherJumpW = false;
+        m_CanDoOtherJumpW = true;
+
+        yield return new WaitForSeconds(m_CanDoOtherJumpTimeW);
+
+
+        if (m_OtherJumpW)
+        {
+            while (!m_JumpingW)
+            {
+                yield return null;
+            }
+
+            m_WIndicator.SetActive(false);
+
+            while (m_JumpingW)
+                yield return null;
+            
+            DoLandsDamageWSecondJump();
+
+            SetAnimatorTrigger("WJumpStop");
+
+            yield return new WaitForSeconds(m_GetUpTimeW);
+
+            EndWSkill(true);
+        }
+        else
+        {
+            SetAnimatorTrigger("WJumpStop");
+            m_WIndicator.SetActive(false);
+
+            yield return new WaitForSeconds(m_GetUpTimeW - m_CanDoOtherJumpTimeW);
+
+            EndWSkill(false);
+        }
+
+    }
+    void EndWSkill(bool ExtraJump)
+    {
+        base.WSkill();
+        if (ExtraJump)
+            m_WSkill.SetTimer(m_WSkill.GetCd() + m_WSkill.GetCd() * (m_PercentageExtraCountdownW / 100));
+        m_WSkill.SetUsingSkill(false);
+        SetDisabled(false);
+        if (!GetIsLookingForPosition())
+            StopMovement();
+        Destroy(m_WIndicator);
+        StartCoroutine(RepeatWSaver());
+    }
+    IEnumerator RepeatWSaver()
+    {
+        m_SaverCanDoW = false;
+        yield return null; // Esperar 1 frame por seguridad
+        m_SaverCanDoW = true;
+
+    }
+    #endregion
+    #region E Skill
 
     //E SKILL
     protected override void ESkill()
@@ -179,7 +436,7 @@ public class RapatuCharacterController : CharacterMaster
         GetCharacterUI().ShowCastingUI();
 
 
-        float l_HealLifeValue = (m_ESkill.GetAttribute("Curación", GetESkillLevel())) + (m_PercentageSkillPower / 100) * GetCharacterStats().GetAbilityPower() + (m_PercentageAdditionalLife / 100) * GetCharacterStats().GetBonusHealth();
+        float l_HealLifeValue = (m_ESkill.GetAttribute("Curación", GetESkillLevel())) + (m_PercentageSkillPowerE / 100) * GetCharacterStats().GetAbilityPower() + (m_PercentageAdditionalLifeE / 100) * GetCharacterStats().GetBonusHealth();
 
         m_HealingAreaE.Heal(l_HealLifeValue);
 
@@ -225,7 +482,8 @@ public class RapatuCharacterController : CharacterMaster
         m_SaverCanDoE = true;
 
     }
-
+    #endregion
+    #region R Skill
     //R SKILL
     protected override void RSkill()
     {
@@ -270,7 +528,7 @@ public class RapatuCharacterController : CharacterMaster
         GetCharacterUI().HideCastingTime();
         GetCharacterUI().UpdateCastingUI(0, 1);
         GetCharacterUI().ShowCastingUI();
-        m_LoadingJump = true;
+        m_LoadingJumpR = true;
         m_RSkillStarted = true;
         StartCoroutine(RSkillCanStop());
 
@@ -279,7 +537,7 @@ public class RapatuCharacterController : CharacterMaster
     void RHoldTimeCheck()
     {
 
-        if (m_LoadingJump)
+        if (m_LoadingJumpR)
         {
             m_TimerR += Time.deltaTime;
             if (m_TimerR >= m_AutoJumpSecondsR)
@@ -309,7 +567,7 @@ public class RapatuCharacterController : CharacterMaster
                 m_RSkillStarted = false;
                 if (!GetIsLookingForPosition())
                     StopMovement();
-                m_LoadingJump = false;
+                m_LoadingJumpR = false;
             }
 
 
@@ -334,13 +592,13 @@ public class RapatuCharacterController : CharacterMaster
             m_RIndicator.transform.position = transform.position + direction * m_MAXRangeR / 100;
         }
 
-        if (m_Jumping)
+        if (m_JumpingR)
         {
             transform.position = Vector3.MoveTowards(transform.position, m_JumpREndPosition, m_RJumpSpeed * Time.deltaTime);
 
             if (transform.position == m_JumpREndPosition)
             {
-                m_Jumping = false;
+                m_JumpingR = false;
             }
         }
         else
@@ -350,11 +608,10 @@ public class RapatuCharacterController : CharacterMaster
         }
     }
 
-    bool m_RStopJumping = false;
     void StartJumpingR()
     {
         GetCharacterUI().HideCastingUI();
-        m_LoadingJump = false;
+        m_LoadingJumpR = false;
         m_RStopJumping = false;
         SetAnimatorTrigger("RJump");
         m_RSkillCoroutine = StartCoroutine(JumpingR());
@@ -366,11 +623,14 @@ public class RapatuCharacterController : CharacterMaster
         if (m_RIndicator == null)
             return;
 
+        if (!m_RSkill.GetUsingSkill())
+            return;
+
         m_JumpREndPosition = m_RIndicator.transform.position;
         m_JumpRStartPosition = transform.position;
         float l_Distance = Vector3.Distance(m_JumpRStartPosition, m_JumpREndPosition);
         m_RJumpSpeed = l_Distance / m_JumpRAirDuration;
-        m_Jumping = true;
+        m_JumpingR = true;
     }
 
 
@@ -383,7 +643,7 @@ public class RapatuCharacterController : CharacterMaster
 
         for (int i = 0; i < l_JumpsNum; i++)
         {
-            while (!m_Jumping)
+            while (!m_JumpingR)
             {
                 if (m_RStopJumping)
                 {
@@ -414,7 +674,7 @@ public class RapatuCharacterController : CharacterMaster
                 m_RIndicator.SetActive(false);
             }
 
-            while (m_Jumping)
+            while (m_JumpingR)
                 yield return null;
 
             if (i != l_JumpsNum - 1 && !m_RStopJumping)
@@ -432,7 +692,7 @@ public class RapatuCharacterController : CharacterMaster
 
         }
 
-        yield return new WaitForSeconds(m_GetUpTime);
+        yield return new WaitForSeconds(m_GetUpTimeR);
 
         m_RSkillCoroutine = null;
         EndRSkill();
@@ -450,9 +710,9 @@ public class RapatuCharacterController : CharacterMaster
             StopMovement();
         Destroy(m_RIndicator);
         StartCoroutine(RepeatRSaver());
-        StartCoroutine(ResetTiggersSaver());
+        StartCoroutine(ResetTiggersSaverR());
     }
-    IEnumerator ResetTiggersSaver()
+    IEnumerator ResetTiggersSaverR()
     {
         yield return new WaitForSeconds(5);
         ResetAnimatorTrigger("RJumpStop");
@@ -470,6 +730,8 @@ public class RapatuCharacterController : CharacterMaster
         m_SaverCanDoR = true;
 
     }
+    #endregion
+
     public override void LevelUpRpc()
     {
         base.LevelUpRpc();

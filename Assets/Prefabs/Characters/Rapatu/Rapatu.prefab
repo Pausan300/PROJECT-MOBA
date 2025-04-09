@@ -1693,6 +1693,11 @@ MonoBehaviour:
   m_UseKeyboardMovement: 0
   m_RangedAutoAttack: {fileID: 0}
   m_RangedAutoSpawnPoint: {fileID: 0}
+  m_MAXRangeW: 1000
+  m_WIndicatorPrefab: {fileID: 4231912645315949874, guid: 79575fab9db99f64594b17c863952490, type: 3}
+  m_AutoJumpSecondsW: 2
+  m_JumpWAirDuration: 0.6
+  m_GetUpTimeW: 1
   m_HealingAreaEPrefab: {fileID: 6620525333772683988, guid: 02e54d4032ff1ad4faaf09f9f2ec28fe, type: 3}
   m_HealingTimes: 4
   m_HealingTimeSpace: 1
@@ -1703,6 +1708,7 @@ MonoBehaviour:
   m_MAXRangeR: 1000
   m_AutoJumpSecondsR: 2
   m_JumpRAirDuration: 0.6
+  m_GetUpTimeR: 1
 --- !u!114 &7780092429937281219
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1929,10 +1935,17 @@ MonoBehaviour:
   - IsCrossFadeExit: 0
     Layer: 0
     OriginatingState: 1748754976
-    DestinationState: 806639367
+    DestinationState: -700605373
+    TransitionDuration: 0.25
+    TriggerNameHash: -1214928682
+    TransitionIndex: 3
+  - IsCrossFadeExit: 0
+    Layer: 0
+    OriginatingState: 1748754976
+    DestinationState: -975443871
     TransitionDuration: 0.25
     TriggerNameHash: -939565991
-    TransitionIndex: 3
+    TransitionIndex: 4
   - IsCrossFadeExit: 0
     Layer: 0
     OriginatingState: -1936938822
@@ -1964,24 +1977,17 @@ MonoBehaviour:
   - IsCrossFadeExit: 0
     Layer: 0
     OriginatingState: 2081823275
-    DestinationState: 806639367
+    DestinationState: -700605373
     TransitionDuration: 0.25
-    TriggerNameHash: -939565991
+    TriggerNameHash: -1214928682
     TransitionIndex: 3
   - IsCrossFadeExit: 0
     Layer: 0
-    OriginatingState: 806639367
-    DestinationState: 1748754976
+    OriginatingState: 2081823275
+    DestinationState: -975443871
     TransitionDuration: 0.25
-    TriggerNameHash: -919026136
-    TransitionIndex: 1
-  - IsCrossFadeExit: 0
-    Layer: 0
-    OriginatingState: 806639367
-    DestinationState: 2081823275
-    TransitionDuration: 0.25
-    TriggerNameHash: -919026136
-    TransitionIndex: 2
+    TriggerNameHash: -939565991
+    TransitionIndex: 4
   - IsCrossFadeExit: 0
     Layer: 0
     OriginatingState: -975443871
@@ -2014,9 +2020,44 @@ MonoBehaviour:
     Layer: 0
     OriginatingState: -1102292126
     DestinationState: 1748754976
-    TransitionDuration: 0.25
+    TransitionDuration: 0.093147516
     TriggerNameHash: -919026136
     TransitionIndex: 1
+  - IsCrossFadeExit: 0
+    Layer: 0
+    OriginatingState: -1102292126
+    DestinationState: 1748754976
+    TransitionDuration: 0.09314799
+    TriggerNameHash: 1057472604
+    TransitionIndex: 2
+  - IsCrossFadeExit: 0
+    Layer: 0
+    OriginatingState: -1102292126
+    DestinationState: 2081823275
+    TransitionDuration: 0.25
+    TriggerNameHash: 1057472604
+    TransitionIndex: 3
+  - IsCrossFadeExit: 0
+    Layer: 0
+    OriginatingState: 1991037970
+    DestinationState: 1748754976
+    TransitionDuration: 0.25
+    TriggerNameHash: -2085649561
+    TransitionIndex: 0
+  - IsCrossFadeExit: 0
+    Layer: 0
+    OriginatingState: 1991037970
+    DestinationState: 2081823275
+    TransitionDuration: 0.25
+    TriggerNameHash: -2085649561
+    TransitionIndex: 1
+  - IsCrossFadeExit: 0
+    Layer: 0
+    OriginatingState: -700605373
+    DestinationState: 1991037970
+    TransitionDuration: 0.25
+    TriggerNameHash: 1792316146
+    TransitionIndex: 0
   m_Animator: {fileID: 9022364282410572717}
 --- !u!54 &3463638054193634300
 Rigidbody:

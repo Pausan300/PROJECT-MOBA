@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 3ce0923097c15bf4f87afa5b31d4f9a4
+guid: f6033ed5a5ae2824c874517462cd734d
 ModelImporter:
   serializedVersion: 22200
   internalIDToNameTable: []
@@ -31,11 +31,11 @@ ModelImporter:
     extraUserProperties: []
     clipAnimations:
     - serializedVersion: 16
-      name: RapatuRPreparing
+      name: RapatuWJump
       takeName: mixamo.com
       internalID: -203655887218126122
       firstFrame: 0
-      lastFrame: 41
+      lastFrame: 95
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -54,7 +54,14 @@ ModelImporter:
       mirror: 0
       bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
       curves: []
-      events: []
+      events:
+      - time: 0.41312397
+        functionName: StartJumpWAnim
+        data: 
+        objectReferenceParameter: {instanceID: 0}
+        floatParameter: 0
+        intParameter: 0
+        messageOptions: 0
       transformMask: []
       maskType: 3
       maskSource: {instanceID: 0}
