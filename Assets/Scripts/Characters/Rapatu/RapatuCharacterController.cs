@@ -227,12 +227,23 @@ public class RapatuCharacterController : CharacterMaster
             }
             GetCharacterUI().UpdateCastingUI(m_TimerW, m_AutoJumpSecondsW);
 
-            if (Input.GetKeyUp(m_WSkillKey))
-            {
-                Debug.Log("Saltando por activacion");
-                StartJumpingW();
-            }
 
+            if (GetUseSkillGizmos())
+            {
+                if (Input.GetMouseButtonUp(0))
+                {
+                    Debug.Log("Saltando por activacion");
+                    StartJumpingW();
+                }
+            }
+            else
+            {
+                if (Input.GetKeyUp(m_WSkillKey) || !Input.GetKey(m_WSkillKey))
+                {
+                    Debug.Log("Saltando por activacion");
+                    StartJumpingW();
+                }
+            }
 
         }
 
