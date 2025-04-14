@@ -33,6 +33,16 @@ MonoBehaviour:
     - 195
     - 230
     - 255
+  - m_AttributeId: Enfriamiento
+    m_IsPct: 0
+    m_ShowScalingInPopup: 0
+    m_ValueFormat: s
+    m_LevelScaling:
+    - 16
+    - 16
+    - 16
+    - 16
+    - 16
   m_DescriptionDamageList:
   - m_DescriptionId: X
     m_Color: 1
@@ -45,6 +55,6 @@ MonoBehaviour:
       m_AtributeType: 3
       m_Color: 6
   m_ExtraSpecifications: []
-  m_IndicatorUIObject: {fileID: 5078714052237607800, guid: 83f81966102af0341a86559624a7f892, type: 3}
+  m_IndicatorUIObject: {fileID: 6649836915933689498, guid: 8caef782d2af9ec429b3465c5f423ec6, type: 3}
   m_SkillDisabledTime: 0
   m_CancelableWithMouseClick: 0
