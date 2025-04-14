@@ -2,6 +2,7 @@ using NUnit.Framework;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Net;
 using Unity.Netcode;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -15,6 +16,16 @@ public class RapatuCharacterController : CharacterMaster
     [Header("PASSIVE SKILL")]
 
     [Header("Q SKILL")]
+    public LineRenderer m_TongueLineRenderer;
+    public Transform m_TongueInitPos;
+    public Transform m_TongueEndPos;
+    public float m_TongueSpeedQ = 450;
+    public float m_TongueRangeQ = 900;
+
+
+    bool m_MoveTongueQ = false;
+    bool m_SaverCanDoQ = true;
+    bool m_MoveTongueReverseQ = false;
 
     [Header("W SKILL")]
     public GameObject m_WIndicatorPrefab;
@@ -108,6 +119,8 @@ public class RapatuCharacterController : CharacterMaster
     public override void OnNetworkSpawn()
     {
         base.OnNetworkSpawn();
+
+        m_TongueLineRenderer.gameObject.SetActive(false);
     }
     protected override void Update()
     {
@@ -118,13 +131,18 @@ public class RapatuCharacterController : CharacterMaster
 
         base.Update();
 
+        if (m_QSkill.GetUsingSkill())
+        {
+            QUpdae();
+        }
+
         if (m_RSkill.GetUsingSkill() && m_RSkillStarted)
         {
-            RHoldTimeCheck();
+            RUpdate();
         }
         if (m_WSkill.GetUsingSkill() && m_WSkillStarted)
         {
-            WHoldTimeCheck();
+            WUpdate();
         }
         if (m_ESkill.GetUsingSkill() && m_CanStopE)
         {
@@ -136,7 +154,6 @@ public class RapatuCharacterController : CharacterMaster
                 StopESkill();
             }
         }
-
 
         if (GetUseSkillGizmos())
         {
@@ -154,15 +171,104 @@ public class RapatuCharacterController : CharacterMaster
         }
     }
 
+
     #region Q Skill
     //Q SKILL
     protected override void QSkill()
     {
-        if (m_ESkill.GetUsingSkill())
+
+        if (!m_SaverCanDoQ)
             return;
-        if (m_RSkill.GetUsingSkill())
-            return;
+
+        StartCoroutine(StartQSkill());
+
+
+        
+
     }
+
+    IEnumerator StartQSkill()
+    {
+        m_QSkill.SetUsingSkill(true);
+
+        m_TongueLineRenderer.gameObject.transform.localPosition = Vector3.zero;
+        m_TongueLineRenderer.positionCount = 2;
+        m_TongueLineRenderer.SetPosition(0, m_TongueInitPos.localPosition);
+        m_TongueEndPos.localPosition = m_TongueInitPos.localPosition;
+        m_TongueLineRenderer.SetPosition(1, m_TongueEndPos.localPosition);
+        m_TongueLineRenderer.gameObject.SetActive(true);
+
+
+        m_MoveTongueQ = false;
+        m_MoveTongueReverseQ = false;
+        m_LookAtMouseQ = true;
+
+
+        StopAttacking();
+        SetAnimatorTrigger("IsUsingQ");
+        SetDisabled(true);
+        if (!GetIsLookingForPosition())
+            StopMovement();
+
+
+        yield return new WaitForSeconds(1f);
+
+        m_MoveTongueQ = true;
+        m_MoveTongueReverseQ = false;
+        m_LookAtMouseQ = false;
+    }
+
+    bool m_LookAtMouseQ = false;
+    private void QUpdae()
+    {
+        if (m_LookAtMouseQ)
+            LookAt(GetPositionWithMouse());
+
+        if (m_MoveTongueQ)
+        {
+            m_TongueEndPos.localPosition = new Vector3(m_TongueEndPos.localPosition.x, m_TongueEndPos.localPosition.y, m_TongueEndPos.localPosition.z + Time.deltaTime * (m_TongueSpeedQ / 100));
+            m_TongueLineRenderer.SetPosition(1, m_TongueEndPos.localPosition);
+            if (Vector3.Distance(m_TongueEndPos.localPosition, m_TongueInitPos.localPosition) >= m_TongueRangeQ / 100)
+            {
+                m_MoveTongueQ = false;
+                m_MoveTongueReverseQ = true;
+            }
+        }
+        if (m_MoveTongueReverseQ)
+        {
+            m_TongueEndPos.localPosition = new Vector3(m_TongueEndPos.localPosition.x, m_TongueEndPos.localPosition.y, m_TongueEndPos.localPosition.z - Time.deltaTime * (m_TongueSpeedQ / 100) * 2);
+            m_TongueLineRenderer.SetPosition(1, m_TongueEndPos.localPosition);
+            if (Vector3.Distance(m_TongueEndPos.localPosition, m_TongueInitPos.localPosition) <= 0.5f)
+            {
+                m_MoveTongueReverseQ = false;
+                m_TongueLineRenderer.gameObject.SetActive(false);
+                EndQSkill();
+            }
+        }
+    }
+
+    private void EndQSkill()
+    {
+        base.QSkill();
+        m_QSkill.SetUsingSkill(false);
+
+        SetDisabled(false);
+
+        if (!GetIsLookingForPosition())
+            StopMovement();
+
+        StartCoroutine(RepeatQSaver());
+    }
+
+    IEnumerator RepeatQSaver()
+    {
+        m_SaverCanDoQ = false;
+        yield return null; // Esperar 1 frame por seguridad
+        m_SaverCanDoQ = true;
+
+    }
+
+
     #endregion
     #region W Skill
     //W SKILL
@@ -214,7 +320,7 @@ public class RapatuCharacterController : CharacterMaster
         m_WIndicator = Instantiate(m_WIndicatorPrefab, transform.position, Quaternion.identity);
         m_WIndicator.transform.localScale = new Vector3(m_DamageRangeWFirstJump / 100, m_WIndicator.transform.localScale.y, m_DamageRangeWFirstJump / 100);
     }
-    void WHoldTimeCheck()
+    void WUpdate()
     {
 
         if (m_LoadingJumpW)
@@ -573,7 +679,7 @@ public class RapatuCharacterController : CharacterMaster
 
         m_RIndicator = Instantiate(m_RIndicatorPrefab, transform.position, Quaternion.identity);
     }
-    void RHoldTimeCheck()
+    void RUpdate()
     {
 
         if (m_LoadingJumpR)
