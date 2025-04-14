@@ -12,14 +12,19 @@ public class Jungle_Monster_Basic_Behaviour : BehaviorTree.Tree
     public float homeDistance = 10f;
     public bool isDamagedByPlayer = false;
     public bool isBackingHome = false;
+    public LayerMask obstacleMask;
+
+    private AStarPathfinding _pathfinding;
 
     protected override Node CreateTree()
     {
+        _pathfinding = new AStarPathfinding();
+
         Jungle_Monster_Task_Idle idle = new Jungle_Monster_Task_Idle();
-        Jungle_Monster_Task_Chasing chase = new Jungle_Monster_Task_Chasing(ownTransform, target, chaseSpeed, attackRange);
+        Jungle_Monster_Task_Chasing chase = new Jungle_Monster_Task_Chasing(ownTransform, target, chaseSpeed, attackRange, obstacleMask, _pathfinding);
         Jungle_Monster_Attack attack = new Jungle_Monster_Attack(ownTransform, target, attackRange);
         Jungle_Monster_CheckIfItDamage_By_Player checkIfDamaged = new Jungle_Monster_CheckIfItDamage_By_Player(this);
-        Jungle_Monster_Return_Home returnHome = new Jungle_Monster_Return_Home(this, ownTransform, homeTransform);
+        Jungle_Monster_Return_Home returnHome = new Jungle_Monster_Return_Home(this, ownTransform, homeTransform, obstacleMask, _pathfinding);
         Jungle_Monster_Check_IfItFarFrom_Home checkIfFarFromHome = new Jungle_Monster_Check_IfItFarFrom_Home(this, ownTransform, homeDistance, homeTransform);
 
         Node root = new Selector(new List<Node>
@@ -30,7 +35,6 @@ public class Jungle_Monster_Basic_Behaviour : BehaviorTree.Tree
         });
         return root;
     }
-
 
     private void OnDrawGizmos()
     {
@@ -45,5 +49,17 @@ public class Jungle_Monster_Basic_Behaviour : BehaviorTree.Tree
         Gizmos.color = Color.yellow;
         Gizmos.DrawLine(ownTransform.position, ownTransform.position + leftBoundary);
         Gizmos.DrawLine(ownTransform.position, ownTransform.position + rightBoundary);
+
+        Gizmos.color = Color.blue;
+        Gizmos.DrawWireSphere(homeTransform.position, homeDistance); // Dibuja el área de la casa
+
+        if (_pathfinding != null)
+        {
+            Gizmos.color = Color.green;
+            foreach (var node in _pathfinding.GeneratedNodes)
+            {
+                Gizmos.DrawSphere(node.Position, 0.2f);
+            }
+        }
     }
 }
