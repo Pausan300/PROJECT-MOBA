@@ -32,7 +32,7 @@ public class CharacterStats : NetworkBehaviour
     float m_OmniDrain;
     float m_ShieldsAndHealsPower;
     float m_MovementSpeed;
-    
+
     float m_HealthBonus;
     float m_ManaBonus;
     float m_AttackDamageBonus;
@@ -44,57 +44,61 @@ public class CharacterStats : NetworkBehaviour
     float m_MoveSpeedBonusFlat;
     float m_MoveSpeedBonusAddi;
     float m_MoveSpeedBonusMulti;
-    Dictionary<string, float> m_MoveSpeedBonusMultiBuffs=new Dictionary<string, float>();
+    Dictionary<string, float> m_MoveSpeedBonusMultiBuffs = new Dictionary<string, float>();
 
     int m_CurrentLevel;
     int m_SkillPoints;
     float m_CurrentExp;
 
+    [Header("Buffs")]
+    bool m_Stuned = false;
+    bool m_Immobilized = false;
+
     void Awake()
     {
         SetInitStats();
     }
-	void Update()
-	{
-		UpdateMovementRpc();
+    void Update()
+    {
+        UpdateMovementRpc();
         ResourceRestoringRpc();
-	}
+    }
     public void SetInitStats()
     {
-        m_MaxHealth=m_CharacterBaseStats.m_BaseHealth;
-        m_MaxMana=m_CharacterBaseStats.m_BaseMana;
-        m_AttackDamage=m_CharacterBaseStats.m_BaseAttackDamage;
-        m_AttackSpeed=m_CharacterBaseStats.m_BaseAttackSpeed;
-        m_AttackRange=m_CharacterBaseStats.m_AttackRange;
-        m_Armor=m_CharacterBaseStats.m_BaseArmor;
-        m_MagicResistance=m_CharacterBaseStats.m_BaseMagicResist;
-        m_HealthRegen=m_CharacterBaseStats.m_BaseHealthRegen;
-        m_ManaRegen=m_CharacterBaseStats.m_BaseManaRegen;
-        m_MovementSpeed=m_CharacterBaseStats.m_BaseMovementSpeed;
+        m_MaxHealth = m_CharacterBaseStats.m_BaseHealth;
+        m_MaxMana = m_CharacterBaseStats.m_BaseMana;
+        m_AttackDamage = m_CharacterBaseStats.m_BaseAttackDamage;
+        m_AttackSpeed = m_CharacterBaseStats.m_BaseAttackSpeed;
+        m_AttackRange = m_CharacterBaseStats.m_AttackRange;
+        m_Armor = m_CharacterBaseStats.m_BaseArmor;
+        m_MagicResistance = m_CharacterBaseStats.m_BaseMagicResist;
+        m_HealthRegen = m_CharacterBaseStats.m_BaseHealthRegen;
+        m_ManaRegen = m_CharacterBaseStats.m_BaseManaRegen;
+        m_MovementSpeed = m_CharacterBaseStats.m_BaseMovementSpeed;
 
-        m_HealthBonus=0.0f;
-        m_ManaBonus=0.0f;
-        m_AttackDamageBonus=0.0f;
-        m_AttackSpeedBonus=0.0f;
-        m_ArmorBonus=0.0f;
-        m_MagicResistBonus=0.0f;
-        m_ManaRegenBonus=0.0f;
-        m_HealthRegenBonus=0.0f;
-        m_MoveSpeedBonusFlat=0.0f;
-        m_MoveSpeedBonusAddi=0.0f;
-        m_MoveSpeedBonusMulti=0.0f;
+        m_HealthBonus = 0.0f;
+        m_ManaBonus = 0.0f;
+        m_AttackDamageBonus = 0.0f;
+        m_AttackSpeedBonus = 0.0f;
+        m_ArmorBonus = 0.0f;
+        m_MagicResistBonus = 0.0f;
+        m_ManaRegenBonus = 0.0f;
+        m_HealthRegenBonus = 0.0f;
+        m_MoveSpeedBonusFlat = 0.0f;
+        m_MoveSpeedBonusAddi = 0.0f;
+        m_MoveSpeedBonusMulti = 0.0f;
 
-        m_CurrentHealth=m_MaxHealth;
-        m_CurrentMana=m_MaxMana;
-        m_CurrentLevel=1;
-        m_CurrentExp=0.0f;
-        m_SkillPoints=1;
+        m_CurrentHealth = m_MaxHealth;
+        m_CurrentMana = m_MaxMana;
+        m_CurrentLevel = 1;
+        m_CurrentExp = 0.0f;
+        m_SkillPoints = 1;
     }
     public void LevelUp()
     {
-        m_CurrentExp-=m_CharacterBaseStats.m_ExpPerLevel[m_CurrentLevel];
-        if(m_CurrentExp<0.0f)
-            m_CurrentExp=0.0f;
+        m_CurrentExp -= m_CharacterBaseStats.m_ExpPerLevel[m_CurrentLevel];
+        if (m_CurrentExp < 0.0f)
+            m_CurrentExp = 0.0f;
         m_CurrentLevel++;
         m_SkillPoints++;
         RecalculateStat(m_MaxHealth, out m_MaxHealth, m_CurrentHealth, out m_CurrentHealth, m_CharacterBaseStats.m_BaseHealth, m_CharacterBaseStats.m_HealthPerLevel, m_HealthBonus);
@@ -108,46 +112,46 @@ public class CharacterStats : NetworkBehaviour
     }
     void RecalculateStat(float Stat, out float StatRef, float Current, out float CurrentRef, float BaseStat, float LevelIncr, float Bonus)
     {
-        float l_InitMaxStat=Stat;
-        StatRef=BaseStat+Bonus+LevelIncr*(m_CurrentLevel-1.0f)*(0.7025f+0.0175f*(m_CurrentLevel-1.0f));
-        float l_Difference=StatRef-l_InitMaxStat;
-        CurrentRef=Current+l_Difference;
+        float l_InitMaxStat = Stat;
+        StatRef = BaseStat + Bonus + LevelIncr * (m_CurrentLevel - 1.0f) * (0.7025f + 0.0175f * (m_CurrentLevel - 1.0f));
+        float l_Difference = StatRef - l_InitMaxStat;
+        CurrentRef = Current + l_Difference;
     }
     void RecalculateStat(out float StatRef, float BaseStat, float LevelIncr, float Bonus)
     {
-        StatRef=BaseStat+Bonus+LevelIncr*(m_CurrentLevel-1.0f)*(0.7025f+0.0175f*(m_CurrentLevel-1.0f));
+        StatRef = BaseStat + Bonus + LevelIncr * (m_CurrentLevel - 1.0f) * (0.7025f + 0.0175f * (m_CurrentLevel - 1.0f));
     }
     [Rpc(SendTo.Everyone)]
-	public void UpdateMovementRpc()
+    public void UpdateMovementRpc()
     {
-        m_MovementSpeed=m_CharacterBaseStats.m_BaseMovementSpeed+m_MoveSpeedBonusFlat;
-        m_MovementSpeed*=1.0f+(m_MoveSpeedBonusAddi/100.0f);
-        if(m_MoveSpeedBonusMulti!=0.0f)
-            m_MovementSpeed*=m_MoveSpeedBonusMulti;
+        m_MovementSpeed = m_CharacterBaseStats.m_BaseMovementSpeed + m_MoveSpeedBonusFlat;
+        m_MovementSpeed *= 1.0f + (m_MoveSpeedBonusAddi / 100.0f);
+        if (m_MoveSpeedBonusMulti != 0.0f)
+            m_MovementSpeed *= m_MoveSpeedBonusMulti;
     }
     [Rpc(SendTo.Everyone)]
     public void ResourceRestoringRpc()
     {
-        if(m_CurrentMana<m_MaxMana)
+        if (m_CurrentMana < m_MaxMana)
         {
-            m_CurrentMana+=m_ManaRegen/5.0f*Time.deltaTime;
-            if(m_CurrentMana>m_MaxMana)
-                m_CurrentMana=m_MaxMana;
+            m_CurrentMana += m_ManaRegen / 5.0f * Time.deltaTime;
+            if (m_CurrentMana > m_MaxMana)
+                m_CurrentMana = m_MaxMana;
         }
-        if(m_CurrentHealth<m_MaxHealth)
+        if (m_CurrentHealth < m_MaxHealth)
         {
-            m_CurrentHealth+=m_HealthRegen/5.0f*Time.deltaTime;
-            if(m_CurrentHealth>m_MaxHealth)
-                m_CurrentHealth=m_MaxHealth;
+            m_CurrentHealth += m_HealthRegen / 5.0f * Time.deltaTime;
+            if (m_CurrentHealth > m_MaxHealth)
+                m_CurrentHealth = m_MaxHealth;
         }
     }
-    
+
     //GETTERS & SETTERS
     public string GetPlayerName()
     {
         return m_CharacterBaseStats.m_PlayerName;
     }
-    public Sprite GetCharacterIcon() 
+    public Sprite GetCharacterIcon()
     {
         return m_CharacterBaseStats.m_CharacterIcon;
     }
@@ -161,7 +165,7 @@ public class CharacterStats : NetworkBehaviour
     }
     public void SetCurrentExp(float Exp)
     {
-        m_CurrentExp=Exp;
+        m_CurrentExp = Exp;
     }
     public int GetSkillPoints()
     {
@@ -169,7 +173,7 @@ public class CharacterStats : NetworkBehaviour
     }
     public void SetSkillPoints(int Points)
     {
-        m_SkillPoints=Points;
+        m_SkillPoints = Points;
     }
     public float GetAttackDamage()
     {
@@ -207,9 +211,9 @@ public class CharacterStats : NetworkBehaviour
     {
         return m_AttackRange;
     }
-    public void SetAttackRange(float Range) 
+    public void SetAttackRange(float Range)
     {
-        m_AttackRange=Range;
+        m_AttackRange = Range;
     }
     public float GetLifeSteal()
     {
@@ -237,7 +241,7 @@ public class CharacterStats : NetworkBehaviour
     }
     public void SetMaxHealth(float Health)
     {
-        m_MaxHealth=Health;
+        m_MaxHealth = Health;
     }
     public float GetCurrentHealth()
     {
@@ -246,7 +250,7 @@ public class CharacterStats : NetworkBehaviour
     [Rpc(SendTo.Everyone)]
     public void SetCurrentHealthRpc(float Health)
     {
-        m_CurrentHealth=Health;
+        m_CurrentHealth = Health;
     }
     public float GetHealthRegen()
     {
@@ -267,7 +271,7 @@ public class CharacterStats : NetworkBehaviour
     [Rpc(SendTo.Everyone)]
     public void SetCurrentManaRpc(float Mana)
     {
-        m_CurrentMana=Mana;
+        m_CurrentMana = Mana;
     }
     public float GetManaRegen()
     {
@@ -283,7 +287,7 @@ public class CharacterStats : NetworkBehaviour
     }
     public void SetArmor(float Armor)
     {
-        m_Armor=Armor;
+        m_Armor = Armor;
     }
     public float GetMagicRes()
     {
@@ -291,7 +295,7 @@ public class CharacterStats : NetworkBehaviour
     }
     public void SetMagicRes(float MagicRes)
     {
-        m_MagicResistance=MagicRes;
+        m_MagicResistance = MagicRes;
     }
     public float GetTenacity()
     {
@@ -307,7 +311,7 @@ public class CharacterStats : NetworkBehaviour
     }
     public void AddMovSpeedBonusFlat(float Bonus)
     {
-        m_MoveSpeedBonusFlat=Bonus;
+        m_MoveSpeedBonusFlat = Bonus;
     }
     public float GetMovSpeedBonusAddi()
     {
@@ -315,30 +319,47 @@ public class CharacterStats : NetworkBehaviour
     }
     public void AddMovSpeedBonusAddi(float Bonus)
     {
-        m_MoveSpeedBonusAddi=Bonus;
+        m_MoveSpeedBonusAddi = Bonus;
     }
     public void AddMovSpeedBonusMulti(string Name, float Bonus)
     {
         m_MoveSpeedBonusMultiBuffs.Add(Name, Bonus);
-        m_MoveSpeedBonusMulti=0.0f;
-        for(int i=0; i<m_MoveSpeedBonusMultiBuffs.Count; ++i)
+        m_MoveSpeedBonusMulti = 0.0f;
+        for (int i = 0; i < m_MoveSpeedBonusMultiBuffs.Count; ++i)
         {
-            if(i==0)
-                m_MoveSpeedBonusMulti=1+m_MoveSpeedBonusMultiBuffs.Values.ToList()[i]/100.0f;
+            if (i == 0)
+                m_MoveSpeedBonusMulti = 1 + m_MoveSpeedBonusMultiBuffs.Values.ToList()[i] / 100.0f;
             else
-                m_MoveSpeedBonusMulti*=1+m_MoveSpeedBonusMultiBuffs.Values.ToList()[i]/100.0f;
+                m_MoveSpeedBonusMulti *= 1 + m_MoveSpeedBonusMultiBuffs.Values.ToList()[i] / 100.0f;
         }
     }
     public void RemoveMovSpeedBonusMulti(string Name)
     {
         m_MoveSpeedBonusMultiBuffs.Remove(Name);
-        m_MoveSpeedBonusMulti=0.0f;
-        for(int i=0; i<m_MoveSpeedBonusMultiBuffs.Count; ++i)
+        m_MoveSpeedBonusMulti = 0.0f;
+        for (int i = 0; i < m_MoveSpeedBonusMultiBuffs.Count; ++i)
         {
-            if(i==0)
-                m_MoveSpeedBonusMulti=1+m_MoveSpeedBonusMultiBuffs.Values.ToList()[i]/100.0f;
+            if (i == 0)
+                m_MoveSpeedBonusMulti = 1 + m_MoveSpeedBonusMultiBuffs.Values.ToList()[i] / 100.0f;
             else
-                m_MoveSpeedBonusMulti*=1+m_MoveSpeedBonusMultiBuffs.Values.ToList()[i]/100.0f;
+                m_MoveSpeedBonusMulti *= 1 + m_MoveSpeedBonusMultiBuffs.Values.ToList()[i] / 100.0f;
         }
+    }
+
+    public bool GetStuned()
+    {
+        return m_Stuned;
+    }
+    public void SetStuned(bool Stuned)
+    {
+        m_Stuned = Stuned;
+    }
+    public bool GetImmobilized()
+    {
+        return m_Immobilized;
+    }
+    public void SetImmobilized(bool Immobilized)
+    {
+        m_Immobilized = Immobilized;
     }
 }

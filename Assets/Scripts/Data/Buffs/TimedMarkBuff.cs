@@ -51,7 +51,7 @@ public class TimedMarkBuff : TimedBuff
     {
         Object.Destroy(m_MarkTransform.gameObject);
     }
-    protected override void ApplyTick()
+    protected override void ApplyTick(float delta)
     {
     }
 }

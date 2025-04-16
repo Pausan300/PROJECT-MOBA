@@ -13,6 +13,7 @@ public class SpeedBuff : Buff
         ADDITIVE,
         MULTIPLICATIVE
     }
+    public bool m_DecreaseInTime;
     [HideInInspector]
     public float m_SpeedIncrease;
 

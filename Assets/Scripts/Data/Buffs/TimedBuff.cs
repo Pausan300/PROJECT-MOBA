@@ -5,7 +5,7 @@ using UnityEngine;
 
 public abstract class TimedBuff
 {
-    protected float m_TickRate = 0.5f;
+    protected float m_TickRate = 0f;
     protected float m_TimeLeft;
     protected int m_EffectStacks;
     public Buff m_Buff { get; }
@@ -20,10 +20,11 @@ public abstract class TimedBuff
     }
     public void Tick(float delta)
     {
-        m_TimeLeft-=delta;
-        if(m_TimeSinceLastTick>=m_TickRate)
+        m_TimeLeft -=delta;
+        m_TimeSinceLastTick += delta;
+        if (m_TimeSinceLastTick>=m_TickRate)
         {
-            ApplyTick();
+            ApplyTick(delta);
             m_TimeSinceLastTick=0;
         }
         if(m_TimeLeft<=0)
@@ -50,6 +51,6 @@ public abstract class TimedBuff
         return m_TimeLeft;
     }
     protected abstract void ApplyEffect();
-    protected abstract void ApplyTick();
+    protected abstract void ApplyTick(float delta);
     public abstract void End();
 }

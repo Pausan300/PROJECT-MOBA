@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7c34f45c379888a41976b79fb94aa565, type: 3}
+  m_Name: RapatuWRalentizaDebuff
+  m_EditorClassIdentifier: 
+  m_BuffName: RapatuWSDebuff
+  m_BuffSprite: {fileID: 21300000, guid: 64147efb5e045ef4e926af4964547da4, type: 3}
+  m_IsDurationRefreshed: 1
+  m_IsEffectStacked: 0
+  m_Duration: 2
+  m_SpeedType: 2
+  m_DecreaseInTime: 1
+  m_SpeedIncrease: -40
