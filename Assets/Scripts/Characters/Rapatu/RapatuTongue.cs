@@ -4,6 +4,7 @@ public class RapatuTongue : MonoBehaviour
 {
     RapatuCharacterController m_RapatuCharacterController;
     public LineRenderer m_TongueLineRenderer;
+    public GameObject m_DamageZone;
 
     public void SetTongue(RapatuCharacterController _RapatuCharacterController)
     {
@@ -12,6 +13,10 @@ public class RapatuTongue : MonoBehaviour
     public Transform GetTongueEndPos()
     {
         return transform;
+    }
+    public GameObject GetDamageZone()
+    {
+        return m_DamageZone;
     }
     public LineRenderer GetTongueLineRenderer()
     {

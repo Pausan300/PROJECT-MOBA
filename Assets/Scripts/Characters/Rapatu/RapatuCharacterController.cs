@@ -2,7 +2,9 @@ using NUnit.Framework;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
+using TMPro;
 using Unity.Netcode;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -23,6 +25,30 @@ public class RapatuCharacterController : CharacterMaster
     public float m_TongueRangeQ = 900;
     public float m_TongueHitboxWidthQ = 80;
     public float m_QChannelingTime = 0.15f;
+    public float m_QReactivationTime = 1.5f;
+
+    [Header("Q1")]
+    public float m_Q1DamageZoneRange = 350f;
+    public ImmobilizeBuff m_QImmobilizeBuff;
+    public float m_Q1ImmobilizeBuffTime = 1.0f;
+    [UnityEngine.Range(0f, 100f)]
+    public float m_PercentageSkillPowerQ1 = 50f;
+
+    [Header("Q2")]
+    public float m_Q2ThrowingRange = 350;
+    public StunBuff m_QStunBuff;
+    public float m_Q2StunBuffTime = 0.5f;
+    [UnityEngine.Range(0f, 100f)]
+    public float m_PercentageSkillPowerQ2 = 50f;
+    public LayerMask m_Q2CanColisioneMask;
+    public float m_Q2AnimationTime = 1f;
+
+    Vector3 m_Q2ThrowingTargetPos;
+    bool m_Q2Throwing = false;
+
+    float m_Q2ColisionsOffset = 0.2f;
+
+
 
 
     RapatuTongue m_TongueController;
@@ -36,13 +62,17 @@ public class RapatuCharacterController : CharacterMaster
     bool m_MoveTongueQ = false;
     bool m_SaverCanDoQ = true;
     bool m_MoveTongueReverseQ = false;
+    bool m_CanReactiveQ = false;
+    bool m_QReactived = false;
+
+    float m_QMoveEnemysSpeed = 5f;
+    List<GameObject> m_EnemysTrappedQ;
+    bool m_QAbsorbing = false;
 
 
     Vector3 m_TongueTargetPos;
     Vector3 m_TongueInitPos;
 
-    public StunBuff m_QStunBuff;
-    public ImmobilizeBuff m_QImmobilizeBuff;
 
     [Header("W SKILL")]
     public GameObject m_WIndicatorPrefab;
@@ -50,10 +80,14 @@ public class RapatuCharacterController : CharacterMaster
 
     public float m_MAXRangeW = 1000;
     public float m_AutoJumpSecondsW = 2;
-    public float m_JumpWAirDuration = 1f;
-    public float m_GetUpTimeW = 1f;
     public float m_CanDoOtherJumpTimeW = 0.4f;
+    public float m_WChannelingTime = 0.15f;
     public SpeedBuff m_WSlowsDownBuff;
+
+    [Tooltip("Duración del salto (idealmente con animación)")]
+    public float m_JumpWAirDuration = 1f;
+    [Tooltip("Tiempo en levantarse del salto (idealmente con animación)")]
+    public float m_GetUpTimeW = 1f;
 
     [Header("FIRST JUMP W")]
     [UnityEngine.Range(0f, 100f)]
@@ -79,7 +113,7 @@ public class RapatuCharacterController : CharacterMaster
     public float m_PercentageExtraCountdownW = 30f;
 
 
-
+    bool m_WChanneling = false;
     float m_TimerW;
     bool m_WSkillStarted = false;
     bool m_LoadingJumpW = false;
@@ -95,15 +129,17 @@ public class RapatuCharacterController : CharacterMaster
     [Header("E SKILL")]
 
     public GameObject m_HealingAreaEPrefab;
-    [Tooltip("Cuantas veces cura")]
+    [Tooltip("Cuantas veces cura en total")]
     public int m_HealingTimes = 4;
-    [Tooltip("Cada cuanto cura")]
+    [Tooltip("Cada cuantos segundos cura")]
     public float m_HealingTimeSpace = 1f;
     public float m_HealingAreaRadius = 500;
     [UnityEngine.Range(0f, 100f)]
     public float m_PercentageSkillPowerE = 50;
     [UnityEngine.Range(0f, 100f)]
     public float m_PercentageAdditionalLifeE = 7;
+
+
     RapatuEHealingArea m_HealingAreaE;
     bool m_CanStopE = false;
     float m_ECurrentHealingTime = 0;
@@ -118,8 +154,11 @@ public class RapatuCharacterController : CharacterMaster
     public GameObject m_RIndicatorPrefab;
     public float m_MAXRangeR = 1000;
     public float m_AutoJumpSecondsR = 2;
+    [Tooltip("Duración del salto (idealmente con animación)")]
     public float m_JumpRAirDuration = 1f;
+    [Tooltip("Tiempo en levantarse del salto (idealmente con animación)")]
     public float m_GetUpTimeR = 1f;
+
     GameObject m_RIndicator;
     float m_TimerR;
     bool m_CanStopR = false;
@@ -183,7 +222,7 @@ public class RapatuCharacterController : CharacterMaster
                     StartRSkill();
 
                 if (m_WSkill.GetUsingSkill() && !m_WSkillStarted)
-                    StartWSkill();
+                    StartCoroutine(StartWSkill());
             }
         }
         if (Input.GetMouseButtonDown(0))
@@ -191,14 +230,15 @@ public class RapatuCharacterController : CharacterMaster
             if (m_QSkill.GetUsingSkill() && !m_QSkillStarted)
                 StartCoroutine(StartQSkill());
         }
-    }
 
+        QSkillThrowing();
+    }
 
     #region Q Skill
     //Q SKILL
     protected override void QSkill()
     {
-        if (m_QSkill.GetUsingSkill())
+        if (m_QSkill.GetUsingSkill() || m_WSkill.GetUsingSkill() || m_ESkill.GetUsingSkill() || m_RSkill.GetUsingSkill())
             return;
 
         if (!m_SaverCanDoQ)
@@ -234,6 +274,7 @@ public class RapatuCharacterController : CharacterMaster
         GetCharacterUI().ShowCastingUI();
         m_QChanneling = true;
 
+        m_QAbsorbing = false;
         m_MoveTongueQ = false;
         m_MoveTongueReverseQ = false;
         m_LookAtMouseQ = true;
@@ -252,12 +293,13 @@ public class RapatuCharacterController : CharacterMaster
         m_QChanneling = false;
         GetCharacterUI().HideCastingUI();
         m_MoveTongueQ = true;
-        m_MoveTongueReverseQ = false;
         m_LookAtMouseQ = false;
 
-        m_TongueController = Instantiate(m_TonguePrefab, m_TonguePositionFace.position, Quaternion.Euler(0f, m_TonguePositionFace.rotation.eulerAngles.y, m_TonguePositionFace.rotation.eulerAngles.z)).GetComponent<RapatuTongue>();
-
+        Vector3 l_Direction = (GetPositionWithMouse() - transform.position).normalized;
+        m_TongueController = Instantiate(m_TonguePrefab, m_TonguePositionFace.position, Quaternion.Euler(0f, l_Direction.y, 0)).GetComponent<RapatuTongue>();
         m_TongueController.SetTongue(this);
+
+        m_TongueController.GetDamageZone().SetActive(false);
 
         m_TongueController.GetTongueLineRenderer().gameObject.transform.localPosition = Vector3.zero;
         m_TongueController.GetTongueLineRenderer().positionCount = 2;
@@ -269,9 +311,103 @@ public class RapatuCharacterController : CharacterMaster
         m_TongueController.GetTongueLineRenderer().startWidth = l_TongueHitboxWidth;
         m_TongueController.GetTongueEndPos().localScale = new Vector3(l_TongueHitboxWidth, l_TongueHitboxWidth, l_TongueHitboxWidth);
 
-        m_TongueTargetPos = m_TongueController.GetTongueEndPos().position + (m_TongueController.GetTongueEndPos().forward * m_TongueRangeQ);
+        m_TongueTargetPos = m_TongueController.GetTongueEndPos().position + (l_Direction * m_TongueRangeQ);
         m_TongueInitPos = m_TongueController.GetTongueEndPos().position;
     }
+
+    private void QSkillThrowing()
+    {
+        if (m_Q2Throwing && m_EnemysTrappedQ.Count != 0)
+        {
+            Vector3 l_TargetPos = m_Q2ThrowingTargetPos;
+            bool l_AllArrived = true;
+
+            for (int i = m_EnemysTrappedQ.Count - 1; i >= 0; i--)
+            {
+                GameObject l_Enemy = m_EnemysTrappedQ[i];
+                Vector3 l_MoveTarget = new Vector3(l_TargetPos.x, l_Enemy.transform.position.y, l_TargetPos.z);
+                Vector3 l_Direction = (l_MoveTarget - l_Enemy.transform.position).normalized;
+                float l_Distance = m_QMoveEnemysSpeed * Time.deltaTime;
+
+                if (!l_Enemy.TryGetComponent(out Collider l_Collider))
+                    continue;
+
+                Vector3 l_Right = Vector3.Cross(Vector3.up, l_Direction).normalized;
+                float l_HalfWidth = l_Collider.bounds.extents.x;
+
+                Vector3[] rayOrigins = new Vector3[]
+                {
+                l_Enemy.transform.position,
+                l_Enemy.transform.position + l_Right * l_HalfWidth,
+                l_Enemy.transform.position - l_Right * l_HalfWidth
+                };
+
+                bool l_HasHit = false;
+
+                foreach (var origin in rayOrigins)
+                {
+                    if (Physics.Raycast(origin, l_Direction, out RaycastHit l_Hit, l_Distance + m_Q2ColisionsOffset, m_Q2CanColisioneMask, QueryTriggerInteraction.Ignore))
+                    {
+                        Debug.DrawRay(origin, l_Direction * (l_Distance + m_Q2ColisionsOffset), Color.red, 0.1f);
+                        Debug.Log($"{l_Enemy.name} ha colisionado con {l_Hit.collider.name} desde {origin}");
+
+                        if (l_Enemy.TryGetComponent(out ITakeDamage Enemy))
+                        {
+                            if (l_Enemy.TryGetComponent(out BuffableEntity Buffs))
+                            {
+                                Buffs.AddBuff(m_QStunBuff.InitializeBuff(m_Q2StunBuffTime, l_Enemy));
+                            }
+
+                            float l_Damage = m_QSkill.GetAttribute("Daño base", GetQSkillLevel()) + (m_PercentageSkillPowerQ2 / 100f) * GetCharacterStats().GetAbilityPower();
+                            Debug.Log($"{l_Enemy.name} recibe {l_Damage} de daño.");
+                            Enemy.TakeDamage(0, l_Damage, m_CharacterStats.GetPlayerName());
+                        }
+
+                        if (l_Hit.collider.TryGetComponent(out ITakeDamage HitEnemy))
+                        {
+                            if (l_Hit.collider.TryGetComponent(out BuffableEntity Buffs))
+                            {
+                                Buffs.AddBuff(m_QStunBuff.InitializeBuff(m_Q2StunBuffTime, l_Hit.collider.gameObject));
+                            }
+
+                            float l_Damage = m_QSkill.GetAttribute("Daño base", GetQSkillLevel()) + (m_PercentageSkillPowerQ2 / 100f) * GetCharacterStats().GetAbilityPower();
+                            Debug.Log($"{l_Hit.collider.gameObject.name} recibe {l_Damage} de daño.");
+                            HitEnemy.TakeDamage(0, l_Damage, m_CharacterStats.GetPlayerName());
+                        }
+
+                        l_HasHit = true;
+                        break;
+                    }
+                }
+
+                if (!l_HasHit)
+                {
+                    if (Vector3.Distance(l_Enemy.transform.position, l_MoveTarget) > 0.1f)
+                    {
+                        l_Enemy.transform.position = Vector3.MoveTowards(l_Enemy.transform.position, l_MoveTarget, l_Distance);
+                        l_AllArrived = false;
+                    }
+                }
+            }
+
+            if (l_AllArrived)
+            {
+                m_Q2Throwing = false;
+
+                foreach (GameObject l_Enemy in m_EnemysTrappedQ)
+                {
+                    Collider[] l_Colliders = l_Enemy.GetComponentsInChildren<Collider>();
+                    foreach (Collider col in l_Colliders)
+                    {
+                        col.enabled = true;
+                    }
+                }
+            }
+        }
+    }
+
+
+
 
     private void QUpdate()
     {
@@ -301,8 +437,8 @@ public class RapatuCharacterController : CharacterMaster
 
         if (m_MoveTongueReverseQ)
         {
-
             m_MoveTongueReverseQ = false;
+            SetAnimatorTrigger("QStop");
             EndQSkill();
         }
 
@@ -313,9 +449,51 @@ public class RapatuCharacterController : CharacterMaster
         }
 
 
+        if (m_QAbsorbing && m_EnemysTrappedQ.Count != 0)
+        {
+            Vector3 l_TargetPos = m_TongueController.GetTongueEndPos().position;
+            bool l_AllArrived = true;
+
+            for (int i = m_EnemysTrappedQ.Count - 1; i >= 0; i--)
+            {
+                GameObject l_Enemy = m_EnemysTrappedQ[i];
+
+                Vector3 l_MoveTarget = new Vector3(l_TargetPos.x, l_Enemy.transform.position.y, l_TargetPos.z);
+
+                if (Vector3.Distance(l_Enemy.transform.position, l_MoveTarget) > 0.1f)
+                {
+                    l_Enemy.transform.position = Vector3.MoveTowards(l_Enemy.transform.position, l_MoveTarget, m_QMoveEnemysSpeed * Time.deltaTime);
+                    l_AllArrived = false;
+                }
+            }
+
+            if (l_AllArrived)
+            {
+                m_QAbsorbing = false;
+                foreach (GameObject l_Enemy in m_EnemysTrappedQ)
+                {
+                    Collider[] l_Colliders = l_Enemy.GetComponentsInChildren<Collider>();
+                    foreach (Collider col in l_Colliders)
+                    {
+                        col.enabled = true;
+                    }
+                }
+
+            }
+        }
+
+        if (m_CanReactiveQ)
+        {
+            if (Input.GetMouseButtonDown(0))
+            {
+                StartCoroutine(QSkillReactivation());
 
 
+            }
+        }
 
+        if (m_TongueController != null)
+            LookAt(m_TongueController.GetTongueEndPos().position);
 
 
         if (m_TongueController != null)
@@ -326,15 +504,49 @@ public class RapatuCharacterController : CharacterMaster
 
     }
 
+    IEnumerator QSkillReactivation()
+    {
+
+        SetAnimatorTrigger("QReactive");
+        SetDisabled(true);
+
+        m_CanReactiveQ = false;
+        m_QReactived = true;
+
+        float l_Distance = Vector3.Distance(m_TongueController.GetTongueEndPos().position, GetPositionWithMouse());
+
+        if (l_Distance <= m_Q2ThrowingRange / 100)
+        {
+            m_Q2ThrowingTargetPos = GetPositionWithMouse();
+        }
+        else
+        {
+            m_Q2ThrowingTargetPos = m_TongueController.GetTongueEndPos().position + (GetPositionWithMouse() - m_TongueController.GetTongueEndPos().position).normalized * (m_Q2ThrowingRange / 100);
+        }
+
+        yield return new WaitForSeconds(m_Q2AnimationTime / 2);
+
+        m_QAbsorbing = false;
+        m_Q2Throwing = true;
 
 
+        m_QReactived = false;
+        if (m_TongueController != null)
+            Destroy(m_TongueController.gameObject);
 
+        m_TongueTarget = null;
+        m_TongueController = null;
+        yield return new WaitForSeconds(m_Q2AnimationTime / 2);
+        SetDisabled(false);
+        EndQSkill();
+    }
     public void TongueDetectCollider(Collider _Collider)
     {
-        if (m_MoveTongueReverseQ)
+        if (m_TongueTarget != null)
             return;
 
         Debug.Log("Tongue Detect: " + _Collider.gameObject.name);
+
 
         if (_Collider.gameObject.GetComponent<CharacterMaster>())
         {
@@ -344,7 +556,8 @@ public class RapatuCharacterController : CharacterMaster
         {
             m_MoveTongueQ = false;
             m_TongueDetectEnemy = true;
-            m_TongueTarget = _Collider.gameObject.transform;
+            m_TongueTarget = _Collider.transform;
+            StartCoroutine(DoQDamage());
         }
         else
         {
@@ -353,37 +566,74 @@ public class RapatuCharacterController : CharacterMaster
         }
 
     }
-    /*IEnumerator DoQDamage(float Damage, float PercentageSlowsDown, float TimeSlowsDown, float DamageRange)
+
+    IEnumerator DoQDamage()
     {
 
-        GameObject l_Explosion = Instantiate(m_WExplosion, transform.position, Quaternion.identity);
-        l_Explosion.transform.localScale = new Vector3(DamageRange / 100, DamageRange / 100, DamageRange / 100);
+        GameObject l_Explosion = m_TongueController.GetDamageZone();
+        m_TongueController.GetDamageZone().SetActive(true);
+        l_Explosion.transform.localScale = new Vector3(m_Q1DamageZoneRange / 100, m_Q1DamageZoneRange / 100, m_Q1DamageZoneRange / 100);
         List<Collider> l_CollidersHit = new List<Collider>();
         Collider[] l_HitColliders = Physics.OverlapSphere(l_Explosion.transform.position, l_Explosion.transform.localScale.x / 2.0f, m_DamageLayerMask);
+
+        if (m_EnemysTrappedQ != null)
+            m_EnemysTrappedQ.Clear();
+        m_EnemysTrappedQ = new List<GameObject>();
+
         foreach (Collider Entity in l_HitColliders)
         {
             if (!l_CollidersHit.Contains(Entity) && Entity.TryGetComponent(out ITakeDamage Enemy))
             {
                 if (Entity.TryGetComponent(out BuffableEntity Buffs))
                 {
-                    Debug.LogError("You need to add buff T_T");
+                    Buffs.AddBuff(m_QImmobilizeBuff.InitializeBuff(m_Q1ImmobilizeBuffTime, Entity.gameObject));
                 }
-                Debug.Log("TAKEN " + Damage + " DAMAGE");
-                Enemy.TakeDamage(0, Damage, m_CharacterStats.GetPlayerName());
+                float l_Damage = (m_QSkill.GetAttribute("Daño base", GetQSkillLevel())) + (m_PercentageSkillPowerQ1 / 100) * GetCharacterStats().GetAbilityPower();
+                Debug.Log("TAKEN " + l_Damage + " DAMAGE");
+                Enemy.TakeDamage(0, l_Damage, m_CharacterStats.GetPlayerName());
                 l_CollidersHit.Add(Entity);
+                m_EnemysTrappedQ.Add(Entity.gameObject);
+            }
+        }
+        m_QAbsorbing = true;
+        foreach (GameObject l_Enemy in m_EnemysTrappedQ)
+        {
+            Collider[] l_Colliders = l_Enemy.GetComponentsInChildren<Collider>();
+            foreach (Collider col in l_Colliders)
+            {
+                col.enabled = false;
             }
         }
 
-        yield return new WaitForSeconds(0.5f);
 
-        Destroy(l_Explosion);
-    }*/
+        StartCoroutine(CanReactiveQ());
+        yield return new WaitForSeconds(0.2f);//Change
+        if (m_TongueController != null)
+            m_TongueController.GetDamageZone().SetActive(false);
+    }
+    IEnumerator CanReactiveQ()
+    {
+        m_QReactived = false;
+        m_QReactived = false;
+        m_CanReactiveQ = true;
+        yield return new WaitForSeconds(m_QReactivationTime);
+        m_CanReactiveQ = false;
+        if (!m_QReactived)
+        {
+            SetAnimatorTrigger("QStop");
+
+            EndQSkill();
+        }
+
+    }
     private void EndQSkill()
     {
-        m_TongueTarget = null;
+        if (m_TongueController != null)
+            Destroy(m_TongueController.gameObject);
 
-        Destroy(m_TongueController.gameObject);
+        m_TongueTarget = null;
         m_TongueController = null;
+
 
         base.QSkill();
         m_QSkill.SetUsingSkill(false);
@@ -392,6 +642,7 @@ public class RapatuCharacterController : CharacterMaster
             StopMovement();
 
         StartCoroutine(RepeatQSaver());
+        StartCoroutine(ResetTiggersSaverQ());
     }
 
     IEnumerator RepeatQSaver()
@@ -401,17 +652,21 @@ public class RapatuCharacterController : CharacterMaster
         m_SaverCanDoQ = true;
 
     }
-
+    IEnumerator ResetTiggersSaverQ()
+    {
+        yield return new WaitForSeconds(0.5f);
+        ResetAnimatorTrigger("QStop");
+    }
 
     #endregion
     #region W Skill
     //W SKILL
     protected override void WSkill()
     {
-        if (m_RSkill.GetUsingSkill())
+
+        if (m_QSkill.GetUsingSkill() || m_WSkill.GetUsingSkill() || m_ESkill.GetUsingSkill() || m_RSkill.GetUsingSkill())
             return;
-        if (m_ESkill.GetUsingSkill())
-            return;
+
         if (!m_SaverCanDoW)
             return;
 
@@ -430,12 +685,11 @@ public class RapatuCharacterController : CharacterMaster
             SetShowingGizmos(true);
         }
         else
-            StartWSkill();
+            StartCoroutine(StartWSkill());
 
 
     }
-
-    void StartWSkill()
+    IEnumerator StartWSkill()
     {
         SetShowingGizmos(false);
         StopAttacking();
@@ -443,19 +697,37 @@ public class RapatuCharacterController : CharacterMaster
         SetAnimatorTrigger("IsUsingW");
         if (!GetIsLookingForPosition())
             StopMovement();
+
+        m_LoadingJumpW = false;
+        m_WSkillStarted = true;
+        m_WChanneling = true;
+        m_TimerW = 0;
+        GetCharacterUI().SetCastingUIAbilityText("Preparando");
+        GetCharacterUI().HideCastingTime();
+        GetCharacterUI().UpdateCastingUI(0, 1);
+        GetCharacterUI().ShowCastingUI();
+
+        m_WIndicator = Instantiate(m_WIndicatorPrefab, transform.position, Quaternion.identity);
+        m_WIndicator.transform.localScale = new Vector3(m_DamageRangeWFirstJump / 100, m_WIndicator.transform.localScale.y, m_DamageRangeWFirstJump / 100);
+
+        yield return new WaitForSeconds(m_WChannelingTime);
+
+        m_WChanneling = false;
         m_TimerW = 0;
         GetCharacterUI().SetCastingUIAbilityText("Cargando salto");
         GetCharacterUI().HideCastingTime();
         GetCharacterUI().UpdateCastingUI(0, 1);
         GetCharacterUI().ShowCastingUI();
         m_LoadingJumpW = true;
-        m_WSkillStarted = true;
 
-        m_WIndicator = Instantiate(m_WIndicatorPrefab, transform.position, Quaternion.identity);
-        m_WIndicator.transform.localScale = new Vector3(m_DamageRangeWFirstJump / 100, m_WIndicator.transform.localScale.y, m_DamageRangeWFirstJump / 100);
     }
     void WUpdate()
     {
+        if (m_WChanneling)
+        {
+            m_TimerW += Time.deltaTime;
+            GetCharacterUI().UpdateCastingUI(m_TimerW, m_WChannelingTime);
+        }
 
         if (m_LoadingJumpW)
         {
@@ -486,15 +758,17 @@ public class RapatuCharacterController : CharacterMaster
             }
 
         }
-
-        if (Vector3.Distance(transform.position, GetPositionWithMouse()) <= m_MAXRangeW / 100)
+        if (m_WIndicator != null)
         {
-            m_WIndicator.transform.position = GetPositionWithMouse();
-        }
-        else
-        {
-            Vector3 l_Direction = (GetPositionWithMouse() - transform.position).normalized;
-            m_WIndicator.transform.position = transform.position + l_Direction * m_MAXRangeW / 100;
+            if (Vector3.Distance(transform.position, GetPositionWithMouse()) <= m_MAXRangeW / 100)
+            {
+                m_WIndicator.transform.position = GetPositionWithMouse();
+            }
+            else
+            {
+                Vector3 l_Direction = (GetPositionWithMouse() - transform.position).normalized;
+                m_WIndicator.transform.position = transform.position + l_Direction * m_MAXRangeW / 100;
+            }
         }
 
         if (m_JumpingW)
@@ -660,10 +934,10 @@ public class RapatuCharacterController : CharacterMaster
     //E SKILL
     protected override void ESkill()
     {
-        if (m_ESkill.GetUsingSkill())
+
+        if (m_QSkill.GetUsingSkill() || m_WSkill.GetUsingSkill() || m_ESkill.GetUsingSkill() || m_RSkill.GetUsingSkill())
             return;
-        if (m_RSkill.GetUsingSkill())
-            return;
+
         if (!m_SaverCanDoE)
             return;
 
@@ -767,10 +1041,10 @@ public class RapatuCharacterController : CharacterMaster
     //R SKILL
     protected override void RSkill()
     {
-        if (m_RSkill.GetUsingSkill())
+
+        if (m_QSkill.GetUsingSkill() || m_WSkill.GetUsingSkill() || m_ESkill.GetUsingSkill() || m_RSkill.GetUsingSkill())
             return;
-        if (m_ESkill.GetUsingSkill())
-            return;
+
         if (!m_SaverCanDoR)
             return;
 

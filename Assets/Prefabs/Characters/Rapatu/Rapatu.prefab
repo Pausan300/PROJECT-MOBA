@@ -1727,13 +1727,24 @@ MonoBehaviour:
   m_RangedAutoSpawnPoint: {fileID: 0}
   m_TonguePositionFace: {fileID: 6935574749045728160}
   m_TonguePrefab: {fileID: 5861226188457819980, guid: 5d4ee24ddb815e3479886a0021054108, type: 3}
-  m_TongueLineRenderer: {fileID: 0}
   m_TongueSpeedQ: 450
   m_TongueRangeQ: 900
   m_TongueHitboxWidthQ: 80
   m_QChannelingTime: 0.15
-  m_QStunBuff: {fileID: 11400000, guid: 06823eb9e26eae94886c2fa3d50a07f0, type: 2}
+  m_QReactivationTime: 1.5
+  m_Q1DamageZoneRange: 350
   m_QImmobilizeBuff: {fileID: 11400000, guid: 2e809e0550f89284aaad2e2c6c5ac31c, type: 2}
+  m_Q1ImmobilizeBuffTime: 1
+  m_PercentageSkillPowerQ1: 50
+  m_Q2ThrowingRange: 350
+  m_QStunBuff: {fileID: 11400000, guid: 06823eb9e26eae94886c2fa3d50a07f0, type: 2}
+  m_Q2StunBuffTime: 0.5
+  m_PercentageSkillPowerQ2: 50
+  m_Q2CanColisioneMask:
+    serializedVersion: 2
+    m_Bits: 1665
+  m_Q2ColisionsOffset: 0.1
+  m_Q2AnimationTime: 1.2
   m_WIndicatorPrefab: {fileID: 4231912645315949874, guid: 79575fab9db99f64594b17c863952490, type: 3}
   m_WExplosion: {fileID: 8270496605563521561, guid: 11c5352ddb9b08f48995a3380924642e, type: 3}
   m_MAXRangeW: 1000
@@ -2150,11 +2161,25 @@ MonoBehaviour:
     TransitionIndex: 0
   - IsCrossFadeExit: 0
     Layer: 0
-    OriginatingState: -1927632917
+    OriginatingState: -2105830735
     DestinationState: -419523528
-    TransitionDuration: 0.2705698
+    TransitionDuration: 0.25
     TriggerNameHash: -1217295421
     TransitionIndex: 0
+  - IsCrossFadeExit: 0
+    Layer: 0
+    OriginatingState: -2105830735
+    DestinationState: 1748754976
+    TransitionDuration: 0.25
+    TriggerNameHash: -76449806
+    TransitionIndex: 1
+  - IsCrossFadeExit: 0
+    Layer: 0
+    OriginatingState: -2105830735
+    DestinationState: 2081823275
+    TransitionDuration: 0.25
+    TriggerNameHash: -76449806
+    TransitionIndex: 2
   m_Animator: {fileID: 9022364282410572717}
 --- !u!54 &3463638054193634300
 Rigidbody:
