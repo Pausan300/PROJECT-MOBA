@@ -125,6 +125,7 @@ public class RapatuCharacterController : CharacterMaster
     bool m_SaverCanDoW = true;
     bool m_OtherJumpW = true;
     bool m_CanDoOtherJumpW = true;
+    bool m_CanReactiveW = true;
 
     [Header("E SKILL")]
 
@@ -172,6 +173,15 @@ public class RapatuCharacterController : CharacterMaster
     Coroutine m_RSkillCoroutine;
     float m_RJumpSpeed;
     bool m_RStopJumping = false;
+
+    [Header("OTHER VALUES")]
+    public GameObject m_CanRideIndicatorPrefab;
+    public float m_CanRideIndicatorYOffset = 1.5f;
+    public float m_CanRideRange = 200;
+
+    GameObject m_CanRideIndicator;
+    bool m_CanRide = false;
+    GameObject m_Rider;
 
     public override void OnNetworkSpawn()
     {
@@ -232,6 +242,9 @@ public class RapatuCharacterController : CharacterMaster
         }
 
         QSkillThrowing();
+
+
+        UpdateSomeOneIsRiding();
     }
 
     #region Q Skill
@@ -698,6 +711,7 @@ public class RapatuCharacterController : CharacterMaster
         if (!GetIsLookingForPosition())
             StopMovement();
 
+        m_CanReactiveW = true;
         m_LoadingJumpW = false;
         m_WSkillStarted = true;
         m_WChanneling = true;
@@ -720,6 +734,9 @@ public class RapatuCharacterController : CharacterMaster
         GetCharacterUI().ShowCastingUI();
         m_LoadingJumpW = true;
 
+        m_CanRideIndicator = Instantiate(m_CanRideIndicatorPrefab, transform.position, Quaternion.identity, transform);
+        m_CanRideIndicator.transform.localPosition = new Vector3(m_CanRideIndicator.transform.localPosition.x, m_CanRideIndicator.transform.localPosition.y + m_CanRideIndicatorYOffset, m_CanRideIndicator.transform.localPosition.z);
+        m_CanRide = true;
     }
     void WUpdate()
     {
@@ -797,6 +814,8 @@ public class RapatuCharacterController : CharacterMaster
     }
     void StartJumpingW()
     {
+        Destroy(m_CanRideIndicator);
+        m_CanRide = false;
         GetCharacterUI().HideCastingUI();
         m_LoadingJumpW = false;
         SetAnimatorTrigger("WJump");
@@ -869,13 +888,18 @@ public class RapatuCharacterController : CharacterMaster
             yield return null;
         DoLandsDamageWFirstJump();
 
-        m_WIndicator.transform.localScale = new Vector3(m_DamageRangeWSecondJump / 100, m_WIndicator.transform.localScale.y, m_DamageRangeWSecondJump / 100);
-        m_WIndicator.SetActive(true);
 
-        m_OtherJumpW = false;
-        m_CanDoOtherJumpW = true;
+        if (m_CanReactiveW)
+        {
+            m_WIndicator.transform.localScale = new Vector3(m_DamageRangeWSecondJump / 100, m_WIndicator.transform.localScale.y, m_DamageRangeWSecondJump / 100);
+            m_WIndicator.SetActive(true);
 
-        yield return new WaitForSeconds(m_CanDoOtherJumpTimeW);
+            m_OtherJumpW = false;
+
+            m_CanDoOtherJumpW = true;
+
+            yield return new WaitForSeconds(m_CanDoOtherJumpTimeW);
+        }
 
 
         if (m_OtherJumpW)
@@ -911,6 +935,7 @@ public class RapatuCharacterController : CharacterMaster
     }
     void EndWSkill(bool ExtraJump)
     {
+        DropSomeOneIsRiding();
         base.WSkill();
         if (ExtraJump)
             m_WSkill.SetTimer(m_WSkill.GetCd() + m_WSkill.GetCd() * (m_PercentageExtraCountdownW / 100));
@@ -1087,6 +1112,10 @@ public class RapatuCharacterController : CharacterMaster
         StartCoroutine(RSkillCanStop());
 
         m_RIndicator = Instantiate(m_RIndicatorPrefab, transform.position, Quaternion.identity);
+
+        m_CanRideIndicator = Instantiate(m_CanRideIndicatorPrefab, transform.position, Quaternion.identity, transform);
+        m_CanRideIndicator.transform.localPosition = new Vector3(m_CanRideIndicator.transform.localPosition.x, m_CanRideIndicator.transform.localPosition.y + m_CanRideIndicatorYOffset, m_CanRideIndicator.transform.localPosition.z);
+        m_CanRide = true;
     }
     void RUpdate()
     {
@@ -1110,6 +1139,10 @@ public class RapatuCharacterController : CharacterMaster
             if (Input.GetKeyDown(m_RSkillKey) && m_CanStopR)
             {
                 Debug.Log("R Canceled");
+
+                Destroy(m_CanRideIndicator);
+                m_CanRide = false;
+
                 StartCoroutine(RepeatRSaver());
                 GetCharacterUI().HideCastingUI();
                 base.RSkill();
@@ -1164,6 +1197,9 @@ public class RapatuCharacterController : CharacterMaster
 
     void StartJumpingR()
     {
+        Destroy(m_CanRideIndicator);
+        m_CanRide = false;
+
         GetCharacterUI().HideCastingUI();
         m_LoadingJumpR = false;
         m_RStopJumping = false;
@@ -1253,6 +1289,7 @@ public class RapatuCharacterController : CharacterMaster
     }
     void EndRSkill()
     {
+        DropSomeOneIsRiding();
         if (m_RSkillCoroutine != null)
             StopCoroutine(m_RSkillCoroutine);
         m_RSkillCoroutine = null;
@@ -1285,6 +1322,55 @@ public class RapatuCharacterController : CharacterMaster
 
     }
     #endregion
+
+    void SomeOneIsRiding(GameObject Rider)
+    {
+        if (m_CanRide)
+            return;
+
+        if (!(Vector3.Distance(Rider.transform.position, transform.position) <= m_CanRideRange / 100))
+            return;
+
+        m_Rider = Rider;
+
+        m_Rider.SetActive(false);
+
+        if (m_RSkill.GetUsingSkill())
+        {
+            Debug.Log("Saltando porque se ha montado alguien");
+            StartJumpingR();
+        }
+        if (m_WSkill.GetUsingSkill())
+        {
+            Debug.Log("Saltando porque se ha montado alguien");
+            m_CanReactiveW = false;
+            StartJumpingW();
+
+        }
+    }
+
+    void UpdateSomeOneIsRiding()
+    {
+        if (m_Rider == null)
+            return;
+
+        m_Rider.transform.position = transform.position;
+    }
+
+    void DropSomeOneIsRiding()
+    {
+        if (m_Rider == null)
+            return;
+
+        if (m_Rider.TryGetComponent(out BuffableEntity Buffs))
+        {
+            Debug.Log("Add Bioluminiscencia Buff here!!");
+        }
+
+        m_Rider.SetActive(true);
+
+        m_Rider = null;
+    }
 
     public override void LevelUpRpc()
     {
