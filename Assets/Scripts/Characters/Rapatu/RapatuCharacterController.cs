@@ -361,7 +361,11 @@ public class RapatuCharacterController : CharacterMaster
                 {
                     if (Physics.Raycast(origin, l_Direction, out RaycastHit l_Hit, l_Distance + m_Q2ColisionsOffset, m_Q2CanColisioneMask, QueryTriggerInteraction.Ignore))
                     {
-                        Debug.DrawRay(origin, l_Direction * (l_Distance + m_Q2ColisionsOffset), Color.red, 0.1f);
+                        bool isHitTrappedEnemy = m_EnemysTrappedQ.Contains(l_Hit.collider.gameObject) || m_EnemysTrappedQ.Contains(l_Hit.collider.transform.root.gameObject);
+
+                        if (isHitTrappedEnemy)
+                            continue;
+
                         Debug.Log($"{l_Enemy.name} ha colisionado con {l_Hit.collider.name} desde {origin}");
 
                         if (l_Enemy.TryGetComponent(out ITakeDamage Enemy))
@@ -497,11 +501,9 @@ public class RapatuCharacterController : CharacterMaster
 
         if (m_CanReactiveQ)
         {
-            if (Input.GetMouseButtonDown(0))
+            if (Input.GetKeyDown(m_QSkillKey))
             {
                 StartCoroutine(QSkillReactivation());
-
-
             }
         }
 
