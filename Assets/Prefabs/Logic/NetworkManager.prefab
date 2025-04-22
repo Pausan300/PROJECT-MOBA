@@ -56,6 +56,8 @@ MonoBehaviour:
     m_Prefab: {fileID: 8207142013517453575, guid: e7442d51bdac87748b08f84d52f00afd, type: 3}
   - m_Name: Shunso
     m_Prefab: {fileID: 8207142013517453575, guid: e733fdf20d91d354ab28dd672a4b8b0a, type: 3}
+  - m_Name: Willdurr
+    m_Prefab: {fileID: 6350617094762857290, guid: aadcd105dc538854fb6a5463e8908424, type: 3}
 --- !u!114 &9018573283165690223
 MonoBehaviour:
   m_ObjectHideFlags: 0
