@@ -42,7 +42,7 @@ MonoBehaviour:
     - 6
   - m_AttributeId: Enfriamiento
     m_IsPct: 0
-    m_ShowScalingInPopup: 1
+    m_ShowScalingInPopup: 0
     m_ValueFormat: s
     m_LevelScaling:
     - 8

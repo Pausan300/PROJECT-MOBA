@@ -29,6 +29,16 @@ MonoBehaviour:
     - 12
     - 11
     - 10
+  - m_AttributeId: Coste de Mana
+    m_IsPct: 0
+    m_ShowScalingInPopup: 0
+    m_ValueFormat: 
+    m_LevelScaling:
+    - 90
+    - 90
+    - 90
+    - 90
+    - 90
   m_DescriptionDamageList: []
   m_ExtraSpecifications: []
   m_IndicatorUIObject: {fileID: 0}
