@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 954276bc021179c40bcc85f768083f24
+guid: 4acb64b8911d4414085374ac09b3c439
 ModelImporter:
   serializedVersion: 22200
   internalIDToNameTable: []
@@ -35,7 +35,7 @@ ModelImporter:
       takeName: mixamo.com
       internalID: -203655887218126122
       firstFrame: 0
-      lastFrame: 60
+      lastFrame: 72
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -55,7 +55,7 @@ ModelImporter:
       bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
       curves: []
       events:
-      - time: 0.4954955
+      - time: 0.4037267
         functionName: PerformAutoAttack
         data: 
         objectReferenceParameter: {instanceID: 0}

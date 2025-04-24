@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class WilldurrCharacterController : CharacterMaster
 {
-    [Header("--- CHARACTER NAME ---")]
+    [Header("--- WILLDURR ---")]
 
 
 

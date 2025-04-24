@@ -807,7 +807,7 @@ public class RapatuCharacterController : CharacterMaster
 
         if (m_CanDoOtherJumpW)
         {
-            if (Input.GetMouseButtonDown(0))
+            if (Input.GetKeyDown(m_WSkillKey))
                 m_OtherJumpW = true;
         }
 
