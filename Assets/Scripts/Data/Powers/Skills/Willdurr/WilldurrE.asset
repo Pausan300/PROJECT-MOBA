@@ -41,6 +41,6 @@ MonoBehaviour:
     - 90
   m_DescriptionDamageList: []
   m_ExtraSpecifications: []
-  m_IndicatorUIObject: {fileID: 0}
+  m_IndicatorUIObject: {fileID: 6649836915933689498, guid: 8caef782d2af9ec429b3465c5f423ec6, type: 3}
   m_SkillDisabledTime: 0
   m_CancelableWithMouseClick: 1

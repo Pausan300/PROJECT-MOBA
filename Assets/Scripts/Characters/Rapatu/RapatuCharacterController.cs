@@ -302,6 +302,7 @@ public class RapatuCharacterController : CharacterMaster
 
         yield return new WaitForSeconds(m_QChannelingTime);
 
+        base.QSkill();
         SetDisabled(false);
         m_QChanneling = false;
         GetCharacterUI().HideCastingUI();
@@ -650,7 +651,6 @@ public class RapatuCharacterController : CharacterMaster
         m_TongueController = null;
 
 
-        base.QSkill();
         m_QSkill.SetUsingSkill(false);
 
         if (!GetIsLookingForPosition())

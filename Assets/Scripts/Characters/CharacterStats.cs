@@ -53,6 +53,7 @@ public class CharacterStats : NetworkBehaviour
     [Header("Buffs")]
     bool m_Stuned = false;
     bool m_Immobilized = false;
+    bool m_Scared = false;
 
     void Awake()
     {
@@ -361,5 +362,14 @@ public class CharacterStats : NetworkBehaviour
     public void SetImmobilized(bool Immobilized)
     {
         m_Immobilized = Immobilized;
+    }
+
+    public bool GetScared()
+    {
+        return m_Scared;
+    }
+    public void SetScared(bool Scared)
+    {
+        m_Scared = Scared;
     }
 }

@@ -3,22 +3,8 @@ using UnityEngine;
 using System.IO;
 using UnityEditor.ProjectWindowCallback;
 
-public class CrearScriptDesdeTemplate
+public class ScriptsPersonalizados
 {
-    [MenuItem("Assets/Create/Scripts Personalizados/Character Controller", false, 80)]
-    public static void CrearScript()
-    {
-        string path = GetSelectedPathOrFallback();
-        string defaultName = "NewCharacterController.cs";
-
-        ProjectWindowUtil.StartNameEditingIfProjectWindowExists(
-            0,
-            ScriptableObject.CreateInstance<CrearScriptAsset>(),
-            Path.Combine(path, defaultName),
-            null,
-            ""
-        );
-    }
 
     private static string GetSelectedPathOrFallback()
     {
@@ -33,9 +19,119 @@ public class CrearScriptDesdeTemplate
         }
         return path;
     }
+    #region CharacterController
+    [MenuItem("Assets/Create/Scripts Personalizados/Character Controller", false, 80)]
+    public static void CrearNewCharacterController()
+    {
+        string path = GetSelectedPathOrFallback();
+        string defaultName = "NewCharacterController.cs";
+
+        ProjectWindowUtil.StartNameEditingIfProjectWindowExists(
+            0,
+            ScriptableObject.CreateInstance<NewCharacterControllerTemplate>(),
+            Path.Combine(path, defaultName),
+            null,
+            ""
+        );
+    }
+
+    #endregion
+
+    #region Buffs
+
+    [MenuItem("Assets/Create/Scripts Personalizados/New Buff", false, 80)]
+    public static void CrearScriptNewBuff()
+    {
+        string path = GetSelectedPathOrFallback();
+        string defaultName = "NewBuff.cs";
+
+        ProjectWindowUtil.StartNameEditingIfProjectWindowExists(
+            0,
+            ScriptableObject.CreateInstance<BuffTemplateWithTimed>(),
+            Path.Combine(path, defaultName),
+            null,
+            ""
+        );
+    }
+
+    #endregion
+
+}
+public class BuffTemplateWithTimed : EndNameEditAction
+{
+    public override void Action(int instanceId, string pathName, string resourceFile)
+    {
+        string scriptName = Path.GetFileNameWithoutExtension(pathName);
+        string directory = Path.GetDirectoryName(pathName);
+
+        // Crear Buff base
+        string buffContent = $@"
+using UnityEngine;
+
+[CreateAssetMenu(menuName = ""Buffs/{scriptName}"")]
+public class {scriptName} : Buff
+{{
+    public TimedBuff InitializeBuff(float Duration, GameObject obj)
+    {{
+        m_Duration = Duration;
+        return new Timed{scriptName}(Duration, this, obj);
+    }}
+}}";
+        File.WriteAllText(pathName, buffContent);
+
+        // Crear Buff timed
+        string timedName = "Timed" + scriptName;
+        string timedPath = Path.Combine(directory, timedName + ".cs");
+
+        string timedContent = $@"
+using UnityEngine;
+
+public class {timedName} : TimedBuff
+{{
+    private readonly CharacterStats m_StatsComponent;
+
+    public {timedName}(float Duration, Buff buff, GameObject obj) : base(buff, obj)
+    {{
+        buff.m_Duration = Duration;
+        if (obj.TryGetComponent(out ITakeDamage Entity))
+            m_StatsComponent = Entity.GetCharacterStats();
+    }}
+
+    //Start {timedName}
+    protected override void ApplyEffect()
+    {{
+        if (m_StatsComponent != null)
+        {{
+            Debug.LogError(""Falta programar inicio {timedName}"");
+        }}
+    }}
+
+    //End {timedName}
+    public override void End()
+    {{
+        if (m_StatsComponent != null)
+        {{
+            Debug.LogError(""Falta programar final {timedName}"");
+        }}
+    }}
+
+    //Update {timedName}
+    protected override void ApplyTick(float delta)
+    {{
+        if (m_StatsComponent != null)
+        {{
+        }}
+    }}
+}}";
+        File.WriteAllText(timedPath, timedContent);
+
+        AssetDatabase.Refresh();
+        Object asset = AssetDatabase.LoadAssetAtPath<Object>(pathName);
+        ProjectWindowUtil.ShowCreatedAsset(asset);
+    }
 }
 
-public class CrearScriptAsset : EndNameEditAction
+public class NewCharacterControllerTemplate : EndNameEditAction
 {
     public override void Action(int instanceId, string pathName, string resourceFile)
     {

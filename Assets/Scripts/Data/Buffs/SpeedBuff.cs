@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(menuName="Buffs/SpeedBuff")]
+[CreateAssetMenu(menuName = "Buffs/SpeedBuff")]
 public class SpeedBuff : Buff
 {
     [Header("Speed stats")]
@@ -19,8 +19,8 @@ public class SpeedBuff : Buff
 
     public TimedBuff InitializeBuff(float Duration, float SpeedIncrease, GameObject obj)
     {
-        m_Duration=Duration;
-        m_SpeedIncrease=SpeedIncrease;
+        m_Duration = Duration;
+        m_SpeedIncrease = SpeedIncrease;
         return new TimedSpeedBuff(Duration, this, obj);
     }
 }
