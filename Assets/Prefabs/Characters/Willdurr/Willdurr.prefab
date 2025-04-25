@@ -2125,7 +2125,7 @@ MonoBehaviour:
   m_FearZoneE: {fileID: 810850169779895839}
   m_UIIndicatorWidthE: 50
   m_RangeE: 700
-  m_SpeedHeatE: 600
+  m_HeadArriveTargetTimeE: 0.4
   m_FearRadioE: 250
   m_EChannelingTime: 0.15
   m_WaitReactivationTimeE: 0.75
@@ -2135,11 +2135,11 @@ MonoBehaviour:
   m_RZonePrefab: {fileID: 5489800043199564986, guid: 4ade2cd217097e74b8fe8fb99c5f6cd4, type: 3}
   m_RHeadPrefab: {fileID: 5758787173917989774, guid: 32acfbf3f788ede42943a598829fd56f, type: 3}
   m_MINRangeR: 800
-  m_ScaleRZoneSpeed: 1000
+  m_ScaleRZoneSpeed: 500
   m_RSkillDuration: 15
   m_RChannelingTime: 0.2
-  m_RMINDistanceHeads: 200
-  m_HeadRRadiusHitbox: 100
+  m_RMINDistanceHeads: 105
+  m_HeadRRadiusHitbox: 50
   m_CoolingEInRSkill: 1.5
   m_RHeadLayerMask:
     serializedVersion: 2

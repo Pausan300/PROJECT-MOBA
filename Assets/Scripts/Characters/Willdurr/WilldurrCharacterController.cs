@@ -26,14 +26,14 @@ public class WilldurrCharacterController : CharacterMaster
     public GameObject m_FearZoneE;
     public float m_UIIndicatorWidthE = 50;
     public float m_RangeE = 700;
-    public float m_SpeedHeatE = 600;
+    public float m_HeadArriveTargetTimeE = 0.4f;
+    float m_SpeedHeatE = 600;
     public float m_FearRadioE = 250;
 
 
     public float m_EChannelingTime = 0.15f;
     public float m_WaitReactivationTimeE = 0.75f;
     public float m_CanReactiveTimeE = 2.5f;
-    public float m_ReturnHeadTimeE = 2f;
 
 
 
@@ -54,22 +54,21 @@ public class WilldurrCharacterController : CharacterMaster
     public float m_ScaleRZoneSpeed = 1000.0f;
     public float m_RSkillDuration = 15f;
     public float m_RChannelingTime = 0.2f;
-    [UnityEngine.Range(50f, 200f)]
-    public float m_RMINDistanceHeads = 100f;
+    [UnityEngine.Range(50f, 450f)]
+    public float m_RMINDistanceHeads = 105f;
     public float m_HeadRRadiusHitbox = 100f;
     public float m_CoolingEInRSkill = 1.5f;
     public LayerMask m_RHeadLayerMask;
 
 
     GameObject m_RZone;
-    List<float> m_RangeToSpawnRHeads;
+    List<Vector3> m_PosToSpawnRHeads;
     List<GameObject> m_RHeads;
 
     float m_ActualRangeR;
     float m_MAXRangeThisR;
     float m_RTimer = 0f;
 
-    int m_ActualHeadToSpawn;
     bool m_RChanneling = false;
     bool m_ScalingRZone = false;
     bool m_RSkillStarted = false;
@@ -120,7 +119,7 @@ public class WilldurrCharacterController : CharacterMaster
 
         if (m_ReturnHead)
         {
-            m_Head.position = Vector3.MoveTowards(m_Head.position, m_HeadPos.position, (m_HeatReturnSpeed / 100) * Time.deltaTime);
+            m_Head.position = m_HeadPos.position;
             if (Vector3.Distance(m_Head.position, m_HeadPos.position) <= 0.01f)
             {
                 m_ReturnHead = false;
@@ -235,6 +234,8 @@ public class WilldurrCharacterController : CharacterMaster
             m_TargetHeadPosition = ((GetPositionWithMouse() - transform.position).normalized * (m_RangeE / 100)) + transform.position;
 
         m_TargetHeadPosition.y = m_Head.position.y;
+        m_SpeedHeatE = ((m_TargetHeadPosition - m_Head.position).magnitude / m_HeadArriveTargetTimeE) * 100;
+
         LookAt(m_TargetHeadPosition);
 
         StopAttacking();
@@ -259,7 +260,6 @@ public class WilldurrCharacterController : CharacterMaster
         m_EChanneling = false;
         m_Head.SetParent(null);
         m_HeadCanMove = true;
-        StartCoroutine(ReturnHeadE());
 
         yield return new WaitForSeconds(m_WaitReactivationTimeE);
         m_CanReactiveE = true;
@@ -270,11 +270,6 @@ public class WilldurrCharacterController : CharacterMaster
 
 
         EndESkill();
-    }
-    IEnumerator ReturnHeadE()
-    {
-        yield return new WaitForSeconds(m_ReturnHeadTimeE);
-        m_ReturnHead = true;
     }
     IEnumerator DoEFear()
     {
@@ -425,36 +420,47 @@ public class WilldurrCharacterController : CharacterMaster
         m_ActualRangeR = 0;
         m_ScalingRZone = true;
 
-        m_RangeToSpawnRHeads = new List<float>();
+        m_PosToSpawnRHeads = new List<Vector3>();
         m_RHeads = new List<GameObject>();
 
         for (int i = 0; i < (m_MAXRangeThisR / 100); i++)
         {
-            m_RangeToSpawnRHeads.Add(GetRandomRangeToSpawn(i));
-            Debug.Log("Range to spawn head " + (i + 1) + ": " + m_RangeToSpawnRHeads[i]);
+            m_PosToSpawnRHeads.Add(GetHeadPosRandom(i));
+            Debug.Log("Range to spawn head " + (i + 1) + ": " + m_PosToSpawnRHeads[i]);
         }
-        m_ActualHeadToSpawn = 0;
         yield return new WaitForSeconds(m_RSkillDuration);
         EndRSkill();
 
     }
 
-    private float GetRandomRangeToSpawn(int i)
+    private Vector3 GetHeadPosRandom(int HeadNum)
     {
-        float l_Range = Random.Range(m_FormulaValueA + (i * m_FormulaValueB), m_FormulaValueC + (i * m_FormulaValueD));
+        float l_Range = Random.Range(0, m_MAXRangeThisR);
 
-        /*if (m_FormulaValueA + (1 * m_FormulaValueD) + m_FormulaValueA <= m_RMINDistanceHeads)
-        {
-            Debug.LogError("m_RMINDistanceHeads da StackOverflow porque le supone imposible cumplir con esta distancia. m_RMINDistanceHeads tiene que ser inferior de " + (m_FormulaValueC + (1 * m_FormulaValueD) + m_FormulaValueA) + " para que no de Error");
-        }*/
+        float l_AnguloAleatorio = Random.Range(0f, 360f);
+        float l_Radianes = l_AnguloAleatorio * Mathf.Deg2Rad;
 
-        if (l_Range > m_MAXRangeThisR)
+        Vector3 l_HeadPos = m_RZone.transform.position + new Vector3(Mathf.Cos(l_Radianes), 0f, Mathf.Sin(l_Radianes)) * (l_Range / 100);
+        l_HeadPos.y = m_RZone.transform.position.y;
+        bool l_CanBePos = true;
+
+        if (m_PosToSpawnRHeads.Count > 0)
         {
-            l_Range = GetRandomRangeToSpawn(i);
+            foreach (Vector3 HeadPos in m_PosToSpawnRHeads)
+            {
+                if (Vector3.Distance(l_HeadPos, HeadPos) < m_RMINDistanceHeads / 100)
+                {
+                    l_CanBePos = false;
+                }
+            }
+            if (!l_CanBePos)
+            {
+                l_HeadPos = GetHeadPosRandom(HeadNum);
+            }
+
         }
-        return l_Range;
+        return l_HeadPos;
     }
-
     void UpdateRSkill()
     {
         if (!m_RSkill.GetUsingSkill() && !m_RSkillStarted)
@@ -472,18 +478,27 @@ public class WilldurrCharacterController : CharacterMaster
             m_ActualRangeR = m_ActualRangeR + Time.deltaTime * m_ScaleRZoneSpeed;
             m_RZone.transform.localScale = new Vector3(m_ActualRangeR / 100 * 2, m_ActualRangeR / 100 * 2, m_ActualRangeR / 100 * 2);
 
-            if (m_RangeToSpawnRHeads.Count > m_ActualHeadToSpawn && m_ActualRangeR >= m_RangeToSpawnRHeads[m_ActualHeadToSpawn])
+            foreach (Vector3 HeadPosition in m_PosToSpawnRHeads)
             {
-                float l_AnguloAleatorio = Random.Range(0f, 360f);
-                float l_Radianes = l_AnguloAleatorio * Mathf.Deg2Rad;
+                bool l_Spawned = false;
+                foreach (GameObject Head in m_RHeads)
+                {
+                    if (Vector3.Distance(Head.transform.position, HeadPosition) <= 0.01f)
+                        l_Spawned = true;
+                }
 
-                Vector3 l_HeadPos = m_RZone.transform.position + new Vector3(Mathf.Cos(l_Radianes), 0f, Mathf.Sin(l_Radianes)) * (m_RangeToSpawnRHeads[m_ActualHeadToSpawn] / 100);
-                l_HeadPos.y = m_RZone.transform.position.y;
-                m_RHeads.Add(Instantiate(m_RHeadPrefab, GetHeadPosRandom(m_RangeToSpawnRHeads[m_ActualHeadToSpawn]), Quaternion.identity));
-                m_RHeads[m_ActualHeadToSpawn].GetComponent<WilldurrHeadR>().SetRadiusHitbox(m_HeadRRadiusHitbox);
+                if (!l_Spawned && Vector3.Distance(HeadPosition, m_RZone.transform.position) <= m_ActualRangeR / 100)
+                {
+                    GameObject l_ThisHead = Instantiate(m_RHeadPrefab, HeadPosition, Quaternion.identity);
+                    m_RHeads.Add(l_ThisHead);
+                    l_ThisHead.GetComponent<WilldurrHeadR>().SetRadiusHitbox(m_HeadRRadiusHitbox);
+                }
 
-                m_ActualHeadToSpawn++;
             }
+
+
+
+
             if (m_ActualRangeR >= m_MAXRangeThisR)
             {
                 m_ScalingRZone = false;
@@ -522,7 +537,12 @@ public class WilldurrCharacterController : CharacterMaster
                             StopMovement();
 
                         m_ESkill.SetCd(m_CoolingEInRSkill);
-                        base.ESkill();
+                        m_ESkill.SetTimer(m_ESkill.GetCd());
+                        GetCharacterUI().m_ESkillCdImage.fillAmount = 1.0f;
+                        GetCharacterUI().m_ESkillCdText.enabled = true;
+                        m_ESkill.SetIsOnCd(true);
+                        StartCoroutine(PowersCooldown(m_ESkill));
+                        StopRecall();
                     }
                 }
             }
@@ -532,48 +552,7 @@ public class WilldurrCharacterController : CharacterMaster
 
     }
 
-    private Vector3 GetHeadPosRandom(float _Range)
-    {
 
-        float l_Result = (m_FormulaValueA + ((m_ActualHeadToSpawn) * m_FormulaValueB) + m_FormulaValueA + ((m_ActualHeadToSpawn - 1) * m_FormulaValueB));
-        l_Result -= 30;
-
-        float l_AnguloAleatorio = Random.Range(0f, 360f);
-        float l_Radianes = l_AnguloAleatorio * Mathf.Deg2Rad;
-
-        Vector3 l_HeadPos = m_RZone.transform.position + new Vector3(Mathf.Cos(l_Radianes), 0f, Mathf.Sin(l_Radianes)) * (_Range / 100);
-        l_HeadPos.y = m_RZone.transform.position.y;
-        bool l_CanBePos = true;
-
-        if (m_RHeads.Count > 0)
-        {
-            foreach (GameObject HeadPos in m_RHeads)
-            {
-                if (m_FormulaValueA + (m_ActualHeadToSpawn * m_FormulaValueB) + m_FormulaValueA + ((m_ActualHeadToSpawn - 1) * m_FormulaValueB) > m_RMINDistanceHeads)
-                {
-                    if (Vector3.Distance(l_HeadPos, HeadPos.transform.position) < m_RMINDistanceHeads / 100)
-                    {
-                        l_CanBePos = false;
-
-                    }
-                }
-                else
-                {
-                    if (Vector3.Distance(l_HeadPos, HeadPos.transform.position) < l_Result / 100)
-                    {
-                        l_CanBePos = false;
-                    }
-                }
-            }
-            if (!l_CanBePos)
-            {
-
-                l_HeadPos = GetHeadPosRandom(_Range);
-            }
-
-        }
-        return l_HeadPos;
-    }
 
 
     List<Collider> m_CollidersHitRZone = new List<Collider>();
@@ -634,7 +613,7 @@ public class WilldurrCharacterController : CharacterMaster
             Destroy(Head);
         }
         m_RHeads = null;
-        m_RangeToSpawnRHeads = null;
+        m_PosToSpawnRHeads = null;
 
         m_CollidersHitRZone = null;
 

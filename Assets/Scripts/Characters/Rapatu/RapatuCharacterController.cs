@@ -233,12 +233,10 @@ public class RapatuCharacterController : CharacterMaster
 
                 if (m_WSkill.GetUsingSkill() && !m_WSkillStarted)
                     StartCoroutine(StartWSkill());
+
+                if (m_QSkill.GetUsingSkill() && !m_QSkillStarted)
+                    StartCoroutine(StartQSkill());
             }
-        }
-        if (Input.GetMouseButtonDown(0))
-        {
-            if (m_QSkill.GetUsingSkill() && !m_QSkillStarted)
-                StartCoroutine(StartQSkill());
         }
 
         QSkillThrowing();
@@ -252,7 +250,27 @@ public class RapatuCharacterController : CharacterMaster
     protected override void QSkill()
     {
         if (m_QSkill.GetUsingSkill() || m_WSkill.GetUsingSkill() || m_ESkill.GetUsingSkill() || m_RSkill.GetUsingSkill())
-            return;
+        {
+            if (!GetUseSkillGizmos())
+                return;
+
+            if (m_WSkill.GetUsingSkill() && !m_WSkillStarted)
+            {
+                m_WSkill.SetUsingSkill(false);
+            }
+            else if (m_ESkill.GetUsingSkill() && !m_ESkillStarted)
+            {
+                m_ESkill.SetUsingSkill(false);
+            }
+            else if (m_RSkill.GetUsingSkill() && !m_RSkillStarted)
+            {
+                m_RSkill.SetUsingSkill(false);
+            }
+            else
+            {
+                return;
+            }
+        }
 
         if (!m_SaverCanDoQ)
             return;
@@ -260,17 +278,21 @@ public class RapatuCharacterController : CharacterMaster
 
         m_QSkill.SetUsingSkill(true);
 
-
-        m_QSkillStarted = false;
-        if (GetShowingGizmos())
+        if (GetUseSkillGizmos())
         {
-            m_SkillIndicatorUI.ClearDeletableSkillIndicatorUI();
-            m_SkillIndicatorUI.ClearNormalSkillIndicatorUI();
-            m_SkillIndicatorUI.ClearTargetSkillIndicatorUI();
-        }
-        m_SkillIndicatorUI.CreateArrowSkillIndicator(m_QSkill.m_IndicatorUIObject, m_TongueHitboxWidthQ, m_TongueRangeQ, transform.position, true);
-        SetShowingGizmos(true);
+            m_QSkillStarted = false;
+            if (GetShowingGizmos())
+            {
+                m_SkillIndicatorUI.ClearDeletableSkillIndicatorUI();
+                m_SkillIndicatorUI.ClearNormalSkillIndicatorUI();
+                m_SkillIndicatorUI.ClearTargetSkillIndicatorUI();
+            }
+            m_SkillIndicatorUI.CreateArrowSkillIndicator(m_QSkill.m_IndicatorUIObject, m_TongueHitboxWidthQ, m_TongueRangeQ, transform.position, true);
+            SetShowingGizmos(true);
 
+        }
+        else
+            StartCoroutine(StartQSkill());
     }
 
     IEnumerator StartQSkill()
@@ -680,7 +702,27 @@ public class RapatuCharacterController : CharacterMaster
     {
 
         if (m_QSkill.GetUsingSkill() || m_WSkill.GetUsingSkill() || m_ESkill.GetUsingSkill() || m_RSkill.GetUsingSkill())
-            return;
+        {
+            if (!GetUseSkillGizmos())
+                return;
+
+            if (m_ESkill.GetUsingSkill() && !m_ESkillStarted)
+            {
+                m_ESkill.SetUsingSkill(false);
+            }
+            else if (m_RSkill.GetUsingSkill() && !m_RSkillStarted)
+            {
+                m_RSkill.SetUsingSkill(false);
+            }
+            else if (m_QSkill.GetUsingSkill() && !m_QSkillStarted)
+            {
+                m_QSkill.SetUsingSkill(false);
+            }
+            else
+            {
+                return;
+            }
+        }
 
         if (!m_SaverCanDoW)
             return;
@@ -963,7 +1005,27 @@ public class RapatuCharacterController : CharacterMaster
     {
 
         if (m_QSkill.GetUsingSkill() || m_WSkill.GetUsingSkill() || m_ESkill.GetUsingSkill() || m_RSkill.GetUsingSkill())
-            return;
+        {
+            if (!GetUseSkillGizmos())
+                return;
+
+            if (m_WSkill.GetUsingSkill() && !m_WSkillStarted)
+            {
+                m_WSkill.SetUsingSkill(false);
+            }
+            else if (m_RSkill.GetUsingSkill() && !m_RSkillStarted)
+            {
+                m_RSkill.SetUsingSkill(false);
+            }
+            else if (m_QSkill.GetUsingSkill() && !m_QSkillStarted)
+            {
+                m_QSkill.SetUsingSkill(false);
+            }
+            else
+            {
+                return;
+            }
+        }
 
         if (!m_SaverCanDoE)
             return;
@@ -1070,7 +1132,27 @@ public class RapatuCharacterController : CharacterMaster
     {
 
         if (m_QSkill.GetUsingSkill() || m_WSkill.GetUsingSkill() || m_ESkill.GetUsingSkill() || m_RSkill.GetUsingSkill())
-            return;
+        {
+            if (!GetUseSkillGizmos())
+                return;
+
+            if (m_WSkill.GetUsingSkill() && !m_WSkillStarted)
+            {
+                m_WSkill.SetUsingSkill(false);
+            }
+            else if (m_ESkill.GetUsingSkill() && !m_ESkillStarted)
+            {
+                m_ESkill.SetUsingSkill(false);
+            }
+            else if (m_QSkill.GetUsingSkill() && !m_QSkillStarted)
+            {
+                m_QSkill.SetUsingSkill(false);
+            }
+            else
+            {
+                return;
+            }
+        }
 
         if (!m_SaverCanDoR)
             return;

@@ -50,7 +50,7 @@ MonoBehaviour:
   m_NetworkManager: {fileID: 9018573283165690223}
   selectedCharacterIndex: 0
   m_Characters:
-  - m_Name: Hiratsu
+  - m_Name: Hirasu
     m_Prefab: {fileID: 8207142013517453575, guid: ce1b7c0bd7344354f99a9206f3d72093, type: 3}
   - m_Name: Rapatu
     m_Prefab: {fileID: 8207142013517453575, guid: e7442d51bdac87748b08f84d52f00afd, type: 3}

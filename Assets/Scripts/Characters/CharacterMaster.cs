@@ -730,7 +730,7 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
         StopRecall();
     }
 
-    IEnumerator PowersCooldown(Power PowerOnCd)
+    public IEnumerator PowersCooldown(Power PowerOnCd)
     {
         while (PowerOnCd.GetIsOnCd())
         {
