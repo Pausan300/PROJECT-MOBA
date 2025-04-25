@@ -13,7 +13,21 @@ public class SpeedBuff : Buff
         ADDITIVE,
         MULTIPLICATIVE
     }
-    public bool m_DecreaseInTime;
+    public WayOfChanging m_WayOfChanging;
+    public enum WayOfChanging
+    {
+        NOCHANGEINTIME,
+        DECREASE,
+        INCREASE,
+        VALUETOVALUE,
+        VALUETOVALUEWITHTIME,
+    }
+    [Header("VALUETOVALUE or VALUETOVALUEWITHTIME")]
+    public float m_Value1;
+    public float m_Value2;
+    [Header("VALUETOVALUEWITHTIME")]
+    public float m_ValueToValueTime;
+
     [HideInInspector]
     public float m_SpeedIncrease;
 

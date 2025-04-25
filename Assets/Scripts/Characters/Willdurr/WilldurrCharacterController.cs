@@ -1,10 +1,6 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel;
-using Unity.VisualScripting;
 using UnityEngine;
-using static UnityEngine.EventSystems.EventTrigger;
 using Random = UnityEngine.Random;
 
 public class WilldurrCharacterController : CharacterMaster
@@ -51,13 +47,14 @@ public class WilldurrCharacterController : CharacterMaster
     Coroutine m_ECoroutine;
 
     [Header("R SKILL")]
+    public SpeedBuff m_SlowDownRBuff;
     public GameObject m_RZonePrefab;
     public GameObject m_RHeadPrefab;
     public float m_MINRangeR = 800.0f;
     public float m_ScaleRZoneSpeed = 1000.0f;
     public float m_RSkillDuration = 15f;
     public float m_RChannelingTime = 0.2f;
-    [UnityEngine.Range(50f, 300f)]
+    [UnityEngine.Range(50f, 200f)]
     public float m_RMINDistanceHeads = 100f;
     public float m_HeadRRadiusHitbox = 100f;
     public float m_CoolingEInRSkill = 1.5f;
@@ -421,7 +418,9 @@ public class WilldurrCharacterController : CharacterMaster
 
 
 
+        m_CollidersHitRZone = new List<Collider>();
         m_RZone = Instantiate(m_RZonePrefab, new Vector3(transform.position.x, transform.position.y + 0.05f, transform.position.z), Quaternion.identity);
+        m_RZone.GetComponent<WilldurrRZone>().m_CharacterController = this;
         m_RZone.transform.localScale = Vector3.zero;
         m_ActualRangeR = 0;
         m_ScalingRZone = true;
@@ -432,10 +431,9 @@ public class WilldurrCharacterController : CharacterMaster
         for (int i = 0; i < (m_MAXRangeThisR / 100); i++)
         {
             m_RangeToSpawnRHeads.Add(GetRandomRangeToSpawn(i));
-            Debug.Log("Range to spawn head " + i + 1 + ": " + m_RangeToSpawnRHeads[i]);
+            Debug.Log("Range to spawn head " + (i + 1) + ": " + m_RangeToSpawnRHeads[i]);
         }
         m_ActualHeadToSpawn = 0;
-
         yield return new WaitForSeconds(m_RSkillDuration);
         EndRSkill();
 
@@ -456,7 +454,6 @@ public class WilldurrCharacterController : CharacterMaster
         }
         return l_Range;
     }
-
 
     void UpdateRSkill()
     {
@@ -578,10 +575,56 @@ public class WilldurrCharacterController : CharacterMaster
         return l_HeadPos;
     }
 
+
+    List<Collider> m_CollidersHitRZone = new List<Collider>();
+    public void TriggerEnterRZone(Collider Entity)
+    {
+        if (Entity.GetComponent<CharacterMaster>())
+            return;
+
+        if (!m_CollidersHitRZone.Contains(Entity) && Entity.TryGetComponent(out ITakeDamage Enemy))
+        {
+            if (Entity.TryGetComponent(out BuffableEntity Buffs))
+            {
+                Buffs.AddBuff(m_SlowDownRBuff.InitializeBuff(m_RSkillDuration, m_SlowDownRBuff.m_Value1, Entity.gameObject));
+                Debug.Log("Buff SlowDown Added to " + Entity.name);
+            }
+
+            m_CollidersHitRZone.Add(Entity);
+        }
+    }
+
+    public void TriggerExitRZone(Collider Entity)
+    {
+        if (!m_RSkill.GetUsingSkill() && !m_RSkillStarted)
+            return;
+
+        if (m_CollidersHitRZone.Contains(Entity) && Entity.TryGetComponent(out ITakeDamage Enemy))
+        {
+            if (Entity.TryGetComponent(out BuffableEntity Buffs))
+            {
+                Buffs.GetBuffWithName(m_SlowDownRBuff.m_BuffName).EndBuffNow();
+                Debug.Log("Buff SlowDown Removed to " + Entity.name);
+            }
+
+            m_CollidersHitRZone.Remove(Entity);
+        }
+    }
+
+
     void EndRSkill()
     {
         m_RSkill.SetUsingSkill(false);
         m_RSkillStarted = false;
+
+        foreach (Collider CollidersHitRZone in m_CollidersHitRZone)
+        {
+            if (CollidersHitRZone.TryGetComponent(out BuffableEntity Buffs))
+            {
+                Buffs.GetBuffWithName(m_SlowDownRBuff.m_BuffName).EndBuffNow();
+                Debug.Log("Buff SlowDown Removed to " + CollidersHitRZone.name);
+            }
+        }
 
         StartCoroutine(RepeatRSaver());
         Destroy(m_RZone);
@@ -592,6 +635,8 @@ public class WilldurrCharacterController : CharacterMaster
         }
         m_RHeads = null;
         m_RangeToSpawnRHeads = null;
+
+        m_CollidersHitRZone = null;
 
         if (!(GetESkillLevel() <= 0))
             m_ESkill.SetCooldown(GetESkillLevel());
@@ -620,4 +665,6 @@ public class WilldurrCharacterController : CharacterMaster
         yield return new WaitForSeconds(Duration);
         SetDisabled(false);
     }
+
+
 }

@@ -5,33 +5,33 @@ using UnityEngine;
 
 public class BuffableEntity : MonoBehaviour
 {
-    private readonly Dictionary<Buff, TimedBuff> m_Buffs=new Dictionary<Buff, TimedBuff>();
+    private readonly Dictionary<Buff, TimedBuff> m_Buffs = new Dictionary<Buff, TimedBuff>();
 
     void Update()
     {
-        foreach(var buff in m_Buffs.Values.ToList())
+        foreach (var buff in m_Buffs.Values.ToList())
         {
             buff.Tick(Time.deltaTime);
-            if(buff.m_IsFinished)
+            if (buff.m_IsFinished)
             {
                 m_Buffs.Remove(buff.m_Buff);
-				//if(TryGetComponent(out CharacterMaster Player))
-				//{
-				//	Player.GetCharacterUI().DeleteBuffObject(buff);
-				//}
-			}
+                //if(TryGetComponent(out CharacterMaster Player))
+                //{
+                //	Player.GetCharacterUI().DeleteBuffObject(buff);
+                //}
+            }
         }
     }
     public void AddBuff(TimedBuff buff)
     {
-        if(m_Buffs.ContainsKey(buff.m_Buff))
+        if (m_Buffs.ContainsKey(buff.m_Buff))
         {
             m_Buffs[buff.m_Buff].Activate();
         }
         else
         {
             m_Buffs.Add(buff.m_Buff, buff);
-            if(TryGetComponent(out CharacterMaster Player))
+            if (TryGetComponent(out CharacterMaster Player))
             {
                 Player.GetCharacterUI().CreateBuffObject(buff);
             }
@@ -40,16 +40,16 @@ public class BuffableEntity : MonoBehaviour
     }
     public bool IsBuffActive(Buff _Buff)
     {
-        if(m_Buffs.ContainsKey(_Buff))
+        if (m_Buffs.ContainsKey(_Buff))
             return true;
         else
             return false;
     }
     public bool IsMarkBuffActive(Buff _Buff)
     {
-        if(m_Buffs.ContainsKey(_Buff))
+        if (m_Buffs.ContainsKey(_Buff))
         {
-            TimedMarkBuff l_MarkBuff=(TimedMarkBuff) m_Buffs[_Buff];
+            TimedMarkBuff l_MarkBuff = (TimedMarkBuff)m_Buffs[_Buff];
             return l_MarkBuff.GetIsEffectActive();
         }
         return false;
@@ -57,5 +57,17 @@ public class BuffableEntity : MonoBehaviour
     public List<TimedBuff> GetBuffs()
     {
         return m_Buffs.Values.ToList();
+    }
+    public TimedBuff GetBuffWithName(string _Name)
+    {
+        foreach (TimedBuff _Buff in m_Buffs.Values.ToList())
+        {
+            if (_Buff.m_Buff.m_BuffName == _Name)
+            {
+                return _Buff;
+            }
+        }
+
+        return null;
     }
 }
