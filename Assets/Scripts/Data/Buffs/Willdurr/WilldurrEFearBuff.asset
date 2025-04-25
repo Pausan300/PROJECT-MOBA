@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a83b8c35801f63647a80f85e5bf86334, type: 3}
   m_Name: WilldurrEFearBuff
   m_EditorClassIdentifier: 
-  m_BuffName: 
-  m_BuffSprite: {fileID: 0}
-  m_IsDurationRefreshed: 0
+  m_BuffName: WilldurrEFearBuff
+  m_BuffSprite: {fileID: 21300000, guid: 20bb54d350d651e47aa6627deb17fd52, type: 3}
+  m_IsDurationRefreshed: 1
   m_IsEffectStacked: 0
-  m_Duration: 0
+  m_Duration: 1.25
