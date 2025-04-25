@@ -2147,7 +2147,7 @@ MonoBehaviour:
   m_FormulaValueA: 30
   m_FormulaValueB: 100
   m_FormulaValueC: 130
-  m_FormulaValueD: 100
+  m_FormulaValueD: 110
   m_HeadPos: {fileID: 3457580757869543846}
   m_HeatReturnSpeed: 600
 --- !u!114 &6223637414398981670
