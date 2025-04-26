@@ -13,11 +13,17 @@ public class WilldurrCharacterController : CharacterMaster
 
     [Header("Q SKILL")]
 
+    public float m_JumpRangeQ = 150f;
+
     bool m_SaverCanDoQ = true;
+    bool m_QSkillStarted;
 
     [Header("W SKILL")]
+    public float m_WRange = 500f;
+    public float m_WHitboxRatio = 500f;
 
     bool m_SaverCanDoW = true;
+    bool m_WSkillStarted;
 
     [Header("E SKILL")]
     public FearBuff m_FearBuffE;
@@ -109,8 +115,67 @@ public class WilldurrCharacterController : CharacterMaster
             {
                 if (m_ESkill.GetUsingSkill() && !m_ESkillStarted)
                     m_ECoroutine = StartCoroutine(StartESkill());
+
+                if (m_QSkill.GetUsingSkill() && !m_QSkillStarted)
+                    StartCoroutine(StartQSkill());
+
+                if (m_WSkill.GetUsingSkill() && !m_WSkillStarted)
+                    StartCoroutine(StartWSkill());
+
                 if (m_RSkill.GetUsingSkill() && !m_RSkillStarted)
                     StartCoroutine(StartRSkill());
+
+
+            }
+            if (Input.GetMouseButtonDown(1))
+            {
+                if (m_ESkill.GetUsingSkill() && !m_ESkillStarted)
+                {
+                    m_ESkill.SetUsingSkill(false);
+                    if (GetShowingGizmos())
+                    {
+                        m_SkillIndicatorUI.ClearDeletableSkillIndicatorUI();
+                        m_SkillIndicatorUI.ClearNormalSkillIndicatorUI();
+                        m_SkillIndicatorUI.ClearTargetSkillIndicatorUI();
+                        SetShowingGizmos(false);
+                    }
+                }
+
+                if (m_RSkill.GetUsingSkill() && !m_RSkillStarted)
+                {
+                    m_RSkill.SetUsingSkill(false);
+                    if (GetShowingGizmos())
+                    {
+                        m_SkillIndicatorUI.ClearDeletableSkillIndicatorUI();
+                        m_SkillIndicatorUI.ClearNormalSkillIndicatorUI();
+                        m_SkillIndicatorUI.ClearTargetSkillIndicatorUI();
+                        SetShowingGizmos(false);
+                    }
+                }
+
+                if (m_WSkill.GetUsingSkill() && !m_WSkillStarted)
+                {
+                    m_WSkill.SetUsingSkill(false);
+                    if (GetShowingGizmos())
+                    {
+                        m_SkillIndicatorUI.ClearDeletableSkillIndicatorUI();
+                        m_SkillIndicatorUI.ClearNormalSkillIndicatorUI();
+                        m_SkillIndicatorUI.ClearTargetSkillIndicatorUI();
+                        SetShowingGizmos(false);
+                    }
+                }
+
+                if (m_QSkill.GetUsingSkill() && !m_QSkillStarted)
+                {
+                    m_QSkill.SetUsingSkill(false);
+                    if (GetShowingGizmos())
+                    {
+                        m_SkillIndicatorUI.ClearDeletableSkillIndicatorUI();
+                        m_SkillIndicatorUI.ClearNormalSkillIndicatorUI();
+                        m_SkillIndicatorUI.ClearTargetSkillIndicatorUI();
+                        SetShowingGizmos(false);
+                    }
+                }
             }
         }
 
@@ -134,15 +199,57 @@ public class WilldurrCharacterController : CharacterMaster
     //Q SKILL
     protected override void QSkill()
     {
-        if (m_QSkill.GetUsingSkill() || m_WSkill.GetUsingSkill() || m_RChanneling || m_EChanneling)
-            return;
+        if (m_QSkill.GetUsingSkill() || m_WSkill.GetUsingSkill())
+        {
+            if (!GetUseSkillGizmos())
+                return;
+
+            if (m_ESkill.GetUsingSkill() && !m_ESkillStarted)
+            {
+                m_ESkill.SetUsingSkill(false);
+            }
+            else if (m_RSkill.GetUsingSkill() && !m_RSkillStarted)
+            {
+                m_RSkill.SetUsingSkill(false);
+            }
+            else if (m_WSkill.GetUsingSkill() && !m_WSkillStarted)
+            {
+                m_WSkill.SetUsingSkill(false);
+            }
+            else
+            {
+                return;
+            }
+        }
 
         if (!m_SaverCanDoQ)
             return;
 
+        m_QSkill.SetUsingSkill(true);
+
+        if (GetUseSkillGizmos())
+        {
+
+            m_QSkillStarted = false;
+            if (GetShowingGizmos())
+            {
+                m_SkillIndicatorUI.ClearDeletableSkillIndicatorUI();
+                m_SkillIndicatorUI.ClearNormalSkillIndicatorUI();
+                m_SkillIndicatorUI.ClearTargetSkillIndicatorUI();
+            }
+            m_SkillIndicatorUI.CreateArrowSkillIndicator(m_QSkill.m_IndicatorUIObject, 100, m_JumpRangeQ, transform.position, true);
+            SetShowingGizmos(true);
+        }
+        else
+            StartCoroutine(StartQSkill());
+
+
+    }
+    IEnumerator StartQSkill()
+    {
+
+        yield return null;
         EndQSkill();
-
-
     }
     void EndQSkill()
     {
@@ -163,14 +270,55 @@ public class WilldurrCharacterController : CharacterMaster
     //W SKILL
     protected override void WSkill()
     {
-        if (m_QSkill.GetUsingSkill() || m_WSkill.GetUsingSkill() || m_RChanneling || m_EChanneling)
-            return;
+        if (m_QSkill.GetUsingSkill() || m_WSkill.GetUsingSkill())
+        {
+            if (!GetUseSkillGizmos())
+                return;
+
+            if (m_ESkill.GetUsingSkill() && !m_ESkillStarted)
+            {
+                m_ESkill.SetUsingSkill(false);
+            }
+            else if (m_RSkill.GetUsingSkill() && !m_RSkillStarted)
+            {
+                m_RSkill.SetUsingSkill(false);
+            }
+            else if (m_QSkill.GetUsingSkill() && !m_QSkillStarted)
+            {
+                m_QSkill.SetUsingSkill(false);
+            }
+            else
+            {
+                return;
+            }
+        }
 
         if (!m_SaverCanDoW)
             return;
 
-        EndWSkill();
 
+        m_WSkill.SetUsingSkill(true);
+
+        if (GetUseSkillGizmos())
+        {
+            m_WSkillStarted = false;
+            if (GetShowingGizmos())
+            {
+                m_SkillIndicatorUI.ClearDeletableSkillIndicatorUI();
+                m_SkillIndicatorUI.ClearNormalSkillIndicatorUI();
+                m_SkillIndicatorUI.ClearTargetSkillIndicatorUI();
+            }
+            m_SkillIndicatorUI.CreateArrowSkillIndicator(m_WSkill.m_IndicatorUIObject, m_WHitboxRatio, m_WRange, transform.position, true);
+            SetShowingGizmos(true);
+        }
+        else
+            StartCoroutine(StartWSkill());
+    }
+    IEnumerator StartWSkill()
+    {
+
+        yield return null;
+        EndWSkill();
     }
     void EndWSkill()
     {
@@ -193,7 +341,27 @@ public class WilldurrCharacterController : CharacterMaster
     protected override void ESkill()
     {
         if (m_QSkill.GetUsingSkill() || m_WSkill.GetUsingSkill() || m_ESkill.GetUsingSkill() || m_RSkill.GetUsingSkill())
-            return;
+        {
+            if (!GetUseSkillGizmos())
+                return;
+
+            if (m_WSkill.GetUsingSkill() && !m_WSkillStarted)
+            {
+                m_WSkill.SetUsingSkill(false);
+            }
+            else if (m_RSkill.GetUsingSkill() && !m_RSkillStarted)
+            {
+                m_RSkill.SetUsingSkill(false);
+            }
+            else if (m_QSkill.GetUsingSkill() && !m_QSkillStarted)
+            {
+                m_QSkill.SetUsingSkill(false);
+            }
+            else
+            {
+                return;
+            }
+        }
 
         if (!m_SaverCanDoE)
             return;
@@ -364,7 +532,27 @@ public class WilldurrCharacterController : CharacterMaster
     protected override void RSkill()
     {
         if (m_QSkill.GetUsingSkill() || m_WSkill.GetUsingSkill() || m_ESkill.GetUsingSkill() || m_RSkill.GetUsingSkill())
-            return;
+        {
+            if (!GetUseSkillGizmos())
+                return;
+
+            if (m_ESkill.GetUsingSkill() && !m_ESkillStarted)
+            {
+                m_ESkill.SetUsingSkill(false);
+            }
+            else if (m_WSkill.GetUsingSkill() && !m_WSkillStarted)
+            {
+                m_WSkill.SetUsingSkill(false);
+            }
+            else if (m_QSkill.GetUsingSkill() && !m_QSkillStarted)
+            {
+                m_QSkill.SetUsingSkill(false);
+            }
+            else
+            {
+                return;
+            }
+        }
 
         if (!m_SaverCanDoR)
             return;

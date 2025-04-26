@@ -237,6 +237,57 @@ public class RapatuCharacterController : CharacterMaster
                 if (m_QSkill.GetUsingSkill() && !m_QSkillStarted)
                     StartCoroutine(StartQSkill());
             }
+
+            if (Input.GetMouseButtonDown(1))
+            {
+                if (m_ESkill.GetUsingSkill() && !m_ESkillStarted)
+                {
+                    m_ESkill.SetUsingSkill(false);
+                    if (GetShowingGizmos())
+                    {
+                        m_SkillIndicatorUI.ClearDeletableSkillIndicatorUI();
+                        m_SkillIndicatorUI.ClearNormalSkillIndicatorUI();
+                        m_SkillIndicatorUI.ClearTargetSkillIndicatorUI();
+                        SetShowingGizmos(false);
+                    }
+                }
+
+                if (m_RSkill.GetUsingSkill() && !m_RSkillStarted)
+                {
+                    m_RSkill.SetUsingSkill(false);
+                    if (GetShowingGizmos())
+                    {
+                        m_SkillIndicatorUI.ClearDeletableSkillIndicatorUI();
+                        m_SkillIndicatorUI.ClearNormalSkillIndicatorUI();
+                        m_SkillIndicatorUI.ClearTargetSkillIndicatorUI();
+                        SetShowingGizmos(false);
+                    }
+                }
+
+                if (m_WSkill.GetUsingSkill() && !m_WSkillStarted)
+                {
+                    m_WSkill.SetUsingSkill(false);
+                    if (GetShowingGizmos())
+                    {
+                        m_SkillIndicatorUI.ClearDeletableSkillIndicatorUI();
+                        m_SkillIndicatorUI.ClearNormalSkillIndicatorUI();
+                        m_SkillIndicatorUI.ClearTargetSkillIndicatorUI();
+                        SetShowingGizmos(false);
+                    }
+                }
+
+                if (m_QSkill.GetUsingSkill() && !m_QSkillStarted)
+                {
+                    m_QSkill.SetUsingSkill(false);
+                    if (GetShowingGizmos())
+                    {
+                        m_SkillIndicatorUI.ClearDeletableSkillIndicatorUI();
+                        m_SkillIndicatorUI.ClearNormalSkillIndicatorUI();
+                        m_SkillIndicatorUI.ClearTargetSkillIndicatorUI();
+                        SetShowingGizmos(false);
+                    }
+                }
+            }
         }
 
         QSkillThrowing();
@@ -768,6 +819,16 @@ public class RapatuCharacterController : CharacterMaster
         m_WIndicator = Instantiate(m_WIndicatorPrefab, transform.position, Quaternion.identity);
         m_WIndicator.transform.localScale = new Vector3(m_DamageRangeWFirstJump / 100, m_WIndicator.transform.localScale.y, m_DamageRangeWFirstJump / 100);
 
+        if (Vector3.Distance(transform.position, GetPositionWithMouse()) <= m_MAXRangeW / 100)
+        {
+            m_WIndicator.transform.position = GetPositionWithMouse();
+        }
+        else
+        {
+            Vector3 l_Direction = (GetPositionWithMouse() - transform.position).normalized;
+            m_WIndicator.transform.position = transform.position + l_Direction * m_MAXRangeW / 100;
+        }
+
         yield return new WaitForSeconds(m_WChannelingTime);
 
         m_WChanneling = false;
@@ -781,6 +842,8 @@ public class RapatuCharacterController : CharacterMaster
         m_CanRideIndicator = Instantiate(m_CanRideIndicatorPrefab, transform.position, Quaternion.identity, transform);
         m_CanRideIndicator.transform.localPosition = new Vector3(m_CanRideIndicator.transform.localPosition.x, m_CanRideIndicator.transform.localPosition.y + m_CanRideIndicatorYOffset, m_CanRideIndicator.transform.localPosition.z);
         m_CanRide = true;
+
+
     }
     void WUpdate()
     {
@@ -803,7 +866,7 @@ public class RapatuCharacterController : CharacterMaster
 
             if (GetUseSkillGizmos())
             {
-                if (Input.GetMouseButtonUp(0))
+                if (Input.GetMouseButtonUp(0) || !Input.GetMouseButton(0))
                 {
                     Debug.Log("Saltando por activacion");
                     StartJumpingW();
@@ -819,18 +882,7 @@ public class RapatuCharacterController : CharacterMaster
             }
 
         }
-        if (m_WIndicator != null)
-        {
-            if (Vector3.Distance(transform.position, GetPositionWithMouse()) <= m_MAXRangeW / 100)
-            {
-                m_WIndicator.transform.position = GetPositionWithMouse();
-            }
-            else
-            {
-                Vector3 l_Direction = (GetPositionWithMouse() - transform.position).normalized;
-                m_WIndicator.transform.position = transform.position + l_Direction * m_MAXRangeW / 100;
-            }
-        }
+
 
         if (m_JumpingW)
         {
@@ -850,7 +902,21 @@ public class RapatuCharacterController : CharacterMaster
         if (m_CanDoOtherJumpW)
         {
             if (Input.GetKeyDown(m_WSkillKey))
+            {
                 m_OtherJumpW = true;
+                m_CanDoOtherJumpW = false;
+
+            }
+
+            if (Vector3.Distance(transform.position, GetPositionWithMouse()) <= m_MAXRangeW / 100)
+            {
+                m_WIndicator.transform.position = GetPositionWithMouse();
+            }
+            else
+            {
+                Vector3 l_Direction = (GetPositionWithMouse() - transform.position).normalized;
+                m_WIndicator.transform.position = transform.position + l_Direction * m_MAXRangeW / 100;
+            }
         }
 
 
@@ -979,6 +1045,8 @@ public class RapatuCharacterController : CharacterMaster
     }
     void EndWSkill(bool ExtraJump)
     {
+
+        m_CanDoOtherJumpW = false;
         DropSomeOneIsRiding();
         base.WSkill();
         if (ExtraJump)
@@ -1262,6 +1330,7 @@ public class RapatuCharacterController : CharacterMaster
             Vector3 direction = (GetPositionWithMouse() - transform.position).normalized;
             m_RIndicator.transform.position = transform.position + direction * m_MAXRangeR / 100;
         }
+
 
         if (m_JumpingR)
         {
