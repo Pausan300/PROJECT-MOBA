@@ -26,6 +26,9 @@ public class RapatuCharacterController : CharacterMaster
     public float m_TongueHitboxWidthQ = 80;
     public float m_QChannelingTime = 0.15f;
     public float m_QReactivationTime = 1.5f;
+    public SpeedBuff m_QSlowDownDebuff;
+    [UnityEngine.Range(0f, 100f)]
+    public float m_PercentageQSlowDownDebuff = 30f;
 
     [Header("Q1")]
     public float m_Q1DamageZoneRange = 350f;
@@ -613,19 +616,20 @@ public class RapatuCharacterController : CharacterMaster
             m_Q2ThrowingTargetPos = m_TongueController.GetTongueEndPos().position + (GetPositionWithMouse() - m_TongueController.GetTongueEndPos().position).normalized * (m_Q2ThrowingRange / 100);
         }
 
-        yield return new WaitForSeconds(m_Q2AnimationTime / 2);
 
         m_QAbsorbing = false;
         m_Q2Throwing = true;
 
 
-        m_QReactived = false;
         if (m_TongueController != null)
             Destroy(m_TongueController.gameObject);
 
         m_TongueTarget = null;
         m_TongueController = null;
-        yield return new WaitForSeconds(m_Q2AnimationTime / 2);
+
+        GetComponent<BuffableEntity>().GetBuffWithName(m_QSlowDownDebuff.m_BuffName).EndBuffNow();
+
+        yield return new WaitForSeconds(m_Q2AnimationTime);
         SetDisabled(false);
         EndQSkill();
     }
@@ -647,13 +651,14 @@ public class RapatuCharacterController : CharacterMaster
             m_TongueDetectEnemy = true;
             m_TongueTarget = _Collider.transform;
             StartCoroutine(DoQDamage());
+
+            GetComponent<BuffableEntity>().AddBuff(m_QSlowDownDebuff.InitializeBuff(float.MaxValue, -m_PercentageQSlowDownDebuff, gameObject));
         }
         else
         {
             m_MoveTongueQ = false;
             m_MoveTongueReverseQ = true;
         }
-
     }
 
     IEnumerator DoQDamage()
@@ -703,7 +708,6 @@ public class RapatuCharacterController : CharacterMaster
     IEnumerator CanReactiveQ()
     {
         m_QReactived = false;
-        m_QReactived = false;
         m_CanReactiveQ = true;
         yield return new WaitForSeconds(m_QReactivationTime);
         m_CanReactiveQ = false;
@@ -711,6 +715,7 @@ public class RapatuCharacterController : CharacterMaster
         {
             SetAnimatorTrigger("QStop");
 
+            GetComponent<BuffableEntity>().GetBuffWithName(m_QSlowDownDebuff.m_BuffName).EndBuffNow();
             EndQSkill();
         }
 

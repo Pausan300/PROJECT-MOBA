@@ -1732,6 +1732,8 @@ MonoBehaviour:
   m_TongueHitboxWidthQ: 80
   m_QChannelingTime: 0.15
   m_QReactivationTime: 1.5
+  m_QSlowDownDebuff: {fileID: 11400000, guid: 1bdd6d4b7065abd45b91a5fd8b1f2275, type: 2}
+  m_PercentageQSlowDownDebuff: 30
   m_Q1DamageZoneRange: 350
   m_QImmobilizeBuff: {fileID: 11400000, guid: 2e809e0550f89284aaad2e2c6c5ac31c, type: 2}
   m_Q1ImmobilizeBuffTime: 1

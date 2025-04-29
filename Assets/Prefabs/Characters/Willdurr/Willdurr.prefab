@@ -216,7 +216,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 3409747937
+  GlobalObjectIdHash: 3684428329
   InScenePlacedSourceGlobalObjectIdHash: 419589164
   DeferredDespawnTick: 0
   Ownership: 1
@@ -2048,7 +2048,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 127372144
+  GlobalObjectIdHash: 3684428329
   InScenePlacedSourceGlobalObjectIdHash: 419589164
   DeferredDespawnTick: 0
   Ownership: 0
@@ -2119,6 +2119,18 @@ MonoBehaviour:
   m_UseKeyboardMovement: 0
   m_RangedAutoAttack: {fileID: 0}
   m_RangedAutoSpawnPoint: {fileID: 0}
+  m_JumpRangeQ: 150
+  m_WilldurrWScythePrefab: {fileID: 7694060363966750834, guid: 8ceab020c7ae5a84da4e055acb47ccda, type: 3}
+  m_WExplosion: {fileID: 8270496605563521561, guid: 6080a7401f4b2b8428db79cc1a2fddc2, type: 3}
+  m_WRange: 500
+  m_WHitboxRatio: 250
+  m_WStunBuff: {fileID: 11400000, guid: c5631a1b7c36f3a4db69dfe7dc07688f, type: 2}
+  m_WStunBuffTime: 0.75
+  m_WChannelingTime: 0.15
+  m_WaitReactivationTimeW: 0.75
+  m_CanReactiveTimeW: 2.5
+  m_PercentageBonusAttackDamageFirst: 55
+  m_PercentageBonusAttackDamageSecond: 75
   m_FearBuffE: {fileID: 11400000, guid: 62d33e509caebc142ad6fb9a10e32fb7, type: 2}
   m_FearBuffTimeE: 1.25
   m_Head: {fileID: 3842100369263391004}
@@ -2130,7 +2142,6 @@ MonoBehaviour:
   m_EChannelingTime: 0.15
   m_WaitReactivationTimeE: 0.75
   m_CanReactiveTimeE: 2.5
-  m_ReturnHeadTimeE: 2
   m_SlowDownRBuff: {fileID: 11400000, guid: 7431da7d46518fb48b80fc35782a8ac4, type: 2}
   m_RZonePrefab: {fileID: 5489800043199564986, guid: 4ade2cd217097e74b8fe8fb99c5f6cd4, type: 3}
   m_RHeadPrefab: {fileID: 5758787173917989774, guid: 32acfbf3f788ede42943a598829fd56f, type: 3}

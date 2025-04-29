@@ -19,11 +19,39 @@ public class WilldurrCharacterController : CharacterMaster
     bool m_QSkillStarted;
 
     [Header("W SKILL")]
+    public GameObject m_WilldurrWScythePrefab;
+    GameObject m_WilldurrWScythe;
+    public GameObject m_WExplosion;
     public float m_WRange = 500f;
-    public float m_WHitboxRatio = 500f;
+    public float m_WHitboxRatio = 250f;
+    public float m_WHitboxRatioReactived = 300f;
+    public StunBuff m_WStunBuff;
+    public float m_WStunBuffTime = 0.75f;
+    public float m_WArribalRangeReactivation = 150f;
 
+
+    public float m_WChannelingTime = 0.15f;
+    public float m_WaitReactivationTimeW = 0.75f;
+    public float m_CanReactiveTimeW = 2.5f;
+    public float m_WReactivedTimeToReturn = 0.7f;
+
+
+    [UnityEngine.Range(0f, 100f)]
+    public float m_PercentageBonusAttackDamageFirst = 55;
+    [UnityEngine.Range(0f, 100f)]
+    public float m_PercentageBonusAttackDamageSecond = 55;
+
+
+
+    bool m_WReactived = false;
+    float m_WReactivedSpeed = 0;
     bool m_SaverCanDoW = true;
     bool m_WSkillStarted;
+    bool m_CanReactiveW = false;
+    bool m_WChanneling = false;
+    float m_WTimer = 0;
+    Coroutine m_WCoroutine;
+    Vector3 m_TargetPositionW;
 
     [Header("E SKILL")]
     public FearBuff m_FearBuffE;
@@ -51,6 +79,7 @@ public class WilldurrCharacterController : CharacterMaster
     bool m_SaverCanDoE = true;
     bool m_ESkillStarted;
     Coroutine m_ECoroutine;
+    List<Collider> m_CollidersHitWZone = new List<Collider>();
 
     [Header("R SKILL")]
     public SpeedBuff m_SlowDownRBuff;
@@ -71,6 +100,7 @@ public class WilldurrCharacterController : CharacterMaster
     List<Vector3> m_PosToSpawnRHeads;
     List<GameObject> m_RHeads;
 
+    List<Collider> m_CollidersHitRZone = new List<Collider>();
     float m_ActualRangeR;
     float m_MAXRangeThisR;
     float m_RTimer = 0f;
@@ -120,7 +150,7 @@ public class WilldurrCharacterController : CharacterMaster
                     StartCoroutine(StartQSkill());
 
                 if (m_WSkill.GetUsingSkill() && !m_WSkillStarted)
-                    StartCoroutine(StartWSkill());
+                    m_WCoroutine = StartCoroutine(StartWSkill());
 
                 if (m_RSkill.GetUsingSkill() && !m_RSkillStarted)
                     StartCoroutine(StartRSkill());
@@ -179,6 +209,7 @@ public class WilldurrCharacterController : CharacterMaster
             }
         }
 
+        UpdateWSkill();
         UpdateESkill();
         UpdateRSkill();
 
@@ -312,18 +343,168 @@ public class WilldurrCharacterController : CharacterMaster
             SetShowingGizmos(true);
         }
         else
-            StartCoroutine(StartWSkill());
+            m_WCoroutine = StartCoroutine(StartWSkill());
     }
     IEnumerator StartWSkill()
     {
+        m_WSkillStarted = true;
 
-        yield return null;
+        if (Vector3.Distance(GetPositionWithMouse(), transform.position) <= (m_WRange / 100))
+            m_TargetPositionW = GetPositionWithMouse();
+        else
+            m_TargetPositionW = ((GetPositionWithMouse() - transform.position).normalized * (m_WRange / 100)) + transform.position;
+
+        m_TargetPositionW.y = transform.position.y;
+
+        LookAt(m_TargetPositionW);
+
+        StopAttacking();
+        if (!GetIsLookingForPosition())
+            StopMovement();
+
+        GetCharacterUI().SetCastingUIAbilityText("Canalizando");
+        GetCharacterUI().HideCastingTime();
+        GetCharacterUI().UpdateCastingUI(0, 1);
+        GetCharacterUI().ShowCastingUI();
+        m_WTimer = 0f;
+        m_WChanneling = true;
+        m_CanReactiveW = false;
+        m_WReactived = false;
+        m_CollidersHitWZone = new List<Collider>();
+
+
+
+
+        SetAnimatorTrigger("IsUsingW");
+
+        SetDisabled(true);
+        yield return new WaitForSeconds(m_WChannelingTime);
+        SetDisabled(false);
+        base.WSkill();
+        GetCharacterUI().HideCastingUI();
+        m_WChanneling = false;
+
+        m_WilldurrWScythe = Instantiate(m_WilldurrWScythePrefab, m_TargetPositionW, transform.rotation);
+        m_WilldurrWScythe.GetComponent<WilldurrWScythe>().m_CharacterController = this;
+        GameObject l_Explosion = Instantiate(m_WExplosion, m_TargetPositionW, Quaternion.identity);
+        l_Explosion.transform.localScale = new Vector3((m_WHitboxRatio / 100) * 2, (m_WHitboxRatio / 100) * 2, (m_WHitboxRatio / 100) * 2);
+
+        List<Collider> l_CollidersHit = new List<Collider>();
+        Collider[] l_HitColliders = Physics.OverlapSphere(m_TargetPositionW, m_WHitboxRatio / 100, m_DamageLayerMask);
+        float l_Damage = (m_WSkill.GetAttribute("Daño base", GetWSkillLevel())) + (m_PercentageBonusAttackDamageFirst / 100) * GetCharacterStats().GetBonusAttackDamage();
+        foreach (Collider Entity in l_HitColliders)
+        {
+            if (!l_CollidersHit.Contains(Entity) && Entity.TryGetComponent(out ITakeDamage Enemy))
+            {
+                if (Entity.TryGetComponent(out BuffableEntity Buffs))
+                {
+
+                    Buffs.AddBuff(m_WStunBuff.InitializeBuff(m_WStunBuffTime, Entity.gameObject));
+                }
+                Debug.Log("TAKEN " + l_Damage + " DAMAGE");
+                Enemy.TakeDamage(l_Damage, 0, m_CharacterStats.GetPlayerName());
+                l_CollidersHit.Add(Entity);
+            }
+        }
+
+        yield return new WaitForSeconds(m_WaitReactivationTimeW);
+        Destroy(l_Explosion);
+
+
+        m_CanReactiveW = true;
+
+        yield return new WaitForSeconds(m_CanReactiveTimeW);
+        m_CanReactiveW = false;
+
+
         EndWSkill();
     }
+    void UpdateWSkill()
+    {
+        if (!m_WSkill.GetUsingSkill() && !m_WSkillStarted)
+            return;
+
+        if (m_WChanneling)
+        {
+            m_WTimer += Time.deltaTime;
+            GetCharacterUI().UpdateCastingUI(m_WTimer, m_WChannelingTime);
+        }
+
+        if (m_CanReactiveW)
+        {
+            if (Input.GetKeyDown(m_WSkillKey))
+            {
+                m_WReactived = true;
+                m_WReactivedSpeed = ((transform.position - m_WilldurrWScythe.transform.position).magnitude / m_WReactivedTimeToReturn);
+                m_CanReactiveW = false;
+                if (m_WCoroutine != null)
+                    StopCoroutine(m_WCoroutine);
+                m_WCoroutine = null;
+
+                m_WilldurrWScythe.GetComponent<WilldurrWScythe>().SetReactive(m_WHitboxRatioReactived);
+
+            }
+        }
+
+        if (m_WReactived)
+        {
+            Vector3 targetPosition = transform.position;
+
+            m_WilldurrWScythe.transform.position = Vector3.MoveTowards(m_WilldurrWScythe.transform.position, new Vector3(targetPosition.x, m_WilldurrWScythe.transform.position.y, targetPosition.z), m_WReactivedSpeed * Time.deltaTime);
+            m_WilldurrWScythe.transform.LookAt(new Vector3(targetPosition.x, m_WilldurrWScythe.transform.position.y, targetPosition.z));
+            m_WilldurrWScythe.transform.rotation = Quaternion.Euler(m_WilldurrWScythe.transform.eulerAngles.x, m_WilldurrWScythe.transform.eulerAngles.y - 180, m_WilldurrWScythe.transform.eulerAngles.z);
+
+
+            for (int i = m_CollidersHitWZone.Count - 1; i >= 0; i--)
+            {
+                Collider entity = m_CollidersHitWZone[i];
+                Transform entityTransform = entity.transform;
+                Vector3 entityTargetPos = new Vector3(targetPosition.x, entityTransform.position.y, targetPosition.z);
+
+                float distance = Vector3.Distance(entityTransform.position, entityTargetPos);
+
+                if (distance > m_WArribalRangeReactivation / 100f)
+                    entityTransform.position = Vector3.MoveTowards(entityTransform.position, entityTargetPos, m_WReactivedSpeed * Time.deltaTime);
+                else
+                    m_CollidersHitWZone.RemoveAt(i);
+            }
+
+            if (Vector3.Distance(m_WilldurrWScythe.transform.position, new Vector3(targetPosition.x, m_WilldurrWScythe.transform.position.y, targetPosition.z)) <= 0.05f)
+            {
+                m_WReactived = false;
+                EndWSkill();
+            }
+
+        }
+
+
+    }
+    public void OnTriggerEnterWReactivation(Collider Entity)
+    {
+        if (!m_WReactived)
+            return;
+        if (Entity.GetComponent<CharacterMaster>())
+            return;
+
+        if (!m_CollidersHitWZone.Contains(Entity) && Entity.TryGetComponent(out ITakeDamage Enemy))
+        {
+            float l_Damage = (m_WSkill.GetAttribute("Daño Reactivación", GetWSkillLevel())) + (m_PercentageBonusAttackDamageSecond / 100) * GetCharacterStats().GetBonusAttackDamage();
+            Debug.Log("TAKEN " + l_Damage + " DAMAGE");
+            Enemy.TakeDamage(l_Damage, 0, m_CharacterStats.GetPlayerName());
+            m_CollidersHitWZone.Add(Entity);
+        }
+    }
+
     void EndWSkill()
     {
-
-        base.WSkill();
+        m_CollidersHitWZone.Clear();
+        Destroy(m_WilldurrWScythe);
+        m_WilldurrWScythe = null;
+        m_WSkillStarted = false;
+        m_WSkill.SetUsingSkill(false);
+        if (m_WCoroutine != null)
+            StopCoroutine(m_WCoroutine);
+        m_WCoroutine = null;
         StartCoroutine(RepeatWSaver());
     }
     IEnumerator RepeatWSaver()
@@ -410,7 +591,7 @@ public class WilldurrCharacterController : CharacterMaster
         if (!GetIsLookingForPosition())
             StopMovement();
 
-        GetCharacterUI().SetCastingUIAbilityText("Tirando cabeza");
+        GetCharacterUI().SetCastingUIAbilityText("Canalizando");
         GetCharacterUI().HideCastingTime();
         GetCharacterUI().UpdateCastingUI(0, 1);
         GetCharacterUI().ShowCastingUI();
@@ -740,10 +921,6 @@ public class WilldurrCharacterController : CharacterMaster
 
     }
 
-
-
-
-    List<Collider> m_CollidersHitRZone = new List<Collider>();
     public void TriggerEnterRZone(Collider Entity)
     {
         if (Entity.GetComponent<CharacterMaster>())
