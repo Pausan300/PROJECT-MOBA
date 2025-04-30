@@ -15,10 +15,10 @@ public class BuffableEntity : MonoBehaviour
             if (buff.m_IsFinished)
             {
                 m_Buffs.Remove(buff.m_Buff);
-                //if(TryGetComponent(out CharacterMaster Player))
-                //{
-                //	Player.GetCharacterUI().DeleteBuffObject(buff);
-                //}
+                if (TryGetComponent(out CharacterMaster Player))
+                {
+                    Player.GetCharacterUI().DeleteBuffObject(buff);
+                }
             }
         }
     }
@@ -27,6 +27,10 @@ public class BuffableEntity : MonoBehaviour
         if (m_Buffs.ContainsKey(buff.m_Buff))
         {
             m_Buffs[buff.m_Buff].Activate();
+            if (TryGetComponent(out CharacterMaster Player))
+            {
+                Player.GetCharacterUI().UpdateBuffObject(buff);
+            }
         }
         else
         {

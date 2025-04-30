@@ -6,6 +6,8 @@ using UnityEngine;
 
 public class CharacterStats : NetworkBehaviour
 {
+
+
     public CharacterBaseStatsBlock m_CharacterBaseStats;
 
     float m_MaxHealth;
@@ -50,10 +52,23 @@ public class CharacterStats : NetworkBehaviour
     int m_SkillPoints;
     float m_CurrentExp;
 
+    [Header("Enemys")]
+    EnemyType m_EnemyType;
+    public enum EnemyType
+    {
+        LARGEMONSTER,
+        MINION,
+        LIGHTLESS,
+        LEGENDARY
+    }
+
+
     [Header("Buffs")]
     bool m_Stuned = false;
     bool m_Immobilized = false;
     bool m_Scared = false;
+    bool m_CanSoulTheft = false;
+    WilldurrCharacterController m_Willdurr; // Willdur esta aqui para el buff de SoulThedtBuff. Es necessario que sea una variable.
 
     void Awake()
     {
@@ -179,6 +194,10 @@ public class CharacterStats : NetworkBehaviour
     public float GetAttackDamage()
     {
         return m_AttackDamage;
+    }
+    public void AddAttackDamage(float Damage)
+    {
+        m_AttackDamage += Damage;
     }
     public float GetBonusAttackDamage()
     {
@@ -347,6 +366,14 @@ public class CharacterStats : NetworkBehaviour
         }
     }
 
+    public EnemyType GetEnemyType()
+    {
+        return m_EnemyType;
+    }
+    public void SetEnemyType(EnemyType EnemyType)
+    {
+        m_EnemyType = EnemyType;
+    }
     public bool GetStuned()
     {
         return m_Stuned;
@@ -371,5 +398,18 @@ public class CharacterStats : NetworkBehaviour
     public void SetScared(bool Scared)
     {
         m_Scared = Scared;
+    }
+    public bool GetCanSoulTheft()
+    {
+        return m_CanSoulTheft;
+    }
+    public WilldurrCharacterController GetWilldurrCharacterController()
+    {
+        return m_Willdurr;
+    }
+    public void SetCanSoulTheft(bool CanSoulTheft, WilldurrCharacterController Willdurr)
+    {
+        m_CanSoulTheft = CanSoulTheft;
+        m_Willdurr = Willdurr;
     }
 }

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static CharacterStats;
 using Random = UnityEngine.Random;
 
 public class WilldurrCharacterController : CharacterMaster
@@ -10,6 +11,24 @@ public class WilldurrCharacterController : CharacterMaster
     //https://wiki.leagueoflegends.com/en-us/Vamp
 
     [Header("PASSIVE SKILL")]
+    public SoulTheftBuff m_PSoulTheftBuff;
+    public PassiveWilldurrBuff m_PWilldurrBuff;
+    public float m_PTimeToTheftSoul = 1.5f;
+    int m_PSouls;
+    public SoulsWithEnemyType[] m_SoulsWithEnemysTypes;
+
+    [Tooltip("Fase 1 cuando llegas a 25 almas.")]
+    public float m_AttackDamageToAddF1 = 10;
+    [Tooltip("Fase 2 cuando llegas a 50 almas.")]
+    public float m_OmnisuctionToAddF2 = 5;
+    [Tooltip("Fase 3 cuando llegas a 75 almas.")]
+    public float m_AttackDamageToAddF3 = 30;
+    [Tooltip("Fase 4 cuando llegas a 100 almas.")]
+    public float m_OmnisuctionToAddF4 = 15;
+    [Tooltip("Fase 5 A partir de 100 almas, por cada 5 almas nuevas.")]
+    public float m_AttackDamageToAddF5 = 2;
+    [Tooltip("Fase 5 A partir de 100 almas, por cada 5 almas nuevas.")]
+    public float m_OmnisuctionToAddF5 = 1;
 
     [Header("Q SKILL")]
 
@@ -40,8 +59,6 @@ public class WilldurrCharacterController : CharacterMaster
     public float m_PercentageBonusAttackDamageFirst = 55;
     [UnityEngine.Range(0f, 100f)]
     public float m_PercentageBonusAttackDamageSecond = 55;
-
-
 
     bool m_WReactived = false;
     float m_WReactivedSpeed = 0;
@@ -129,6 +146,8 @@ public class WilldurrCharacterController : CharacterMaster
     {
         base.OnNetworkSpawn();
         m_FearZoneE.SetActive(false);
+        m_PSouls = 0;
+        GetComponent<BuffableEntity>().AddBuff(m_PWilldurrBuff.InitializeBuff(m_PSouls, gameObject));
     }
     protected override void Update()
     {
@@ -224,6 +243,10 @@ public class WilldurrCharacterController : CharacterMaster
                 m_Head.localPosition = Vector3.zero;
             }
         }
+#if UNITY_EDITOR
+        if (Input.GetKeyDown(KeyCode.F1))
+            AddSoul(EnemyType.MINION);
+#endif
     }
 
     #region Q Skill
@@ -278,13 +301,14 @@ public class WilldurrCharacterController : CharacterMaster
     }
     IEnumerator StartQSkill()
     {
-
+        m_QSkillStarted = true;
         yield return null;
         EndQSkill();
     }
     void EndQSkill()
     {
-
+        m_QSkillStarted = false;
+        m_QSkill.SetUsingSkill(false);
         base.QSkill();
         StartCoroutine(RepeatQSaver());
     }
@@ -400,6 +424,7 @@ public class WilldurrCharacterController : CharacterMaster
                 {
 
                     Buffs.AddBuff(m_WStunBuff.InitializeBuff(m_WStunBuffTime, Entity.gameObject));
+                    Buffs.AddBuff(m_PSoulTheftBuff.InitializeBuff(this, m_PTimeToTheftSoul, Entity.gameObject));
                 }
                 Debug.Log("TAKEN " + l_Damage + " DAMAGE");
                 Enemy.TakeDamage(l_Damage, 0, m_CharacterStats.GetPlayerName());
@@ -477,7 +502,6 @@ public class WilldurrCharacterController : CharacterMaster
 
         }
 
-
     }
     public void OnTriggerEnterWReactivation(Collider Entity)
     {
@@ -488,6 +512,11 @@ public class WilldurrCharacterController : CharacterMaster
 
         if (!m_CollidersHitWZone.Contains(Entity) && Entity.TryGetComponent(out ITakeDamage Enemy))
         {
+            if (Entity.TryGetComponent(out BuffableEntity Buffs))
+            {
+                Buffs.AddBuff(m_PSoulTheftBuff.InitializeBuff(this, m_PTimeToTheftSoul, Entity.gameObject));
+            }
+
             float l_Damage = (m_WSkill.GetAttribute("Daño Reactivación", GetWSkillLevel())) + (m_PercentageBonusAttackDamageSecond / 100) * GetCharacterStats().GetBonusAttackDamage();
             Debug.Log("TAKEN " + l_Damage + " DAMAGE");
             Enemy.TakeDamage(l_Damage, 0, m_CharacterStats.GetPlayerName());
@@ -569,7 +598,6 @@ public class WilldurrCharacterController : CharacterMaster
 
 
     }
-
     IEnumerator StartESkill()
     {
         m_ESkillStarted = true;
@@ -740,8 +768,8 @@ public class WilldurrCharacterController : CharacterMaster
 
         m_RSkill.SetUsingSkill(true);
 
-        m_MAXRangeThisR = m_MINRangeR;
-
+        m_MAXRangeThisR = m_MINRangeR + (((int)(m_PSouls / 5)) * 15);
+        Debug.LogError(m_MAXRangeThisR);
 
         if (GetUseSkillGizmos())
         {
@@ -998,6 +1026,64 @@ public class WilldurrCharacterController : CharacterMaster
     #endregion
 
 
+
+
+    public void AddSoul(EnemyType _EnemyType)
+    {
+        int l_AddedSouls = 0;
+
+        foreach (SoulsWithEnemyType Item in m_SoulsWithEnemysTypes)
+        {
+            if (Item.m_EnemyType == _EnemyType)
+            {
+                l_AddedSouls = Item.m_Souls;
+                GetComponent<BuffableEntity>().AddBuff(m_PWilldurrBuff.InitializeBuff(m_PSouls + l_AddedSouls, gameObject));
+            }
+        }
+
+        if (m_PSouls < 25 && m_PSouls + l_AddedSouls >= 25)
+        {
+            GetCharacterStats().AddAttackDamage(m_AttackDamageToAddF1);
+        }
+
+        if (m_PSouls < 50 && m_PSouls + l_AddedSouls >= 50)
+        {
+            // Omnisuccion 5% -->m_OmnisuctionToAddF2
+        }
+
+        if (m_PSouls < 75 && m_PSouls + l_AddedSouls >= 75)
+        {
+            GetCharacterStats().AddAttackDamage(m_AttackDamageToAddF3);
+        }
+
+        if (m_PSouls < 100 && m_PSouls + l_AddedSouls >= 100)
+        {
+            // Omnisuccion 15% -->m_OmnisuctionToAddF4
+        }
+
+        if (m_PSouls + l_AddedSouls > 100)
+        {
+            float l_ExtraValue = ((int)(m_PSouls - 100) / 5) - ((int)(m_PSouls + l_AddedSouls - 100) / 5);
+
+            // Omnisuccion 1% * l_ExtraValue --> m_OmnisuctionToAddF5
+            GetCharacterStats().AddAttackDamage(m_AttackDamageToAddF5 * l_ExtraValue);
+        }
+
+        m_PSouls += l_AddedSouls;
+    }
+    protected override void PerformAutoAttack()
+    {
+        if (m_DesiredEnemy == null)
+        {
+            StopAttacking();
+            return;
+        }
+
+        if (m_DesiredEnemy.TryGetComponent(out BuffableEntity Buffs))
+            Buffs.AddBuff(m_PSoulTheftBuff.InitializeBuff(this, m_PTimeToTheftSoul, m_DesiredEnemy.gameObject));
+
+        m_DesiredEnemy.GetComponent<ITakeDamage>().TakeDamage(m_CharacterStats.GetAttackDamage(), m_CharacterStats.GetAbilityPower(), m_CharacterStats.GetPlayerName());
+    }
     public override void LevelUpRpc()
     {
         base.LevelUpRpc();
@@ -1011,4 +1097,11 @@ public class WilldurrCharacterController : CharacterMaster
     }
 
 
+}
+
+[System.Serializable]
+public class SoulsWithEnemyType
+{
+    public EnemyType m_EnemyType;
+    public int m_Souls;
 }

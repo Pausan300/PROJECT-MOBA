@@ -216,7 +216,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 3684428329
+  GlobalObjectIdHash: 3409747937
   InScenePlacedSourceGlobalObjectIdHash: 419589164
   DeferredDespawnTick: 0
   Ownership: 1
@@ -2048,7 +2048,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 3684428329
+  GlobalObjectIdHash: 127372144
   InScenePlacedSourceGlobalObjectIdHash: 419589164
   DeferredDespawnTick: 0
   Ownership: 0
@@ -2119,16 +2119,31 @@ MonoBehaviour:
   m_UseKeyboardMovement: 0
   m_RangedAutoAttack: {fileID: 0}
   m_RangedAutoSpawnPoint: {fileID: 0}
+  m_PSoulTheftBuff: {fileID: 11400000, guid: 595ae1c7fb394a44da2c7c352f988e08, type: 2}
+  m_PWilldurrBuff: {fileID: 11400000, guid: 89bf62153dc56fc488d15a836f5d9487, type: 2}
+  m_PTimeToTheftSoul: 1.5
+  m_SoulsWithEnemysTypes:
+  - m_EnemyType: 0
+    m_Souls: 1
+  - m_EnemyType: 1
+    m_Souls: 1
+  - m_EnemyType: 2
+    m_Souls: 2
+  - m_EnemyType: 3
+    m_Souls: 100
   m_JumpRangeQ: 150
   m_WilldurrWScythePrefab: {fileID: 7694060363966750834, guid: 8ceab020c7ae5a84da4e055acb47ccda, type: 3}
   m_WExplosion: {fileID: 8270496605563521561, guid: 6080a7401f4b2b8428db79cc1a2fddc2, type: 3}
   m_WRange: 500
   m_WHitboxRatio: 250
+  m_WHitboxRatioReactived: 300
   m_WStunBuff: {fileID: 11400000, guid: c5631a1b7c36f3a4db69dfe7dc07688f, type: 2}
   m_WStunBuffTime: 0.75
+  m_WArribalRangeReactivation: 150
   m_WChannelingTime: 0.15
   m_WaitReactivationTimeW: 0.75
   m_CanReactiveTimeW: 2.5
+  m_WReactivedTimeToReturn: 0.7
   m_PercentageBonusAttackDamageFirst: 55
   m_PercentageBonusAttackDamageSecond: 75
   m_FearBuffE: {fileID: 11400000, guid: 62d33e509caebc142ad6fb9a10e32fb7, type: 2}
@@ -2393,6 +2408,13 @@ MonoBehaviour:
     TransitionIndex: 3
   - IsCrossFadeExit: 0
     Layer: 0
+    OriginatingState: 1748754976
+    DestinationState: -2086762481
+    TransitionDuration: 0.25
+    TriggerNameHash: -1214928682
+    TransitionIndex: 4
+  - IsCrossFadeExit: 0
+    Layer: 0
     OriginatingState: -1936938822
     DestinationState: 658534615
     TransitionDuration: 0.10623217
@@ -2407,6 +2429,13 @@ MonoBehaviour:
     TransitionIndex: 3
   - IsCrossFadeExit: 0
     Layer: 0
+    OriginatingState: -1936938822
+    DestinationState: -2086762481
+    TransitionDuration: 0.25
+    TriggerNameHash: -1214928682
+    TransitionIndex: 4
+  - IsCrossFadeExit: 0
+    Layer: 0
     OriginatingState: 2081823275
     DestinationState: 658534615
     TransitionDuration: 0.10478258
@@ -2419,6 +2448,13 @@ MonoBehaviour:
     TransitionDuration: 0.068041325
     TriggerNameHash: -939565991
     TransitionIndex: 3
+  - IsCrossFadeExit: 0
+    Layer: 0
+    OriginatingState: 2081823275
+    DestinationState: -2086762481
+    TransitionDuration: 0.25
+    TriggerNameHash: -1214928682
+    TransitionIndex: 4
   m_Animator: {fileID: 8724997472088692283}
 --- !u!54 &5690429476524533762
 Rigidbody:

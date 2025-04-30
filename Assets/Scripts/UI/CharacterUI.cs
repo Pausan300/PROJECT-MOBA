@@ -292,28 +292,58 @@ public class CharacterUI : MonoBehaviour
         m_ELevelPoints.value = 0;
         m_RLevelPoints.value = 0;
     }
-    public void CreateBuffObject(TimedBuff TimedBuff)
+    public void CreateBuffObject(TimedBuff _TimedBuff)
     {
         GameObject l_BuffObject = Instantiate(m_BuffUIPrefab, m_BuffsDebuffsParent);
         BuffDebuffObjectUI l_BuffObjectUI = l_BuffObject.GetComponent<BuffDebuffObjectUI>();
-        l_BuffObjectUI.m_BuffImage.sprite = TimedBuff.m_Buff.m_BuffSprite;
-        l_BuffObjectUI.m_BuffDurationImage.sprite = TimedBuff.m_Buff.m_BuffSprite;
+        l_BuffObjectUI.m_BuffImage.sprite = _TimedBuff.m_Buff.m_BuffSprite;
+        l_BuffObjectUI.m_BuffDurationImage.sprite = _TimedBuff.m_Buff.m_BuffSprite;
         l_BuffObjectUI.m_BuffDurationImage.fillAmount = 1.0f;
-        l_BuffObjectUI.m_TimedBuff = TimedBuff;
-        //m_BuffDebuffUIList.Add(l_BuffObjectUI);
+        l_BuffObjectUI.m_TimedBuff = _TimedBuff;
+        if (_TimedBuff.m_Buff.m_ValueAmount != -1)
+        {
+            l_BuffObjectUI.m_CumulativeAmountValueText.gameObject.SetActive(true);
+            l_BuffObjectUI.m_CumulativeAmountValueText.text = _TimedBuff.m_Buff.m_ValueAmount.ToString();
+        }
+        else
+        {
+            l_BuffObjectUI.m_CumulativeAmountValueText.gameObject.SetActive(false);
+        }
+
+        m_BuffDebuffUIList.Add(l_BuffObjectUI);
     }
-    //public void DeleteBuffObject(TimedBuff TimedBuff)
-    //{
-    //    foreach(BuffDebuffObjectUI BuffDebuffUI in m_BuffDebuffUIList)
-    //    {
-    //        if(BuffDebuffUI.m_TimedBuff==TimedBuff)
-    //        {
-    //            m_BuffDebuffUIList.Remove(BuffDebuffUI);
-    //            Destroy(BuffDebuffUI.gameObject);
-    //            break;
-    //        }
-    //    }
-    //}
+    public void UpdateBuffObject(TimedBuff _TimedBuff)
+    {
+        foreach (BuffDebuffObjectUI BuffObject in m_BuffDebuffUIList)
+        {
+            BuffDebuffObjectUI l_BuffObjectUI = BuffObject;
+            if (l_BuffObjectUI.m_TimedBuff.m_Buff.m_BuffName == _TimedBuff.m_Buff.m_BuffName)
+            {
+                if (_TimedBuff.m_Buff.m_ValueAmount != -1)
+                {
+                    l_BuffObjectUI.m_CumulativeAmountValueText.gameObject.SetActive(true);
+                    l_BuffObjectUI.m_CumulativeAmountValueText.text = _TimedBuff.m_Buff.m_ValueAmount.ToString();
+                }
+                else
+                {
+                    l_BuffObjectUI.m_CumulativeAmountValueText.gameObject.SetActive(false);
+                }
+            }
+        }
+    }
+
+    public void DeleteBuffObject(TimedBuff _TimedBuff)
+    {
+        foreach (BuffDebuffObjectUI BuffDebuffUI in m_BuffDebuffUIList)
+        {
+            if (BuffDebuffUI.m_TimedBuff.m_Buff.m_BuffName == _TimedBuff.m_Buff.m_BuffName)
+            {
+                m_BuffDebuffUIList.Remove(BuffDebuffUI);
+                Destroy(BuffDebuffUI.gameObject);
+                break;
+            }
+        }
+    }
     public void SetPopupType(InspectableElementUI.PopupType PopupElement, string Description, string Name, bool IsLevelUp, bool _ShowPopup)
     {
         switch (PopupElement)
@@ -322,22 +352,22 @@ public class CharacterUI : MonoBehaviour
                 m_PopupUI.UpdatePowerPopupInfo(m_Character.m_PassiveSkill, "P", 0, IsLevelUp);
                 break;
             case InspectableElementUI.PopupType.QSKILL:
-                if(m_Character.GetQSkillLevel()>=5 && !_ShowPopup)
+                if (m_Character.GetQSkillLevel() >= 5 && !_ShowPopup)
                     return;
                 m_PopupUI.UpdatePowerPopupInfo(m_Character.m_QSkill, m_Character.m_QSkillKey.ToString(), m_Character.GetQSkillLevel(), IsLevelUp);
                 break;
             case InspectableElementUI.PopupType.WSKILL:
-                if(m_Character.GetWSkillLevel()>=5 && !_ShowPopup)
+                if (m_Character.GetWSkillLevel() >= 5 && !_ShowPopup)
                     return;
                 m_PopupUI.UpdatePowerPopupInfo(m_Character.m_WSkill, m_Character.m_WSkillKey.ToString(), m_Character.GetWSkillLevel(), IsLevelUp);
                 break;
             case InspectableElementUI.PopupType.ESKILL:
-                if(m_Character.GetESkillLevel()>=5 && !_ShowPopup)
+                if (m_Character.GetESkillLevel() >= 5 && !_ShowPopup)
                     return;
                 m_PopupUI.UpdatePowerPopupInfo(m_Character.m_ESkill, m_Character.m_ESkillKey.ToString(), m_Character.GetESkillLevel(), IsLevelUp);
                 break;
             case InspectableElementUI.PopupType.RSKILL:
-                if(m_Character.GetRSkillLevel()>=3 && !_ShowPopup)
+                if (m_Character.GetRSkillLevel() >= 3 && !_ShowPopup)
                     return;
                 m_PopupUI.UpdatePowerPopupInfo(m_Character.m_RSkill, m_Character.m_RSkillKey.ToString(), m_Character.GetRSkillLevel(), IsLevelUp);
                 break;
@@ -351,7 +381,7 @@ public class CharacterUI : MonoBehaviour
                 m_PopupUI.UpdateStatPopupInfo(Description, Name);
                 break;
         }
-        if(_ShowPopup)
+        if (_ShowPopup)
             ShowPopup();
     }
 
@@ -440,9 +470,9 @@ public class CharacterUI : MonoBehaviour
     {
         m_CastingAbilityText.text = Text;
     }
-    public void SetCharacterSprite(Sprite CharacterIcon) 
+    public void SetCharacterSprite(Sprite CharacterIcon)
     {
-        m_CharacterImage.sprite=CharacterIcon;
+        m_CharacterImage.sprite = CharacterIcon;
     }
     public void SetPowersSprites(Sprite PSprite, Sprite QSprite, Sprite WSprite, Sprite ESprite, Sprite RSprite, Sprite Summ1Sprite, Sprite Summ2Sprite)
     {

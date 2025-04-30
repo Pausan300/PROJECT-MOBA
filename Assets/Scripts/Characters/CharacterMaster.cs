@@ -859,6 +859,11 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
     //LLAMADA POR EVENTO EN LA ANIMACION DE AUTOATAQUE
     protected virtual void PerformAutoAttack()
     {
+        if (m_DesiredEnemy == null)
+        {
+            StopAttacking();
+            return;
+        }
 #if UNITY_EDITOR
         Debug.Log("ATTACKING - Since last auto: " + m_TimeSinceLastAuto);
         m_TimeSinceLastAuto = 0.0f;
