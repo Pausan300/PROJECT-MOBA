@@ -303,7 +303,6 @@ public class WilldurrCharacterController : CharacterMaster
     }
     IEnumerator StartQSkill()
     {
-        Debug.LogError(m_QSkill.GetThisIsSpecialLoad());
         m_QSkillStarted = true;
         yield return null;
         EndQSkill();

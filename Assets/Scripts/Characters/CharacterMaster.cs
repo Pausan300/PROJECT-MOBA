@@ -625,11 +625,13 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
             m_QSkill.AddActualLoads(-1);
             m_CharacterUI.m_QSkillLoadsText.text = m_QSkill.GetActualLoads().ToString();
 
-            if (m_QSkill.GetSpecialNextLoad())
-                m_CharacterUI.m_QSkillImage.sprite = m_QSkill.m_SpecialLoadSprite;
-            else
-                m_CharacterUI.m_QSkillImage.sprite = m_QSkill.m_Sprite;
-
+            if (m_WSkill.GetHaveSpecialLoad())
+            {
+                if (m_QSkill.GetSpecialNextLoad())
+                    m_CharacterUI.m_QSkillImage.sprite = m_QSkill.m_SpecialLoadSprite;
+                else
+                    m_CharacterUI.m_QSkillImage.sprite = m_QSkill.m_Sprite;
+            }
 
             m_IngameCharacterUI.SetLoadsInfo(m_QSkill);
 
@@ -703,11 +705,13 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
             m_WSkill.AddActualLoads(-1);
             m_CharacterUI.m_WSkillLoadsText.text = m_WSkill.GetActualLoads().ToString();
 
-            if (m_WSkill.GetSpecialNextLoad())
-                m_CharacterUI.m_WSkillImage.sprite = m_WSkill.m_SpecialLoadSprite;
-            else
-                m_CharacterUI.m_WSkillImage.sprite = m_WSkill.m_Sprite;
-
+            if (m_WSkill.GetHaveSpecialLoad())
+            {
+                if (m_WSkill.GetSpecialNextLoad())
+                    m_CharacterUI.m_WSkillImage.sprite = m_WSkill.m_SpecialLoadSprite;
+                else
+                    m_CharacterUI.m_WSkillImage.sprite = m_WSkill.m_Sprite;
+            }
 
             m_IngameCharacterUI.SetLoadsInfo(m_WSkill);
 
@@ -782,11 +786,13 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
             m_ESkill.AddActualLoads(-1);
             m_CharacterUI.m_ESkillLoadsText.text = m_ESkill.GetActualLoads().ToString();
 
-            if (m_ESkill.GetSpecialNextLoad())
-                m_CharacterUI.m_ESkillImage.sprite = m_ESkill.m_SpecialLoadSprite;
-            else
-                m_CharacterUI.m_ESkillImage.sprite = m_ESkill.m_Sprite;
-
+            if (m_ESkill.GetHaveSpecialLoad())
+            {
+                if (m_ESkill.GetSpecialNextLoad())
+                    m_CharacterUI.m_ESkillImage.sprite = m_ESkill.m_SpecialLoadSprite;
+                else
+                    m_CharacterUI.m_ESkillImage.sprite = m_ESkill.m_Sprite;
+            }
             m_IngameCharacterUI.SetLoadsInfo(m_ESkill);
 
             if (m_ESkill.GetActualLoads() + 1 == m_ESkill.GetMAXLoads())
@@ -859,10 +865,13 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
             m_RSkill.AddActualLoads(-1);
             m_CharacterUI.m_RSkillLoadsText.text = m_RSkill.GetActualLoads().ToString();
 
-            if (m_RSkill.GetSpecialNextLoad())
-                m_CharacterUI.m_RSkillImage.sprite = m_RSkill.m_SpecialLoadSprite;
-            else
-                m_CharacterUI.m_RSkillImage.sprite = m_RSkill.m_Sprite;
+            if (m_RSkill.GetHaveSpecialLoad())
+            {
+                if (m_RSkill.GetSpecialNextLoad())
+                    m_CharacterUI.m_RSkillImage.sprite = m_RSkill.m_SpecialLoadSprite;
+                else
+                    m_CharacterUI.m_RSkillImage.sprite = m_RSkill.m_Sprite;
+            }
 
             m_IngameCharacterUI.SetLoadsInfo(m_RSkill);
 
@@ -984,10 +993,6 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
                     m_CharacterUI.m_RSkillCdText.enabled = true;
                     break;
             }
-
-            m_CharacterUI.m_RSkillLoadsText.text = PowerOnCd.GetActualLoads().ToString();
-            m_CharacterUI.m_RSkillCdImage.fillAmount = 1.0f;
-            m_CharacterUI.m_RSkillCdText.enabled = true;
 
             PowerOnCd.SetIsOnCd(true);
             StartCoroutine(PowersCooldown(PowerOnCd));
