@@ -48,6 +48,7 @@ public class SkillDescriptionTooltip
 [CreateAssetMenu(menuName = "Powers/Skill")]
 public class Skill : Power
 {
+    [Header("Skill")]
     public SkillAttribute[] m_AttributeList;
     public SkillDescriptionDamage[] m_DescriptionDamageList;
     public string[] m_ExtraSpecifications;
@@ -79,7 +80,7 @@ public class Skill : Power
         SetCd(GetAttribute("Tiempo de recarga", Level));
     }
 
-    
+
 
     public bool GetUsingSkill()
     {

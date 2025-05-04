@@ -14,6 +14,7 @@ public class Power : ScriptableObject
         SUMMONER1,
         SUMMONER2
     }
+    [Header("General")]
     public PowerType m_PowerType;
     public string m_PowerName;
     public Sprite m_Sprite;
@@ -28,6 +29,7 @@ public class Power : ScriptableObject
     public bool m_HaveLoads = false;
     public int m_MAXLoads = 0;
     int m_ActualLoads = 0;
+    int m_LoadsUsed = 0;
 
     public void Tick(float Delta)
     {
@@ -94,6 +96,14 @@ public class Power : ScriptableObject
     public void AddActualLoads(int Loads)
     {
         m_ActualLoads += Loads;
+    }
+    public int GetLoadsUsed()
+    {
+        return m_LoadsUsed;
+    }
+    public void LoadUsed()
+    {
+        m_LoadsUsed++;
     }
     public int GetMAXLoads()
     {

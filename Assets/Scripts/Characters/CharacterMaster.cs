@@ -621,6 +621,7 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
         }
         else
         {
+            m_QSkill.LoadUsed();
             m_QSkill.AddActualLoads(-1);
             m_CharacterUI.m_QSkillLoadsText.text = m_QSkill.GetActualLoads().ToString();
 
@@ -690,6 +691,7 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
         }
         else
         {
+            m_WSkill.LoadUsed();
             m_WSkill.AddActualLoads(-1);
             m_CharacterUI.m_WSkillLoadsText.text = m_WSkill.GetActualLoads().ToString();
 
@@ -759,6 +761,8 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
         }
         else
         {
+
+            m_ESkill.LoadUsed();
             m_ESkill.AddActualLoads(-1);
             m_CharacterUI.m_ESkillLoadsText.text = m_ESkill.GetActualLoads().ToString();
 
@@ -828,6 +832,7 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
         }
         else
         {
+            m_RSkill.LoadUsed();
             m_RSkill.AddActualLoads(-1);
             m_CharacterUI.m_RSkillLoadsText.text = m_RSkill.GetActualLoads().ToString();
 
