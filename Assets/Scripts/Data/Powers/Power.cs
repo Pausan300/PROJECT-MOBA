@@ -30,6 +30,9 @@ public class Power : ScriptableObject
     public int m_MAXLoads = 0;
     int m_ActualLoads = 0;
     int m_LoadsUsed = 0;
+    public bool m_HaveSpecialLoad = false;
+    public int m_SpecialLoadEvery = 0;
+    public Sprite m_SpecialLoadSprite;
 
     public void Tick(float Delta)
     {
@@ -42,6 +45,7 @@ public class Power : ScriptableObject
         m_OnCd = false;
         m_Timer = 0.0f;
         m_ActualLoads = 0;
+        m_LoadsUsed = 0;
     }
 
     public float GetTimer()
@@ -104,6 +108,23 @@ public class Power : ScriptableObject
     public void LoadUsed()
     {
         m_LoadsUsed++;
+    }
+    public bool GetSpecialNextLoad()
+    {
+        return (m_LoadsUsed + 1) % m_SpecialLoadEvery == 0;
+    }
+    public bool GetHaveSpecialLoad()
+    {
+        return m_HaveSpecialLoad;
+    }
+    public bool GetThisIsSpecialLoad()
+    {
+        return (m_LoadsUsed + 1) % m_SpecialLoadEvery == 0;
+    }
+
+    public int GetSpecialLoadEvery()
+    {
+        return m_SpecialLoadEvery;
     }
     public int GetMAXLoads()
     {

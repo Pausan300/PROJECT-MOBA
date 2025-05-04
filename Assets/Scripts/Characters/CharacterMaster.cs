@@ -625,6 +625,14 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
             m_QSkill.AddActualLoads(-1);
             m_CharacterUI.m_QSkillLoadsText.text = m_QSkill.GetActualLoads().ToString();
 
+            if (m_QSkill.GetSpecialNextLoad())
+                m_CharacterUI.m_QSkillImage.sprite = m_QSkill.m_SpecialLoadSprite;
+            else
+                m_CharacterUI.m_QSkillImage.sprite = m_QSkill.m_Sprite;
+
+
+            m_IngameCharacterUI.SetLoadsInfo(m_QSkill);
+
             if (m_QSkill.GetActualLoads() + 1 == m_QSkill.GetMAXLoads())
             {
                 m_QSkill.SetTimer(m_QSkill.GetCd());
@@ -694,6 +702,14 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
             m_WSkill.LoadUsed();
             m_WSkill.AddActualLoads(-1);
             m_CharacterUI.m_WSkillLoadsText.text = m_WSkill.GetActualLoads().ToString();
+
+            if (m_WSkill.GetSpecialNextLoad())
+                m_CharacterUI.m_WSkillImage.sprite = m_WSkill.m_SpecialLoadSprite;
+            else
+                m_CharacterUI.m_WSkillImage.sprite = m_WSkill.m_Sprite;
+
+
+            m_IngameCharacterUI.SetLoadsInfo(m_WSkill);
 
             if (m_WSkill.GetActualLoads() + 1 == m_WSkill.GetMAXLoads())
             {
@@ -766,6 +782,13 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
             m_ESkill.AddActualLoads(-1);
             m_CharacterUI.m_ESkillLoadsText.text = m_ESkill.GetActualLoads().ToString();
 
+            if (m_ESkill.GetSpecialNextLoad())
+                m_CharacterUI.m_ESkillImage.sprite = m_ESkill.m_SpecialLoadSprite;
+            else
+                m_CharacterUI.m_ESkillImage.sprite = m_ESkill.m_Sprite;
+
+            m_IngameCharacterUI.SetLoadsInfo(m_ESkill);
+
             if (m_ESkill.GetActualLoads() + 1 == m_ESkill.GetMAXLoads())
             {
                 m_ESkill.SetTimer(m_ESkill.GetCd());
@@ -835,6 +858,13 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
             m_RSkill.LoadUsed();
             m_RSkill.AddActualLoads(-1);
             m_CharacterUI.m_RSkillLoadsText.text = m_RSkill.GetActualLoads().ToString();
+
+            if (m_RSkill.GetSpecialNextLoad())
+                m_CharacterUI.m_RSkillImage.sprite = m_RSkill.m_SpecialLoadSprite;
+            else
+                m_CharacterUI.m_RSkillImage.sprite = m_RSkill.m_Sprite;
+
+            m_IngameCharacterUI.SetLoadsInfo(m_RSkill);
 
             if (m_RSkill.GetActualLoads() + 1 == m_RSkill.GetMAXLoads())
             {
@@ -908,6 +938,8 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
             return;
 
         PowerOnCd.AddActualLoads(1);
+
+        m_IngameCharacterUI.SetLoadsInfo(PowerOnCd);
 
         switch (PowerOnCd.m_PowerType)
         {
@@ -1214,10 +1246,19 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
     public void SetQSkillLevelRpc()
     {
         m_QSkillLevel++;
-        m_QSkill.SetCooldown(m_QSkillLevel);
+        if (m_QSkill.GetHaveLoads())
+        {
+            m_QSkill.SetLoadCooldown(m_QSkillLevel);
 
-        if (m_QSkillLevel - 1 == 0)
-            PowersCooldownLoads(m_QSkill);
+            if (m_QSkillLevel - 1 == 0)
+                PowersCooldownLoads(m_QSkill);
+
+            m_IngameCharacterUI.SetLoadsInfo(m_QSkill);
+
+        }
+        else
+            m_QSkill.SetCooldown(m_QSkillLevel);
+
     }
     public int GetWSkillLevel()
     {
@@ -1227,10 +1268,17 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
     public void SetWSkillLevelRpc()
     {
         m_WSkillLevel++;
-        m_WSkill.SetCooldown(m_WSkillLevel);
+        if (m_WSkill.GetHaveLoads())
+        {
+            m_WSkill.SetLoadCooldown(m_WSkillLevel);
 
-        if (m_WSkillLevel - 1 == 0)
-            PowersCooldownLoads(m_WSkill);
+            if (m_WSkillLevel - 1 == 0)
+                PowersCooldownLoads(m_WSkill);
+
+            m_IngameCharacterUI.SetLoadsInfo(m_WSkill);
+        }
+        else
+            m_WSkill.SetCooldown(m_WSkillLevel);
     }
     public int GetESkillLevel()
     {
@@ -1240,10 +1288,18 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
     public void SetESkillLevelRpc()
     {
         m_ESkillLevel++;
-        m_ESkill.SetCooldown(m_ESkillLevel);
+        if (m_ESkill.GetHaveLoads())
+        {
+            m_ESkill.SetLoadCooldown(m_ESkillLevel);
 
-        if (m_ESkillLevel - 1 == 0)
-            PowersCooldownLoads(m_ESkill);
+            if (m_ESkillLevel - 1 == 0)
+                PowersCooldownLoads(m_ESkill);
+
+            m_IngameCharacterUI.SetLoadsInfo(m_ESkill);
+        }
+        else
+            m_ESkill.SetCooldown(m_ESkillLevel);
+
     }
     public int GetRSkillLevel()
     {
@@ -1253,9 +1309,17 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
     public void SetRSkillLevelRpc()
     {
         m_RSkillLevel++;
-        m_RSkill.SetCooldown(m_RSkillLevel);
+        if (m_RSkill.GetHaveLoads())
+        {
+            m_RSkill.SetLoadCooldown(m_RSkillLevel);
 
-        if (m_RSkillLevel - 1 == 0)
-            PowersCooldownLoads(m_RSkill);
+            if (m_RSkillLevel - 1 == 0)
+                PowersCooldownLoads(m_RSkill);
+
+            m_IngameCharacterUI.SetLoadsInfo(m_RSkill);
+        }
+        else
+            m_RSkill.SetCooldown(m_RSkillLevel);
+
     }
 }

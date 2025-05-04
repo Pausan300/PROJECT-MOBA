@@ -67,6 +67,16 @@ public class IngameCharacterUI : MonoBehaviour
     public List<HealthInstance> m_HealthInstanceList = new List<HealthInstance>();
 
 
+    [Header("LOADS INFO")]
+    public GameObject m_LoadsInfo;
+    public GameObject m_SkillLoadUIPrefab;
+    List<Image> m_SkillLoadsList;
+    public Color m_NotLoadColor;
+    public Color m_LoadColor;
+    public Color m_SpecialLoadColor;
+
+
+
     void Start()
     {
         m_CanvasRectTransform = m_WorldCanvas.GetComponent<RectTransform>();
@@ -169,7 +179,7 @@ public class IngameCharacterUI : MonoBehaviour
             TextMeshProUGUI l_TextMesh = l_HealthText.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
             l_TextMesh.text = Health.ToString("f0");
         }
-        
+
     }
 
     public void UpdateHealthManaBars(float HealthRounded, float MaxHealth, float ManaRounded, float MaxMana)
@@ -204,5 +214,39 @@ public class IngameCharacterUI : MonoBehaviour
     public void SetPlayerName(string Name)
     {
         m_PlayerNameText.text = Name;
+    }
+
+    public void SetLoadsInfo(Power _Power)
+    {
+        if (m_SkillLoadsList == null)
+        {
+            m_SkillLoadsList = new List<Image>();
+            for (int i = 0; i < _Power.m_MAXLoads; i++)
+            {
+                GameObject l_LoadGO = Instantiate(m_SkillLoadUIPrefab, m_LoadsInfo.transform);
+                m_SkillLoadsList.Add(l_LoadGO.GetComponent<Image>());
+            }
+        }
+        int l_Count = 1;
+        foreach (Image image in m_SkillLoadsList)
+        {
+            if (_Power.GetActualLoads() >= l_Count)
+            {
+                if (_Power.GetHaveSpecialLoad())
+                {
+                    if ((_Power.GetLoadsUsed() + l_Count) % _Power.GetSpecialLoadEvery() == 0)
+                        image.color = m_SpecialLoadColor;
+                    else
+                        image.color = m_LoadColor;
+                }
+                else
+                    image.color = m_LoadColor;
+            }
+            else
+                image.color = m_NotLoadColor;
+
+
+            l_Count++;
+        }
     }
 }
