@@ -1379,6 +1379,8 @@ public class RapatuCharacterController : CharacterMaster
         float l_Distance = Vector3.Distance(m_JumpRStartPosition, m_JumpREndPosition);
         m_RJumpSpeed = l_Distance / m_JumpRAirDuration;
         m_JumpingR = true;
+
+        GetCharacterStats().SetImmuneCC(true);
     }
 
 
@@ -1425,6 +1427,8 @@ public class RapatuCharacterController : CharacterMaster
             while (m_JumpingR)
                 yield return null;
 
+            GetCharacterStats().SetImmuneCC(false);
+
             if (i != l_JumpsNum - 1 && !m_RStopJumping)
                 m_RIndicator.SetActive(true);
 
@@ -1460,6 +1464,7 @@ public class RapatuCharacterController : CharacterMaster
         Destroy(m_RIndicator);
         StartCoroutine(RepeatRSaver());
         StartCoroutine(ResetTiggersSaverR());
+        GetCharacterStats().SetImmuneCC(false);
     }
     IEnumerator ResetTiggersSaverR()
     {

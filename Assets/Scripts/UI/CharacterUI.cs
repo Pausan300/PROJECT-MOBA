@@ -51,6 +51,11 @@ public class CharacterUI : MonoBehaviour
     public Slider m_ELevelPoints;
     public Slider m_RLevelPoints;
 
+    public TextMeshProUGUI m_QSkillLoadsText;
+    public TextMeshProUGUI m_WSkillLoadsText;
+    public TextMeshProUGUI m_ESkillLoadsText;
+    public TextMeshProUGUI m_RSkillLoadsText;
+
     [Header("EXPERIENCE")]
     public Slider m_ExpBar;
     public TextMeshProUGUI m_LevelText;
@@ -121,6 +126,7 @@ public class CharacterUI : MonoBehaviour
         HideCdTexts();
         HideTargetInfoUI();
         HidePopup();
+        HideLoadsTexts();
     }
     private void Update()
     {
@@ -428,6 +434,13 @@ public class CharacterUI : MonoBehaviour
         m_RSkillCdText.enabled = false;
         m_SumSpell1CdText.enabled = false;
         m_SumSpell2CdText.enabled = false;
+    }
+    public void HideLoadsTexts()
+    {
+        m_QSkillLoadsText.enabled = false;
+        m_WSkillLoadsText.enabled = false;
+        m_ESkillLoadsText.enabled = false;
+        m_RSkillLoadsText.enabled = false;
     }
     public void ShowLevelUpSkillButtons()
     {

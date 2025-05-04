@@ -64,11 +64,13 @@ public class CharacterStats : NetworkBehaviour
 
 
     [Header("Buffs")]
+    bool m_ImmuneCC = false;
     bool m_Stuned = false;
     bool m_Immobilized = false;
     bool m_Scared = false;
     bool m_CanSoulTheft = false;
     WilldurrCharacterController m_Willdurr; // Willdur esta aqui para el buff de SoulThedtBuff. Es necessario que sea una variable.
+    float m_Omnivamp = 0;
 
     void Awake()
     {
@@ -411,5 +413,25 @@ public class CharacterStats : NetworkBehaviour
     {
         m_CanSoulTheft = CanSoulTheft;
         m_Willdurr = Willdurr;
+    }
+    public float GetOmnivamp()
+    {
+        return m_Omnivamp;
+    }
+    public void SetOmnivamp(float Omnivamp)
+    {
+        m_Omnivamp = Omnivamp;
+    }
+    public void AddOmnivamp(float Omnivamp)
+    {
+        m_Omnivamp += Omnivamp;
+    }
+    public bool GetImmuneCC()
+    {
+        return m_ImmuneCC;
+    }
+    public void SetImmuneCC(bool ImmuneCC)
+    {
+        m_ImmuneCC = ImmuneCC;
     }
 }

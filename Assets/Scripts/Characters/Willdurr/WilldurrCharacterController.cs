@@ -15,6 +15,8 @@ public class WilldurrCharacterController : CharacterMaster
     public PassiveWilldurrBuff m_PWilldurrBuff;
     public float m_PTimeToTheftSoul = 1.5f;
     int m_PSouls;
+
+    float m_PAttackDamageAdded = 0;
     public SoulsWithEnemyType[] m_SoulsWithEnemysTypes;
 
     [Tooltip("Fase 1 cuando llegas a 25 almas.")]
@@ -802,7 +804,9 @@ public class WilldurrCharacterController : CharacterMaster
             StopMovement();
         SetAnimatorTrigger("IsUsingR");
         SetDisabled(true);
+        GetCharacterStats().SetImmuneCC(true);
         yield return new WaitForSeconds(m_EChannelingTime);
+        GetCharacterStats().SetImmuneCC(false);
         SetDisabled(false);
         base.RSkill();
         GetCharacterUI().HideCastingUI();
@@ -1044,33 +1048,37 @@ public class WilldurrCharacterController : CharacterMaster
         if (m_PSouls < 25 && m_PSouls + l_AddedSouls >= 25)
         {
             GetCharacterStats().AddAttackDamage(m_AttackDamageToAddF1);
+            m_PAttackDamageAdded = m_AttackDamageToAddF1;
         }
 
         if (m_PSouls < 50 && m_PSouls + l_AddedSouls >= 50)
         {
-            // Omnisuccion 5% -->m_OmnisuctionToAddF2
+            GetCharacterStats().AddOmnivamp(m_OmnisuctionToAddF2);
         }
 
         if (m_PSouls < 75 && m_PSouls + l_AddedSouls >= 75)
         {
             GetCharacterStats().AddAttackDamage(m_AttackDamageToAddF3);
+            m_PAttackDamageAdded += m_AttackDamageToAddF3;
         }
 
         if (m_PSouls < 100 && m_PSouls + l_AddedSouls >= 100)
         {
-            // Omnisuccion 15% -->m_OmnisuctionToAddF4
+            GetCharacterStats().AddOmnivamp(m_OmnisuctionToAddF4);
         }
 
         if (m_PSouls + l_AddedSouls > 100)
         {
-            float l_ExtraValue = ((int)(m_PSouls - 100) / 5) - ((int)(m_PSouls + l_AddedSouls - 100) / 5);
+            float l_ExtraValue = ((int)(m_PSouls + l_AddedSouls - 100) / 5) - ((int)(m_PSouls - 100) / 5);
 
-            // Omnisuccion 1% * l_ExtraValue --> m_OmnisuctionToAddF5
+            GetCharacterStats().AddOmnivamp(m_OmnisuctionToAddF5);
             GetCharacterStats().AddAttackDamage(m_AttackDamageToAddF5 * l_ExtraValue);
+            m_PAttackDamageAdded += m_AttackDamageToAddF5 * l_ExtraValue;
         }
 
         m_PSouls += l_AddedSouls;
     }
+
     protected override void PerformAutoAttack()
     {
         if (m_DesiredEnemy == null)
@@ -1082,11 +1090,13 @@ public class WilldurrCharacterController : CharacterMaster
         if (m_DesiredEnemy.TryGetComponent(out BuffableEntity Buffs))
             Buffs.AddBuff(m_PSoulTheftBuff.InitializeBuff(this, m_PTimeToTheftSoul, m_DesiredEnemy.gameObject));
 
-        m_DesiredEnemy.GetComponent<ITakeDamage>().TakeDamage(m_CharacterStats.GetAttackDamage(), m_CharacterStats.GetAbilityPower(), m_CharacterStats.GetPlayerName());
+        base.PerformAutoAttack();
     }
     public override void LevelUpRpc()
     {
         base.LevelUpRpc();
+
+        GetCharacterStats().AddAttackDamage(m_PAttackDamageAdded);
     }
 
     IEnumerator DisableForDuration(float Duration)

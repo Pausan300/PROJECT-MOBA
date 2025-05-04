@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [Serializable]
-public class SkillAttribute 
+public class SkillAttribute
 {
     public string m_AttributeId;
     public bool m_IsPct;
@@ -17,7 +17,7 @@ public class SkillAttribute
 
 
 [Serializable]
-public class SkillDescriptionDamage 
+public class SkillDescriptionDamage
 {
     public string m_DescriptionId;
     public TextColors.TextColorTypes m_Color;
@@ -42,10 +42,10 @@ public class SkillDescriptionTooltip
     public string m_ToolTip;
     public SkillDescriptionTooltipTypes m_AtributeType;
     public TextColors.TextColorTypes m_Color;
-    
+
 }
 
-[CreateAssetMenu(menuName="Powers/Skill")]
+[CreateAssetMenu(menuName = "Powers/Skill")]
 public class Skill : Power
 {
     public SkillAttribute[] m_AttributeList;
@@ -55,6 +55,7 @@ public class Skill : Power
     public float m_SkillDisabledTime;
     public bool m_CancelableWithMouseClick;
     bool m_UsingSkill;
+
 
     public override void SetInitStats()
     {
@@ -73,32 +74,39 @@ public class Skill : Power
         SetCd(GetAttribute("Enfriamiento", Level));
     }
 
+    public void SetLoadCooldown(int Level)
+    {
+        SetCd(GetAttribute("Tiempo de recarga", Level));
+    }
+
+    
+
     public bool GetUsingSkill()
     {
         return m_UsingSkill;
     }
     public void SetUsingSkill(bool True)
     {
-        m_UsingSkill=True;
+        m_UsingSkill = True;
     }
 
-    public float GetAttribute(string Id, int Level) 
+    public float GetAttribute(string Id, int Level)
     {
-        int l_Index=Level-1;
-        if(l_Index<0)
-            l_Index=0;
-        foreach(SkillAttribute Attribute in m_AttributeList) 
+        int l_Index = Level - 1;
+        if (l_Index < 0)
+            l_Index = 0;
+        foreach (SkillAttribute Attribute in m_AttributeList)
         {
-            if(Attribute.m_AttributeId==Id)
+            if (Attribute.m_AttributeId == Id)
                 return Attribute.m_LevelScaling[l_Index];
         }
         return 0.0f;
     }
-    public float GetAttribute(string Id) 
+    public float GetAttribute(string Id)
     {
-        foreach(SkillAttribute Attribute in m_AttributeList) 
+        foreach (SkillAttribute Attribute in m_AttributeList)
         {
-            if(Attribute.m_AttributeId==Id)
+            if (Attribute.m_AttributeId == Id)
                 return Attribute.m_LevelScaling[0];
         }
         return 0.0f;

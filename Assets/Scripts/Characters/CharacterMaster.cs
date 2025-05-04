@@ -570,121 +570,277 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
 
     void QSkillInput(InputAction.CallbackContext obj)
     {
-        if (m_QSkillLevel <= 0)
+        if (m_QSkill.GetHaveLoads())
         {
-            Debug.Log("Q STILL LOCKED BOBI");
-        }
-        else if (m_QSkill.GetIsOnCd())
-        {
-            Debug.Log("Q STILL ON COOLDOWN BOBI");
-        }
-        else if (m_CharacterStats.GetCurrentMana() < m_QSkill.GetMana(m_QSkillLevel))
-        {
-            Debug.Log("NOT ENOUGH MANA TO USE Q");
+            if (m_QSkillLevel <= 0)
+            {
+                Debug.Log("Q STILL LOCKED BOBI");
+            }
+            else if (m_QSkill.GetActualLoads() <= 0)
+            {
+                Debug.Log("Q DON'T HAVE LOADS, STILL ON COOLDOWN BOBI");
+            }
+            else if (m_CharacterStats.GetCurrentMana() < m_QSkill.GetMana(m_QSkillLevel))
+            {
+                Debug.Log("NOT ENOUGH MANA TO USE Q");
+            }
+            else
+            {
+                m_InputBufferController.AddInput(new InputBufferAction(InputBufferAction.Action.QPRESSED, m_QInputDelegate));
+            }
         }
         else
         {
-            m_InputBufferController.AddInput(new InputBufferAction(InputBufferAction.Action.QPRESSED, m_QInputDelegate));
+            if (m_QSkillLevel <= 0)
+            {
+                Debug.Log("Q STILL LOCKED BOBI");
+            }
+            else if (m_QSkill.GetIsOnCd())
+            {
+                Debug.Log("Q STILL ON COOLDOWN BOBI");
+            }
+            else if (m_CharacterStats.GetCurrentMana() < m_QSkill.GetMana(m_QSkillLevel))
+            {
+                Debug.Log("NOT ENOUGH MANA TO USE Q");
+            }
+            else
+            {
+                m_InputBufferController.AddInput(new InputBufferAction(InputBufferAction.Action.QPRESSED, m_QInputDelegate));
+            }
         }
     }
     protected virtual void QSkill()
     {
-        m_QSkill.SetTimer(m_QSkill.GetCd());
-        m_CharacterUI.m_QSkillCdImage.fillAmount = 1.0f;
-        m_CharacterUI.m_QSkillCdText.enabled = true;
+        if (!m_QSkill.GetHaveLoads())
+        {
+            m_QSkill.SetTimer(m_QSkill.GetCd());
+            m_CharacterUI.m_QSkillCdImage.fillAmount = 1.0f;
+            m_CharacterUI.m_QSkillCdText.enabled = true;
+            m_QSkill.SetIsOnCd(true);
+            StartCoroutine(PowersCooldown(m_QSkill));
+        }
+        else
+        {
+            m_QSkill.AddActualLoads(-1);
+            m_CharacterUI.m_QSkillLoadsText.text = m_QSkill.GetActualLoads().ToString();
+
+            if (m_QSkill.GetActualLoads() + 1 == m_QSkill.GetMAXLoads())
+            {
+                m_QSkill.SetTimer(m_QSkill.GetCd());
+                m_CharacterUI.m_QSkillCdImage.fillAmount = 1.0f;
+                m_CharacterUI.m_QSkillCdText.enabled = true;
+                m_QSkill.SetIsOnCd(true);
+                StartCoroutine(PowersCooldown(m_QSkill));
+            }
+        }
         m_CharacterStats.SetCurrentManaRpc(m_CharacterStats.GetCurrentMana() - m_QSkill.GetMana(m_QSkillLevel));
-        m_QSkill.SetIsOnCd(true);
-        StartCoroutine(PowersCooldown(m_QSkill));
         StopRecall();
     }
 
     void WSkillInput(InputAction.CallbackContext obj)
     {
-        if (m_WSkillLevel <= 0)
+        if (m_WSkill.GetHaveLoads())
         {
-            Debug.Log("W STILL LOCKED BOBI");
-        }
-        else if (m_WSkill.GetIsOnCd())
-        {
-            Debug.Log("W STILL ON COOLDOWN BOBI");
-        }
-        else if (m_CharacterStats.GetCurrentMana() < m_WSkill.GetMana(m_WSkillLevel))
-        {
-            Debug.Log("NOT ENOUGH MANA TO USE W");
+            if (m_WSkillLevel <= 0)
+            {
+                Debug.Log("W STILL LOCKED BOBI");
+            }
+            else if (m_WSkill.GetActualLoads() <= 0)
+            {
+                Debug.Log("W DON'T HAVE LOADS, STILL ON COOLDOWN BOBI");
+            }
+            else if (m_CharacterStats.GetCurrentMana() < m_WSkill.GetMana(m_WSkillLevel))
+            {
+                Debug.Log("NOT ENOUGH MANA TO USE W");
+            }
+            else
+            {
+                m_InputBufferController.AddInput(new InputBufferAction(InputBufferAction.Action.WPRESSED, m_WInputDelegate));
+            }
         }
         else
         {
-            m_InputBufferController.AddInput(new InputBufferAction(InputBufferAction.Action.WPRESSED, m_WInputDelegate));
+            if (m_WSkillLevel <= 0)
+            {
+                Debug.Log("W STILL LOCKED BOBI");
+            }
+            else if (m_WSkill.GetIsOnCd())
+            {
+                Debug.Log("W STILL ON COOLDOWN BOBI");
+            }
+            else if (m_CharacterStats.GetCurrentMana() < m_WSkill.GetMana(m_WSkillLevel))
+            {
+                Debug.Log("NOT ENOUGH MANA TO USE W");
+            }
+            else
+            {
+                m_InputBufferController.AddInput(new InputBufferAction(InputBufferAction.Action.WPRESSED, m_WInputDelegate));
+            }
         }
     }
     protected virtual void WSkill()
     {
-        m_WSkill.SetTimer(m_WSkill.GetCd());
-        m_CharacterUI.m_WSkillCdImage.fillAmount = 1.0f;
-        m_CharacterUI.m_WSkillCdText.enabled = true;
+        if (!m_WSkill.GetHaveLoads())
+        {
+            m_WSkill.SetTimer(m_WSkill.GetCd());
+            m_CharacterUI.m_WSkillCdImage.fillAmount = 1.0f;
+            m_CharacterUI.m_WSkillCdText.enabled = true;
+            m_WSkill.SetIsOnCd(true);
+            StartCoroutine(PowersCooldown(m_WSkill));
+        }
+        else
+        {
+            m_WSkill.AddActualLoads(-1);
+            m_CharacterUI.m_WSkillLoadsText.text = m_WSkill.GetActualLoads().ToString();
+
+            if (m_WSkill.GetActualLoads() + 1 == m_WSkill.GetMAXLoads())
+            {
+                m_WSkill.SetTimer(m_WSkill.GetCd());
+                m_CharacterUI.m_WSkillCdImage.fillAmount = 1.0f;
+                m_CharacterUI.m_WSkillCdText.enabled = true;
+                m_WSkill.SetIsOnCd(true);
+                StartCoroutine(PowersCooldown(m_WSkill));
+            }
+        }
         m_CharacterStats.SetCurrentManaRpc(m_CharacterStats.GetCurrentMana() - m_WSkill.GetMana(m_WSkillLevel));
-        m_WSkill.SetIsOnCd(true);
-        StartCoroutine(PowersCooldown(m_WSkill));
         StopRecall();
     }
 
     void ESkillInput(InputAction.CallbackContext obj)
     {
-        if (m_ESkillLevel <= 0)
+        if (m_ESkill.GetHaveLoads())
         {
-            Debug.Log("E STILL LOCKED BOBI");
-        }
-        else if (m_ESkill.GetIsOnCd())
-        {
-            Debug.Log("E STILL ON COOLDOWN BOBI");
-        }
-        else if (m_CharacterStats.GetCurrentMana() < m_ESkill.GetMana(m_ESkillLevel))
-        {
-            Debug.Log("NOT ENOUGH MANA TO USE E");
+            if (m_ESkillLevel <= 0)
+            {
+                Debug.Log("E STILL LOCKED BOBI");
+            }
+            else if (m_ESkill.GetActualLoads() <= 0)
+            {
+                Debug.Log("E DON'T HAVE LOADS, STILL ON COOLDOWN BOBI");
+            }
+            else if (m_CharacterStats.GetCurrentMana() < m_ESkill.GetMana(m_ESkillLevel))
+            {
+                Debug.Log("NOT ENOUGH MANA TO USE E");
+            }
+            else
+            {
+                m_InputBufferController.AddInput(new InputBufferAction(InputBufferAction.Action.EPRESSED, m_EInputDelegate));
+            }
         }
         else
         {
-            m_InputBufferController.AddInput(new InputBufferAction(InputBufferAction.Action.EPRESSED, m_EInputDelegate));
+            if (m_ESkillLevel <= 0)
+            {
+                Debug.Log("E STILL LOCKED BOBI");
+            }
+            else if (m_ESkill.GetIsOnCd())
+            {
+                Debug.Log("E STILL ON COOLDOWN BOBI");
+            }
+            else if (m_CharacterStats.GetCurrentMana() < m_ESkill.GetMana(m_ESkillLevel))
+            {
+                Debug.Log("NOT ENOUGH MANA TO USE E");
+            }
+            else
+            {
+                m_InputBufferController.AddInput(new InputBufferAction(InputBufferAction.Action.EPRESSED, m_EInputDelegate));
+            }
         }
     }
     protected virtual void ESkill()
     {
-        m_ESkill.SetTimer(m_ESkill.GetCd());
-        m_CharacterUI.m_ESkillCdImage.fillAmount = 1.0f;
-        m_CharacterUI.m_ESkillCdText.enabled = true;
+        if (!m_ESkill.GetHaveLoads())
+        {
+            m_ESkill.SetTimer(m_ESkill.GetCd());
+            m_CharacterUI.m_ESkillCdImage.fillAmount = 1.0f;
+            m_CharacterUI.m_ESkillCdText.enabled = true;
+            m_ESkill.SetIsOnCd(true);
+            StartCoroutine(PowersCooldown(m_ESkill));
+        }
+        else
+        {
+            m_ESkill.AddActualLoads(-1);
+            m_CharacterUI.m_ESkillLoadsText.text = m_ESkill.GetActualLoads().ToString();
+
+            if (m_ESkill.GetActualLoads() + 1 == m_ESkill.GetMAXLoads())
+            {
+                m_ESkill.SetTimer(m_ESkill.GetCd());
+                m_CharacterUI.m_ESkillCdImage.fillAmount = 1.0f;
+                m_CharacterUI.m_ESkillCdText.enabled = true;
+                m_ESkill.SetIsOnCd(true);
+                StartCoroutine(PowersCooldown(m_ESkill));
+            }
+        }
         m_CharacterStats.SetCurrentManaRpc(m_CharacterStats.GetCurrentMana() - m_ESkill.GetMana(m_ESkillLevel));
-        m_ESkill.SetIsOnCd(true);
-        StartCoroutine(PowersCooldown(m_ESkill));
         StopRecall();
     }
 
     void RSkillInput(InputAction.CallbackContext obj)
     {
-        if (m_RSkillLevel <= 0)
+        if (m_RSkill.GetHaveLoads())
         {
-            Debug.Log("R STILL LOCKED BOBI");
-        }
-        else if (m_RSkill.GetIsOnCd())
-        {
-            Debug.Log("R STILL ON COOLDOWN BOBI");
-        }
-        else if (m_CharacterStats.GetCurrentMana() < m_RSkill.GetMana(m_RSkillLevel))
-        {
-            Debug.Log("NOT ENOUGH MANA TO USE R");
+            if (m_RSkillLevel <= 0)
+            {
+                Debug.Log("R STILL LOCKED BOBI");
+            }
+            else if (m_RSkill.GetActualLoads() <= 0)
+            {
+                Debug.Log("R DON'T HAVE LOADS, STILL ON COOLDOWN BOBI");
+            }
+            else if (m_CharacterStats.GetCurrentMana() < m_RSkill.GetMana(m_RSkillLevel))
+            {
+                Debug.Log("NOT ENOUGH MANA TO USE R");
+            }
+            else
+            {
+                m_InputBufferController.AddInput(new InputBufferAction(InputBufferAction.Action.RPRESSED, m_RInputDelegate));
+            }
         }
         else
         {
-            m_InputBufferController.AddInput(new InputBufferAction(InputBufferAction.Action.RPRESSED, m_RInputDelegate));
+            if (m_RSkillLevel <= 0)
+            {
+                Debug.Log("R STILL LOCKED BOBI");
+            }
+            else if (m_RSkill.GetIsOnCd())
+            {
+                Debug.Log("R STILL ON COOLDOWN BOBI");
+            }
+            else if (m_CharacterStats.GetCurrentMana() < m_RSkill.GetMana(m_RSkillLevel))
+            {
+                Debug.Log("NOT ENOUGH MANA TO USE R");
+            }
+            else
+            {
+                m_InputBufferController.AddInput(new InputBufferAction(InputBufferAction.Action.RPRESSED, m_RInputDelegate));
+            }
         }
     }
     protected virtual void RSkill()
     {
-        m_RSkill.SetTimer(m_RSkill.GetCd());
-        m_CharacterUI.m_RSkillCdImage.fillAmount = 1.0f;
-        m_CharacterUI.m_RSkillCdText.enabled = true;
+        if (m_QSkill.GetHaveLoads())
+        {
+            m_RSkill.SetTimer(m_RSkill.GetCd());
+            m_CharacterUI.m_RSkillCdImage.fillAmount = 1.0f;
+            m_CharacterUI.m_RSkillCdText.enabled = true;
+            m_RSkill.SetIsOnCd(true);
+            StartCoroutine(PowersCooldown(m_RSkill));
+        }
+        else
+        {
+            m_RSkill.AddActualLoads(-1);
+            m_CharacterUI.m_RSkillLoadsText.text = m_RSkill.GetActualLoads().ToString();
+
+            if (m_RSkill.GetActualLoads() + 1 == m_RSkill.GetMAXLoads())
+            {
+                m_RSkill.SetTimer(m_RSkill.GetCd());
+                m_CharacterUI.m_RSkillCdImage.fillAmount = 1.0f;
+                m_CharacterUI.m_RSkillCdText.enabled = true;
+                m_RSkill.SetIsOnCd(true);
+                StartCoroutine(PowersCooldown(m_RSkill));
+            }
+        }
         m_CharacterStats.SetCurrentManaRpc(m_CharacterStats.GetCurrentMana() - m_RSkill.GetMana(m_RSkillLevel));
-        m_RSkill.SetIsOnCd(true);
-        StartCoroutine(PowersCooldown(m_RSkill));
         StopRecall();
     }
 
@@ -738,6 +894,69 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
             m_CharacterUI.UpdatePowerUI(PowerOnCd.m_PowerType, PowerOnCd.GetTimer(), PowerOnCd.GetCd(), PowerOnCd.GetZeroCooldown());
             yield return null;
         }
+        PowersCooldownLoads(PowerOnCd);
+    }
+
+    void PowersCooldownLoads(Power PowerOnCd)
+    {
+        if (!PowerOnCd.GetHaveLoads())
+            return;
+
+        PowerOnCd.AddActualLoads(1);
+
+        switch (PowerOnCd.m_PowerType)
+        {
+            case Power.PowerType.QSKILL:
+                m_CharacterUI.m_QSkillLoadsText.enabled = true;
+                m_CharacterUI.m_QSkillLoadsText.text = PowerOnCd.GetActualLoads().ToString();
+                break;
+            case Power.PowerType.WSKILL:
+                m_CharacterUI.m_WSkillLoadsText.enabled = true;
+                m_CharacterUI.m_WSkillLoadsText.text = PowerOnCd.GetActualLoads().ToString();
+                break;
+            case Power.PowerType.ESKILL:
+                m_CharacterUI.m_ESkillLoadsText.enabled = true;
+                m_CharacterUI.m_ESkillLoadsText.text = PowerOnCd.GetActualLoads().ToString();
+                break;
+            case Power.PowerType.RSKILL:
+                m_CharacterUI.m_RSkillLoadsText.enabled = true;
+                m_CharacterUI.m_RSkillLoadsText.text = PowerOnCd.GetActualLoads().ToString();
+                break;
+        }
+
+        if (PowerOnCd.GetActualLoads() != PowerOnCd.GetMAXLoads())
+        {
+            PowerOnCd.SetTimer(PowerOnCd.GetCd());
+
+            switch (PowerOnCd.m_PowerType)
+            {
+                case Power.PowerType.QSKILL:
+                    m_CharacterUI.m_QSkillCdImage.fillAmount = 1.0f;
+                    m_CharacterUI.m_QSkillCdText.enabled = true;
+                    break;
+                case Power.PowerType.WSKILL:
+                    m_CharacterUI.m_WSkillCdImage.fillAmount = 1.0f;
+                    m_CharacterUI.m_WSkillCdText.enabled = true;
+                    break;
+                case Power.PowerType.ESKILL:
+                    m_CharacterUI.m_ESkillCdImage.fillAmount = 1.0f;
+                    m_CharacterUI.m_ESkillCdText.enabled = true;
+                    break;
+                case Power.PowerType.RSKILL:
+                    m_CharacterUI.m_RSkillCdImage.fillAmount = 1.0f;
+                    m_CharacterUI.m_RSkillCdText.enabled = true;
+                    break;
+            }
+
+            m_CharacterUI.m_RSkillLoadsText.text = PowerOnCd.GetActualLoads().ToString();
+            m_CharacterUI.m_RSkillCdImage.fillAmount = 1.0f;
+            m_CharacterUI.m_RSkillCdText.enabled = true;
+
+            PowerOnCd.SetIsOnCd(true);
+            StartCoroutine(PowersCooldown(PowerOnCd));
+        }
+
+
     }
     void UseRecall(InputAction.CallbackContext obj)
     {
@@ -803,6 +1022,9 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
     }
     public void TakeDamage(float PhysDamage, float MagicDamage, string SourceId)
     {
+        if (GetCharacterStats().GetImmuneCC())
+            return;
+
         float l_TotalPhysDamage = PhysDamage / (1.0f + m_CharacterStats.GetArmor() / 100.0f);
         float l_TotalMagicDamage = MagicDamage / (1.0f + m_CharacterStats.GetMagicRes() / 100.0f);
         if (PhysDamage > 0.0f)
@@ -988,6 +1210,9 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
     {
         m_QSkillLevel++;
         m_QSkill.SetCooldown(m_QSkillLevel);
+
+        if (m_QSkillLevel - 1 == 0)
+            PowersCooldownLoads(m_QSkill);
     }
     public int GetWSkillLevel()
     {
@@ -998,6 +1223,9 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
     {
         m_WSkillLevel++;
         m_WSkill.SetCooldown(m_WSkillLevel);
+
+        if (m_WSkillLevel - 1 == 0)
+            PowersCooldownLoads(m_WSkill);
     }
     public int GetESkillLevel()
     {
@@ -1008,6 +1236,9 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
     {
         m_ESkillLevel++;
         m_ESkill.SetCooldown(m_ESkillLevel);
+
+        if (m_ESkillLevel - 1 == 0)
+            PowersCooldownLoads(m_ESkill);
     }
     public int GetRSkillLevel()
     {
@@ -1018,5 +1249,8 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
     {
         m_RSkillLevel++;
         m_RSkill.SetCooldown(m_RSkillLevel);
+
+        if (m_RSkillLevel - 1 == 0)
+            PowersCooldownLoads(m_RSkill);
     }
 }
