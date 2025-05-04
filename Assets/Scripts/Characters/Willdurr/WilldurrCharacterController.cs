@@ -33,11 +33,31 @@ public class WilldurrCharacterController : CharacterMaster
     public float m_OmnisuctionToAddF5 = 1;
 
     [Header("Q SKILL")]
-
+    public GameObject m_QHiboxGameObject;
     public float m_JumpRangeQ = 150f;
+    public float m_JumpSpeedQ = 900f;
 
+    public float m_QPercentageBonusAttackDamageFirst = 85;
+    public float m_QPercentageBonusAttackDamageSecond = 95;
+
+    [Header("Q1")]
+    float m_AngleQ1ToDoDamage = 160;
+    public float m_InitialRadiusQ1 = 100;
+    public float m_FinalRadiusQ1 = 250;
+
+    [Header("Q2")]
+    public float m_InitialRadiusQ2 = 100;
+    public float m_FinalRadiusQ2 = 350;
+
+
+
+    float m_ActualHitboxRadius = 0;
+    float l_QDistanceTraveled = 0f;
     bool m_SaverCanDoQ = true;
     bool m_QSkillStarted;
+    Vector3 m_InitialPositionQ;
+    bool m_JumpingQ = false;
+    List<Collider> m_CollidersHitQZone = new List<Collider>();
 
     [Header("W SKILL")]
     public GameObject m_WilldurrWScythePrefab;
@@ -58,9 +78,9 @@ public class WilldurrCharacterController : CharacterMaster
 
 
     [UnityEngine.Range(0f, 100f)]
-    public float m_PercentageBonusAttackDamageFirst = 55;
+    public float m_WPercentageBonusAttackDamageFirst = 55;
     [UnityEngine.Range(0f, 100f)]
-    public float m_PercentageBonusAttackDamageSecond = 55;
+    public float m_WPercentageBonusAttackDamageSecond = 55;
 
     bool m_WReactived = false;
     float m_WReactivedSpeed = 0;
@@ -71,6 +91,7 @@ public class WilldurrCharacterController : CharacterMaster
     float m_WTimer = 0;
     Coroutine m_WCoroutine;
     Vector3 m_TargetPositionW;
+    List<Collider> m_CollidersHitWZone = new List<Collider>();
 
     [Header("E SKILL")]
     public FearBuff m_FearBuffE;
@@ -98,7 +119,6 @@ public class WilldurrCharacterController : CharacterMaster
     bool m_SaverCanDoE = true;
     bool m_ESkillStarted;
     Coroutine m_ECoroutine;
-    List<Collider> m_CollidersHitWZone = new List<Collider>();
 
     [Header("R SKILL")]
     public SpeedBuff m_SlowDownRBuff;
@@ -150,6 +170,7 @@ public class WilldurrCharacterController : CharacterMaster
         m_FearZoneE.SetActive(false);
         m_PSouls = 0;
         GetComponent<BuffableEntity>().AddBuff(m_PWilldurrBuff.InitializeBuff(m_PSouls, gameObject));
+        m_QHiboxGameObject.SetActive(false);
     }
     protected override void Update()
     {
@@ -230,6 +251,7 @@ public class WilldurrCharacterController : CharacterMaster
             }
         }
 
+        UpdateQSkill();
         UpdateWSkill();
         UpdateESkill();
         UpdateRSkill();
@@ -303,16 +325,109 @@ public class WilldurrCharacterController : CharacterMaster
     }
     IEnumerator StartQSkill()
     {
+        m_CollidersHitQZone = new List<Collider>();
+        LookAt(((GetPositionWithMouse() - transform.position).normalized * (m_JumpRangeQ / 100)) + transform.position);
+        m_InitialPositionQ = transform.position;
+        m_JumpingQ = true;
+
+
+        StopAttacking();
+        if (!GetIsLookingForPosition())
+            StopMovement();
+
+        if (m_QSkill.GetThisIsSpecialLoad())
+            m_ActualHitboxRadius = m_InitialRadiusQ2;
+        else
+            m_ActualHitboxRadius = m_InitialRadiusQ1;
+        SetDisabled(true);
+
+        if (m_QSkill.GetThisIsSpecialLoad())
+            SetAnimatorTrigger("IsUsingQ2");
+        else
+            SetAnimatorTrigger("IsUsingQ1");
+        l_QDistanceTraveled = 0f;
+        m_QHiboxGameObject.SetActive(true);
         m_QSkillStarted = true;
         yield return null;
-        EndQSkill();
+    }
+    void UpdateQSkill()
+    {
+        if (!m_QSkill.GetUsingSkill() && !m_QSkillStarted)
+            return;
+
+        float l_DistancePercent = 1;
+
+        if (m_JumpingQ)
+        {
+            float l_Desplazamiento = (m_JumpSpeedQ / 100f) * Time.deltaTime;
+            transform.Translate(Vector3.forward * l_Desplazamiento);
+            l_QDistanceTraveled += l_Desplazamiento;
+
+            float l_DistanciaMaxima = m_JumpRangeQ / 100f;
+            l_DistancePercent = l_QDistanceTraveled / l_DistanciaMaxima;
+
+            if (l_QDistanceTraveled >= l_DistanciaMaxima)
+            {
+                m_JumpingQ = false;
+                m_QHiboxGameObject.SetActive(false);
+                EndQSkill();
+            }
+        }
+
+
+        if (m_QSkill.GetThisIsSpecialLoad())
+            m_ActualHitboxRadius = m_InitialRadiusQ2 + ((m_FinalRadiusQ2 - m_InitialRadiusQ2) * l_DistancePercent);
+        else
+            m_ActualHitboxRadius = m_InitialRadiusQ1 + ((m_FinalRadiusQ1 - m_InitialRadiusQ1) * l_DistancePercent);
+
+        m_QHiboxGameObject.transform.localScale = new Vector3(m_ActualHitboxRadius / 100, m_ActualHitboxRadius / 100, m_ActualHitboxRadius / 100);
+    }
+    public void OnTriggerEnterQ(Collider Entity)
+    {
+        if (Entity.GetComponent<CharacterMaster>())
+            return;
+
+        if (m_QSkill.GetThisIsSpecialLoad())
+        {
+            if (!m_CollidersHitQZone.Contains(Entity) && Entity.TryGetComponent(out ITakeDamage Enemy))
+            {
+                float l_Damage = (m_QSkill.GetAttribute("Daño 3r ataque", GetQSkillLevel())) + (m_QPercentageBonusAttackDamageSecond / 100) * GetCharacterStats().GetBonusAttackDamage();
+                Debug.Log("TAKEN " + l_Damage + " DAMAGE");
+                Enemy.TakeDamage(l_Damage, 0, m_CharacterStats.GetPlayerName());
+                m_CollidersHitQZone.Add(Entity);
+            }
+        }
+        else
+        {
+            Vector3 l_EntityDirection = (Entity.transform.position - transform.position).normalized;
+            float l_Angle = Vector3.Angle(transform.forward, l_EntityDirection);
+
+            if (Vector3.Angle(transform.forward, l_EntityDirection) < m_AngleQ1ToDoDamage / 2f)
+            {
+                Debug.Log("Entidad delante: " + Entity.name);
+                if (!m_CollidersHitQZone.Contains(Entity) && Entity.TryGetComponent(out ITakeDamage Enemy))
+                {
+                    float l_Damage = (m_QSkill.GetAttribute("Daño base", GetQSkillLevel())) + (m_QPercentageBonusAttackDamageFirst / 100) * GetCharacterStats().GetBonusAttackDamage();
+                    Debug.Log("TAKEN " + l_Damage + " DAMAGE");
+                    Enemy.TakeDamage(l_Damage, 0, m_CharacterStats.GetPlayerName());
+                    m_CollidersHitQZone.Add(Entity);
+                }
+
+            }
+        }
     }
     void EndQSkill()
     {
+        if (m_CollidersHitQZone != null)
+            m_CollidersHitQZone.Clear();
+        m_CollidersHitQZone = null;
+
+        SetDisabled(false);
         m_QSkillStarted = false;
         m_QSkill.SetUsingSkill(false);
         base.QSkill();
         StartCoroutine(RepeatQSaver());
+        StartCoroutine(RepeatESaver());
     }
     IEnumerator RepeatQSaver()
     {
@@ -417,7 +532,7 @@ public class WilldurrCharacterController : CharacterMaster
 
         List<Collider> l_CollidersHit = new List<Collider>();
         Collider[] l_HitColliders = Physics.OverlapSphere(m_TargetPositionW, m_WHitboxRatio / 100, m_DamageLayerMask);
-        float l_Damage = (m_WSkill.GetAttribute("Daño base", GetWSkillLevel())) + (m_PercentageBonusAttackDamageFirst / 100) * GetCharacterStats().GetBonusAttackDamage();
+        float l_Damage = (m_WSkill.GetAttribute("Daño base", GetWSkillLevel())) + (m_WPercentageBonusAttackDamageFirst / 100) * GetCharacterStats().GetBonusAttackDamage();
         foreach (Collider Entity in l_HitColliders)
         {
             if (!l_CollidersHit.Contains(Entity) && Entity.TryGetComponent(out ITakeDamage Enemy))
@@ -519,7 +634,7 @@ public class WilldurrCharacterController : CharacterMaster
                 Buffs.AddBuff(m_PSoulTheftBuff.InitializeBuff(this, m_PTimeToTheftSoul, Entity.gameObject));
             }
 
-            float l_Damage = (m_WSkill.GetAttribute("Daño Reactivación", GetWSkillLevel())) + (m_PercentageBonusAttackDamageSecond / 100) * GetCharacterStats().GetBonusAttackDamage();
+            float l_Damage = (m_WSkill.GetAttribute("Daño Reactivación", GetWSkillLevel())) + (m_WPercentageBonusAttackDamageSecond / 100) * GetCharacterStats().GetBonusAttackDamage();
             Debug.Log("TAKEN " + l_Damage + " DAMAGE");
             Enemy.TakeDamage(l_Damage, 0, m_CharacterStats.GetPlayerName());
             m_CollidersHitWZone.Add(Entity);
@@ -699,10 +814,14 @@ public class WilldurrCharacterController : CharacterMaster
                 m_ReturnHead = true;
                 m_HeadCanMove = false;
                 StartCoroutine(DoEFear());
-                StopAttacking();
 
-                if (!GetIsLookingForPosition())
-                    StopMovement();
+                if (!m_QSkill.GetUsingSkill())
+                {
+                    StopAttacking();
+
+                    if (!GetIsLookingForPosition())
+                        StopMovement();
+                }
 
                 EndESkill();
             }
@@ -1028,8 +1147,6 @@ public class WilldurrCharacterController : CharacterMaster
 
     }
     #endregion
-
-
 
 
     public void AddSoul(EnemyType _EnemyType)

@@ -625,7 +625,7 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
             m_QSkill.AddActualLoads(-1);
             m_CharacterUI.m_QSkillLoadsText.text = m_QSkill.GetActualLoads().ToString();
 
-            if (m_WSkill.GetHaveSpecialLoad())
+            if (m_QSkill.GetHaveSpecialLoad())
             {
                 if (m_QSkill.GetSpecialNextLoad())
                     m_CharacterUI.m_QSkillImage.sprite = m_QSkill.m_SpecialLoadSprite;
