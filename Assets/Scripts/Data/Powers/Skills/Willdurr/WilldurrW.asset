@@ -16,9 +16,15 @@ MonoBehaviour:
   m_PowerName: "Imposicion / Atracci\xF3n Forzada"
   m_Sprite: {fileID: 21300000, guid: 39f814d69d484ee4c80eb60c0f461712, type: 3}
   m_Description: "Willdurr golpea el suelo con su guada\xF1a, aturde 0,75 s e inflige
-    X de da\xF1o f\xEDsico a los enemigos golpeados.\r\n\r\nReactivaci\xF3n: Willdurr
-    arrastra su guada\xF1a hacia s\xED mismo, atrae e inflige Y de da\xF1o f\xEDsico
-    a los enemigos golpeados."
+    X = (90 +55% del da\xF1o de ataque adicional) de da\xF1o f\xEDsico a los enemigos
+    golpeados.\r\n\r\nReactivaci\xF3n: Willdurr arrastra su guada\xF1a hacia s\xED
+    mismo, atrae e inflige X = (115 +75% del da\xF1o de ataque adicional) de da\xF1o
+    f\xEDsico a los enemigos golpeados."
+  m_HaveLoads: 0
+  m_MAXLoads: 0
+  m_HaveSpecialLoad: 0
+  m_SpecialLoadEvery: 0
+  m_SpecialLoadSprite: {fileID: 0}
   m_AttributeList:
   - m_AttributeId: "Da\xF1o base"
     m_IsPct: 0
@@ -81,7 +87,11 @@ MonoBehaviour:
       m_ToolTip: "del da\xF1o de ataque adicional"
       m_AtributeType: 1
       m_Color: 4
-  m_ExtraSpecifications: []
+  m_ExtraSpecifications:
+  - "Tiempo de espera m\xEDnimo para Reactivaci\xF3n: 0,75 segundos."
+  - "Tiempo de espera m\xE1ximo para Reactivaci\xF3n: 2,5 segundos."
+  - "Mientras est\xE1 haciendo la Q, solo puede usar \u201CReactivaci\xF3n\u201D
+    de la E."
   m_IndicatorUIObject: {fileID: 6649836915933689498, guid: 8caef782d2af9ec429b3465c5f423ec6, type: 3}
   m_SkillDisabledTime: 0
   m_CancelableWithMouseClick: 1

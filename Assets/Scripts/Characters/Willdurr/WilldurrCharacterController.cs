@@ -35,15 +35,15 @@ public class WilldurrCharacterController : CharacterMaster
     [Header("Q SKILL")]
     public GameObject m_QHiboxGameObject;
     public float m_JumpRangeQ = 150f;
-    public float m_JumpSpeedQ = 900f;
+    public float m_JumpTimeQ = 0.75f;
 
     public float m_QPercentageBonusAttackDamageFirst = 85;
     public float m_QPercentageBonusAttackDamageSecond = 95;
 
     [Header("Q1")]
-    float m_AngleQ1ToDoDamage = 160;
     public float m_InitialRadiusQ1 = 100;
     public float m_FinalRadiusQ1 = 250;
+    float m_AngleQ1ToDoDamage = 160;
 
     [Header("Q2")]
     public float m_InitialRadiusQ2 = 100;
@@ -51,6 +51,7 @@ public class WilldurrCharacterController : CharacterMaster
 
 
 
+    float m_JumpSpeedQ;
     float m_ActualHitboxRadius = 0;
     float l_QDistanceTraveled = 0f;
     bool m_SaverCanDoQ = true;
@@ -68,12 +69,14 @@ public class WilldurrCharacterController : CharacterMaster
     public float m_WHitboxRatioReactived = 300f;
     public StunBuff m_WStunBuff;
     public float m_WStunBuffTime = 0.75f;
+    [Tooltip("Los enemigos golpeados en la trayectoria de Reactivación, son atraídos hasta quedar a m_WArribalRangeReactivation unidades de Willdurr.")]
     public float m_WArribalRangeReactivation = 150f;
 
 
     public float m_WChannelingTime = 0.15f;
     public float m_WaitReactivationTimeW = 0.75f;
     public float m_CanReactiveTimeW = 2.5f;
+    [Tooltip("Tiempo para calcular la velocidad de la W en reactivación.")]
     public float m_WReactivedTimeToReturn = 0.7f;
 
 
@@ -94,12 +97,14 @@ public class WilldurrCharacterController : CharacterMaster
     List<Collider> m_CollidersHitWZone = new List<Collider>();
 
     [Header("E SKILL")]
+    public GameObject m_FearZoneE;
+    public Transform m_Head;
+    public float m_UIIndicatorWidthE = 50;
     public FearBuff m_FearBuffE;
     public float m_FearBuffTimeE = 1.25f;
-    public Transform m_Head;
-    public GameObject m_FearZoneE;
-    public float m_UIIndicatorWidthE = 50;
     public float m_RangeE = 700;
+
+    [Tooltip("Tiempo para calcular la velocidad de la Cabeza en llegar a su destino.")]
     public float m_HeadArriveTargetTimeE = 0.4f;
     float m_SpeedHeatE = 600;
     public float m_FearRadioE = 250;
@@ -124,15 +129,18 @@ public class WilldurrCharacterController : CharacterMaster
     public SpeedBuff m_SlowDownRBuff;
     public GameObject m_RZonePrefab;
     public GameObject m_RHeadPrefab;
+    public LayerMask m_RHeadLayerMask;
     public float m_MINRangeR = 800.0f;
     public float m_ScaleRZoneSpeed = 1000.0f;
     public float m_RSkillDuration = 15f;
     public float m_RChannelingTime = 0.2f;
     [UnityEngine.Range(50f, 450f)]
+    [Tooltip("Distancia minima entre cabezas.")]
     public float m_RMINDistanceHeads = 105f;
+    [Tooltip("Hitbox para hacer la reactivacion de la E.")]
     public float m_HeadRRadiusHitbox = 100f;
+    [Tooltip("Tiempo enfriamiento para hacer la reactivacion de la E.")]
     public float m_CoolingEInRSkill = 1.5f;
-    public LayerMask m_RHeadLayerMask;
 
 
     GameObject m_RZone;
@@ -149,19 +157,9 @@ public class WilldurrCharacterController : CharacterMaster
     bool m_RSkillStarted = false;
     bool m_SaverCanDoR = true;
 
-    [Header("Fórmula del rango de valores")]
-    [Tooltip("ValueA + (X * ValueB) TO ValueC + (X * ValueD) --> X es el número de cabeza (de 0 a depende del rango)")]
-    public float m_FormulaValueA = 30f;
-    [Tooltip("ValueA + (X * ValueB) TO ValueC + (X * ValueD) --> X es el número de cabeza (de 0 a depende del rango)")]
-    public float m_FormulaValueB = 100f;
-    [Tooltip("ValueA + (X * ValueB) TO ValueC + (X * ValueD) --> X es el número de cabeza (de 0 a depende del rango)")]
-    public float m_FormulaValueC = 130f;
-    [Tooltip("ValueA + (X * ValueB) TO ValueC + (X * ValueD) --> X es el número de cabeza (de 0 a depende del rango)")]
-    public float m_FormulaValueD = 100f;
-
     [Header("OTHER VALUES")]
     public Transform m_HeadPos;
-    public float m_HeatReturnSpeed = 600;
+    float m_HeatReturnSpeed = 600;
     bool m_ReturnHead = false;
 
     public override void OnNetworkSpawn()
@@ -325,6 +323,7 @@ public class WilldurrCharacterController : CharacterMaster
     }
     IEnumerator StartQSkill()
     {
+        m_JumpSpeedQ = m_JumpRangeQ / m_JumpTimeQ;
         m_CollidersHitQZone = new List<Collider>();
         LookAt(((GetPositionWithMouse() - transform.position).normalized * (m_JumpRangeQ / 100)) + transform.position);
         m_InitialPositionQ = transform.position;

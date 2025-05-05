@@ -16,9 +16,10 @@ MonoBehaviour:
   m_PowerName: Corte Segador
   m_Sprite: {fileID: 21300000, guid: 9e7d9239e4351ac4cad13195f89ed60f, type: 3}
   m_Description: "Willdurr se desplaza cortando con la guada\xF1a hacia delante,
-    infligiendo X de da\xF1o f\xEDsico a los enemigos golpeados.\r\n\r\nCada tercer
-    Corte Segador realiza un gran corte circular que inflige Y de da\xF1o f\xEDsico.\r\n\r\nEsta
-    habilidad tiene hasta 4 cargas.\r"
+    infligiendo X = (100 +85% del da\xF1o de ataque adicional) de da\xF1o f\xEDsico
+    a los enemigos golpeados.\r\n\r\nCada tercer Corte Segador realiza un gran corte
+    circular que inflige X = (120 +95% del da\xF1o de ataque adicional) de da\xF1o
+    f\xEDsico.\r\n\r\nEsta habilidad tiene hasta 4 cargas."
   m_HaveLoads: 1
   m_MAXLoads: 4
   m_HaveSpecialLoad: 1
@@ -96,7 +97,11 @@ MonoBehaviour:
       m_ToolTip: "del da\xF1o de ataque adicional"
       m_AtributeType: 1
       m_Color: 4
-  m_ExtraSpecifications: []
+  m_ExtraSpecifications:
+  - "La reducci\xF3n de enfriamiento se aplica al Tiempo de recarga."
+  - 'Radio 3r ataque (circular): 100 a 350 unidades.'
+  - "Mientras est\xE1 haciendo la Q, solo puede usar \u201CReactivaci\xF3n\u201D
+    de la E."
   m_IndicatorUIObject: {fileID: 6649836915933689498, guid: 8caef782d2af9ec429b3465c5f423ec6, type: 3}
   m_SkillDisabledTime: 0
   m_CancelableWithMouseClick: 0
