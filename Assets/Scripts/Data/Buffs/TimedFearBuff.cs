@@ -4,9 +4,11 @@ using UnityEngine;
 public class TimedFearBuff : TimedBuff
 {
     private readonly CharacterStats m_StatsComponent;
+    Vector3 m_FearPosition;
 
-    public TimedFearBuff(float Duration, Buff buff, GameObject obj) : base(buff, obj)
+    public TimedFearBuff(Vector3 FearPosition, float Duration, Buff buff, GameObject obj) : base(buff, obj)
     {
+        m_FearPosition = FearPosition;
         buff.m_Duration = Duration;
         if (obj.TryGetComponent(out ITakeDamage Entity))
             m_StatsComponent = Entity.GetCharacterStats();
@@ -17,7 +19,8 @@ public class TimedFearBuff : TimedBuff
     {
         if (m_StatsComponent != null)
         {
-            m_StatsComponent.SetScared(true);
+            m_StatsComponent.SetScared(true, m_FearPosition);
+            m_StatsComponent.SetImmobilized(true);
         }
     }
 
@@ -26,7 +29,8 @@ public class TimedFearBuff : TimedBuff
     {
         if (m_StatsComponent != null)
         {
-            m_StatsComponent.SetScared(false);
+            m_StatsComponent.SetScared(false, Vector3.zero);
+            m_StatsComponent.SetImmobilized(false);
         }
     }
 

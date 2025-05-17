@@ -1,0 +1,55 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1b99bce7ea32ac459c70144bb0096a3, type: 3}
+  m_Name: ZappadasR
+  m_EditorClassIdentifier: 
+  m_PowerType: 4
+  m_PowerName: "Vac\xEDo Acechante"
+  m_Sprite: {fileID: 21300000, guid: a1809d2b07573af4bb32e078d4f2713b, type: 3}
+  m_Description: "Desde Willdurr se expande una zona de muerte y putrefacci\xF3n
+    que crea cabezas las cuales puede teletransportarse con Omnipresencia y adem\xE1s
+    ralentiza un 20% que aumenta hasta 75% a los enemigos dentro de la zona.\r\n\r\nCuantas
+    m\xE1s almas ha cosechado Willdurr, m\xE1s grande es la zona."
+  m_HaveLoads: 0
+  m_MAXLoads: 0
+  m_HaveSpecialLoad: 0
+  m_SpecialLoadEvery: 0
+  m_SpecialLoadSprite: {fileID: 0}
+  m_AttributeList:
+  - m_AttributeId: Enfriamiento
+    m_IsPct: 0
+    m_ShowScalingInPopup: 1
+    m_ValueFormat: s
+    m_LevelScaling:
+    - 80
+    - 65
+    - 50
+  - m_AttributeId: Coste de Mana
+    m_IsPct: 0
+    m_ShowScalingInPopup: 0
+    m_ValueFormat: 
+    m_LevelScaling:
+    - 100
+    - 100
+    - 100
+  m_DescriptionDamageList: []
+  m_ExtraSpecifications:
+  - 'Cantidad de cabezas: 1 por cada 100 unidades de Radio.'
+  - 'Aumento de radio: 15 unidades cada 5 almas.'
+  - "Duraci\xF3n de la habilidad: 15 s."
+  - Slow crece de 20% a 75% en 3 s.
+  - "Dentro de la zona, la E tiene est\xE1 siempre en modo \u201CReactivaci\xF3n\u201D. "
+  - "Dentro de la zona, la E se activa al usarla con el rat\xF3n encima de una cabeza. "
+  - 'Dentro de la zona, la E tiene 0,5 s de enfriamiento. '
+  m_IndicatorUIObject: {fileID: 5078714052237607800, guid: 83f81966102af0341a86559624a7f892, type: 3}
+  m_SkillDisabledTime: 0
+  m_CancelableWithMouseClick: 1

@@ -68,6 +68,7 @@ public class CharacterStats : NetworkBehaviour
     bool m_Stuned = false;
     bool m_Immobilized = false;
     bool m_Scared = false;
+    Vector3 m_FearPosition;
     bool m_CanSoulTheft = false;
     WilldurrCharacterController m_Willdurr; // Willdur esta aqui para el buff de SoulThedtBuff. Es necessario que sea una variable.
     float m_Omnivamp = 0;
@@ -397,8 +398,13 @@ public class CharacterStats : NetworkBehaviour
     {
         return m_Scared;
     }
-    public void SetScared(bool Scared)
+    public Vector3 GetFearPos()
     {
+        return m_FearPosition;
+    }
+    public void SetScared(bool Scared, Vector3 FearPosition)
+    {
+        m_FearPosition = FearPosition;
         m_Scared = Scared;
     }
     public bool GetCanSoulTheft()

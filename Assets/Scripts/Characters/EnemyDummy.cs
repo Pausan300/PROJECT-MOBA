@@ -2,9 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using Unity.Netcode;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 using static CharacterStats;
+using static UnityEngine.GraphicsBuffer;
 
 public class EnemyDummy : NetworkBehaviour, ITakeDamage
 {
@@ -98,7 +100,21 @@ public class EnemyDummy : NetworkBehaviour, ITakeDamage
                 transform.forward = l_Dir;
             }
         }
+
+        ScaredBuff();
     }
+
+    void ScaredBuff()
+    {
+        if (m_CharacterStats.GetScared())
+        {
+            Vector3 l_DirectionToTarget = (new Vector3(m_CharacterStats.GetFearPos().x, transform.position.y, m_CharacterStats.GetFearPos().z) - transform.position).normalized;
+            Vector3 l_OppositeDirection = -l_DirectionToTarget;
+
+            transform.position += l_OppositeDirection * (m_CharacterStats.GetMovSpeed() / 100.0f) * Time.deltaTime;
+        }
+    }
+
     public IEnumerator PerformAttack()
     {
         Collider[] l_HitColliders = Physics.OverlapSphere(transform.position, m_AttackRadius / 100.0f, m_LayerMask);

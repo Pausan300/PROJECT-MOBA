@@ -216,7 +216,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 3684428329
+  GlobalObjectIdHash: 3409747937
   InScenePlacedSourceGlobalObjectIdHash: 419589164
   DeferredDespawnTick: 0
   Ownership: 1
@@ -2171,7 +2171,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 3684428329
+  GlobalObjectIdHash: 127372144
   InScenePlacedSourceGlobalObjectIdHash: 419589164
   DeferredDespawnTick: 0
   Ownership: 0
@@ -2262,7 +2262,7 @@ MonoBehaviour:
   m_OmnisuctionToAddF5: 1
   m_QHiboxGameObject: {fileID: 2678366778026711827}
   m_JumpRangeQ: 150
-  m_JumpSpeedQ: 300
+  m_JumpTimeQ: 0.75
   m_QPercentageBonusAttackDamageFirst: 85
   m_QPercentageBonusAttackDamageSecond: 95
   m_InitialRadiusQ1: 100
@@ -2283,11 +2283,11 @@ MonoBehaviour:
   m_WReactivedTimeToReturn: 0.7
   m_WPercentageBonusAttackDamageFirst: 55
   m_WPercentageBonusAttackDamageSecond: 55
+  m_FearZoneE: {fileID: 810850169779895839}
+  m_Head: {fileID: 3842100369263391004}
+  m_UIIndicatorWidthE: 50
   m_FearBuffE: {fileID: 11400000, guid: 62d33e509caebc142ad6fb9a10e32fb7, type: 2}
   m_FearBuffTimeE: 1.25
-  m_Head: {fileID: 3842100369263391004}
-  m_FearZoneE: {fileID: 810850169779895839}
-  m_UIIndicatorWidthE: 50
   m_RangeE: 700
   m_HeadArriveTargetTimeE: 0.4
   m_FearRadioE: 250
@@ -2297,6 +2297,9 @@ MonoBehaviour:
   m_SlowDownRBuff: {fileID: 11400000, guid: 7431da7d46518fb48b80fc35782a8ac4, type: 2}
   m_RZonePrefab: {fileID: 5489800043199564986, guid: 4ade2cd217097e74b8fe8fb99c5f6cd4, type: 3}
   m_RHeadPrefab: {fileID: 5758787173917989774, guid: 32acfbf3f788ede42943a598829fd56f, type: 3}
+  m_RHeadLayerMask:
+    serializedVersion: 2
+    m_Bits: 2048
   m_MINRangeR: 800
   m_ScaleRZoneSpeed: 500
   m_RSkillDuration: 15
@@ -2304,15 +2307,7 @@ MonoBehaviour:
   m_RMINDistanceHeads: 105
   m_HeadRRadiusHitbox: 50
   m_CoolingEInRSkill: 1.5
-  m_RHeadLayerMask:
-    serializedVersion: 2
-    m_Bits: 2048
-  m_FormulaValueA: 30
-  m_FormulaValueB: 100
-  m_FormulaValueC: 130
-  m_FormulaValueD: 110
   m_HeadPos: {fileID: 3457580757869543846}
-  m_HeatReturnSpeed: 600
 --- !u!114 &6223637414398981670
 MonoBehaviour:
   m_ObjectHideFlags: 0

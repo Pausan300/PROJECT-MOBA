@@ -275,7 +275,7 @@ public class WilldurrCharacterController : CharacterMaster
     //Q SKILL
     protected override void QSkill()
     {
-        if (m_QSkill.GetUsingSkill() || m_WSkill.GetUsingSkill())
+        if (m_QSkill.GetUsingSkill() || (m_WSkill.GetUsingSkill() && m_WSkillStarted && m_WChanneling))
         {
             if (!GetUseSkillGizmos())
                 return;
@@ -666,7 +666,7 @@ public class WilldurrCharacterController : CharacterMaster
     //E SKILL
     protected override void ESkill()
     {
-        if (m_QSkill.GetUsingSkill() || m_WSkill.GetUsingSkill() || m_ESkill.GetUsingSkill() || m_RSkill.GetUsingSkill())
+        if (m_QSkill.GetUsingSkill() || (m_WSkill.GetUsingSkill() && m_WSkillStarted && m_WChanneling) || m_ESkill.GetUsingSkill() || m_RSkill.GetUsingSkill())
         {
             if (!GetUseSkillGizmos())
                 return;
@@ -780,7 +780,7 @@ public class WilldurrCharacterController : CharacterMaster
             {
                 if (Entity.TryGetComponent(out BuffableEntity Buffs))
                 {
-                    Buffs.AddBuff(m_FearBuffE.InitializeBuff(m_FearBuffTimeE, Entity.gameObject));
+                    Buffs.AddBuff(m_FearBuffE.InitializeBuff(transform.position, m_FearBuffTimeE, Entity.gameObject));
                     Debug.Log("Buff Fear Added to " + Entity.name);
                 }
 
@@ -860,7 +860,7 @@ public class WilldurrCharacterController : CharacterMaster
     //R SKILL
     protected override void RSkill()
     {
-        if (m_QSkill.GetUsingSkill() || m_WSkill.GetUsingSkill() || m_ESkill.GetUsingSkill() || m_RSkill.GetUsingSkill())
+        if (m_QSkill.GetUsingSkill() || (m_WSkill.GetUsingSkill() && m_WSkillStarted && m_WChanneling) || m_ESkill.GetUsingSkill() || m_RSkill.GetUsingSkill())
         {
             if (!GetUseSkillGizmos())
                 return;
