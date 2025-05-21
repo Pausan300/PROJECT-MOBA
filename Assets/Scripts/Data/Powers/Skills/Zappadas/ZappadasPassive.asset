@@ -13,17 +13,13 @@ MonoBehaviour:
   m_Name: ZappadasPassive
   m_EditorClassIdentifier: 
   m_PowerType: 0
-  m_PowerName: Sentimientos Cosechados
+  m_PowerName: "INFUSI\xD3N DE EXCEDENTE"
   m_Sprite: {fileID: 21300000, guid: 45a5602e2948cf741bf5e21737758c34, type: 3}
-  m_Description: "Willdurr cosecha las almas de los enemigos que mata o asiste en
-    los \xFAltimos 1,5 s:\r\n\r\n- 1 alma de monstruos grandes y s\xFAbditos.\r\n\r\n-
-    2 almas de Sinluz.\r\n\r\n- 100 almas de monstruos legendarios.\r\n\r\n\r\nWilldurr
-    aumenta su poder acumulando almas:\r\n\r\n25 almas: 10 de Da\xF1o de Ataque.\r\n\r\n50
-    almas: 5% de Omnisucci\xF3n.\r\n\r\n75 almas: 30 de Da\xF1o de Ataque.\r\n\r\n100
-    almas: 15% de Omnisucci\xF3n.\r\n\r\nA partir de 100 almas, por cada 5 almas
-    nuevas, Willdurr obtiene 2 de Da\xF1o de Ataque y 1% de Omnisucci\xF3n.\r"
-  m_HaveLoads: 0
-  m_MAXLoads: 0
+  m_Description: "Zappadas obtiene energ\xEDa oscura que almacena hasta un m\xE1ximo
+    de 100 cargas.\r\n\r\n- 1 cada segundo.\r\n\r\n- 5 cada vez que golpea con una
+    habilidad a un Sinluz.\r\n\r\nAl tener 100 cargas, potencia su siguiente habilidad.\r"
+  m_HaveLoads: 1
+  m_MAXLoads: 100
   m_HaveSpecialLoad: 0
   m_SpecialLoadEvery: 0
   m_SpecialLoadSprite: {fileID: 0}

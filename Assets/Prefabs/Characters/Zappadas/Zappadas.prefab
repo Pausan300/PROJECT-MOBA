@@ -2581,6 +2581,9 @@ MonoBehaviour:
   m_UseKeyboardMovement: 0
   m_RangedAutoAttack: {fileID: 0}
   m_RangedAutoSpawnPoint: {fileID: 0}
+  m_PZappadasBuff: {fileID: 11400000, guid: a52a10ff88305bb478f2dae406419b38, type: 2}
+  m_DarkPoyerEvery: 1
+  m_DarkPoyerToAddWithTime: 1
 --- !u!114 &6223637414398981670
 MonoBehaviour:
   m_ObjectHideFlags: 0

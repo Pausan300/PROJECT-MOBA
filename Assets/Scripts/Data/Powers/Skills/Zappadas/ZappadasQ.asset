@@ -20,11 +20,11 @@ MonoBehaviour:
     a los enemigos golpeados.\r\n\r\nCada tercer Corte Segador realiza un gran corte
     circular que inflige X = (120 +95% del da\xF1o de ataque adicional) de da\xF1o
     f\xEDsico.\r\n\r\nEsta habilidad tiene hasta 4 cargas."
-  m_HaveLoads: 1
-  m_MAXLoads: 4
-  m_HaveSpecialLoad: 1
-  m_SpecialLoadEvery: 3
-  m_SpecialLoadSprite: {fileID: 21300000, guid: e9b29da0732ea134295b9c818541650c, type: 3}
+  m_HaveLoads: 0
+  m_MAXLoads: 0
+  m_HaveSpecialLoad: 0
+  m_SpecialLoadEvery: 0
+  m_SpecialLoadSprite: {fileID: 0}
   m_AttributeList:
   - m_AttributeId: "Da\xF1o base"
     m_IsPct: 0
