@@ -246,7 +246,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 1467627243
+  GlobalObjectIdHash: 3470274533
   InScenePlacedSourceGlobalObjectIdHash: 419589164
   DeferredDespawnTick: 0
   Ownership: 1
@@ -1438,6 +1438,37 @@ Transform:
   - {fileID: 802480346733774707}
   m_Father: {fileID: 3571570155287810304}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &3620283928683951889
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7546933147880516835}
+  m_Layer: 0
+  m_Name: AASpawnPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7546933147880516835
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3620283928683951889}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.007, y: 0.073, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5412141948284323861}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &3642980184704895913
 GameObject:
   m_ObjectHideFlags: 0
@@ -2510,7 +2541,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 1467627243
+  GlobalObjectIdHash: 3047748510
   InScenePlacedSourceGlobalObjectIdHash: 419589164
   DeferredDespawnTick: 0
   Ownership: 0
@@ -2579,11 +2610,16 @@ MonoBehaviour:
     m_Bits: 128
   m_InputBufferController: {fileID: 7621680028878733405}
   m_UseKeyboardMovement: 0
-  m_RangedAutoAttack: {fileID: 0}
-  m_RangedAutoSpawnPoint: {fileID: 0}
+  m_RangedAutoAttack: {fileID: 2324013535973436300, guid: a2d7e2b075203d94b913f1e53024f930, type: 3}
+  m_RangedAutoSpawnPoint: {fileID: 7546933147880516835}
   m_PZappadasBuff: {fileID: 11400000, guid: a52a10ff88305bb478f2dae406419b38, type: 2}
-  m_DarkPoyerEvery: 1
-  m_DarkPoyerToAddWithTime: 1
+  m_DarkPowerEvery: 1
+  m_DarkPowerToAddWithTime: 1
+  m_MAXDarkPower: 100
+  m_QChannelingTime: 1
+  m_WChannelingTime: 1
+  m_EChannelingTime: 1
+  m_RChannelingTime: 1
 --- !u!114 &6223637414398981670
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3714,6 +3750,7 @@ Transform:
   - {fileID: 4768302371415211957}
   - {fileID: 3180121990957535441}
   - {fileID: 2852035938023875363}
+  - {fileID: 7546933147880516835}
   m_Father: {fileID: 8159740009221571189}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &8711164852160430639

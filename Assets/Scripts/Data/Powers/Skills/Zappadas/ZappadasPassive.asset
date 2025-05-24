@@ -18,8 +18,8 @@ MonoBehaviour:
   m_Description: "Zappadas obtiene energ\xEDa oscura que almacena hasta un m\xE1ximo
     de 100 cargas.\r\n\r\n- 1 cada segundo.\r\n\r\n- 5 cada vez que golpea con una
     habilidad a un Sinluz.\r\n\r\nAl tener 100 cargas, potencia su siguiente habilidad.\r"
-  m_HaveLoads: 1
-  m_MAXLoads: 100
+  m_HaveLoads: 0
+  m_MAXLoads: 0
   m_HaveSpecialLoad: 0
   m_SpecialLoadEvery: 0
   m_SpecialLoadSprite: {fileID: 0}

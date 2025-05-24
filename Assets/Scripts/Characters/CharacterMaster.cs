@@ -1146,9 +1146,13 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
         GameObject l_Projectile = Instantiate(m_RangedAutoAttack, m_RangedAutoSpawnPoint.position, transform.rotation);
         NetworkObject l_ProjectileNetwork = l_Projectile.GetComponent<NetworkObject>();
         l_ProjectileNetwork.SpawnWithOwnership(GetComponent<NetworkObject>().OwnerClientId);
-        l_Projectile.GetComponent<RangedAutoAttack>().SetStats(m_DesiredEnemy, m_CharacterStats.GetAttackDamage(), 0.0f);
+        l_Projectile.GetComponent<RangedAutoAttack>().SetStats(m_DesiredEnemy, m_CharacterStats.GetAttackDamage(), 0.0f, this);
     }
+    //LLAMADA CUANDO EL PROYECTIL HACE DAÑO AL ENEMIGO. EL PROPIO PROYECTIL YA SE ENCARGA DE HACER EL DAÑO, ES PARA SI SE QUIERE HACER ALGO MAS A PARTE DEL DAÑO.
+    public virtual void RangedAutoAttackHitDamage(Transform _Enemy)
+    {
 
+    }
     //GETTERS & SETTERS
     public GameManager GetGameManager()
     {

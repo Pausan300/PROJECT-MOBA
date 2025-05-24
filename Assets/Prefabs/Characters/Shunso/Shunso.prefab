@@ -2520,7 +2520,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 79616569
+  GlobalObjectIdHash: 51414338
   InScenePlacedSourceGlobalObjectIdHash: 1219962804
   DeferredDespawnTick: 0
   Ownership: 0
@@ -3202,7 +3202,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 3014364260
+  GlobalObjectIdHash: 51414338
   InScenePlacedSourceGlobalObjectIdHash: 0
   DeferredDespawnTick: 0
   Ownership: 1
@@ -3480,6 +3480,30 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 346968064731679334, guid: 3da7a6805ae666b438f74a7378cae75c, type: 3}
       propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 393315134758501495, guid: 3da7a6805ae666b438f74a7378cae75c, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 393315134758501495, guid: 3da7a6805ae666b438f74a7378cae75c, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 393315134758501495, guid: 3da7a6805ae666b438f74a7378cae75c, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 393315134758501495, guid: 3da7a6805ae666b438f74a7378cae75c, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 393315134758501495, guid: 3da7a6805ae666b438f74a7378cae75c, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 393315134758501495, guid: 3da7a6805ae666b438f74a7378cae75c, type: 3}
+      propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1241778700938406682, guid: 3da7a6805ae666b438f74a7378cae75c, type: 3}

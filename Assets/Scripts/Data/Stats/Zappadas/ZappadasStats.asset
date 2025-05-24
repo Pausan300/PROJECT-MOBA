@@ -14,21 +14,21 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_PlayerName: Zappadas
   m_CharacterIcon: {fileID: 21300000, guid: 7cc58a542e128a841b8e817256c13eab, type: 3}
-  m_BaseHealth: 650
-  m_BaseMana: 300
-  m_BaseAttackDamage: 67
-  m_BaseAttackSpeed: 0.66
-  m_BaseArmor: 38
-  m_BaseMagicResist: 32
-  m_BaseHealthRegen: 8
-  m_BaseManaRegen: 7
-  m_AttackRange: 175
-  m_BaseMovementSpeed: 340
-  m_HealthPerLevel: 110
-  m_ManaPerLevel: 55
-  m_AttackDamagePerLevel: 4
-  m_AttackSpeedPerLevel: 0.018
-  m_ArmorPerLevel: 5
+  m_BaseHealth: 580
+  m_BaseMana: 405
+  m_BaseAttackDamage: 54
+  m_BaseAttackSpeed: 0.65
+  m_BaseArmor: 20
+  m_BaseMagicResist: 30
+  m_BaseHealthRegen: 7
+  m_BaseManaRegen: 8
+  m_AttackRange: 525
+  m_BaseMovementSpeed: 335
+  m_HealthPerLevel: 104
+  m_ManaPerLevel: 45
+  m_AttackDamagePerLevel: 3
+  m_AttackSpeedPerLevel: 0.014
+  m_ArmorPerLevel: 3
   m_MagicResistPerLevel: 2
   m_HealthRegenPerLevel: 0.5
   m_ManaRegenPerLevel: 0.7
