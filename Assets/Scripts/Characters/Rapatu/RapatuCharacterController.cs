@@ -14,7 +14,6 @@ public class RapatuCharacterController : CharacterMaster
     [Header("--- RAPATU ---")]
 
 
-
     [Header("PASSIVE SKILL")]
 
     [Header("Q SKILL")]

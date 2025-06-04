@@ -15,11 +15,12 @@ MonoBehaviour:
   m_PowerType: 1
   m_PowerName: Corte Segador
   m_Sprite: {fileID: 21300000, guid: 07898b6585ceba64597c18a3ea3de521, type: 3}
-  m_Description: "Willdurr se desplaza cortando con la guada\xF1a hacia delante,
-    infligiendo X = (100 +85% del da\xF1o de ataque adicional) de da\xF1o f\xEDsico
-    a los enemigos golpeados.\r\n\r\nCada tercer Corte Segador realiza un gran corte
-    circular que inflige X = (120 +95% del da\xF1o de ataque adicional) de da\xF1o
-    f\xEDsico.\r\n\r\nEsta habilidad tiene hasta 4 cargas."
+  m_Description: "Zappadas invoca 3 bolas con energ\xEDa oscura que desaparecen al
+    cabo de 5 segundos.\r\n\r\nReactivaci\xF3n: Lanza una bola que al golpear a un
+    enemigo explota e inflige X de da\xF1o m\xE1gico en un \xE1rea alrededor del
+    enemigo golpeado.\r\n\r\nEnerg\xEDa oscura: Cuando una bola impacta, emite un
+    rayo de energ\xEDa oscura hacia el enemigo m\xE1s cercano que rebota 3 veces
+    e inflige Y de da\xF1o m\xE1gico."
   m_HaveLoads: 0
   m_MAXLoads: 0
   m_HaveSpecialLoad: 0
@@ -31,72 +32,82 @@ MonoBehaviour:
     m_ShowScalingInPopup: 1
     m_ValueFormat: 
     m_LevelScaling:
+    - 60
+    - 70
+    - 80
+    - 90
     - 100
-    - 135
-    - 165
-    - 195
-    - 225
-  - m_AttributeId: Tiempo de recarga
-    m_IsPct: 0
-    m_ShowScalingInPopup: 1
-    m_ValueFormat: s
-    m_LevelScaling:
-    - 8
-    - 7.5
-    - 7
-    - 6.5
-    - 6
   - m_AttributeId: Enfriamiento
     m_IsPct: 0
     m_ShowScalingInPopup: 0
     m_ValueFormat: s
     m_LevelScaling:
     - 8
-    - 7.5
     - 7
     - 6.5
     - 6
-  - m_AttributeId: "Da\xF1o 3r ataque"
-    m_IsPct: 0
-    m_ShowScalingInPopup: 1
-    m_ValueFormat: 
-    m_LevelScaling:
-    - 120
-    - 155
-    - 185
-    - 215
-    - 245
+    - 5
   - m_AttributeId: Coste de Mana
     m_IsPct: 0
     m_ShowScalingInPopup: 0
     m_ValueFormat: 
     m_LevelScaling:
-    - 45
-    - 45
-    - 45
-    - 45
-    - 45
+    - 60
+    - 65
+    - 70
+    - 75
+    - 80
+  - m_AttributeId: Cantidad de bolas
+    m_IsPct: 0
+    m_ShowScalingInPopup: 1
+    m_ValueFormat: 
+    m_LevelScaling:
+    - 3
+    - 3
+    - 5
+    - 5
+    - 7
+  - m_AttributeId: Tiempo para que desaparezcan las bolas
+    m_IsPct: 0
+    m_ShowScalingInPopup: 1
+    m_ValueFormat: s
+    m_LevelScaling:
+    - 5
+    - 5
+    - 7
+    - 7
+    - 9
+  - m_AttributeId: "Da\xF1o base \u201CEnerg\xEDa oscura\u201D"
+    m_IsPct: 0
+    m_ShowScalingInPopup: 1
+    m_ValueFormat: 
+    m_LevelScaling:
+    - 50
+    - 55
+    - 60
+    - 65
+    - 70
   m_DescriptionDamageList:
   - m_DescriptionId: X
-    m_Color: 5
+    m_Color: 1
     m_AttributeId: "Da\xF1o base"
     m_MultiplyValue: 1
     m_SkillDescriptionTooltips:
-    - m_Value: 95
+    - m_Value: 60
       m_Format: '%'
-      m_ToolTip: "del da\xF1o de ataque adicional"
-      m_AtributeType: 1
-      m_Color: 4
+      m_ToolTip: del poder de habilidad
+      m_AtributeType: 3
+      m_Color: 6
   - m_DescriptionId: Y
-    m_Color: 5
-    m_AttributeId: "Da\xF1o 3r ataque"
+    m_Color: 1
+    m_AttributeId: "Da\xF1o base \u201CEnerg\xEDa oscura\u201D"
     m_MultiplyValue: 1
     m_SkillDescriptionTooltips:
-    - m_Value: 85
+    - m_Value: 70
       m_Format: '%'
-      m_ToolTip: "del da\xF1o de ataque adicional"
-      m_AtributeType: 1
-      m_Color: 4
+      m_ToolTip: del poder de habilidad
+      m_AtributeType: 3
+      m_Color: 6
   m_ExtraSpecifications:
   - "La reducci\xF3n de enfriamiento se aplica al Tiempo de recarga."
   - 'Radio 3r ataque (circular): 100 a 350 unidades.'

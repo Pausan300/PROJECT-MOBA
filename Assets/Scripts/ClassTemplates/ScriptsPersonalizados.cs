@@ -192,6 +192,12 @@ public class { scriptName } : CharacterMaster
 
         base.Update();
 
+        GeneralUpdate();
+
+    }}
+
+    void GeneralUpdate(){{
+
         if (GetUseSkillGizmos())
         {{
             if (Input.GetMouseButtonDown(0))
@@ -264,7 +270,6 @@ public class { scriptName } : CharacterMaster
         UpdateWSkill();
         UpdateESkill();
         UpdateRSkill();
-
     }}
 
     #region Q Skill
@@ -320,6 +325,7 @@ public class { scriptName } : CharacterMaster
     IEnumerator StartQSkill()
     {{
         
+        m_QSkillStarted = true;
         StopAttacking();
         if (!GetIsLookingForPosition())
             StopMovement();
@@ -362,7 +368,6 @@ public class { scriptName } : CharacterMaster
     {{
         m_QSkillStarted = false;
         m_QSkill.SetUsingSkill(false);
-        base.QSkill();
         StartCoroutine(RepeatQSaver());
     }}
     IEnumerator RepeatQSaver()
@@ -427,7 +432,7 @@ public class { scriptName } : CharacterMaster
 
     IEnumerator StartWSkill()
     {{
-
+        m_WSkillStarted = true;
         StopAttacking();
         if (!GetIsLookingForPosition())
             StopMovement();
@@ -471,7 +476,6 @@ public class { scriptName } : CharacterMaster
 
         m_WSkillStarted = false;
         m_WSkill.SetUsingSkill(false);
-        base.WSkill();
         StartCoroutine(RepeatWSaver());
     }}
     IEnumerator RepeatWSaver()
@@ -535,7 +539,7 @@ public class { scriptName } : CharacterMaster
     }}
     IEnumerator StartESkill()
     {{
-
+        m_ESkillStarted = true;
         StopAttacking();
         if (!GetIsLookingForPosition())
             StopMovement();
@@ -577,7 +581,6 @@ public class { scriptName } : CharacterMaster
     {{
         m_ESkillStarted = false;
         m_ESkill.SetUsingSkill(false);
-        base.ESkill();
         StartCoroutine(RepeatESaver());
     }}
     IEnumerator RepeatESaver()
@@ -643,7 +646,7 @@ public class { scriptName } : CharacterMaster
 
     IEnumerator StartRSkill()
     {{
-
+        m_RSkillStarted = true;
         StopAttacking();
         if (!GetIsLookingForPosition())
             StopMovement();
@@ -685,7 +688,6 @@ public class { scriptName } : CharacterMaster
     {{
         m_RSkillStarted = false;
         m_RSkill.SetUsingSkill(false);
-        base.RSkill();
         StartCoroutine(RepeatRSaver());
     }}
 
