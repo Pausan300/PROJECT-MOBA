@@ -14,7 +14,8 @@ public class BuffDebuffObjectUI : MonoBehaviour
     private void Update()
     {
         m_BuffDurationImage.fillAmount = Mathf.Lerp(0.0f, 1.0f, m_TimedBuff.GetCurrentDuration() / m_TimedBuff.m_Buff.m_Duration);
-        if (m_TimedBuff.GetCurrentDuration() <= 0.0f)
+        if (m_TimedBuff.GetCurrentDuration() <= 0.0f || m_TimedBuff.m_IsFinished)
             Destroy(gameObject);
     }
 }
+

@@ -50,18 +50,42 @@ MonoBehaviour:
     - 35
     - 38
     - 40
-  - m_AttributeId: Rango
+  - m_AttributeId: Rango proyectil
     m_IsPct: 0
     m_ShowScalingInPopup: 0
     m_ValueFormat: 
     m_LevelScaling:
     - 900
-  - m_AttributeId: Ancho
+  - m_AttributeId: Ancho proyectil
     m_IsPct: 0
     m_ShowScalingInPopup: 0
     m_ValueFormat: 
     m_LevelScaling:
     - 80
+  - m_AttributeId: Velocidad proyectil
+    m_IsPct: 0
+    m_ShowScalingInPopup: 0
+    m_ValueFormat: 
+    m_LevelScaling:
+    - 1000
+  - m_AttributeId: "Rango ara\xF1azo"
+    m_IsPct: 0
+    m_ShowScalingInPopup: 0
+    m_ValueFormat: 
+    m_LevelScaling:
+    - 300
+  - m_AttributeId: "Ancho ara\xF1azo"
+    m_IsPct: 0
+    m_ShowScalingInPopup: 0
+    m_ValueFormat: 
+    m_LevelScaling:
+    - 90
+  - m_AttributeId: "Velocidad ara\xF1azo"
+    m_IsPct: 0
+    m_ShowScalingInPopup: 0
+    m_ValueFormat: 
+    m_LevelScaling:
+    - 1600
   m_DescriptionDamageList:
   - m_DescriptionId: X
     m_Color: 5
@@ -76,5 +100,5 @@ MonoBehaviour:
   m_ExtraSpecifications:
   - Aplica efectos de impacto
   m_IndicatorUIObject: {fileID: 6649836915933689498, guid: 8caef782d2af9ec429b3465c5f423ec6, type: 3}
-  m_SkillDisabledTime: 0
-  m_CancelableWithMouseClick: 0
+  m_SkillDisabledTime: 0.15
+  m_CancelableWithMouseClick: 1

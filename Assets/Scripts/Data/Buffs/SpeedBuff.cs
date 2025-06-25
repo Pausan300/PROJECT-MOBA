@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
 [CreateAssetMenu(menuName = "Buffs/SpeedBuff")]
 public class SpeedBuff : Buff
@@ -36,5 +38,19 @@ public class SpeedBuff : Buff
         m_Duration = Duration;
         m_SpeedIncrease = SpeedIncrease;
         return new TimedSpeedBuff(Duration, this, obj);
+    }
+}
+
+[CustomEditor(typeof(SpeedBuff))]
+public class SpeedBuffEditor : Editor
+{
+    public override void OnInspectorGUI()
+    {
+        DrawDefaultInspector();
+        Buff l_Buff = (Buff)target;
+        if(l_Buff.m_IsEffectStacked)
+        {   
+            l_Buff.m_MaxStacks=EditorGUILayout.IntField("Max Stacks", l_Buff.m_MaxStacks);
+        }
     }
 }

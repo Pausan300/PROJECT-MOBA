@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -8,14 +9,23 @@ public class SkillIndicatorUI : MonoBehaviour
     RectTransform m_ArrowSkillIndicatorRect;
     List<RectTransform> m_DeletableSkillIndicatorList=new List<RectTransform>();
     List<RectTransform> m_NormalSkillIndicatorList=new List<RectTransform>();
+    [Serializable]
     public struct TargetSkillIndicator 
     {
         public Transform m_TargetObject;
         public RectTransform m_SkillIndicator;
+        public bool m_FollowMouse;
         public TargetSkillIndicator(Transform TargetObject, RectTransform SkillIndicator) 
         {
             m_TargetObject=TargetObject;
             m_SkillIndicator=SkillIndicator;
+            m_FollowMouse=false;
+        }
+        public TargetSkillIndicator(bool FollowMouse, RectTransform SkillIndicator) 
+        {
+            m_TargetObject=null;
+            m_SkillIndicator=SkillIndicator;
+            m_FollowMouse=FollowMouse;
         }
     }
     List<TargetSkillIndicator> m_TargetSkillIndicatorList=new List<TargetSkillIndicator>();
@@ -29,7 +39,7 @@ public class SkillIndicatorUI : MonoBehaviour
     }
     void Update()
     {
-         if(m_ArrowSkillIndicatorRect!=null)
+        if(m_ArrowSkillIndicatorRect!=null)
             MoveArrowSkillIndicator();
         if(m_TargetSkillIndicatorList.Count>0)
             UpdateTargetSkillIndicatorUI();
@@ -77,18 +87,32 @@ public class SkillIndicatorUI : MonoBehaviour
             m_DeletableSkillIndicatorList.Add(l_CircleRect);
 
     }
+    public void CreateCircleSkillIndicator(GameObject Circle, float Radius, bool FollowMouse)
+    {
+        GameObject l_Circle=Instantiate(Circle, transform);
+        RectTransform l_CircleRect=l_Circle.GetComponent<RectTransform>();
+        l_CircleRect.sizeDelta=new Vector2(Radius/100.0f*2.0f, Radius/100.0f*2.0f);
+        if(FollowMouse)
+            m_TargetSkillIndicatorList.Add(new TargetSkillIndicator(FollowMouse, l_CircleRect));
+    }
     public void UpdateTargetSkillIndicatorUI()
     {
         for(int i=m_TargetSkillIndicatorList.Count-1; i>=0; --i) 
         {
-            if(m_TargetSkillIndicatorList[i].m_TargetObject==null) 
+            if(!m_TargetSkillIndicatorList[i].m_FollowMouse && m_TargetSkillIndicatorList[i].m_TargetObject==null) 
             {
                 Destroy(m_TargetSkillIndicatorList[i].m_SkillIndicator.gameObject);
                 m_TargetSkillIndicatorList.Remove(m_TargetSkillIndicatorList[i]);
             }
-            else
-                m_TargetSkillIndicatorList[i].m_SkillIndicator.position=new Vector3(m_TargetSkillIndicatorList[i].m_TargetObject.position.x, 0.05f, 
-                    m_TargetSkillIndicatorList[i].m_TargetObject.position.z);
+            else 
+            {
+                Vector3 l_Position;
+                if(m_TargetSkillIndicatorList[i].m_FollowMouse) 
+                    l_Position=m_Character.GetPositionWithMouse();
+                else 
+                    l_Position=m_TargetSkillIndicatorList[i].m_TargetObject.position;
+                m_TargetSkillIndicatorList[i].m_SkillIndicator.position=new Vector3(l_Position.x, 0.05f, l_Position.z);
+            }
         }
     }
     public void ClearDeletableSkillIndicatorUI()

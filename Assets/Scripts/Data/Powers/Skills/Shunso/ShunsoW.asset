@@ -71,7 +71,19 @@ MonoBehaviour:
     m_ShowScalingInPopup: 0
     m_ValueFormat: 
     m_LevelScaling:
-    - 35
+    - 25
+  - m_AttributeId: Velocidad
+    m_IsPct: 0
+    m_ShowScalingInPopup: 0
+    m_ValueFormat: 
+    m_LevelScaling:
+    - 3000
+  - m_AttributeId: Separacion
+    m_IsPct: 0
+    m_ShowScalingInPopup: 0
+    m_ValueFormat: 
+    m_LevelScaling:
+    - 1
   m_DescriptionDamageList:
   - m_DescriptionId: X
     m_Color: 0
@@ -85,5 +97,5 @@ MonoBehaviour:
     m_SkillDescriptionTooltips: []
   m_ExtraSpecifications: []
   m_IndicatorUIObject: {fileID: 0}
-  m_SkillDisabledTime: 0
+  m_SkillDisabledTime: 0.15
   m_CancelableWithMouseClick: 0

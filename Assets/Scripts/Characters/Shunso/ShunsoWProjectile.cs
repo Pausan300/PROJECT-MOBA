@@ -1,0 +1,77 @@
+using System.Collections;
+using Unity.Netcode;
+using Unity.VisualScripting;
+using UnityEngine;
+using UnityEngine.UIElements;
+
+public class ShunsoWProjectile : NetworkBehaviour
+{
+    public GameObject m_Projectile;
+    ShunsoCharacterController m_Player;
+
+    float m_Damage;
+    float m_Speed;
+    float m_TimeNeeded;
+    float m_Timer;
+    float m_MaxRange;
+    Vector3 m_InitialPos;
+    Vector3 m_TargetPos;
+    Vector3 m_InitialScale;
+    Vector3 m_TargetScale;
+    Vector3 m_Direction;
+
+    
+    void Start()
+    {
+    }
+
+    void Update()
+    {
+        m_Timer+=Time.deltaTime;
+        m_Projectile.transform.localScale=Vector3.Lerp(m_InitialScale, m_TargetScale, m_Timer/m_TimeNeeded);
+        m_Projectile.transform.localPosition=Vector3.Lerp(m_InitialPos, m_TargetPos, m_Timer/m_TimeNeeded);
+
+        if(m_Timer>=m_TimeNeeded) 
+        {
+            Destroy(gameObject);
+        }
+    }
+
+    public void SetStats(ShunsoCharacterController Player, float Damage, float Speed, float Width, float Range, float Offset, Vector3 Direction) 
+    {
+        m_Player=Player;
+        m_Damage=Damage;
+        m_Speed=Speed/100.0f;
+        m_MaxRange=Range/100.0f;
+        m_TimeNeeded=m_MaxRange/m_Speed;
+
+        transform.forward=Direction;
+        m_Projectile.transform.localScale=new Vector3(Width/100.0f, 0.5f, 0.0f);
+        m_InitialScale=m_Projectile.transform.localScale;
+        m_Projectile.transform.localPosition=new Vector3(0.0f, 0.5f, 0.0f);
+        m_InitialPos=m_Projectile.transform.localPosition;
+
+        Vector3 l_FinalPos=transform.position+Direction*m_MaxRange+transform.right*Offset;
+        m_Projectile.transform.forward=(l_FinalPos-transform.position).normalized;
+
+        m_TargetPos=transform.InverseTransformPoint((l_FinalPos+transform.position)/2.0f);
+        m_TargetPos.y=m_InitialPos.y;
+        m_TargetScale=new Vector3(m_Projectile.transform.localScale.x, m_Projectile.transform.localScale.y, (l_FinalPos-transform.position).magnitude);
+    }
+
+    private void OnTriggerEnter(Collider other)
+	{
+        if(!IsSpawned||!HasAuthority)
+        {
+            return;
+        }
+
+        if(other.CompareTag("Enemy")) 
+        {
+            if(other.TryGetComponent(out ITakeDamage Enemy))
+	        {
+		        Enemy.TakeDamage(m_Damage, 0.0f, m_Player.m_CharacterStats.GetPlayerName());
+            }
+        }
+	}
+}

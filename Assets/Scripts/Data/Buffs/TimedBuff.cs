@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Netcode;
@@ -38,6 +39,8 @@ public abstract class TimedBuff
         if (m_Buff.m_IsEffectStacked || m_TimeLeft <= 0)
         {
             m_EffectStacks++;
+            if(m_EffectStacks>m_Buff.m_MaxStacks)
+                m_EffectStacks=m_Buff.m_MaxStacks;
             ApplyEffect();
         }
 
@@ -49,6 +52,10 @@ public abstract class TimedBuff
     public float GetCurrentDuration()
     {
         return m_TimeLeft;
+    }
+    public float GetCurrentStacks() 
+    {
+        return m_EffectStacks;
     }
     public void EndBuffNow()
     {

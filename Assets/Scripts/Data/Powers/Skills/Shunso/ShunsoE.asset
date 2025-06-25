@@ -44,6 +44,18 @@ MonoBehaviour:
     - 50
     - 60
     - 70
+  - m_AttributeId: Velocidad
+    m_IsPct: 0
+    m_ShowScalingInPopup: 0
+    m_ValueFormat: 
+    m_LevelScaling:
+    - 0.5
+  - m_AttributeId: Duracion
+    m_IsPct: 0
+    m_ShowScalingInPopup: 0
+    m_ValueFormat: 
+    m_LevelScaling:
+    - 2.5
   - m_AttributeId: Coste de Mana
     m_IsPct: 0
     m_ShowScalingInPopup: 0

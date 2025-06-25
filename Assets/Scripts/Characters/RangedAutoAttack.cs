@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using Unity.Netcode;
 using UnityEngine;
@@ -14,6 +15,8 @@ public class RangedAutoAttack : NetworkBehaviour
     public ParticleSystem m_ParticleSystem;
     float m_TimeToDestroyWithParticle = 5;
     bool m_DamageDone = false;
+
+    public event Action m_OnHitEffects;
 
     void Update()
     {
@@ -41,6 +44,8 @@ public class RangedAutoAttack : NetworkBehaviour
                 else
                     Destroy(gameObject);
             }
+           
+            m_OnHitEffects?.Invoke();
         }
     }
     IEnumerator DestroyWithParticles()

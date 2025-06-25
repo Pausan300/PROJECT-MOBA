@@ -2592,9 +2592,10 @@ MonoBehaviour:
   m_RangedAutoAttack: {fileID: 8413048611526370374, guid: 2ce0df19bb2af8a478ba1ad145d95731, type: 3}
   m_RangedAutoSpawnPoint: {fileID: 5358651008968027849}
   m_MinExtraDamage: 0
-  m_MinExtraDamage1: 0
-  m_MinExtraDamage2: 0
+  m_QProjectile: {fileID: 8270496605563521561, guid: 2483da9418e3d054db13c518dff590b3, type: 3}
+  m_WProjectile: {fileID: 8270496605563521561, guid: c24a88d86428cab449ad5f7da88cfc13, type: 3}
   m_MinExtraDamage3: 0
+  m_ESpeedBuff: {fileID: 11400000, guid: f9a5be81d53812d47ba8dff1dd74ee42, type: 2}
   m_RProjectile: {fileID: 8270496605563521561, guid: a0c7c128064ece94a9ba8673d546e333, type: 3}
 --- !u!114 &7780092429937281219
 MonoBehaviour:
@@ -2868,6 +2869,13 @@ MonoBehaviour:
     TransitionDuration: 0.1
     TriggerNameHash: 1593183715
     TransitionIndex: 5
+  - IsCrossFadeExit: 0
+    Layer: 0
+    OriginatingState: -1936938822
+    DestinationState: -831615249
+    TransitionDuration: 0
+    TriggerNameHash: 1593183715
+    TransitionIndex: 2
   - IsCrossFadeExit: 0
     Layer: 0
     OriginatingState: -726377838

@@ -9,6 +9,8 @@ public class Buff : ScriptableObject
     public bool m_IsDurationRefreshed;
     public bool m_IsEffectStacked;
     public bool m_InfiniteDuration;
+    [HideInInspector] 
+    public int m_MaxStacks;
     [HideInInspector]
     public float m_Duration;
     [HideInInspector]

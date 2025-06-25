@@ -10,17 +10,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7c34f45c379888a41976b79fb94aa565, type: 3}
-  m_Name: HirasuESpeedBuff
+  m_Name: ShunsoEBuff
   m_EditorClassIdentifier: 
-  m_BuffName: HirasuEBuff
-  m_BuffSprite: {fileID: 21300000, guid: 8ac145c8b7b5ccc4dba1dd3eba755798, type: 3}
+  m_BuffName: Fuerza Corrupta
+  m_BuffSprite: {fileID: 21300000, guid: bb2238797c1885143893bf69a0b9ddb2, type: 3}
   m_IsDurationRefreshed: 1
-  m_IsEffectStacked: 0
-  m_MaxStacks: 0
-  m_Duration: 2
+  m_IsEffectStacked: 1
+  m_MaxStacks: 10
+  m_Duration: 2.5
   m_SpeedType: 2
   m_WayOfChanging: 0
   m_Value1: 0
   m_Value2: 0
   m_ValueToValueTime: 0
-  m_SpeedIncrease: 30
+  m_SpeedIncrease: 0.5

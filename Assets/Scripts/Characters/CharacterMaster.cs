@@ -67,7 +67,6 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
     public KeyCode m_RSkillKey;
     public LayerMask m_DamageLayerMask;
     bool m_ShowingGizmos;
-    bool m_UseSkillGizmos;
     int m_QSkillLevel;
     int m_WSkillLevel;
     int m_ESkillLevel;
@@ -333,7 +332,7 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
     {
         if (Input.GetMouseButtonDown(1))
         {
-            if (m_UseSkillGizmos && IsAnySkillBeingUsed())
+            if (m_ShowingGizmos && IsAnySkillBeingUsed())
             {
                 m_SkillIndicatorUI.ClearDeletableSkillIndicatorUI();
                 m_SkillIndicatorUI.ClearTargetSkillIndicatorUI();
@@ -370,6 +369,7 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
                     m_CharacterUI.HideTargetInfoUI();
             }
             m_SkillIndicatorUI.ClearDeletableSkillIndicatorUI();
+            m_SkillIndicatorUI.ClearTargetSkillIndicatorUI();
         }
 
         if (m_LookingForNextPosition)

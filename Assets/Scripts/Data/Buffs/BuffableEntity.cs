@@ -22,6 +22,7 @@ public class BuffableEntity : MonoBehaviour
             }
         }
     }
+
     public void AddBuff(TimedBuff buff)
     {
         if (m_Buffs.ContainsKey(buff.m_Buff))
@@ -42,6 +43,7 @@ public class BuffableEntity : MonoBehaviour
             buff.Activate();
         }
     }
+
     public bool IsBuffActive(Buff _Buff)
     {
         if (m_Buffs.ContainsKey(_Buff))
@@ -58,6 +60,7 @@ public class BuffableEntity : MonoBehaviour
         }
         return false;
     }
+
     public List<TimedBuff> GetBuffs()
     {
         return m_Buffs.Values.ToList();
@@ -73,5 +76,11 @@ public class BuffableEntity : MonoBehaviour
         }
 
         return null;
+    }
+
+    public void RemoveBuff(TimedBuff _Buff) 
+    {
+        m_Buffs.Remove(_Buff.m_Buff);
+        _Buff.m_IsFinished=true;
     }
 }

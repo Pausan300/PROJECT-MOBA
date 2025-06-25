@@ -13,6 +13,7 @@ public class CharacterStats : NetworkBehaviour
     float m_MaxHealth;
     float m_MaxMana;
     float m_CurrentHealth;
+    float m_CurrentCorruptedHealth;
     float m_CurrentMana;
     float m_AttackDamage;
     float m_AbilityPower;
@@ -346,7 +347,11 @@ public class CharacterStats : NetworkBehaviour
     }
     public void AddMovSpeedBonusMulti(string Name, float Bonus)
     {
-        m_MoveSpeedBonusMultiBuffs.Add(Name, Bonus);
+        if(m_MoveSpeedBonusMultiBuffs.ContainsKey(Name))
+            m_MoveSpeedBonusMultiBuffs[Name]+=Bonus;
+        else
+            m_MoveSpeedBonusMultiBuffs.Add(Name, Bonus);
+
         m_MoveSpeedBonusMulti = 0.0f;
         for (int i = 0; i < m_MoveSpeedBonusMultiBuffs.Count; ++i)
         {
