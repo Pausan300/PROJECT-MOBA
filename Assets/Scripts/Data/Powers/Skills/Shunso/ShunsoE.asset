@@ -18,11 +18,16 @@ MonoBehaviour:
   m_Description: "Pasiva: Golpear a un enemigo con un ataque b\xE1sico o una habilidad
     otorga 1 acumulaci\xF3n de Fuerza Corrupta durante 2,5 s, si el enemigo golpeado
     tiene <color=FISICDAMAGE>Vida Corrupta</color> otorga 2 acumulaciones. Cada acumulaci\xF3n
-    otorga 0,5% de velocidad de movimiento, hasta un m\xE1ximo de 10 acumulaciones.
+    otorga 2% de velocidad de movimiento, hasta un m\xE1ximo de 10 acumulaciones.
     Mientras tenga el m\xE1ximo de acumulaciones, su fuerza se ve potenciada y obtiene
     X <color=ATTACKDAMAGE>de da\xF1o de ataque adicional</color>.\r\n\r\nActiva:
     Shunso consume las 10 acumulaciones de sangre corrupta y restaura Y <color=LIFE>puntos
     de vida</color>.\r"
+  m_HaveLoads: 0
+  m_MAXLoads: 0
+  m_HaveSpecialLoad: 0
+  m_SpecialLoadEvery: 0
+  m_SpecialLoadSprite: {fileID: 0}
   m_AttributeList:
   - m_AttributeId: "Curaci\xF3n"
     m_IsPct: 0
@@ -49,7 +54,7 @@ MonoBehaviour:
     m_ShowScalingInPopup: 0
     m_ValueFormat: 
     m_LevelScaling:
-    - 0.5
+    - 2
   - m_AttributeId: Duracion
     m_IsPct: 0
     m_ShowScalingInPopup: 0

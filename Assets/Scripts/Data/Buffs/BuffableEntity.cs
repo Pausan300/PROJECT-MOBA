@@ -30,7 +30,7 @@ public class BuffableEntity : MonoBehaviour
             m_Buffs[buff.m_Buff].Activate();
             if (TryGetComponent(out CharacterMaster Player))
             {
-                Player.GetCharacterUI().UpdateBuffObject(buff);
+                Player.GetCharacterUI().UpdateBuffObject(m_Buffs[buff.m_Buff]);
             }
         }
         else
@@ -44,13 +44,6 @@ public class BuffableEntity : MonoBehaviour
         }
     }
 
-    public bool IsBuffActive(Buff _Buff)
-    {
-        if (m_Buffs.ContainsKey(_Buff))
-            return true;
-        else
-            return false;
-    }
     public bool IsMarkBuffActive(Buff _Buff)
     {
         if (m_Buffs.ContainsKey(_Buff))
@@ -65,16 +58,20 @@ public class BuffableEntity : MonoBehaviour
     {
         return m_Buffs.Values.ToList();
     }
-    public TimedBuff GetBuffWithName(string _Name)
+    public TimedBuff GetBuffWithKey(Buff _Key)
     {
+        if (m_Buffs.ContainsKey(_Key))
+            return m_Buffs[_Key];
+        
+        /*
         foreach (TimedBuff _Buff in m_Buffs.Values.ToList())
         {
-            if (_Buff.m_Buff.m_BuffName == _Name)
+            if (_Buff.m_Buff.m_BuffName == _Key)
             {
                 return _Buff;
             }
         }
-
+        */
         return null;
     }
 
@@ -82,5 +79,9 @@ public class BuffableEntity : MonoBehaviour
     {
         m_Buffs.Remove(_Buff.m_Buff);
         _Buff.m_IsFinished=true;
+        if (TryGetComponent(out CharacterMaster Player))
+        {
+            Player.GetCharacterUI().DeleteBuffObject(_Buff);
+        }
     }
 }

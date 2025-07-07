@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using TreeEditor;
 using Unity.Netcode;
@@ -25,6 +26,8 @@ public class ShunsoQProjectile : NetworkBehaviour
     Vector3 m_Direction;
     bool m_Exploded;
     bool m_GoRight;
+
+    public event Action<int> m_EStacksOnHit;
 
     void Start()
     {
@@ -94,7 +97,11 @@ public class ShunsoQProjectile : NetworkBehaviour
                 StartCoroutine(StartSlash());
             if(other.TryGetComponent(out ITakeDamage Enemy))
 	        {
-		        Enemy.TakeDamage(m_Damage, 0.0f, m_Player.m_CharacterStats.GetPlayerName());
+		        Enemy.TakeDamage(m_Damage, 0.0f, false, m_Player.m_CharacterStats.GetPlayerName());
+                if(Enemy.GetCharacterStats().GetCorruptedHealth()>0.0f) 
+                    m_EStacksOnHit?.Invoke(2);
+                else
+                    m_EStacksOnHit?.Invoke(1);
             }
         } 
 	}

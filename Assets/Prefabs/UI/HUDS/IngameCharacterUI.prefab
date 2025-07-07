@@ -550,6 +550,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_WorldCanvas: {fileID: 0}
   m_IngameHealthBar: {fileID: 4337888493491307490}
+  m_IngameCorruptedHealthBar: {fileID: 4337888493491307490}
   m_IngameManaBar: {fileID: 2813803828831378565}
   m_IngameLevelText: {fileID: 4154252784937390472}
   m_PlayerNameText: {fileID: 1918213966467753306}

@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using Unity.Netcode;
 using Unity.VisualScripting;
@@ -15,6 +16,8 @@ public class ShunsoRProjectile : NetworkBehaviour
     Vector3 m_TargetPosition;
     Vector3 m_Direction;
     bool m_Exploding;
+
+    public event Action<int> m_EStacksOnHit;
 
     
     void Start()
@@ -62,8 +65,11 @@ public class ShunsoRProjectile : NetworkBehaviour
 		{
             if(Entity.TryGetComponent(out ITakeDamage Enemy))
 	        {
-                Debug.Log(l_ExtraDamage);
-		        Enemy.TakeDamage(m_Damage+l_ExtraDamage, 0.0f, m_Player.m_CharacterStats.GetPlayerName());
+		        Enemy.TakeDamage(m_Damage+l_ExtraDamage, 0.0f, false, m_Player.m_CharacterStats.GetPlayerName());
+                  if(Enemy.GetCharacterStats().GetCorruptedHealth()>0.0f) 
+                    m_EStacksOnHit?.Invoke(4);
+                else
+                    m_EStacksOnHit?.Invoke(1);
             }
         }
         l_Collider.enabled=false;

@@ -997,8 +997,6 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
             PowerOnCd.SetIsOnCd(true);
             StartCoroutine(PowersCooldown(PowerOnCd));
         }
-
-
     }
     void UseRecall(InputAction.CallbackContext obj)
     {
@@ -1062,7 +1060,7 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
         m_IngameCharacterUI.UpdateCharacterLevel(m_CharacterStats.GetCurrentLevel());
         m_IngameCharacterUI.SetPlayerName(m_CharacterStats.GetPlayerName());
     }
-    public void TakeDamage(float PhysDamage, float MagicDamage, string SourceId)
+    public void TakeDamage(float PhysDamage, float MagicDamage, bool IgnoreResistances, string SourceId)
     {
         if (GetCharacterStats().GetImmuneCC())
             return;
@@ -1094,7 +1092,6 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
         m_CharacterStats.SetCurrentHealthRpc(m_CharacterStats.GetCurrentHealth() + HealthToAdd);
 
         m_IngameCharacterUI.AddHealthInstance(HealthToAdd);
-
     }
     public bool IsAnySkillBeingUsed()
     {
@@ -1132,8 +1129,9 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
         Debug.Log("ATTACKING - Since last auto: " + m_TimeSinceLastAuto);
         m_TimeSinceLastAuto = 0.0f;
 #endif
-        m_DesiredEnemy.GetComponent<ITakeDamage>().TakeDamage(m_CharacterStats.GetAttackDamage(), m_CharacterStats.GetAbilityPower(), m_CharacterStats.GetPlayerName());
+        m_DesiredEnemy.GetComponent<ITakeDamage>().TakeDamage(m_CharacterStats.GetAttackDamage(), m_CharacterStats.GetAbilityPower(), false, m_CharacterStats.GetPlayerName());
     }
+
     //LLAMADA POR EVENTO EN LA ANIMACION DE AUTOATAQUE
     protected virtual void PerformRangedAutoAttack()
     {
@@ -1148,11 +1146,14 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
         l_ProjectileNetwork.SpawnWithOwnership(GetComponent<NetworkObject>().OwnerClientId);
         l_Projectile.GetComponent<RangedAutoAttack>().SetStats(m_DesiredEnemy, m_CharacterStats.GetAttackDamage(), 0.0f, this);
     }
+
     //LLAMADA CUANDO EL PROYECTIL HACE DAÑO AL ENEMIGO. EL PROPIO PROYECTIL YA SE ENCARGA DE HACER EL DAÑO, ES PARA SI SE QUIERE HACER ALGO MAS A PARTE DEL DAÑO.
     public virtual void RangedAutoAttackHitDamage(Transform _Enemy)
     {
 
     }
+
+
     //GETTERS & SETTERS
     public GameManager GetGameManager()
     {

@@ -84,10 +84,16 @@ public class EnemyDummy : NetworkBehaviour, ITakeDamage
             m_TimerLeftToRegen -= Time.deltaTime;
             if (m_TimerLeftToRegen <= 0.0f)
             {
-                UpdateCurrentHealthRpc(m_CharacterStats.GetMaxHealth(), false);
+                m_CharacterStats.SetCurrentHealthRpc(m_CharacterStats.GetMaxHealth());
+                m_CharacterStats.SetCorruptedHealth(0.0f);
                 m_CharacterStats.SetCurrentManaRpc(m_CharacterStats.GetMaxMana());
+                UpdateHealthBarRpc();
+                UpdateCorruptedHealthRpc();
             }
         }
+
+        if(m_CharacterStats.GetCorruptedHealth()>0.0f)
+            UpdateCorruptedHealthRpc();
 
         if (m_MoveToPoint && !m_CharacterStats.GetImmobilized() && !m_CharacterStats.GetStuned())
         {
@@ -102,6 +108,12 @@ public class EnemyDummy : NetworkBehaviour, ITakeDamage
         }
 
         ScaredBuff();
+
+        if (m_CanDie)
+        {
+            if (m_CharacterStats.GetCurrentHealth() <= 0.0f && m_CharacterStats.GetCorruptedHealth() <= 0.0f) 
+                OnDeath();
+        }
     }
 
     void ScaredBuff()
@@ -121,7 +133,7 @@ public class EnemyDummy : NetworkBehaviour, ITakeDamage
         foreach (Collider Entity in l_HitColliders)
         {
             if (Entity.TryGetComponent(out ITakeDamage Enemy))
-                Enemy.TakeDamage(m_CharacterStats.GetAttackDamage(), m_CharacterStats.GetAbilityPower(), "PracticeDummy");
+                Enemy.TakeDamage(m_CharacterStats.GetAttackDamage(), m_CharacterStats.GetAbilityPower(), false, "PracticeDummy");
         }
         m_CharacterStats.SetCurrentManaRpc(m_CharacterStats.GetCurrentMana() - 10.0f);
         m_ShowGizmos = true;
@@ -136,18 +148,17 @@ public class EnemyDummy : NetworkBehaviour, ITakeDamage
             Gizmos.DrawSphere(transform.position, m_AttackRadius / 100.0f);
         }
     }
-    public void TakeDamage(float PhysDamage, float MagicDamage, string SourceId)
+    public void TakeDamage(float PhysDamage, float MagicDamage, bool IgnoreResistances, string SourceId)
     {
-        float l_TotalPhysDamage = PhysDamage / (1.0f + m_CharacterStats.GetArmor() / 100.0f);
-        float l_TotalMagicDamage = MagicDamage / (1.0f + m_CharacterStats.GetMagicRes() / 100.0f);
-        UpdateCurrentHealthRpc(m_CharacterStats.GetCurrentHealth() - l_TotalPhysDamage - l_TotalMagicDamage, true);
-        m_IngameUI.AddDamageInstance(l_TotalPhysDamage, l_TotalMagicDamage, SourceId);
-
-        if (m_CanDie)
+        float l_TotalPhysDamage=PhysDamage;
+        float l_TotalMagicDamage=MagicDamage;
+        if(!IgnoreResistances) 
         {
-            if (m_CharacterStats.GetCurrentHealth() <= 0)
-                OnDeath();
+            l_TotalPhysDamage /= (1.0f + m_CharacterStats.GetArmor() / 100.0f);
+            l_TotalMagicDamage /= (1.0f + m_CharacterStats.GetMagicRes() / 100.0f);
         }
+        UpdateCurrentHealthRpc(l_TotalPhysDamage + l_TotalMagicDamage, true);
+        m_IngameUI.AddDamageInstance(l_TotalPhysDamage, l_TotalMagicDamage, SourceId);
     }
     public void OnDeath()
     {
@@ -168,12 +179,38 @@ public class EnemyDummy : NetworkBehaviour, ITakeDamage
     }
 
     [Rpc(SendTo.Everyone)]
-    void UpdateCurrentHealthRpc(float Amount, bool TookDamage)
+    void UpdateCurrentHealthRpc(float DamageAmount, bool TookDamage)
     {
-        m_CharacterStats.SetCurrentHealthRpc(Amount);
-        m_IngameUI.m_IngameHealthBar.value = m_CharacterStats.GetCurrentHealth() / m_CharacterStats.GetMaxHealth();
+        float l_NewHealth=m_CharacterStats.GetCurrentHealth()-DamageAmount;
+        float l_LeftoverDamage=0.0f; 
+        if(l_NewHealth<0.0f) 
+        {
+            l_LeftoverDamage=-l_NewHealth;
+            l_NewHealth=0.0f;
+        }
+        m_CharacterStats.SetCurrentHealthRpc(l_NewHealth);
+        if(l_LeftoverDamage>0.0f) 
+        {
+            m_CharacterStats.SetCorruptedHealth(m_CharacterStats.GetCorruptedHealth()-l_LeftoverDamage);
+            if(m_CharacterStats.GetCorruptedHealth()<0.0f)
+                m_CharacterStats.SetCorruptedHealth(0.0f);
+        }
+
+        UpdateHealthBarRpc();
+        UpdateCorruptedHealthRpc();
+
         if (TookDamage)
             m_TimerLeftToRegen = m_TimeToStartRegen;
+    }
+    [Rpc(SendTo.Everyone)]
+    void UpdateHealthBarRpc() 
+    {
+         m_IngameUI.m_IngameHealthBar.value = m_CharacterStats.GetCurrentHealth() / m_CharacterStats.GetMaxHealth();
+    }
+    void UpdateCorruptedHealthRpc()
+    {
+        Debug.Log("Health: "+m_CharacterStats.GetCurrentHealth()+" Corrupted: "+m_CharacterStats.GetCorruptedHealth()+" Value: "+(m_CharacterStats.GetCurrentHealth()+m_CharacterStats.GetCorruptedHealth())/m_CharacterStats.GetMaxHealth());
+        m_IngameUI.m_IngameCorruptedHealthBar.value = (m_CharacterStats.GetCurrentHealth() + m_CharacterStats.GetCorruptedHealth()) / m_CharacterStats.GetMaxHealth();
     }
     [Rpc(SendTo.Everyone)]
     public void AddHealthRpc(float Health)
@@ -189,7 +226,6 @@ public class EnemyDummy : NetworkBehaviour, ITakeDamage
         m_CharacterStats.SetArmor(m_CharacterStats.GetArmor() + 10.0f);
         m_CharacterStats.SetMagicRes(m_CharacterStats.GetMagicRes() + 10.0f);
     }
-
 
 
     public CharacterStats GetCharacterStats()

@@ -370,7 +370,7 @@ public class ZappadasCharacterController : CharacterMaster
                 {
                     float l_Damage = (m_QSkill.GetAttribute("Daño base", GetQSkillLevel())) + (m_PercentageSkillPowerQ1 / 100) * GetCharacterStats().GetAbilityPower();
                     Debug.Log("TAKEN " + l_Damage + " DAMAGE");
-                    Enemy.TakeDamage(0, l_Damage, m_CharacterStats.GetPlayerName());
+                    Enemy.TakeDamage(0, l_Damage, false, m_CharacterStats.GetPlayerName());
                     AddmDarkPowerDamageLightlessWithSkill();
                     l_CollidersHit.Add(Entity);
                 }

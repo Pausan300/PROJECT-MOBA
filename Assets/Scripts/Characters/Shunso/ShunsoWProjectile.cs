@@ -1,15 +1,15 @@
+using System;
 using System.Collections;
 using Unity.Netcode;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 public class ShunsoWProjectile : NetworkBehaviour
 {
     public GameObject m_Projectile;
     ShunsoCharacterController m_Player;
 
-    float m_Damage;
+    float m_CorruptedHealth;
+    float m_CorruptedHealthDamage;
     float m_Speed;
     float m_TimeNeeded;
     float m_Timer;
@@ -18,8 +18,8 @@ public class ShunsoWProjectile : NetworkBehaviour
     Vector3 m_TargetPos;
     Vector3 m_InitialScale;
     Vector3 m_TargetScale;
-    Vector3 m_Direction;
-
+    
+    public event Action<int> m_EStacksOnHit;
     
     void Start()
     {
@@ -37,10 +37,11 @@ public class ShunsoWProjectile : NetworkBehaviour
         }
     }
 
-    public void SetStats(ShunsoCharacterController Player, float Damage, float Speed, float Width, float Range, float Offset, Vector3 Direction) 
+    public void SetStats(ShunsoCharacterController Player, float CorruptedHealth, float CorruptedHealthDamage, float Speed, float Width, float Range, float Offset, Vector3 Direction) 
     {
         m_Player=Player;
-        m_Damage=Damage;
+        m_CorruptedHealth=CorruptedHealth;
+        m_CorruptedHealthDamage=CorruptedHealthDamage;
         m_Speed=Speed/100.0f;
         m_MaxRange=Range/100.0f;
         m_TimeNeeded=m_MaxRange/m_Speed;
@@ -70,7 +71,14 @@ public class ShunsoWProjectile : NetworkBehaviour
         {
             if(other.TryGetComponent(out ITakeDamage Enemy))
 	        {
-		        Enemy.TakeDamage(m_Damage, 0.0f, m_Player.m_CharacterStats.GetPlayerName());
+                Enemy.TakeDamage(m_CorruptedHealth, 0.0f, true, m_Player.m_CharacterStats.GetPlayerName());
+                //Enemy.GetCharacterStats().SetCurrentHealthRpc(Enemy.GetCharacterStats().GetCurrentHealth()-m_CorruptedHealth);
+                if(Enemy.GetCharacterStats().GetCorruptedHealth()>0.0f)
+                    m_EStacksOnHit.Invoke(2);
+                else
+                    m_EStacksOnHit.Invoke(1);
+                Enemy.GetCharacterStats().SetCorruptedHealth(Enemy.GetCharacterStats().GetCorruptedHealth()+m_CorruptedHealth);
+                Enemy.GetCharacterStats().SetCorruptedHealthDamage(m_CorruptedHealthDamage);
             }
         }
 	}

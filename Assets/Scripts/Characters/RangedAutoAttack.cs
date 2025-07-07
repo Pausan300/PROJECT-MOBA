@@ -28,11 +28,10 @@ public class RangedAutoAttack : NetworkBehaviour
         transform.position = Vector3.MoveTowards(transform.position, m_Target.position, m_Speed * Time.deltaTime);
         if (!m_DamageDone)
         {
-
             if (Vector3.Distance(transform.position, m_Target.position) <= 0.005f)
             {
                 if (m_Target.TryGetComponent<ITakeDamage>(out ITakeDamage Enemy))
-                    Enemy.TakeDamage(m_PhysicDamage, m_MagicDamage, "AutoAttack");
+                    DamageEnemy(Enemy);
 
                 m_CharacterMaster.RangedAutoAttackHitDamage(m_Target);
 
@@ -43,10 +42,13 @@ public class RangedAutoAttack : NetworkBehaviour
                 }
                 else
                     Destroy(gameObject);
-            }
-           
-            m_OnHitEffects?.Invoke();
+            }  
         }
+    }
+    protected virtual void DamageEnemy(ITakeDamage Enemy) 
+    {
+        Enemy.TakeDamage(m_PhysicDamage, m_MagicDamage, false, "AutoAttack");
+        m_OnHitEffects?.Invoke();
     }
     IEnumerator DestroyWithParticles()
     {

@@ -14,8 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_BuffName: HirasuWDebuff
   m_BuffSprite: {fileID: 21300000, guid: 8c42c262388d20a4ca5a7f9a8e50d43c, type: 3}
-  m_Duration: 5
   m_IsDurationRefreshed: 1
   m_IsEffectStacked: 1
+  m_InfiniteDuration: 0
+  m_MaxStacks: 0
+  m_Duration: 5
+  m_ValueAmount: -1
   m_MaxMarks: 3
   m_MarkObject: {fileID: 5370994416899626803, guid: 81ce3eb63f575ad4c89f887efc641c62, type: 3}

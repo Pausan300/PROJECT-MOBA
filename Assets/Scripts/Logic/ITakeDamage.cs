@@ -4,6 +4,6 @@ using UnityEngine;
 
 public interface ITakeDamage
 {
-	void TakeDamage(float PhysDamage, float MagicDamage, string SourceId);
+	void TakeDamage(float PhysDamage, float MagicDamage, bool IgnoreResistances, string SourceId);
 	CharacterStats GetCharacterStats();
 }

@@ -23,6 +23,7 @@ public class PracticeModeUI : NetworkBehaviour
     public Animation m_EnemyAttacksButtonAnim;
     public Animation m_EnemyResistsButtonAnim;
     public Animation m_EnemyHealthButtonAnim;
+    public Animation m_EnemyCanDieButtonAnim;
     public Animation m_UseKeyboardMovementButtonAnim;
 
     bool m_Opened;
@@ -33,6 +34,7 @@ public class PracticeModeUI : NetworkBehaviour
     bool m_EnemyAttacksButtonActive;
     bool m_EnemyResistsButtonActive;
     bool m_EnemyHealthButtonActive;
+    bool m_EnemyCanDieButtonActive;
     bool m_UseKeyboardMovementButtonActive;
 
     float m_ButtonAnimTime;
@@ -76,12 +78,6 @@ public class PracticeModeUI : NetworkBehaviour
             m_ButtonAnimTime = m_EnemyResistsButtonAnim[m_EnemyResistsButtonAnim.clip.name].time;
         if (m_EnemyHealthButtonActive)
             m_ButtonAnimTime = m_EnemyHealthButtonAnim[m_EnemyHealthButtonAnim.clip.name].time;
-
-        foreach (EnemyDummy Enemy in m_EnemiesList)
-        {
-            if (!Enemy.IsDestroyed())
-                Enemy.SetCanDie(m_EnemyAttacksButtonActive);
-        }
 
         if (m_EnemyAttacksButtonActive)
         {
@@ -252,6 +248,8 @@ public class PracticeModeUI : NetworkBehaviour
         EnemyDummy l_EnemyScript = l_Enemy.GetComponent<EnemyDummy>();
         l_EnemyScript.SetMovement(false);
         m_EnemiesList.Add(l_Enemy.GetComponent<EnemyDummy>());
+        if(m_EnemyCanDieButtonActive)
+            l_EnemyScript.SetCanDie(true);
     }
     void AddHealthToEnemy()
     {
@@ -299,6 +297,27 @@ public class PracticeModeUI : NetworkBehaviour
             m_EnemyAttacksButtonAnim.Sample();
             m_EnemyAttacksButtonAnim.Play();
             m_TimerSinceLastDummyAttack = 0.0f;
+        }
+    }
+    public void EnemyCanDieButton()
+    {
+        m_EnemyCanDieButtonActive = !m_EnemyCanDieButtonActive;
+        if (m_EnemyCanDieButtonAnim.isPlaying)
+        {
+            m_EnemyCanDieButtonAnim[m_EnemyCanDieButtonAnim.clip.name].time = 0.0f;
+            m_EnemyCanDieButtonAnim.Sample();
+            m_EnemyCanDieButtonAnim.Stop();
+        }
+        else
+        {
+            m_EnemyCanDieButtonAnim[m_EnemyCanDieButtonAnim.clip.name].time = m_ButtonAnimTime;
+            m_EnemyCanDieButtonAnim.Sample();
+            m_EnemyCanDieButtonAnim.Play();
+        }
+        foreach (EnemyDummy Enemy in m_EnemiesList)
+        {
+            if (!Enemy.IsDestroyed())
+                Enemy.SetCanDie(m_EnemyCanDieButtonActive); 
         }
     }
     public void EraseEnemies()

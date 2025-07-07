@@ -311,6 +311,11 @@ public class CharacterUI : MonoBehaviour
             l_BuffObjectUI.m_CumulativeAmountValueText.gameObject.SetActive(true);
             l_BuffObjectUI.m_CumulativeAmountValueText.text = _TimedBuff.m_Buff.m_ValueAmount.ToString();
         }
+        else if(_TimedBuff.m_Buff.m_IsEffectStacked)
+        { 
+            l_BuffObjectUI.m_CumulativeAmountValueText.gameObject.SetActive(true);
+            l_BuffObjectUI.m_CumulativeAmountValueText.text = _TimedBuff.GetCurrentStacks().ToString();
+        }
         else
         {
             l_BuffObjectUI.m_CumulativeAmountValueText.gameObject.SetActive(false);
@@ -322,17 +327,21 @@ public class CharacterUI : MonoBehaviour
     {
         foreach (BuffDebuffObjectUI BuffObject in m_BuffDebuffUIList)
         {
-            BuffDebuffObjectUI l_BuffObjectUI = BuffObject;
-            if (l_BuffObjectUI.m_TimedBuff.m_Buff.m_BuffName == _TimedBuff.m_Buff.m_BuffName)
+            if (BuffObject.m_TimedBuff == _TimedBuff)
             {
                 if (_TimedBuff.m_Buff.m_ValueAmount != -1)
                 {
-                    l_BuffObjectUI.m_CumulativeAmountValueText.gameObject.SetActive(true);
-                    l_BuffObjectUI.m_CumulativeAmountValueText.text = _TimedBuff.m_Buff.m_ValueAmount.ToString();
+                    BuffObject.m_CumulativeAmountValueText.gameObject.SetActive(true);
+                    BuffObject.m_CumulativeAmountValueText.text = _TimedBuff.m_Buff.m_ValueAmount.ToString();
+                }
+                else if(_TimedBuff.m_Buff.m_IsEffectStacked)
+                { 
+                    BuffObject.m_CumulativeAmountValueText.gameObject.SetActive(true);
+                    BuffObject.m_CumulativeAmountValueText.text = _TimedBuff.GetCurrentStacks().ToString();
                 }
                 else
                 {
-                    l_BuffObjectUI.m_CumulativeAmountValueText.gameObject.SetActive(false);
+                    BuffObject.m_CumulativeAmountValueText.gameObject.SetActive(false);
                 }
             }
         }

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using static Unity.VisualScripting.Member;
 
 
 public class DamageInstance
@@ -46,6 +45,7 @@ public class IngameCharacterUI : MonoBehaviour
 
     public GameObject m_WorldCanvas;
     public Slider m_IngameHealthBar;
+    public Slider m_IngameCorruptedHealthBar;
     public Slider m_IngameManaBar;
     public TextMeshProUGUI m_IngameLevelText;
     public TextMeshProUGUI m_PlayerNameText;
@@ -65,7 +65,6 @@ public class IngameCharacterUI : MonoBehaviour
     public GameObject m_HealthNumbers;
     public Vector3 m_HealthNumbersPosOffset;
     public List<HealthInstance> m_HealthInstanceList = new List<HealthInstance>();
-
 
     [Header("LOADS INFO")]
     public GameObject m_LoadsInfo;
@@ -179,7 +178,6 @@ public class IngameCharacterUI : MonoBehaviour
             TextMeshProUGUI l_TextMesh = l_HealthText.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
             l_TextMesh.text = Health.ToString("f0");
         }
-
     }
 
     public void UpdateHealthManaBars(float HealthRounded, float MaxHealth, float ManaRounded, float MaxMana)

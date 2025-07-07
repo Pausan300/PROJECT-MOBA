@@ -111,7 +111,7 @@ public class ZappadasQProjectileUpgrade : MonoBehaviour
                 l_Damage += m_AditionalDamageMinions;
 
             Debug.Log("TAKEN " + l_Damage + " DAMAGE");
-            Enemy.TakeDamage(0, l_Damage, m_CharacterStats.GetPlayerName());
+            Enemy.TakeDamage(0, l_Damage, false, m_CharacterStats.GetPlayerName());
             m_CharacterController.AddmDarkPowerDamageLightlessWithSkill();
         }
     }

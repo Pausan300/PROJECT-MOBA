@@ -41,7 +41,8 @@ public abstract class TimedBuff
             m_EffectStacks++;
             if(m_EffectStacks>m_Buff.m_MaxStacks)
                 m_EffectStacks=m_Buff.m_MaxStacks;
-            ApplyEffect();
+            else
+                ApplyEffect();
         }
 
         if (m_Buff.m_IsDurationRefreshed || m_TimeLeft <= 0)

@@ -16,8 +16,10 @@ MonoBehaviour:
   m_BuffSprite: {fileID: 21300000, guid: 8ac145c8b7b5ccc4dba1dd3eba755798, type: 3}
   m_IsDurationRefreshed: 1
   m_IsEffectStacked: 0
+  m_InfiniteDuration: 0
   m_MaxStacks: 0
   m_Duration: 2
+  m_ValueAmount: -1
   m_SpeedType: 2
   m_WayOfChanging: 0
   m_Value1: 0

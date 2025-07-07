@@ -195,7 +195,7 @@ public class HirasuCharacterController : CharacterMaster
 					if(Entity.TryGetComponent(out ITakeDamage Enemy))
 					{
 						Enemy.TakeDamage(m_QSkill.GetAttribute("Daño base", GetQSkillLevel())+(m_QAdditionalDamage/100.0f*m_CharacterStats.GetBonusAttackDamage())+l_ExtraPhysDamage, l_ExtraMagicDamage, 
-							m_CharacterStats.GetPlayerName());
+							false, m_CharacterStats.GetPlayerName());
 						for(int i=0; i<2; i++)
 						{
 							SpawnSplinter(Entity.transform.position, transform.forward, Entity.transform, Enemy);
@@ -437,7 +437,7 @@ public class HirasuCharacterController : CharacterMaster
 							Damage*=(1.0f+m_WMarksExtraDamage/100.0f);
 					}
 					Debug.Log("TAKEN "+Damage+" DAMAGE");
-					Enemy.TakeDamage(Damage, 0.0f, m_CharacterStats.GetPlayerName());
+					Enemy.TakeDamage(Damage, 0.0f, false, m_CharacterStats.GetPlayerName());
 					l_CollidersHit.Add(Entity);
 				}
 			}
@@ -531,7 +531,7 @@ public class HirasuCharacterController : CharacterMaster
 				m_SecondAttack=false;
 			}
 		}
-		m_DesiredEnemy.GetComponent<ITakeDamage>().TakeDamage(m_CharacterStats.GetAttackDamage()+l_ExtraPhysDamage, l_ExtraMagicDamage, m_CharacterStats.GetPlayerName());
+		m_DesiredEnemy.GetComponent<ITakeDamage>().TakeDamage(m_CharacterStats.GetAttackDamage()+l_ExtraPhysDamage, l_ExtraMagicDamage, false, m_CharacterStats.GetPlayerName());
 	}
     [Rpc(SendTo.Everyone)]
 	void AddBuffMarkRpc(NetworkObjectReference Enemy) 

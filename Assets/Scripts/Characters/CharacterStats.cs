@@ -6,14 +6,11 @@ using UnityEngine;
 
 public class CharacterStats : NetworkBehaviour
 {
-
-
     public CharacterBaseStatsBlock m_CharacterBaseStats;
 
     float m_MaxHealth;
     float m_MaxMana;
     float m_CurrentHealth;
-    float m_CurrentCorruptedHealth;
     float m_CurrentMana;
     float m_AttackDamage;
     float m_AbilityPower;
@@ -53,6 +50,9 @@ public class CharacterStats : NetworkBehaviour
     int m_SkillPoints;
     float m_CurrentExp;
 
+    float m_CorruptedHealth;
+    float m_CorruptedHealthDamage;
+
     [Header("Enemys")]
     EnemyType m_EnemyType;
     public enum EnemyType
@@ -62,7 +62,6 @@ public class CharacterStats : NetworkBehaviour
         LIGHTLESS,
         LEGENDARY
     }
-
 
     [Header("Buffs")]
     bool m_ImmuneCC = false;
@@ -164,6 +163,12 @@ public class CharacterStats : NetworkBehaviour
             if (m_CurrentHealth > m_MaxHealth)
                 m_CurrentHealth = m_MaxHealth;
         }
+        if(m_CorruptedHealth > 0.0f) 
+        {
+            m_CorruptedHealth-=m_CorruptedHealthDamage*Time.deltaTime;
+            if(m_CorruptedHealth<0.0f)
+                m_CorruptedHealth=0.0f;
+        }
     }
 
     //GETTERS & SETTERS
@@ -206,6 +211,10 @@ public class CharacterStats : NetworkBehaviour
     public float GetBonusAttackDamage()
     {
         return m_AttackDamageBonus;
+    }
+    public void SetBonusAttackDamage(float Bonus) 
+    {
+        m_AttackDamageBonus=Bonus;
     }
     public float GetAbilityPower()
     {
@@ -275,6 +284,18 @@ public class CharacterStats : NetworkBehaviour
     public void SetCurrentHealthRpc(float Health)
     {
         m_CurrentHealth = Health;
+    }
+    public float GetCorruptedHealth() 
+    {
+        return m_CorruptedHealth;
+    }
+    public void SetCorruptedHealth(float Health) 
+    {
+        m_CorruptedHealth=Health;
+    }
+    public void SetCorruptedHealthDamage(float Damage) 
+    {
+        m_CorruptedHealthDamage=Damage;
     }
     public float GetHealthRegen()
     {

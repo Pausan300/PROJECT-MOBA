@@ -17,7 +17,6 @@ public class ShunsoCharacterController : CharacterMaster
 	public GameObject m_WProjectile;
 
     [Header("E SKILL")]
-	public float m_MinExtraDamage3;
 	public SpeedBuff m_ESpeedBuff;
 
     [Header("R SKILL")]
@@ -96,9 +95,11 @@ public class ShunsoCharacterController : CharacterMaster
 		l_Projectile.transform.position+=Vector3.up*l_Width+l_Direction*l_Width;
 		NetworkObject l_ProjectileNetwork=l_Projectile.GetComponent<NetworkObject>();
 		l_ProjectileNetwork.SpawnWithOwnership(GetComponent<NetworkObject>().OwnerClientId);
-		l_Projectile.GetComponent<ShunsoQProjectile>().SetStats(this, m_QSkill.GetAttribute("Daño base", GetQSkillLevel()), m_QSkill.GetAttribute("Velocidad proyectil"), 
+		ShunsoQProjectile l_ProjectileScript=l_Projectile.GetComponent<ShunsoQProjectile>();
+		l_ProjectileScript.SetStats(this, m_QSkill.GetAttribute("Daño base", GetQSkillLevel()), m_QSkill.GetAttribute("Velocidad proyectil"), 
 			m_QSkill.GetAttribute("Ancho proyectil"), m_QSkill.GetAttribute("Rango proyectil"), m_QSkill.GetAttribute("Velocidad arañazo"), m_QSkill.GetAttribute("Ancho arañazo"), 
 			m_QSkill.GetAttribute("Rango arañazo"), l_Direction, m_QGoRight);
+		l_ProjectileScript.m_EStacksOnHit+=GainEStacks;
 		m_QGoRight=!m_QGoRight;
 		base.QSkill();
 	}
@@ -134,8 +135,8 @@ public class ShunsoCharacterController : CharacterMaster
 			GameObject l_Projectile=Instantiate(m_WProjectile, transform.position, m_WProjectile.transform.rotation);
 			NetworkObject l_ProjectileNetwork=l_Projectile.GetComponent<NetworkObject>();
 			l_ProjectileNetwork.SpawnWithOwnership(GetComponent<NetworkObject>().OwnerClientId);
-			l_Projectile.GetComponent<ShunsoWProjectile>().SetStats(this, m_WSkill.GetAttribute("Puntos de Vida Corrupta", GetQSkillLevel()), m_WSkill.GetAttribute("Velocidad"), 
-				m_WSkill.GetAttribute("Ancho"), m_WSkill.GetAttribute("Rango"), l_Offset, l_Direction);
+			l_Projectile.GetComponent<ShunsoWProjectile>().SetStats(this, m_WSkill.GetAttribute("Puntos de Vida Corrupta", GetWSkillLevel()), m_WSkill.GetAttribute("Daño de Vida Corrupta", GetWSkillLevel()),
+				m_WSkill.GetAttribute("Velocidad"), m_WSkill.GetAttribute("Ancho"), m_WSkill.GetAttribute("Rango"), l_Offset, l_Direction);
 			l_Offset+=m_WSkill.GetAttribute("Separacion");
 		}
 		base.WSkill();
@@ -145,21 +146,26 @@ public class ShunsoCharacterController : CharacterMaster
 	protected override void ESkill()
 	{
 		BuffableEntity l_CharacterBuffs=GetComponent<BuffableEntity>();
-		if(l_CharacterBuffs.GetBuffWithName(m_ESpeedBuff.m_BuffName)!=null) 
+		if(l_CharacterBuffs.GetBuffWithKey(m_ESpeedBuff)!=null) 
 		{
-			if(l_CharacterBuffs.GetBuffWithName(m_ESpeedBuff.m_BuffName).GetCurrentStacks()>=10) 
+			if(l_CharacterBuffs.GetBuffWithKey(m_ESpeedBuff).GetCurrentStacks()>=10) 
 			{
 				AddHealth(m_ESkill.GetAttribute("Curación", GetESkillLevel()) + GetCharacterStats().GetBonusAttackDamage()*0.8f);
-				l_CharacterBuffs.RemoveBuff(l_CharacterBuffs.GetBuffWithName(m_ESpeedBuff.m_BuffName));
+				l_CharacterBuffs.GetBuffWithKey(m_ESpeedBuff).End();
+				l_CharacterBuffs.RemoveBuff(l_CharacterBuffs.GetBuffWithKey(m_ESpeedBuff));
 				base.ESkill();
 			}
 		}
 	}
-	void GainEStacks() 
+	void GainEStacks(int Stacks) 
 	{
 		if(GetESkillLevel()>0) 
 		{
-			GetComponent<BuffableEntity>().AddBuff(m_ESpeedBuff.InitializeBuff(m_ESkill.GetAttribute("Duracion"), m_ESkill.GetAttribute("Velocidad"), gameObject));
+			for(int i=0; i<Stacks; ++i)
+				GetComponent<BuffableEntity>().AddBuff(m_ESpeedBuff.InitializeBuff(m_ESkill.GetAttribute("Duracion"), m_ESkill.GetAttribute("Velocidad"), gameObject));
+
+			//if(GetComponent<BuffableEntity>().GetBuffWithKey(m_ESpeedBuff).GetCurrentStacks()<=m_ESpeedBuff.m_MaxStacks)
+
 		}
 	}
 
@@ -212,8 +218,10 @@ public class ShunsoCharacterController : CharacterMaster
 		l_Projectile.transform.position+=Vector3.up*l_Radius+l_Direction*(l_Radius*2.0f);
 		NetworkObject l_ProjectileNetwork=l_Projectile.GetComponent<NetworkObject>();
 		l_ProjectileNetwork.SpawnWithOwnership(GetComponent<NetworkObject>().OwnerClientId);
-		l_Projectile.GetComponent<ShunsoRProjectile>().SetStats(this, m_RSkill.GetAttribute("Daño base", GetRSkillLevel()), m_RSkill.GetAttribute("Velocidad"), m_RSkill.GetAttribute("Radio mordisco"), 
+		ShunsoRProjectile l_ProjectileScript=l_Projectile.GetComponent<ShunsoRProjectile>();
+		l_ProjectileScript.SetStats(this, m_RSkill.GetAttribute("Daño base", GetRSkillLevel()), m_RSkill.GetAttribute("Velocidad"), m_RSkill.GetAttribute("Radio mordisco"), 
 			l_TargetPos);
+		l_ProjectileScript.m_EStacksOnHit+=GainEStacks;
 		base.RSkill();
 	}
 
@@ -228,8 +236,10 @@ public class ShunsoCharacterController : CharacterMaster
         GameObject l_Projectile = Instantiate(m_RangedAutoAttack, m_RangedAutoSpawnPoint.position, transform.rotation);
         NetworkObject l_ProjectileNetwork = l_Projectile.GetComponent<NetworkObject>();
         l_ProjectileNetwork.SpawnWithOwnership(GetComponent<NetworkObject>().OwnerClientId);
-        l_Projectile.GetComponent<RangedAutoAttack>().SetStats(m_DesiredEnemy, m_CharacterStats.GetAttackDamage(), 0.0f, this);
-		l_Projectile.GetComponent<RangedAutoAttack>().m_OnHitEffects+=GainEStacks;
+		ShunsoAA l_ProjectileScript=l_Projectile.GetComponent<ShunsoAA>();
+        l_ProjectileScript.SetStats(m_DesiredEnemy, m_CharacterStats.GetAttackDamage(), 0.0f, this);
+		l_ProjectileScript.m_EStacksOnHit+=GainEStacks;
+		//l_Projectile.GetComponent<RangedAutoAttack>().m_OnHitEffects+=GainEStacks;
     }
 
     public override void LevelUpRpc()
