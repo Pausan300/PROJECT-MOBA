@@ -5,7 +5,7 @@ public class TimedStunBuff : TimedBuff
     private readonly CharacterStats m_StatsComponent;
     float m_Timer;
 
-    public TimedStunBuff(float Duration, Buff buff, GameObject obj) : base(buff, obj)
+    public TimedStunBuff(float Duration, Buff buff, GameObject obj) : base(buff)
     {
         buff.m_Duration = Duration;
         if (obj.TryGetComponent(out ITakeDamage Entity))

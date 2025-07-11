@@ -10,15 +10,15 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 069c6fcdcf7fdc142a21dc49938daa49, type: 3}
-  m_Name: HirasuWMarkDebuff
+  m_Name: ShunsoPMarkDebuff
   m_EditorClassIdentifier: 
-  m_BuffName: HirasuWDebuff
-  m_BuffSprite: {fileID: 21300000, guid: 8c42c262388d20a4ca5a7f9a8e50d43c, type: 3}
+  m_BuffName: Equilibrio Espiritual
+  m_BuffSprite: {fileID: 21300000, guid: 3212a6782c4f948488eff191da95aa98, type: 3}
   m_IsDurationRefreshed: 1
-  m_IsEffectStacked: 1
+  m_IsEffectStacked: 0
   m_InfiniteDuration: 0
-  m_MaxStacks: 3
-  m_Duration: 5
+  m_MaxStacks: 1
+  m_Duration: 0
   m_ValueAmount: -1
-  m_MaxMarks: 3
-  m_MarkObject: {fileID: 5370994416899626803, guid: 81ce3eb63f575ad4c89f887efc641c62, type: 3}
+  m_MaxMarks: 1
+  m_MarkObject: {fileID: 5370994416899626803, guid: 9a2f8878ea4000b4390606ee2660e7e9, type: 3}

@@ -6,7 +6,7 @@ public class TimedFearBuff : TimedBuff
     private readonly CharacterStats m_StatsComponent;
     Vector3 m_FearPosition;
 
-    public TimedFearBuff(Vector3 FearPosition, float Duration, Buff buff, GameObject obj) : base(buff, obj)
+    public TimedFearBuff(Vector3 FearPosition, float Duration, Buff buff, GameObject obj) : base(buff)
     {
         m_FearPosition = FearPosition;
         buff.m_Duration = Duration;

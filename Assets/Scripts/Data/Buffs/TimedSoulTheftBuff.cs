@@ -6,7 +6,7 @@ public class TimedSoulTheftBuff : TimedBuff
     private readonly CharacterStats m_StatsComponent;
 
     WilldurrCharacterController m_WilldurrCharacterController;
-    public TimedSoulTheftBuff(WilldurrCharacterController _WilldurrCharacterController, float Duration, Buff buff, GameObject obj) : base(buff, obj)
+    public TimedSoulTheftBuff(WilldurrCharacterController _WilldurrCharacterController, float Duration, Buff buff, GameObject obj) : base(buff)
     {
 
         m_WilldurrCharacterController = _WilldurrCharacterController;

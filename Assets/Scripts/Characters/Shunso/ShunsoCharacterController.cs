@@ -1,13 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Netcode;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class ShunsoCharacterController : CharacterMaster
 {
     [Header("--- SHUNSO ---")]
     [Header("PASSIVE SKILL")]
-	public float m_MinExtraDamage;
+	public MarkBuff m_PMarkDebuff;
 
     [Header("Q SKILL")]
 	public GameObject m_QProjectile;
@@ -18,6 +19,7 @@ public class ShunsoCharacterController : CharacterMaster
 
     [Header("E SKILL")]
 	public SpeedBuff m_ESpeedBuff;
+	bool m_MaxEStacksBuffActive;
 
     [Header("R SKILL")]
 	public GameObject m_RProjectile;
@@ -46,6 +48,12 @@ public class ShunsoCharacterController : CharacterMaster
 			}
 		}
     }
+
+	//PASSIVE SKILL
+	void AddPassiveDebuffMark(GameObject Enemy) 
+	{
+		Enemy.GetComponent<BuffableEntity>().AddBuff(m_PMarkDebuff.InitializeBuff(5.0f, Enemy));
+	}
 
 	//Q SKILL
 	protected override void QSkill()
@@ -135,8 +143,10 @@ public class ShunsoCharacterController : CharacterMaster
 			GameObject l_Projectile=Instantiate(m_WProjectile, transform.position, m_WProjectile.transform.rotation);
 			NetworkObject l_ProjectileNetwork=l_Projectile.GetComponent<NetworkObject>();
 			l_ProjectileNetwork.SpawnWithOwnership(GetComponent<NetworkObject>().OwnerClientId);
-			l_Projectile.GetComponent<ShunsoWProjectile>().SetStats(this, m_WSkill.GetAttribute("Puntos de Vida Corrupta", GetWSkillLevel()), m_WSkill.GetAttribute("Daño de Vida Corrupta", GetWSkillLevel()),
+			ShunsoWProjectile l_ProjectileScript=l_Projectile.GetComponent<ShunsoWProjectile>();
+			l_ProjectileScript.SetStats(this, m_WSkill.GetAttribute("Puntos de Vida Corrupta", GetWSkillLevel()), m_WSkill.GetAttribute("Daño de Vida Corrupta", GetWSkillLevel()),
 				m_WSkill.GetAttribute("Velocidad"), m_WSkill.GetAttribute("Ancho"), m_WSkill.GetAttribute("Rango"), l_Offset, l_Direction);
+			l_ProjectileScript.m_EStacksOnHit+=GainEStacks;
 			l_Offset+=m_WSkill.GetAttribute("Separacion");
 		}
 		base.WSkill();
@@ -161,11 +171,23 @@ public class ShunsoCharacterController : CharacterMaster
 	{
 		if(GetESkillLevel()>0) 
 		{
+			TimedBuff l_Buff=m_ESpeedBuff.InitializeBuff(m_ESkill.GetAttribute("Duracion"), m_ESkill.GetAttribute("Velocidad"), gameObject);
+			l_Buff.m_OnFullStacks+=OnMaxEStacks;
 			for(int i=0; i<Stacks; ++i)
-				GetComponent<BuffableEntity>().AddBuff(m_ESpeedBuff.InitializeBuff(m_ESkill.GetAttribute("Duracion"), m_ESkill.GetAttribute("Velocidad"), gameObject));
-
-			//if(GetComponent<BuffableEntity>().GetBuffWithKey(m_ESpeedBuff).GetCurrentStacks()<=m_ESpeedBuff.m_MaxStacks)
-
+				GetComponent<BuffableEntity>().AddBuff(l_Buff);
+		}
+	}
+	void OnMaxEStacks(bool Max) 
+	{
+		if(Max && !m_MaxEStacksBuffActive) 
+		{
+			m_MaxEStacksBuffActive=true;
+			m_CharacterStats.SetBonusAttackDamage(m_CharacterStats.GetBonusAttackDamage()+m_ESkill.GetAttribute("Daño de ataque adicional"));
+		}
+		else if(!Max)
+		{
+			m_MaxEStacksBuffActive=false;
+			m_CharacterStats.SetBonusAttackDamage(m_CharacterStats.GetBonusAttackDamage()-m_ESkill.GetAttribute("Daño de ataque adicional"));
 		}
 	}
 
@@ -239,6 +261,7 @@ public class ShunsoCharacterController : CharacterMaster
 		ShunsoAA l_ProjectileScript=l_Projectile.GetComponent<ShunsoAA>();
         l_ProjectileScript.SetStats(m_DesiredEnemy, m_CharacterStats.GetAttackDamage(), 0.0f, this);
 		l_ProjectileScript.m_EStacksOnHit+=GainEStacks;
+		l_ProjectileScript.m_OnHitEffects+=AddPassiveDebuffMark;
 		//l_Projectile.GetComponent<RangedAutoAttack>().m_OnHitEffects+=GainEStacks;
     }
 

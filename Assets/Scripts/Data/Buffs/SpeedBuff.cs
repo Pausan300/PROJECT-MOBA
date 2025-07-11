@@ -42,15 +42,6 @@ public class SpeedBuff : Buff
 }
 
 [CustomEditor(typeof(SpeedBuff))]
-public class SpeedBuffEditor : Editor
+public class SpeedBuffEditor : BuffEditor
 {
-    public override void OnInspectorGUI()
-    {
-        DrawDefaultInspector();
-        Buff l_Buff = (Buff)target;
-        if(l_Buff.m_IsEffectStacked)
-        {   
-            l_Buff.m_MaxStacks=EditorGUILayout.IntField("Max Stacks", l_Buff.m_MaxStacks);
-        }
-    }
 }

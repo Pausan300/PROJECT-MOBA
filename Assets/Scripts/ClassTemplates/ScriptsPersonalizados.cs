@@ -90,7 +90,7 @@ public class {timedName} : TimedBuff
 {{
     private readonly CharacterStats m_StatsComponent;
 
-    public {timedName}(float Duration, Buff buff, GameObject obj) : base(buff, obj)
+    public {timedName}(float Duration, Buff buff, GameObject obj) : base(buff)
     {{
         buff.m_Duration = Duration;
         if (obj.TryGetComponent(out ITakeDamage Entity))

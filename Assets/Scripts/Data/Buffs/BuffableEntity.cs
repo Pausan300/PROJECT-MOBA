@@ -14,33 +14,31 @@ public class BuffableEntity : MonoBehaviour
             buff.Tick(Time.deltaTime);
             if (buff.m_IsFinished)
             {
-                m_Buffs.Remove(buff.m_Buff);
                 if (TryGetComponent(out CharacterMaster Player))
                 {
-                    Player.GetCharacterUI().DeleteBuffObject(buff);
+                    Player.GetCharacterUI().DeleteBuffObject(m_Buffs[buff.m_Buff].GetUIOBject());
                 }
+                m_Buffs.Remove(buff.m_Buff);
             }
         }
     }
 
-    public void AddBuff(TimedBuff buff)
+    public void AddBuff(TimedBuff Buff)
     {
-        if (m_Buffs.ContainsKey(buff.m_Buff))
+        if (m_Buffs.ContainsKey(Buff.m_Buff))
         {
-            m_Buffs[buff.m_Buff].Activate();
-            if (TryGetComponent(out CharacterMaster Player))
-            {
-                Player.GetCharacterUI().UpdateBuffObject(m_Buffs[buff.m_Buff]);
-            }
+            m_Buffs[Buff.m_Buff].Activate();
+            if(m_Buffs[Buff.m_Buff].GetUIOBject())
+                m_Buffs[Buff.m_Buff].GetUIOBject().UpdateBuffObject();
         }
         else
         {
-            m_Buffs.Add(buff.m_Buff, buff);
+            m_Buffs.Add(Buff.m_Buff, Buff);
+            Buff.Activate();
             if (TryGetComponent(out CharacterMaster Player))
             {
-                Player.GetCharacterUI().CreateBuffObject(buff);
+                Buff.SetUIObject(Player.GetCharacterUI().CreateBuffObject(Buff));
             }
-            buff.Activate();
         }
     }
 
@@ -75,13 +73,12 @@ public class BuffableEntity : MonoBehaviour
         return null;
     }
 
-    public void RemoveBuff(TimedBuff _Buff) 
+    public void RemoveBuff(TimedBuff Buff) 
     {
-        m_Buffs.Remove(_Buff.m_Buff);
-        _Buff.m_IsFinished=true;
-        if (TryGetComponent(out CharacterMaster Player))
+        if(TryGetComponent(out CharacterMaster Player))
         {
-            Player.GetCharacterUI().DeleteBuffObject(_Buff);
+            Player.GetCharacterUI().DeleteBuffObject(m_Buffs[Buff.m_Buff].GetUIOBject());
         }
+        m_Buffs.Remove(Buff.m_Buff);
     }
 }

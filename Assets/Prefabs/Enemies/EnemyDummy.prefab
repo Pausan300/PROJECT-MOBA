@@ -156,7 +156,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 3644221097
+  GlobalObjectIdHash: 4187742895
   InScenePlacedSourceGlobalObjectIdHash: 3644221097
   DeferredDespawnTick: 0
   Ownership: 1
@@ -205,6 +205,8 @@ MonoBehaviour:
     m_Bits: 1
   m_WorldCanvasPrefab: {fileID: 739544401025306892, guid: 5af5d642eecc84a4cbf908b4f87ce2ee, type: 3}
   m_IngameUIPrefab: {fileID: 5536230946720591678, guid: 0742bad163f9b014bbbba7f62d8d19a7, type: 3}
+  m_BuffMarksUIPrefab: {fileID: 4298932692335254440, guid: d68bb23cd6e157f41b58f092089e9ba1, type: 3}
+  m_BuffMarksUI: {fileID: 0}
   m_IngameUI: {fileID: 0}
   m_TimeToStartRegen: 5
 --- !u!114 &852399847533407206

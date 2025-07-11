@@ -239,10 +239,11 @@ public class HirasuCharacterController : CharacterMaster
     }
     void SpawnSplinter(Vector3 Position, Vector3 Forward, Transform Parent, ITakeDamage Enemy)
     {   
-        GameObject l_Splinter=Instantiate(m_QSplinter, Position, m_QSplinter.transform.rotation, Parent);
+        GameObject l_Splinter=Instantiate(m_QSplinter, Position, m_QSplinter.transform.rotation);
         l_Splinter.transform.forward=Forward;
         l_Splinter.GetComponent<HirasuQSplinter>().SetStats(this, Enemy, m_QSplintersDuration);
 		l_Splinter.GetComponent<NetworkObject>().SpawnWithOwnership(GetComponent<NetworkObject>().OwnerClientId);
+		l_Splinter.GetComponent<NetworkObject>().TrySetParent(Parent);
     }
 	public void AddSplinterToList(HirasuQSplinter Splinter)
 	{

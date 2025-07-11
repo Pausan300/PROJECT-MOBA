@@ -5,7 +5,7 @@ public class TimedDarkPowerBuff : TimedBuff
 {
     private readonly CharacterStats m_StatsComponent;
 
-    public TimedDarkPowerBuff(float Duration, Buff buff, GameObject obj) : base(buff, obj)
+    public TimedDarkPowerBuff(float Duration, Buff buff, GameObject obj) : base(buff)
     {
         buff.m_Duration = Duration;
         if (obj.TryGetComponent(out ITakeDamage Entity))

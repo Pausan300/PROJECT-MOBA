@@ -8,16 +8,20 @@ public abstract class TimedBuff
 {
     protected float m_TickRate = 0f;
     protected float m_TimeLeft;
-    protected int m_EffectStacks;
+    protected int m_CurrentStacks;
     public Buff m_Buff { get; }
-    protected readonly GameObject m_Obj;
     public bool m_IsFinished;
+    bool m_LosingStacks;
+    float m_LooseStacksTimer;
     protected float m_TimeSinceLastTick;
 
-    public TimedBuff(Buff buff, GameObject obj)
+    BuffDebuffObjectUI m_UIObject;
+
+    public event Action<bool> m_OnFullStacks;
+
+    public TimedBuff(Buff buff)
     {
         m_Buff = buff;
-        m_Obj = obj;
     }
     public void Tick(float delta)
     {
@@ -30,25 +34,52 @@ public abstract class TimedBuff
         }
         if (m_TimeLeft <= 0)
         {
-            End();
-            m_IsFinished = true;
+            if(m_Buff.m_IsEffectStacked) 
+            {
+                if(m_Buff.m_AreAllStacksLost) 
+                    End();
+                else 
+                    m_LosingStacks=true;
+            }
+            else 
+                End();
+        }
+
+        if(m_LosingStacks) 
+        {
+            m_LooseStacksTimer+=Time.deltaTime;
+            if(m_LooseStacksTimer>=m_Buff.m_StackLooseInterval) 
+            {
+                if(m_CurrentStacks>=m_Buff.m_MaxStacks)
+                   m_OnFullStacks?.Invoke(false);
+                m_CurrentStacks--;
+                if(m_UIObject!=null)
+                    m_UIObject.UpdateBuffObject();
+                m_LooseStacksTimer=0.0f;
+                if(m_CurrentStacks<=0)
+                    End();
+            }
         }
     }
     public void Activate()
     {
         if (m_Buff.m_IsEffectStacked || m_TimeLeft <= 0)
         {
-            m_EffectStacks++;
-            if(m_EffectStacks>m_Buff.m_MaxStacks)
-                m_EffectStacks=m_Buff.m_MaxStacks;
-            else
-                ApplyEffect();
+            m_CurrentStacks++;
+            if (m_CurrentStacks>=m_Buff.m_MaxStacks)
+            {
+                m_OnFullStacks?.Invoke(true);
+                m_CurrentStacks=m_Buff.m_MaxStacks;
+            }
+            m_LosingStacks=false;
         }
 
         if (m_Buff.m_IsDurationRefreshed || m_TimeLeft <= 0)
         {
             m_TimeLeft = m_Buff.m_Duration;
         }
+
+        ApplyEffect();
     }
     public float GetCurrentDuration()
     {
@@ -56,13 +87,27 @@ public abstract class TimedBuff
     }
     public float GetCurrentStacks() 
     {
-        return m_EffectStacks;
+        return m_CurrentStacks;
+    }
+    public BuffDebuffObjectUI GetUIOBject() 
+    {
+        return m_UIObject;
+    }
+    public void SetUIObject(BuffDebuffObjectUI Object) 
+    {
+        m_UIObject=Object;
     }
     public void EndBuffNow()
     {
         m_TimeLeft = 0;
     }
+
     protected abstract void ApplyEffect();
     protected abstract void ApplyTick(float delta);
-    public abstract void End();
+    public virtual void End() 
+    {
+        if(m_CurrentStacks>=m_Buff.m_MaxStacks)
+            m_OnFullStacks?.Invoke(false);
+        m_IsFinished = true;
+    }
 }

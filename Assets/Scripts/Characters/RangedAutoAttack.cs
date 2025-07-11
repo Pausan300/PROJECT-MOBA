@@ -16,7 +16,7 @@ public class RangedAutoAttack : NetworkBehaviour
     float m_TimeToDestroyWithParticle = 5;
     bool m_DamageDone = false;
 
-    public event Action m_OnHitEffects;
+    public event Action<GameObject> m_OnHitEffects;
 
     void Update()
     {
@@ -48,7 +48,7 @@ public class RangedAutoAttack : NetworkBehaviour
     protected virtual void DamageEnemy(ITakeDamage Enemy) 
     {
         Enemy.TakeDamage(m_PhysicDamage, m_MagicDamage, false, "AutoAttack");
-        m_OnHitEffects?.Invoke();
+        m_OnHitEffects?.Invoke(m_Target.gameObject);
     }
     IEnumerator DestroyWithParticles()
     {

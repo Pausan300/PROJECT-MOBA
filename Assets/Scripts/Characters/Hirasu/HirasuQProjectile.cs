@@ -122,6 +122,7 @@ public class HirasuQProjectile : NetworkBehaviour
     {
         NetworkObject l_Splinter=Splinter;
         NetworkObject l_AttachedEnemy=AttachedEnemy;
+        l_Splinter.TrySetParent(l_AttachedEnemy.gameObject);
         l_Splinter.GetComponent<HirasuQSplinter>().SetStats(m_Player, l_AttachedEnemy.GetComponent<ITakeDamage>(), m_SplintersDuration);
     }
     void CalcDistancePerSplinter()

@@ -298,7 +298,8 @@ public class CharacterUI : MonoBehaviour
         m_ELevelPoints.value = 0;
         m_RLevelPoints.value = 0;
     }
-    public void CreateBuffObject(TimedBuff _TimedBuff)
+
+    public BuffDebuffObjectUI CreateBuffObject(TimedBuff _TimedBuff)
     {
         GameObject l_BuffObject = Instantiate(m_BuffUIPrefab, m_BuffsDebuffsParent);
         BuffDebuffObjectUI l_BuffObjectUI = l_BuffObject.GetComponent<BuffDebuffObjectUI>();
@@ -320,45 +321,19 @@ public class CharacterUI : MonoBehaviour
         {
             l_BuffObjectUI.m_CumulativeAmountValueText.gameObject.SetActive(false);
         }
-
         m_BuffDebuffUIList.Add(l_BuffObjectUI);
+
+        return l_BuffObjectUI;
+
     }
-    public void UpdateBuffObject(TimedBuff _TimedBuff)
+    public void DeleteBuffObject(BuffDebuffObjectUI Object)
     {
-        foreach (BuffDebuffObjectUI BuffObject in m_BuffDebuffUIList)
-        {
-            if (BuffObject.m_TimedBuff == _TimedBuff)
-            {
-                if (_TimedBuff.m_Buff.m_ValueAmount != -1)
-                {
-                    BuffObject.m_CumulativeAmountValueText.gameObject.SetActive(true);
-                    BuffObject.m_CumulativeAmountValueText.text = _TimedBuff.m_Buff.m_ValueAmount.ToString();
-                }
-                else if(_TimedBuff.m_Buff.m_IsEffectStacked)
-                { 
-                    BuffObject.m_CumulativeAmountValueText.gameObject.SetActive(true);
-                    BuffObject.m_CumulativeAmountValueText.text = _TimedBuff.GetCurrentStacks().ToString();
-                }
-                else
-                {
-                    BuffObject.m_CumulativeAmountValueText.gameObject.SetActive(false);
-                }
-            }
-        }
+        if(Object==null)
+            return;
+        m_BuffDebuffUIList.Remove(Object);
+        Destroy(Object.gameObject);
     }
 
-    public void DeleteBuffObject(TimedBuff _TimedBuff)
-    {
-        foreach (BuffDebuffObjectUI BuffDebuffUI in m_BuffDebuffUIList)
-        {
-            if (BuffDebuffUI.m_TimedBuff.m_Buff.m_BuffName == _TimedBuff.m_Buff.m_BuffName)
-            {
-                m_BuffDebuffUIList.Remove(BuffDebuffUI);
-                Destroy(BuffDebuffUI.gameObject);
-                break;
-            }
-        }
-    }
     public void SetPopupType(InspectableElementUI.PopupType PopupElement, string Description, string Name, bool IsLevelUp, bool _ShowPopup)
     {
         switch (PopupElement)

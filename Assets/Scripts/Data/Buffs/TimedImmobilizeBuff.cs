@@ -5,7 +5,7 @@ public class TimedImmobilizeBuff : TimedBuff
     private readonly CharacterStats m_StatsComponent;
     float m_Timer;
 
-    public TimedImmobilizeBuff(float Duration, Buff buff, GameObject obj) : base(buff, obj)
+    public TimedImmobilizeBuff(float Duration, Buff buff, GameObject obj) : base(buff)
     {
         buff.m_Duration = Duration;
         if (obj.TryGetComponent(out ITakeDamage Entity))

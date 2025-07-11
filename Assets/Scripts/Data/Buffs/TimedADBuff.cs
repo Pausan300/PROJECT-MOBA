@@ -7,7 +7,7 @@ public class TimedADBuff : TimedBuff
 
     float m_DamageIncrease;
 
-    public TimedADBuff(float Duration, float Damage, Buff buff, GameObject obj) : base(buff, obj)
+    public TimedADBuff(float Duration, float Damage, Buff buff, GameObject obj) : base(buff)
     {
         buff.m_Duration=Duration;
         m_DamageIncrease=Damage;

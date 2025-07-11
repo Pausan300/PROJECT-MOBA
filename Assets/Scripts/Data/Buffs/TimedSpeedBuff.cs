@@ -7,8 +7,9 @@ public class TimedSpeedBuff : TimedBuff
     private readonly CharacterStats m_StatsComponent;
     private float m_Timer;
     private float m_LastAppliedValue = 0f;
+    private float m_AccumulatedValue;
 
-    public TimedSpeedBuff(float Duration, Buff buff, GameObject obj) : base(buff, obj)
+    public TimedSpeedBuff(float Duration, Buff buff, GameObject obj) : base(buff)
     {
         buff.m_Duration = Duration;
         if (obj.TryGetComponent(out ITakeDamage Entity))
@@ -30,10 +31,12 @@ public class TimedSpeedBuff : TimedBuff
             switch (l_SpeedBuff.m_SpeedType)
             {
                 case SpeedBuff.SpeedType.FLAT:
-                    m_StatsComponent.AddMovSpeedBonusFlat(m_LastAppliedValue);
+                    m_StatsComponent.SetMovSpeedBonusFlat(m_StatsComponent.GetMovSpeedBonusFlat()+m_LastAppliedValue);
+                    m_AccumulatedValue+=l_SpeedBuff.m_SpeedIncrease;
                     break;
                 case SpeedBuff.SpeedType.ADDITIVE:
-                    m_StatsComponent.AddMovSpeedBonusAddi(m_LastAppliedValue);
+                    m_StatsComponent.SetMovSpeedBonusAddi(m_StatsComponent.GetMovSpeedBonusAddi()+m_LastAppliedValue);
+                    m_AccumulatedValue+=l_SpeedBuff.m_SpeedIncrease;
                     break;
                 case SpeedBuff.SpeedType.MULTIPLICATIVE:
                     m_StatsComponent.AddMovSpeedBonusMulti(l_SpeedBuff.m_BuffName, m_LastAppliedValue);
@@ -43,7 +46,9 @@ public class TimedSpeedBuff : TimedBuff
     }
 
     public override void End()
-    {
+    { 
+        base.End();
+
         if (m_StatsComponent != null)
         {
             SpeedBuff l_SpeedBuff = (SpeedBuff)m_Buff;
@@ -51,10 +56,10 @@ public class TimedSpeedBuff : TimedBuff
             switch (l_SpeedBuff.m_SpeedType)
             {
                 case SpeedBuff.SpeedType.FLAT:
-                    m_StatsComponent.AddMovSpeedBonusFlat(-m_LastAppliedValue);
+                    m_StatsComponent.SetMovSpeedBonusFlat(m_StatsComponent.GetMovSpeedBonusFlat()-m_AccumulatedValue);
                     break;
                 case SpeedBuff.SpeedType.ADDITIVE:
-                    m_StatsComponent.AddMovSpeedBonusAddi(-m_LastAppliedValue);
+                    m_StatsComponent.SetMovSpeedBonusAddi(m_StatsComponent.GetMovSpeedBonusAddi()-m_AccumulatedValue);
                     break;
                 case SpeedBuff.SpeedType.MULTIPLICATIVE:
                     m_StatsComponent.RemoveMovSpeedBonusMulti(l_SpeedBuff.m_BuffName);
@@ -102,13 +107,13 @@ public class TimedSpeedBuff : TimedBuff
         switch (l_SpeedBuff.m_SpeedType)
         {
             case SpeedBuff.SpeedType.FLAT:
-                m_StatsComponent.AddMovSpeedBonusFlat(-m_LastAppliedValue);
-                m_StatsComponent.AddMovSpeedBonusFlat((int)l_NewValue);
+                m_StatsComponent.SetMovSpeedBonusFlat(-m_LastAppliedValue);
+                m_StatsComponent.SetMovSpeedBonusFlat((int)l_NewValue);
                 break;
 
             case SpeedBuff.SpeedType.ADDITIVE:
-                m_StatsComponent.AddMovSpeedBonusAddi(-m_LastAppliedValue);
-                m_StatsComponent.AddMovSpeedBonusAddi((int)l_NewValue);
+                m_StatsComponent.SetMovSpeedBonusAddi(-m_LastAppliedValue);
+                m_StatsComponent.SetMovSpeedBonusAddi((int)l_NewValue);
                 break;
 
             case SpeedBuff.SpeedType.MULTIPLICATIVE:

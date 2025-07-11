@@ -9,8 +9,6 @@ using UnityEngine.TextCore.Text;
 using UnityEngine.UI;
 using ColorUtility = UnityEngine.ColorUtility;
 
-
-
 public class PopupUI : MonoBehaviour
 {
     RectTransform m_Rect;
@@ -35,7 +33,6 @@ public class PopupUI : MonoBehaviour
     public TextMeshProUGUI m_StatName;
     [Header("POSITION")]
     public float m_BottomYPos;
-
 
 
     private void Awake()
@@ -224,23 +221,27 @@ public class PopupUI : MonoBehaviour
         m_ExtraSpecificationsText.gameObject.SetActive(false);
         m_MainDescription.text = Description;
         m_StatName.text = Name;
+
+        foreach (GameObject Obj in m_OldSkillsSpecificationsList)
+            if (Obj != null)
+                Destroy(Obj);
+        m_OldSkillsSpecificationsList.Clear();
     }
 
-    public void ChangePopupPos()
+    public void PlayShowAnimation()
     {
-        float l_Height = m_Rect.sizeDelta.y;
-        float l_NewPos = m_BottomYPos + (l_Height / 2.0f);
-        m_Rect.anchoredPosition = new Vector2(m_Rect.anchoredPosition.x, l_NewPos);
+        m_Animation.Play();
     }
-
     public void StopAnimation()
     {
         m_Animation.Stop();
     }
     //LLAMADA POR EVENTO EN LA ANIMACION DE SHOWPOPUP
-    public void PlayShowAnimation()
+    public void ChangePopupPos()
     {
-        m_Animation.Play();
+        float l_Height = m_Rect.sizeDelta.y;
+        float l_NewPos = m_BottomYPos + (l_Height / 2.0f);
+        m_Rect.anchoredPosition = new Vector2(m_Rect.anchoredPosition.x, l_NewPos);
     }
 
     //GETTERS & SETTERS

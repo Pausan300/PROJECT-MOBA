@@ -24,6 +24,8 @@ public class EnemyDummy : NetworkBehaviour, ITakeDamage
     [Header("UI")]
     public GameObject m_WorldCanvasPrefab;
     public GameObject m_IngameUIPrefab;
+    public GameObject m_BuffMarksUIPrefab;
+    public GameObject m_BuffMarksUI;
     public IngameCharacterUI m_IngameUI;
     public float m_TimeToStartRegen;
     float m_TimerLeftToRegen;
@@ -50,7 +52,9 @@ public class EnemyDummy : NetworkBehaviour, ITakeDamage
         l_WorldCanvas.GetComponent<NetworkObject>().Spawn();
         GameObject l_IngameUIObject = Instantiate(m_IngameUIPrefab, null);
         l_IngameUIObject.GetComponent<NetworkObject>().Spawn();
-        SpawnCanvasRpc(l_WorldCanvas.GetComponent<NetworkObject>(), l_IngameUIObject.GetComponent<NetworkObject>());
+        GameObject l_BuffMarksUIObject=Instantiate(m_BuffMarksUIPrefab, null);
+        l_BuffMarksUIObject.GetComponent<NetworkObject>().Spawn();
+        SpawnCanvasRpc(l_WorldCanvas.GetComponent<NetworkObject>(), l_IngameUIObject.GetComponent<NetworkObject>(), l_BuffMarksUIObject.GetComponent<NetworkObject>());
     }
     private void Start()
     {
@@ -65,7 +69,7 @@ public class EnemyDummy : NetworkBehaviour, ITakeDamage
         }
     }
     [Rpc(SendTo.Everyone)]
-    void SpawnCanvasRpc(NetworkObjectReference WorldCanvas, NetworkObjectReference IngameUIObject)
+    void SpawnCanvasRpc(NetworkObjectReference WorldCanvas, NetworkObjectReference IngameUIObject, NetworkObjectReference BuffUIObject)
     {
         NetworkObject l_WorldCanvas = WorldCanvas;
         if (HasAuthority)
@@ -76,6 +80,10 @@ public class EnemyDummy : NetworkBehaviour, ITakeDamage
         m_IngameUI = l_IngameUIObject.GetComponent<IngameCharacterUI>();
         m_IngameUI.m_WorldCanvas = l_WorldCanvas.gameObject;
         SetIngameUICamera(GameManager.m_GameManagerInstance.GetPlayersList()[0].GetCameraController());
+        NetworkObject l_BuffUIObject=BuffUIObject;
+        if(HasAuthority)
+            l_BuffUIObject.TrySetParent(transform, false);
+        m_BuffMarksUI=l_BuffUIObject.gameObject;
     }
     void Update()
     {

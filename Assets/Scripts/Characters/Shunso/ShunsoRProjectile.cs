@@ -31,7 +31,7 @@ public class ShunsoRProjectile : NetworkBehaviour
             if(Vector3.Distance(transform.position, m_TargetPosition)>0.25)
                 transform.position+=m_Direction*m_Speed*Time.deltaTime;
             else
-                StartCoroutine(DoByte());
+                StartCoroutine(DoByte(false));
         }
     }
 
@@ -54,8 +54,10 @@ public class ShunsoRProjectile : NetworkBehaviour
         m_ByteAreaSprite.gameObject.SetActive(false);
     }
 
-    IEnumerator DoByte() 
+    IEnumerator DoByte(bool EnemyHit) 
     {
+        if(EnemyHit)
+            yield return new WaitForSeconds(0.1f);
         m_Exploding=true;
         m_ByteAreaSprite.gameObject.SetActive(true);
         Collider l_Collider=GetComponent<Collider>();
@@ -85,6 +87,6 @@ public class ShunsoRProjectile : NetworkBehaviour
         }
 
 		if(other.CompareTag("Enemy") && !m_Exploding)
-            StartCoroutine(DoByte());
+            StartCoroutine(DoByte(true));
 	}
 }

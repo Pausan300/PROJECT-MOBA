@@ -215,6 +215,7 @@ public class CharacterStats : NetworkBehaviour
     public void SetBonusAttackDamage(float Bonus) 
     {
         m_AttackDamageBonus=Bonus;
+        RecalculateStat(out m_AttackDamage, m_CharacterBaseStats.m_BaseAttackDamage, m_CharacterBaseStats.m_AttackDamagePerLevel, m_AttackDamageBonus);
     }
     public float GetAbilityPower()
     {
@@ -354,7 +355,7 @@ public class CharacterStats : NetworkBehaviour
     {
         return m_MoveSpeedBonusFlat;
     }
-    public void AddMovSpeedBonusFlat(float Bonus)
+    public void SetMovSpeedBonusFlat(float Bonus)
     {
         m_MoveSpeedBonusFlat = Bonus;
     }
@@ -362,7 +363,7 @@ public class CharacterStats : NetworkBehaviour
     {
         return m_MoveSpeedBonusAddi;
     }
-    public void AddMovSpeedBonusAddi(float Bonus)
+    public void SetMovSpeedBonusAddi(float Bonus)
     {
         m_MoveSpeedBonusAddi = Bonus;
     }
