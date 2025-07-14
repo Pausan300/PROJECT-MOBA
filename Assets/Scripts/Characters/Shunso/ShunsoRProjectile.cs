@@ -18,6 +18,7 @@ public class ShunsoRProjectile : NetworkBehaviour
     bool m_Exploding;
 
     public event Action<int> m_EStacksOnHit;
+    public event Action<GameObject> m_OnDamageEnemy;
 
     
     void Start()
@@ -68,10 +69,11 @@ public class ShunsoRProjectile : NetworkBehaviour
             if(Entity.TryGetComponent(out ITakeDamage Enemy))
 	        {
 		        Enemy.TakeDamage(m_Damage+l_ExtraDamage, 0.0f, false, m_Player.m_CharacterStats.GetPlayerName());
-                  if(Enemy.GetCharacterStats().GetCorruptedHealth()>0.0f) 
+                if(Enemy.GetCharacterStats().GetCorruptedHealth()>0.0f) 
                     m_EStacksOnHit?.Invoke(4);
                 else
                     m_EStacksOnHit?.Invoke(1);
+                m_OnDamageEnemy?.Invoke(Entity.gameObject);
             }
         }
         l_Collider.enabled=false;

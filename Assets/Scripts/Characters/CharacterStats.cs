@@ -318,6 +318,8 @@ public class CharacterStats : NetworkBehaviour
     public void SetCurrentManaRpc(float Mana)
     {
         m_CurrentMana = Mana;
+        if(m_CurrentMana>m_MaxMana)
+            m_CurrentMana=m_MaxMana;
     }
     public float GetManaRegen()
     {
@@ -369,7 +371,7 @@ public class CharacterStats : NetworkBehaviour
     }
     public void AddMovSpeedBonusMulti(string Name, float Bonus)
     {
-        if(m_MoveSpeedBonusMultiBuffs.ContainsKey(Name))
+        if(m_MoveSpeedBonusMultiBuffs.ContainsKey(Name)) 
             m_MoveSpeedBonusMultiBuffs[Name]+=Bonus;
         else
             m_MoveSpeedBonusMultiBuffs.Add(Name, Bonus);

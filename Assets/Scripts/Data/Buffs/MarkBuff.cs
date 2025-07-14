@@ -10,9 +10,10 @@ public class MarkBuff : Buff
     public int m_MaxMarks;
     public GameObject m_MarkObject;
 
-    public TimedBuff InitializeBuff(float Duration, GameObject Enemy)
+    public TimedBuff InitializeBuff(float Duration, float Interval, GameObject Enemy)
     {
         m_Duration=Duration;
+        m_EffectInterval=Interval;
         return new TimedMarkBuff(m_Duration, this, Enemy);
     }
 }

@@ -20,6 +20,8 @@ public class Buff : ScriptableObject
     [HideInInspector]
     public float m_Duration;
     [HideInInspector]
+    public float m_EffectInterval=0.0f;
+    [HideInInspector]
     public float m_ValueAmount = -1f;
 }
 

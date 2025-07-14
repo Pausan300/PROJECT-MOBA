@@ -9,9 +9,9 @@ public class TimedSpeedBuff : TimedBuff
     private float m_LastAppliedValue = 0f;
     private float m_AccumulatedValue;
 
-    public TimedSpeedBuff(float Duration, Buff buff, GameObject obj) : base(buff)
+    public TimedSpeedBuff(float Duration, Buff _Buff, GameObject obj) : base(_Buff)
     {
-        buff.m_Duration = Duration;
+        _Buff.m_Duration = Duration;
         if (obj.TryGetComponent(out ITakeDamage Entity))
             m_StatsComponent = Entity.GetCharacterStats();
     }
@@ -40,6 +40,30 @@ public class TimedSpeedBuff : TimedBuff
                     break;
                 case SpeedBuff.SpeedType.MULTIPLICATIVE:
                     m_StatsComponent.AddMovSpeedBonusMulti(l_SpeedBuff.m_BuffName, m_LastAppliedValue);
+                    break;
+            }
+        }
+    }
+
+    public override void LooseStack()
+    {
+        base.LooseStack();
+        if (m_StatsComponent != null && !m_IsFinished)
+        {
+            SpeedBuff l_SpeedBuff = (SpeedBuff)m_Buff;
+
+            switch (l_SpeedBuff.m_SpeedType)
+            {
+                case SpeedBuff.SpeedType.FLAT:
+                    m_StatsComponent.SetMovSpeedBonusFlat(m_StatsComponent.GetMovSpeedBonusFlat()-m_LastAppliedValue);
+                    m_AccumulatedValue+=l_SpeedBuff.m_SpeedIncrease;
+                    break;
+                case SpeedBuff.SpeedType.ADDITIVE:
+                    m_StatsComponent.SetMovSpeedBonusAddi(m_StatsComponent.GetMovSpeedBonusAddi()-m_LastAppliedValue);
+                    m_AccumulatedValue+=l_SpeedBuff.m_SpeedIncrease;
+                    break;
+                case SpeedBuff.SpeedType.MULTIPLICATIVE:
+                    m_StatsComponent.AddMovSpeedBonusMulti(l_SpeedBuff.m_BuffName, -m_LastAppliedValue);
                     break;
             }
         }

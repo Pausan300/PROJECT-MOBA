@@ -20,6 +20,7 @@ public class ShunsoWProjectile : NetworkBehaviour
     Vector3 m_TargetScale;
     
     public event Action<int> m_EStacksOnHit;
+    public event Action<GameObject> m_OnDamageEnemy;
     
     void Start()
     {
@@ -73,10 +74,16 @@ public class ShunsoWProjectile : NetworkBehaviour
 	        {
                 Enemy.TakeDamage(m_CorruptedHealth, 0.0f, true, m_Player.m_CharacterStats.GetPlayerName());
                 //Enemy.GetCharacterStats().SetCurrentHealthRpc(Enemy.GetCharacterStats().GetCurrentHealth()-m_CorruptedHealth);
-                if(Enemy.GetCharacterStats().GetCorruptedHealth()>0.0f)
-                    m_EStacksOnHit.Invoke(2);
-                else
-                    m_EStacksOnHit.Invoke(1);
+                if(!m_Player.m_GainStacksCooldown) 
+                {
+                    if(Enemy.GetCharacterStats().GetCorruptedHealth()>0.0f)
+                        m_EStacksOnHit.Invoke(2);
+                    else
+                        m_EStacksOnHit.Invoke(1);
+                    m_Player.StartCoroutine(m_Player.WAlreadyGainedEStacks());
+                }
+                    
+                m_OnDamageEnemy?.Invoke(other.gameObject);
                 Enemy.GetCharacterStats().SetCorruptedHealth(Enemy.GetCharacterStats().GetCorruptedHealth()+m_CorruptedHealth);
                 Enemy.GetCharacterStats().SetCorruptedHealthDamage(m_CorruptedHealthDamage);
             }

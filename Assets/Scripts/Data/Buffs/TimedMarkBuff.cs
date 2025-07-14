@@ -9,10 +9,11 @@ public class TimedMarkBuff : TimedBuff
     RectTransform m_MarkTransform;
     bool m_EffectActive;
 
-    public TimedMarkBuff(float Duration, Buff buff, GameObject obj) : base(buff)
+    public TimedMarkBuff(float Duration, Buff _Buff, GameObject Character) : base(_Buff)
     {
-        buff.m_Duration=Duration;
-        m_Canvas=obj.GetComponent<EnemyDummy>().m_BuffMarksUI;
+        _Buff.m_Duration=Duration;
+        m_AffectedCharacter=Character;
+        m_Canvas=m_AffectedCharacter.GetComponent<EnemyDummy>().m_BuffMarksUI;
     }
     protected override void ApplyEffect()
     {
@@ -61,5 +62,7 @@ public class TimedMarkBuff : TimedBuff
     }
     protected override void ApplyTick(float delta)
     {
+        if(m_EffectActive)
+            InvokeTickEvent();
     }
 }

@@ -95,13 +95,8 @@ public class EnemyDummy : NetworkBehaviour, ITakeDamage
                 m_CharacterStats.SetCurrentHealthRpc(m_CharacterStats.GetMaxHealth());
                 m_CharacterStats.SetCorruptedHealth(0.0f);
                 m_CharacterStats.SetCurrentManaRpc(m_CharacterStats.GetMaxMana());
-                UpdateHealthBarRpc();
-                UpdateCorruptedHealthRpc();
             }
         }
-
-        if(m_CharacterStats.GetCorruptedHealth()>0.0f)
-            UpdateCorruptedHealthRpc();
 
         if (m_MoveToPoint && !m_CharacterStats.GetImmobilized() && !m_CharacterStats.GetStuned())
         {
@@ -116,6 +111,10 @@ public class EnemyDummy : NetworkBehaviour, ITakeDamage
         }
 
         ScaredBuff();
+
+        UpdateHealthBarRpc();
+        UpdateCorruptedHealthRpc();
+        UpdateManaBar();
 
         if (m_CanDie)
         {
@@ -204,9 +203,6 @@ public class EnemyDummy : NetworkBehaviour, ITakeDamage
                 m_CharacterStats.SetCorruptedHealth(0.0f);
         }
 
-        UpdateHealthBarRpc();
-        UpdateCorruptedHealthRpc();
-
         if (TookDamage)
             m_TimerLeftToRegen = m_TimeToStartRegen;
     }
@@ -217,8 +213,12 @@ public class EnemyDummy : NetworkBehaviour, ITakeDamage
     }
     void UpdateCorruptedHealthRpc()
     {
-        Debug.Log("Health: "+m_CharacterStats.GetCurrentHealth()+" Corrupted: "+m_CharacterStats.GetCorruptedHealth()+" Value: "+(m_CharacterStats.GetCurrentHealth()+m_CharacterStats.GetCorruptedHealth())/m_CharacterStats.GetMaxHealth());
+        //Debug.Log("Health: "+m_CharacterStats.GetCurrentHealth()+" Corrupted: "+m_CharacterStats.GetCorruptedHealth()+" Value: "+(m_CharacterStats.GetCurrentHealth()+m_CharacterStats.GetCorruptedHealth())/m_CharacterStats.GetMaxHealth());
         m_IngameUI.m_IngameCorruptedHealthBar.value = (m_CharacterStats.GetCurrentHealth() + m_CharacterStats.GetCorruptedHealth()) / m_CharacterStats.GetMaxHealth();
+    }
+    void UpdateManaBar() 
+    {
+        m_IngameUI.m_IngameManaBar.value=m_CharacterStats.GetCurrentMana()/m_CharacterStats.GetMaxMana();
     }
     [Rpc(SendTo.Everyone)]
     public void AddHealthRpc(float Health)

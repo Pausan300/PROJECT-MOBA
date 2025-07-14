@@ -1030,6 +1030,81 @@ Transform:
   m_Children: []
   m_Father: {fileID: 4448975194395680931}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &2123522031540073518
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1151075855138048794}
+  - component: {fileID: 6921778632585517269}
+  - component: {fileID: 364848488740944103}
+  m_Layer: 0
+  m_Name: ShunsoPassiveArea
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1151075855138048794
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2123522031540073518}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: -0.01}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6703158970996671057}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 10, y: 10}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!222 &6921778632585517269
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2123522031540073518}
+  m_CullTransparentMesh: 1
+--- !u!114 &364848488740944103
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2123522031540073518}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 0.60784316}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 21300000, guid: 3c63dab1a45e0b54ba8416edaf03ab9b, type: 3}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
 --- !u!1 &2306297692957170715
 GameObject:
   m_ObjectHideFlags: 0
@@ -2587,15 +2662,20 @@ MonoBehaviour:
   m_DamageLayerMask:
     serializedVersion: 2
     m_Bits: 128
+  m_AlliesLayerMask:
+    serializedVersion: 2
+    m_Bits: 1
   m_InputBufferController: {fileID: 7683495954015566684}
   m_UseKeyboardMovement: 0
   m_RangedAutoAttack: {fileID: 8413048611526370374, guid: 2ce0df19bb2af8a478ba1ad145d95731, type: 3}
   m_RangedAutoSpawnPoint: {fileID: 5358651008968027849}
   m_PMarkDebuff: {fileID: 11400000, guid: 1d80a155022918d4fbb5983ef1775c13, type: 2}
-  m_MinExtraDamage: 0
+  m_PArea: {fileID: 2123522031540073518}
+  m_PManaParticle: {fileID: 8270496605563521561, guid: 97afb89abb5b0644bb1f9274e0ca7c8b, type: 3}
   m_QProjectile: {fileID: 8270496605563521561, guid: 2483da9418e3d054db13c518dff590b3, type: 3}
   m_WProjectile: {fileID: 8270496605563521561, guid: c24a88d86428cab449ad5f7da88cfc13, type: 3}
   m_ESpeedBuff: {fileID: 11400000, guid: f9a5be81d53812d47ba8dff1dd74ee42, type: 2}
+  m_GainStacksCooldown: 0
   m_RProjectile: {fileID: 8270496605563521561, guid: a0c7c128064ece94a9ba8673d546e333, type: 3}
 --- !u!114 &7780092429937281219
 MonoBehaviour:
@@ -3415,7 +3495,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
-    m_AddedGameObjects: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 4934602529921915485, guid: 9077641dbd1aa0d4aaa117fe81594f54, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1151075855138048794}
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 9077641dbd1aa0d4aaa117fe81594f54, type: 3}
 --- !u!224 &6703158970996671057 stripped

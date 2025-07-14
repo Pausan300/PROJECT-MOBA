@@ -9,6 +9,10 @@ public class ShunsoCharacterController : CharacterMaster
     [Header("--- SHUNSO ---")]
     [Header("PASSIVE SKILL")]
 	public MarkBuff m_PMarkDebuff;
+	public GameObject m_PArea;
+	public GameObject m_PManaParticle;
+	List<GameObject> m_AffectedEnemies=new List<GameObject>(); 
+	float m_ReduceCooldownTimer;
 
     [Header("Q SKILL")]
 	public GameObject m_QProjectile;
@@ -20,6 +24,8 @@ public class ShunsoCharacterController : CharacterMaster
     [Header("E SKILL")]
 	public SpeedBuff m_ESpeedBuff;
 	bool m_MaxEStacksBuffActive;
+	[HideInInspector]
+	public bool m_GainStacksCooldown;
 
     [Header("R SKILL")]
 	public GameObject m_RProjectile;
@@ -27,6 +33,9 @@ public class ShunsoCharacterController : CharacterMaster
     public override void OnNetworkSpawn()
     {
         base.OnNetworkSpawn();
+		float l_Size=m_PassiveSkill.GetAttribute("Radio")/100.0f*2.0f;
+		m_PArea.GetComponent<RectTransform>().sizeDelta=new Vector2(l_Size, l_Size);
+		m_PArea.SetActive(false);
     }
     protected override void Update()
     {
@@ -47,12 +56,63 @@ public class ShunsoCharacterController : CharacterMaster
 					StartCoroutine(RCastProjectile());
 			}
 		}
+
+		if(m_AffectedEnemies.Count>=3)
+			ReduceSkillsCooldown();
+		else
+			m_ReduceCooldownTimer=0.0f;
     }
 
 	//PASSIVE SKILL
 	void AddPassiveDebuffMark(GameObject Enemy) 
 	{
-		Enemy.GetComponent<BuffableEntity>().AddBuff(m_PMarkDebuff.InitializeBuff(5.0f, Enemy));
+		TimedBuff l_Buff=m_PMarkDebuff.InitializeBuff(m_PassiveSkill.GetAttribute("Duracion"), m_PassiveSkill.GetAttribute("Intervalo"), Enemy);
+		l_Buff.m_OnTick+=ManaDrain;
+		l_Buff.m_OnEnd+=RemoveEnemyFromList;
+		Enemy.GetComponent<BuffableEntity>().AddBuff(l_Buff);
+		if(!m_AffectedEnemies.Contains(Enemy))
+			m_AffectedEnemies.Add(Enemy);
+		if(!m_PArea.activeSelf)
+			m_PArea.SetActive(true);
+	}
+	void ManaDrain(GameObject Enemy) 
+	{
+		CharacterStats l_Enemy=Enemy.GetComponent<CharacterStats>();
+		l_Enemy.SetCurrentManaRpc(l_Enemy.GetCurrentMana()-m_PassiveSkill.GetAttribute("Drenaje mana"));
+		ShunsoPManaParticle l_ManaParticle=Instantiate(m_PManaParticle, Enemy.transform.position, m_PManaParticle.transform.rotation, null).GetComponent<ShunsoPManaParticle>();
+		l_ManaParticle.SetStats(transform);
+		l_ManaParticle.m_OnReachTarget+=ManaRegeneration;
+	}
+	void ManaRegeneration() 
+	{
+		float l_ManaRegen=m_PassiveSkill.GetAttribute("Drenaje mana");
+		Collider[] l_HitColliders=Physics.OverlapSphere(transform.position, m_PassiveSkill.GetAttribute("Radio")/100.0f, m_AlliesLayerMask);
+		foreach(Collider Entity in l_HitColliders)
+		{
+            if(Entity.TryGetComponent(out CharacterStats Ally))
+		        Ally.SetCurrentManaRpc(m_CharacterStats.GetCurrentMana()+l_ManaRegen);
+        }
+		if(m_AffectedEnemies.Count<=0)
+			m_PArea.SetActive(false);
+	}
+	void RemoveEnemyFromList(GameObject Enemy) 
+	{
+		m_AffectedEnemies.Remove(Enemy);
+		if(m_AffectedEnemies.Count<=0)
+			m_PArea.SetActive(false);
+	}
+	void ReduceSkillsCooldown() 
+	{
+		m_ReduceCooldownTimer+=Time.deltaTime;
+		if(m_ReduceCooldownTimer>=m_PassiveSkill.GetAttribute("Intervalo")) 
+		{
+			float l_Cooldown=m_PassiveSkill.GetAttribute("Recuperacion enfriamiento");
+			if(m_QSkill.GetIsOnCd())
+				m_QSkill.SetTimer(m_QSkill.GetTimer()-l_Cooldown);
+			if(m_WSkill.GetIsOnCd())
+				m_WSkill.SetTimer(m_WSkill.GetTimer()-l_Cooldown);
+			m_ReduceCooldownTimer=0.0f;
+		}
 	}
 
 	//Q SKILL
@@ -108,6 +168,7 @@ public class ShunsoCharacterController : CharacterMaster
 			m_QSkill.GetAttribute("Ancho proyectil"), m_QSkill.GetAttribute("Rango proyectil"), m_QSkill.GetAttribute("Velocidad arañazo"), m_QSkill.GetAttribute("Ancho arañazo"), 
 			m_QSkill.GetAttribute("Rango arañazo"), l_Direction, m_QGoRight);
 		l_ProjectileScript.m_EStacksOnHit+=GainEStacks;
+		l_ProjectileScript.m_OnDamageEnemy+=AddPassiveDebuffMark;
 		m_QGoRight=!m_QGoRight;
 		base.QSkill();
 	}
@@ -147,9 +208,16 @@ public class ShunsoCharacterController : CharacterMaster
 			l_ProjectileScript.SetStats(this, m_WSkill.GetAttribute("Puntos de Vida Corrupta", GetWSkillLevel()), m_WSkill.GetAttribute("Daño de Vida Corrupta", GetWSkillLevel()),
 				m_WSkill.GetAttribute("Velocidad"), m_WSkill.GetAttribute("Ancho"), m_WSkill.GetAttribute("Rango"), l_Offset, l_Direction);
 			l_ProjectileScript.m_EStacksOnHit+=GainEStacks;
+			l_ProjectileScript.m_OnDamageEnemy+=AddPassiveDebuffMark;
 			l_Offset+=m_WSkill.GetAttribute("Separacion");
 		}
 		base.WSkill();
+	}
+	public IEnumerator WAlreadyGainedEStacks() 
+	{
+		m_GainStacksCooldown=true;
+		yield return new WaitForSeconds(0.2f);
+		m_GainStacksCooldown=false;
 	}
 
 	//E SKILL
@@ -158,7 +226,7 @@ public class ShunsoCharacterController : CharacterMaster
 		BuffableEntity l_CharacterBuffs=GetComponent<BuffableEntity>();
 		if(l_CharacterBuffs.GetBuffWithKey(m_ESpeedBuff)!=null) 
 		{
-			if(l_CharacterBuffs.GetBuffWithKey(m_ESpeedBuff).GetCurrentStacks()>=10) 
+			if(l_CharacterBuffs.GetBuffWithKey(m_ESpeedBuff).GetCurrentStacks()>=m_ESpeedBuff.m_MaxStacks) 
 			{
 				AddHealth(m_ESkill.GetAttribute("Curación", GetESkillLevel()) + GetCharacterStats().GetBonusAttackDamage()*0.8f);
 				l_CharacterBuffs.GetBuffWithKey(m_ESpeedBuff).End();
@@ -244,6 +312,7 @@ public class ShunsoCharacterController : CharacterMaster
 		l_ProjectileScript.SetStats(this, m_RSkill.GetAttribute("Daño base", GetRSkillLevel()), m_RSkill.GetAttribute("Velocidad"), m_RSkill.GetAttribute("Radio mordisco"), 
 			l_TargetPos);
 		l_ProjectileScript.m_EStacksOnHit+=GainEStacks;
+		l_ProjectileScript.m_OnDamageEnemy+=AddPassiveDebuffMark;
 		base.RSkill();
 	}
 

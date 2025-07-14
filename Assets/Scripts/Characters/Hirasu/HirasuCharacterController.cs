@@ -539,6 +539,6 @@ public class HirasuCharacterController : CharacterMaster
 	{
 		NetworkObject l_Enemy=Enemy;
 		if(l_Enemy.TryGetComponent(out BuffableEntity Buffs))
-			Buffs.AddBuff(m_WMarksDebuff.InitializeBuff(m_WMarksDuration, l_Enemy.gameObject));
+			Buffs.AddBuff(m_WMarksDebuff.InitializeBuff(m_WMarksDuration, 0.0f, l_Enemy.gameObject));
 	}
 }

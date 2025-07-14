@@ -66,6 +66,7 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
     public KeyCode m_ESkillKey;
     public KeyCode m_RSkillKey;
     public LayerMask m_DamageLayerMask;
+    public LayerMask m_AlliesLayerMask;
     bool m_ShowingGizmos;
     int m_QSkillLevel;
     int m_WSkillLevel;
