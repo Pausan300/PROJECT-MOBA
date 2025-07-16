@@ -14,6 +14,8 @@ public class ShunsoWProjectile : NetworkBehaviour
     float m_TimeNeeded;
     float m_Timer;
     float m_MaxRange;
+    int m_NormalCharges;
+    int m_CorruptedCharges;
     Vector3 m_InitialPos;
     Vector3 m_TargetPos;
     Vector3 m_InitialScale;
@@ -38,7 +40,8 @@ public class ShunsoWProjectile : NetworkBehaviour
         }
     }
 
-    public void SetStats(ShunsoCharacterController Player, float CorruptedHealth, float CorruptedHealthDamage, float Speed, float Width, float Range, float Offset, Vector3 Direction) 
+    public void SetStats(ShunsoCharacterController Player, float CorruptedHealth, float CorruptedHealthDamage, float Speed, float Width, float Range, float Offset, Vector3 Direction, 
+        float NormalCharges, float CorruptedCharges) 
     {
         m_Player=Player;
         m_CorruptedHealth=CorruptedHealth;
@@ -46,6 +49,8 @@ public class ShunsoWProjectile : NetworkBehaviour
         m_Speed=Speed/100.0f;
         m_MaxRange=Range/100.0f;
         m_TimeNeeded=m_MaxRange/m_Speed;
+        m_NormalCharges=(int)NormalCharges;
+        m_CorruptedCharges=(int)CorruptedCharges;
 
         transform.forward=Direction;
         m_Projectile.transform.localScale=new Vector3(Width/100.0f, 0.5f, 0.0f);
@@ -77,9 +82,9 @@ public class ShunsoWProjectile : NetworkBehaviour
                 if(!m_Player.m_GainStacksCooldown) 
                 {
                     if(Enemy.GetCharacterStats().GetCorruptedHealth()>0.0f)
-                        m_EStacksOnHit.Invoke(2);
+                        m_EStacksOnHit.Invoke(m_CorruptedCharges);
                     else
-                        m_EStacksOnHit.Invoke(1);
+                        m_EStacksOnHit.Invoke(m_NormalCharges);
                     m_Player.StartCoroutine(m_Player.WAlreadyGainedEStacks());
                 }
                     

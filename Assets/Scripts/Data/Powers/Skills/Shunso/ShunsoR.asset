@@ -18,12 +18,14 @@ MonoBehaviour:
   m_Description: "Shunso dispara una gran bola de sangre corrupta con energ\xEDa
     de Yin y Yang que al golpear a un Sinluz o llegar al lugar seleccionado, invoca
     a Baihu para que muerda a los enemigos infligiendo X <color=FISICDAMAGE>+ 5 por
-    cada 100 unidades viajadas como da\xF1o f\xEDsico</color>.\r\n\r\nEsta habilidad
-    otorga el doble de acumulaciones de Fuerza Corrupta si el enemigo tiene <color=FISICDAMAGE>Vida
-    Corrupta</color>.\r"
+    cada 100 unidades viajadas como da\xF1o f\xEDsico</color>.\r"
+  m_HaveLoads: 0
+  m_MAXLoads: 0
+  m_HaveSpecialLoad: 0
+  m_SpecialLoadEvery: 0
+  m_SpecialLoadSprite: {fileID: 0}
   m_AttributeList:
   - m_AttributeId: "Da\xF1o base"
-    m_IsPct: 0
     m_ShowScalingInPopup: 1
     m_ValueFormat: 
     m_LevelScaling:
@@ -31,7 +33,6 @@ MonoBehaviour:
     - 400
     - 550
   - m_AttributeId: Enfriamiento
-    m_IsPct: 0
     m_ShowScalingInPopup: 1
     m_ValueFormat: s
     m_LevelScaling:
@@ -39,7 +40,6 @@ MonoBehaviour:
     - 60
     - 40
   - m_AttributeId: Coste de Mana
-    m_IsPct: 0
     m_ShowScalingInPopup: 0
     m_ValueFormat: 
     m_LevelScaling:
@@ -47,25 +47,21 @@ MonoBehaviour:
     - 100
     - 100
   - m_AttributeId: Rango
-    m_IsPct: 0
     m_ShowScalingInPopup: 0
     m_ValueFormat: 
     m_LevelScaling:
     - 8000
   - m_AttributeId: Radio proyectil
-    m_IsPct: 0
     m_ShowScalingInPopup: 0
     m_ValueFormat: 
     m_LevelScaling:
     - 125
   - m_AttributeId: Radio mordisco
-    m_IsPct: 0
     m_ShowScalingInPopup: 0
     m_ValueFormat: 
     m_LevelScaling:
     - 250
   - m_AttributeId: Velocidad
-    m_IsPct: 0
     m_ShowScalingInPopup: 0
     m_ValueFormat: 
     m_LevelScaling:

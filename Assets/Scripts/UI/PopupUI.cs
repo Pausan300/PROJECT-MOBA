@@ -104,7 +104,7 @@ public class PopupUI : MonoBehaviour
             }
         }
 
-        float l_BaseDamage = _Skill.GetAttribute("Daño base", SkillLV);
+        //float l_BaseDamage = _Skill.GetAttribute("Daño base", SkillLV);
         foreach (SkillDescriptionDamage DamageDescription in _Skill.m_DescriptionDamageList)
         {
             string l_TooltipsText = "";

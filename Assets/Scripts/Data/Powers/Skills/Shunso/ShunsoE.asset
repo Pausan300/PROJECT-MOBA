@@ -30,7 +30,6 @@ MonoBehaviour:
   m_SpecialLoadSprite: {fileID: 0}
   m_AttributeList:
   - m_AttributeId: "Curaci\xF3n"
-    m_IsPct: 0
     m_ShowScalingInPopup: 1
     m_ValueFormat: 
     m_LevelScaling:
@@ -40,7 +39,6 @@ MonoBehaviour:
     - 145
     - 160
   - m_AttributeId: "Da\xF1o de ataque adicional"
-    m_IsPct: 0
     m_ShowScalingInPopup: 1
     m_ValueFormat: 
     m_LevelScaling:
@@ -50,19 +48,16 @@ MonoBehaviour:
     - 60
     - 70
   - m_AttributeId: Velocidad
-    m_IsPct: 0
     m_ShowScalingInPopup: 0
     m_ValueFormat: 
     m_LevelScaling:
     - 2
   - m_AttributeId: Duracion
-    m_IsPct: 0
     m_ShowScalingInPopup: 0
     m_ValueFormat: 
     m_LevelScaling:
     - 2.5
   - m_AttributeId: Coste de Mana
-    m_IsPct: 0
     m_ShowScalingInPopup: 0
     m_ValueFormat: 
     m_LevelScaling:
@@ -72,7 +67,6 @@ MonoBehaviour:
     - 20
     - 20
   - m_AttributeId: Enfriamiento
-    m_IsPct: 0
     m_ShowScalingInPopup: 0
     m_ValueFormat: 
     m_LevelScaling:
@@ -81,6 +75,16 @@ MonoBehaviour:
     - 0
     - 0
     - 0
+  - m_AttributeId: Obtencion cargas
+    m_ShowScalingInPopup: 0
+    m_ValueFormat: 
+    m_LevelScaling:
+    - 1
+  - m_AttributeId: Obtencion cargas contra sangre corrupta
+    m_ShowScalingInPopup: 0
+    m_ValueFormat: 
+    m_LevelScaling:
+    - 2
   m_DescriptionDamageList:
   - m_DescriptionId: X
     m_Color: 4

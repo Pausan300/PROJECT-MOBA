@@ -852,7 +852,7 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
     }
     protected virtual void RSkill()
     {
-        if (m_QSkill.GetHaveLoads())
+        if (!m_RSkill.GetHaveLoads())
         {
             m_RSkill.SetTimer(m_RSkill.GetCd());
             m_CharacterUI.m_RSkillCdImage.fillAmount = 1.0f;

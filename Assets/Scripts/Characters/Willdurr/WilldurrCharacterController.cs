@@ -131,6 +131,7 @@ public class WilldurrCharacterController : CharacterMaster
     public GameObject m_RHeadPrefab;
     public LayerMask m_RHeadLayerMask;
     public float m_MINRangeR = 800.0f;
+    public float m_RUnitsPerSkull;
     public float m_ScaleRZoneSpeed = 1000.0f;
     public float m_RSkillDuration = 15f;
     public float m_RChannelingTime = 0.2f;
@@ -373,7 +374,6 @@ public class WilldurrCharacterController : CharacterMaster
             }
         }
 
-
         if (m_QSkill.GetThisIsSpecialLoad())
             m_ActualHitboxRadius = m_InitialRadiusQ2 + ((m_FinalRadiusQ2 - m_InitialRadiusQ2) * l_DistancePercent);
         else
@@ -393,6 +393,8 @@ public class WilldurrCharacterController : CharacterMaster
                 float l_Damage = (m_QSkill.GetAttribute("Daño 3r ataque", GetQSkillLevel())) + (m_QPercentageBonusAttackDamageSecond / 100) * GetCharacterStats().GetBonusAttackDamage();
                 Debug.Log("TAKEN " + l_Damage + " DAMAGE");
                 Enemy.TakeDamage(l_Damage, 0, false, m_CharacterStats.GetPlayerName());
+                if (Entity.TryGetComponent(out BuffableEntity Buffs))
+                    Buffs.AddBuff(m_PSoulTheftBuff.InitializeBuff(this, m_PTimeToTheftSoul, Entity.gameObject));
                 m_CollidersHitQZone.Add(Entity);
             }
         }
@@ -409,6 +411,8 @@ public class WilldurrCharacterController : CharacterMaster
                     float l_Damage = (m_QSkill.GetAttribute("Daño base", GetQSkillLevel())) + (m_QPercentageBonusAttackDamageFirst / 100) * GetCharacterStats().GetBonusAttackDamage();
                     Debug.Log("TAKEN " + l_Damage + " DAMAGE");
                     Enemy.TakeDamage(l_Damage, 0, false, m_CharacterStats.GetPlayerName());
+                    if (Entity.TryGetComponent(out BuffableEntity Buffs))
+                        Buffs.AddBuff(m_PSoulTheftBuff.InitializeBuff(this, m_PTimeToTheftSoul, Entity.gameObject));
                     m_CollidersHitQZone.Add(Entity);
                 }
 
@@ -512,9 +516,6 @@ public class WilldurrCharacterController : CharacterMaster
         m_WReactived = false;
         m_CollidersHitWZone = new List<Collider>();
 
-
-
-
         SetAnimatorTrigger("IsUsingW");
 
         SetDisabled(true);
@@ -598,6 +599,8 @@ public class WilldurrCharacterController : CharacterMaster
 
             for (int i = m_CollidersHitWZone.Count - 1; i >= 0; i--)
             {
+                if(m_CollidersHitQZone[i]!=null)
+                    return;
                 Collider entity = m_CollidersHitWZone[i];
                 Transform entityTransform = entity.transform;
                 Vector3 entityTargetPos = new Vector3(targetPosition.x, entityTransform.position.y, targetPosition.z);
@@ -709,10 +712,6 @@ public class WilldurrCharacterController : CharacterMaster
         }
         else
             m_ECoroutine = StartCoroutine(StartESkill());
-
-
-
-
     }
     IEnumerator StartESkill()
     {
@@ -781,6 +780,7 @@ public class WilldurrCharacterController : CharacterMaster
                 if (Entity.TryGetComponent(out BuffableEntity Buffs))
                 {
                     Buffs.AddBuff(m_FearBuffE.InitializeBuff(transform.position, m_FearBuffTimeE, Entity.gameObject));
+                    Buffs.AddBuff(m_PSoulTheftBuff.InitializeBuff(this, m_PTimeToTheftSoul, Entity.gameObject));
                     Debug.Log("Buff Fear Added to " + Entity.name);
                 }
 
@@ -930,8 +930,6 @@ public class WilldurrCharacterController : CharacterMaster
         GetCharacterUI().HideCastingUI();
         m_RChanneling = false;
 
-
-
         m_CollidersHitRZone = new List<Collider>();
         m_RZone = Instantiate(m_RZonePrefab, new Vector3(transform.position.x, transform.position.y + 0.05f, transform.position.z), Quaternion.identity);
         m_RZone.GetComponent<WilldurrRZone>().m_CharacterController = this;
@@ -942,14 +940,13 @@ public class WilldurrCharacterController : CharacterMaster
         m_PosToSpawnRHeads = new List<Vector3>();
         m_RHeads = new List<GameObject>();
 
-        for (int i = 0; i < (m_MAXRangeThisR / 100); i++)
+        for (int i = 0; i < (m_MAXRangeThisR / m_RUnitsPerSkull); i++)
         {
             m_PosToSpawnRHeads.Add(GetHeadPosRandom(i));
             Debug.Log("Range to spawn head " + (i + 1) + ": " + m_PosToSpawnRHeads[i]);
         }
         yield return new WaitForSeconds(m_RSkillDuration);
         EndRSkill();
-
     }
 
     private Vector3 GetHeadPosRandom(int HeadNum)
@@ -993,7 +990,6 @@ public class WilldurrCharacterController : CharacterMaster
 
         if (m_ScalingRZone)
         {
-
             m_ActualRangeR = m_ActualRangeR + Time.deltaTime * m_ScaleRZoneSpeed;
             m_RZone.transform.localScale = new Vector3(m_ActualRangeR / 100 * 2, m_ActualRangeR / 100 * 2, m_ActualRangeR / 100 * 2);
 
@@ -1014,9 +1010,6 @@ public class WilldurrCharacterController : CharacterMaster
                 }
 
             }
-
-
-
 
             if (m_ActualRangeR >= m_MAXRangeThisR)
             {
@@ -1050,8 +1043,10 @@ public class WilldurrCharacterController : CharacterMaster
                     if (l_CameraRaycastHit.collider.gameObject.GetComponent<WilldurrHeadR>())
                     {
                         transform.position = new Vector3(l_CameraRaycastHit.transform.position.x, transform.position.y, l_CameraRaycastHit.transform.position.z);
-                        StopAttacking();
+                        m_RHeads.Remove(l_CameraRaycastHit.collider.gameObject);
+                        Destroy(l_CameraRaycastHit.collider.gameObject);
 
+                        StopAttacking();
                         if (!GetIsLookingForPosition())
                             StopMovement();
 
@@ -1065,10 +1060,7 @@ public class WilldurrCharacterController : CharacterMaster
                     }
                 }
             }
-
         }
-
-
     }
 
     public void TriggerEnterRZone(Collider Entity)
@@ -1081,6 +1073,7 @@ public class WilldurrCharacterController : CharacterMaster
             if (Entity.TryGetComponent(out BuffableEntity Buffs))
             {
                 Buffs.AddBuff(m_SlowDownRBuff.InitializeBuff(m_RSkillDuration, m_SlowDownRBuff.m_Value1, Entity.gameObject));
+                Buffs.AddBuff(m_PSoulTheftBuff.InitializeBuff(this, m_PTimeToTheftSoul, Entity.gameObject));
                 Debug.Log("Buff SlowDown Added to " + Entity.name);
             }
 
@@ -1221,8 +1214,6 @@ public class WilldurrCharacterController : CharacterMaster
         yield return new WaitForSeconds(Duration);
         SetDisabled(false);
     }
-
-
 }
 
 [System.Serializable]

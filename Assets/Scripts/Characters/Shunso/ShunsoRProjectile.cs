@@ -12,6 +12,8 @@ public class ShunsoRProjectile : NetworkBehaviour
     float m_Damage;
     float m_Speed;
     float m_ByteRadius;
+    int m_NormalCharges;
+    int m_CorruptedCharges;
     Vector3 m_InitialPos;
     Vector3 m_TargetPosition;
     Vector3 m_Direction;
@@ -36,7 +38,7 @@ public class ShunsoRProjectile : NetworkBehaviour
         }
     }
 
-    public void SetStats(ShunsoCharacterController Player, float Damage, float Speed, float ByteRadius, Vector3 TargetPos) 
+    public void SetStats(ShunsoCharacterController Player, float Damage, float Speed, float ByteRadius, Vector3 TargetPos, float NormalCharges, float CorruptedCharges) 
     {
         m_InitialPos=transform.position;
         m_Player=Player;
@@ -48,6 +50,8 @@ public class ShunsoRProjectile : NetworkBehaviour
         m_Direction=m_TargetPosition-transform.position;
         m_Direction.y=0.0f;
         m_Direction.Normalize();
+        m_NormalCharges=(int)NormalCharges;
+        m_CorruptedCharges=(int)CorruptedCharges;
 
         float l_SpriteWidth=m_ByteAreaSprite.sprite.rect.width*transform.localScale.x;
         float l_NewWidth=ByteRadius*2.0f/l_SpriteWidth;
@@ -70,9 +74,9 @@ public class ShunsoRProjectile : NetworkBehaviour
 	        {
 		        Enemy.TakeDamage(m_Damage+l_ExtraDamage, 0.0f, false, m_Player.m_CharacterStats.GetPlayerName());
                 if(Enemy.GetCharacterStats().GetCorruptedHealth()>0.0f) 
-                    m_EStacksOnHit?.Invoke(4);
+                    m_EStacksOnHit?.Invoke(m_CorruptedCharges);
                 else
-                    m_EStacksOnHit?.Invoke(1);
+                    m_EStacksOnHit?.Invoke(m_NormalCharges);
                 m_OnDamageEnemy?.Invoke(Entity.gameObject);
             }
         }

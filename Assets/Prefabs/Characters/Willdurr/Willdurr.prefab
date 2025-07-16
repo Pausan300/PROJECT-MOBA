@@ -2238,6 +2238,9 @@ MonoBehaviour:
   m_DamageLayerMask:
     serializedVersion: 2
     m_Bits: 128
+  m_AlliesLayerMask:
+    serializedVersion: 2
+    m_Bits: 0
   m_InputBufferController: {fileID: 7621680028878733405}
   m_UseKeyboardMovement: 0
   m_RangedAutoAttack: {fileID: 0}
@@ -2301,6 +2304,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 2048
   m_MINRangeR: 800
+  m_RUnitsPerSkull: 50
   m_ScaleRZoneSpeed: 500
   m_RSkillDuration: 15
   m_RChannelingTime: 0.2

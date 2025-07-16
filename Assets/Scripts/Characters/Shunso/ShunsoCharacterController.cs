@@ -66,7 +66,7 @@ public class ShunsoCharacterController : CharacterMaster
 	//PASSIVE SKILL
 	void AddPassiveDebuffMark(GameObject Enemy) 
 	{
-		TimedBuff l_Buff=m_PMarkDebuff.InitializeBuff(m_PassiveSkill.GetAttribute("Duracion"), m_PassiveSkill.GetAttribute("Intervalo"), Enemy);
+		TimedBuff l_Buff=m_PMarkDebuff.InitializeBuff(m_PassiveSkill.GetAttribute("Duracion"), m_PassiveSkill.GetAttribute("Intervalo drenaje"), Enemy);
 		l_Buff.m_OnTick+=ManaDrain;
 		l_Buff.m_OnEnd+=RemoveEnemyFromList;
 		Enemy.GetComponent<BuffableEntity>().AddBuff(l_Buff);
@@ -104,7 +104,7 @@ public class ShunsoCharacterController : CharacterMaster
 	void ReduceSkillsCooldown() 
 	{
 		m_ReduceCooldownTimer+=Time.deltaTime;
-		if(m_ReduceCooldownTimer>=m_PassiveSkill.GetAttribute("Intervalo")) 
+		if(m_ReduceCooldownTimer>=m_PassiveSkill.GetAttribute("Intervalo enfriamiento")) 
 		{
 			float l_Cooldown=m_PassiveSkill.GetAttribute("Recuperacion enfriamiento");
 			if(m_QSkill.GetIsOnCd())
@@ -136,6 +136,7 @@ public class ShunsoCharacterController : CharacterMaster
 	}
 	IEnumerator QCastProjectile() 
 	{
+		base.QSkill();
 		StartCoroutine(DisableForDuration(m_QSkill.m_SkillDisabledTime));
 		SetAnimatorTrigger("IsUsingQ");
 		GetCharacterUI().SetCastingUIAbilityText(m_QSkill.m_PowerName);
@@ -166,11 +167,10 @@ public class ShunsoCharacterController : CharacterMaster
 		ShunsoQProjectile l_ProjectileScript=l_Projectile.GetComponent<ShunsoQProjectile>();
 		l_ProjectileScript.SetStats(this, m_QSkill.GetAttribute("Daño base", GetQSkillLevel()), m_QSkill.GetAttribute("Velocidad proyectil"), 
 			m_QSkill.GetAttribute("Ancho proyectil"), m_QSkill.GetAttribute("Rango proyectil"), m_QSkill.GetAttribute("Velocidad arañazo"), m_QSkill.GetAttribute("Ancho arañazo"), 
-			m_QSkill.GetAttribute("Rango arañazo"), l_Direction, m_QGoRight);
+			m_QSkill.GetAttribute("Rango arañazo"), l_Direction, m_QGoRight, m_ESkill.GetAttribute("Obtencion cargas"), m_ESkill.GetAttribute("Obtencion cargas contra sangra corrupta"));
 		l_ProjectileScript.m_EStacksOnHit+=GainEStacks;
 		l_ProjectileScript.m_OnDamageEnemy+=AddPassiveDebuffMark;
 		m_QGoRight=!m_QGoRight;
-		base.QSkill();
 	}
 
 	//W SKILL
@@ -185,6 +185,7 @@ public class ShunsoCharacterController : CharacterMaster
 	}
 	IEnumerator WCastProjectile() 
 	{
+		base.WSkill();
 		Vector3 l_TargetPos=GetPositionWithMouse();
 		Vector3 l_Direction=l_TargetPos-transform.position;
 		l_Direction.y=0.0f;
@@ -206,12 +207,12 @@ public class ShunsoCharacterController : CharacterMaster
 			l_ProjectileNetwork.SpawnWithOwnership(GetComponent<NetworkObject>().OwnerClientId);
 			ShunsoWProjectile l_ProjectileScript=l_Projectile.GetComponent<ShunsoWProjectile>();
 			l_ProjectileScript.SetStats(this, m_WSkill.GetAttribute("Puntos de Vida Corrupta", GetWSkillLevel()), m_WSkill.GetAttribute("Daño de Vida Corrupta", GetWSkillLevel()),
-				m_WSkill.GetAttribute("Velocidad"), m_WSkill.GetAttribute("Ancho"), m_WSkill.GetAttribute("Rango"), l_Offset, l_Direction);
+				m_WSkill.GetAttribute("Velocidad"), m_WSkill.GetAttribute("Ancho"), m_WSkill.GetAttribute("Rango"), l_Offset, l_Direction, m_ESkill.GetAttribute("Obtencion cargas"), 
+				m_ESkill.GetAttribute("Obtencion cargas contra sangra corrupta"));
 			l_ProjectileScript.m_EStacksOnHit+=GainEStacks;
 			l_ProjectileScript.m_OnDamageEnemy+=AddPassiveDebuffMark;
 			l_Offset+=m_WSkill.GetAttribute("Separacion");
 		}
-		base.WSkill();
 	}
 	public IEnumerator WAlreadyGainedEStacks() 
 	{
@@ -310,7 +311,7 @@ public class ShunsoCharacterController : CharacterMaster
 		l_ProjectileNetwork.SpawnWithOwnership(GetComponent<NetworkObject>().OwnerClientId);
 		ShunsoRProjectile l_ProjectileScript=l_Projectile.GetComponent<ShunsoRProjectile>();
 		l_ProjectileScript.SetStats(this, m_RSkill.GetAttribute("Daño base", GetRSkillLevel()), m_RSkill.GetAttribute("Velocidad"), m_RSkill.GetAttribute("Radio mordisco"), 
-			l_TargetPos);
+			l_TargetPos, m_ESkill.GetAttribute("Obtencion cargas"), m_ESkill.GetAttribute("Obtencion cargas contra sangra corrupta"));
 		l_ProjectileScript.m_EStacksOnHit+=GainEStacks;
 		l_ProjectileScript.m_OnDamageEnemy+=AddPassiveDebuffMark;
 		base.RSkill();
@@ -329,9 +330,9 @@ public class ShunsoCharacterController : CharacterMaster
         l_ProjectileNetwork.SpawnWithOwnership(GetComponent<NetworkObject>().OwnerClientId);
 		ShunsoAA l_ProjectileScript=l_Projectile.GetComponent<ShunsoAA>();
         l_ProjectileScript.SetStats(m_DesiredEnemy, m_CharacterStats.GetAttackDamage(), 0.0f, this);
+		l_ProjectileScript.SetChargesOnHit(m_ESkill.GetAttribute("Obtencion cargas"), m_ESkill.GetAttribute("Obtencion cargas contra sangra corrupta"));
 		l_ProjectileScript.m_EStacksOnHit+=GainEStacks;
 		l_ProjectileScript.m_OnHitEffects+=AddPassiveDebuffMark;
-		//l_Projectile.GetComponent<RangedAutoAttack>().m_OnHitEffects+=GainEStacks;
     }
 
     public override void LevelUpRpc()

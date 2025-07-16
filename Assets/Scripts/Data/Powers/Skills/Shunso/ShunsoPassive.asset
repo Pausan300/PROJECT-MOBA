@@ -29,31 +29,31 @@ MonoBehaviour:
   m_SpecialLoadSprite: {fileID: 0}
   m_AttributeList:
   - m_AttributeId: Drenaje mana
-    m_IsPct: 0
     m_ShowScalingInPopup: 0
     m_ValueFormat: 
     m_LevelScaling:
     - 5
-  - m_AttributeId: Duracion
-    m_IsPct: 0
-    m_ShowScalingInPopup: 0
-    m_ValueFormat: 
-    m_LevelScaling:
-    - 5
-  - m_AttributeId: Intervalo
-    m_IsPct: 0
-    m_ShowScalingInPopup: 0
-    m_ValueFormat: 
-    m_LevelScaling:
-    - 1
   - m_AttributeId: Recuperacion enfriamiento
-    m_IsPct: 0
     m_ShowScalingInPopup: 0
     m_ValueFormat: 
     m_LevelScaling:
     - 0.5
+  - m_AttributeId: Duracion
+    m_ShowScalingInPopup: 0
+    m_ValueFormat: 
+    m_LevelScaling:
+    - 5
+  - m_AttributeId: Intervalo drenaje
+    m_ShowScalingInPopup: 0
+    m_ValueFormat: 
+    m_LevelScaling:
+    - 1
+  - m_AttributeId: Intervalo enfriamiento
+    m_ShowScalingInPopup: 0
+    m_ValueFormat: 
+    m_LevelScaling:
+    - 1
   - m_AttributeId: Radio
-    m_IsPct: 0
     m_ShowScalingInPopup: 0
     m_ValueFormat: 
     m_LevelScaling:

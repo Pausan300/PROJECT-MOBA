@@ -7,14 +7,11 @@ using UnityEngine;
 public class SkillAttribute
 {
     public string m_AttributeId;
-    public bool m_IsPct;
     public bool m_ShowScalingInPopup;
     [Tooltip("Ej: Si el valor son segundos poner -> s || no poner espacios || si no tiene formato dejar vacío")]
     public string m_ValueFormat = "";
     public List<float> m_LevelScaling;
 }
-
-
 
 [Serializable]
 public class SkillDescriptionDamage
@@ -81,7 +78,6 @@ public class Skill : Power
     }
 
 
-
     public bool GetUsingSkill()
     {
         return m_UsingSkill;
@@ -101,6 +97,7 @@ public class Skill : Power
             if (Attribute.m_AttributeId == Id)
                 return Attribute.m_LevelScaling[l_Index];
         }
+        Debug.LogError("COULDN'T FIND THE ATTRIBUTE, MAYBE IT DOESN'T EXIST OR THE NAME DOESN'T MATCH");
         return 0.0f;
     }
     public float GetAttribute(string Id)
