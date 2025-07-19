@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class ZappadasQProjectile : MonoBehaviour
+public class ZappadasQProjectile : Projectile
 {
     bool m_Move;
 
@@ -19,8 +19,10 @@ public class ZappadasQProjectile : MonoBehaviour
         m_Move = false;
     }
 
-    public void SetProjectile(float ProjectileHitbox, float Range, float ProjectileSpeed, Vector3 Direction, ZappadasCharacterController _CharacterController)
+    public void SetProjectile(float damage, float ProjectileHitbox, float Range, float ProjectileSpeed, Vector3 Direction, ZappadasCharacterController _CharacterController)
     {
+        SetDamage(damage);
+        SetHitboxRadius((ProjectileHitbox/100)/2);
         transform.localScale = new Vector3(ProjectileHitbox / 100, ProjectileHitbox / 100, ProjectileHitbox / 100);
         m_RangeQ = Range;
         m_ProjectileSpeedQ = ProjectileSpeed;
@@ -31,6 +33,7 @@ public class ZappadasQProjectile : MonoBehaviour
         m_Move = true;
 
         m_CharacterController = _CharacterController;
+        SetCanBeDeleted(true);
     }
 
     private void Update()

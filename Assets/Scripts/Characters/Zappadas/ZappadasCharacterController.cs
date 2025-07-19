@@ -47,7 +47,7 @@ public class ZappadasCharacterController : CharacterMaster
     public float m_Q2TimeToArribeTarget = 0.25f;
     public float m_Q2Range = 300;
     public float m_Q2AditionalDamageMinions = 25;
-    public int m_Q2MaxBounces = 3;
+    private int m_Q2MaxBounces = 3;
 
 
 
@@ -64,7 +64,28 @@ public class ZappadasCharacterController : CharacterMaster
     public int m_DarkPowerToUpgradeSkillW = 100;
     bool m_WSkillUpgrade = false;
 
-    public float m_WChannelingTime = 1f; //Se puede borrar si no hace Canalizando la skill
+
+    public float m_WWormholeRange = 900f;
+    public float m_WWormholeDuration = 8f;
+    public float m_WWormholeStartPosOffset = 1f;
+    public float m_WProjectileExitRange = 800f;
+    public float m_WProjectileExitSpeed = 900f;
+    [UnityEngine.Range(0f, 100f)]
+    public float m_WProjectileHitboxIncrease = 10f;
+    public float m_WWormholeStartHitboxRadius = 150f;
+
+    public float m_WDarkPowerRange = 450f;
+
+
+    public GameObject m_WWormholeStartPrefab;
+    public GameObject m_WSkillIndicatorUIObject;
+
+    Vector3 m_WWormholeEndPosition;
+    bool m_LoadingWSkill = false;
+
+
+
+    public float m_WChannelingTime = 0.05f; //Se puede borrar si no hace Canalizando la skill
     bool m_WChanneling = true; //Se puede borrar si no hace Canalizando la skill
     float m_WTimer = 0f; //Se puede borrar si no hace Canalizando la skill
     bool m_SaverCanDoW = true;
@@ -342,8 +363,8 @@ public class ZappadasCharacterController : CharacterMaster
                 Vector3 l_Direccion = GetPositionWithMouse() - l_ActualProjectile.transform.position;
                 l_Direccion.y = 0;
                 l_Direccion = l_Direccion.normalized;
-
-                l_ActualProjectile.GetComponent<ZappadasQProjectile>().SetProjectile(m_ProjectileHitboxQ, m_RangeQ, m_ProjectileSpeedQ, l_Direccion, this);
+                float l_Damage = (m_QSkill.GetAttribute("Daño base", GetQSkillLevel())) + (m_PercentageSkillPowerQ1 / 100) * GetCharacterStats().GetAbilityPower();
+                l_ActualProjectile.GetComponent<ZappadasQProjectile>().SetProjectile(l_Damage, m_ProjectileHitboxQ, m_RangeQ, m_ProjectileSpeedQ, l_Direccion, this);
 
                 if (m_QProjectiles.Count == 0)
                     EndQSkill();
@@ -363,7 +384,7 @@ public class ZappadasCharacterController : CharacterMaster
             List<Collider> l_CollidersHit = new List<Collider>();
             Collider[] l_HitColliders = Physics.OverlapSphere(OtherEntity.transform.position, m_ExplosionHitboxQ / 100, m_DamageLayerMask);
 
-            
+
             foreach (Collider Entity in l_HitColliders)
             {
                 if (!l_CollidersHit.Contains(Entity) && Entity.TryGetComponent(out ITakeDamage Enemy))
@@ -383,7 +404,7 @@ public class ZappadasCharacterController : CharacterMaster
                 Vector3 l_SpawnPos = OtherEntity.transform.position;
                 l_SpawnPos.y = m_OffsetYProjectileQ;
                 GameObject l_QProjectileUpgrade = Instantiate(m_QProjectileUpgradePrefab, l_SpawnPos, Quaternion.identity);
-
+                m_Q2MaxBounces = (int)m_QSkill.GetAttribute("Cantidad de rebotes", GetQSkillLevel());
                 float l_Damage = (m_QSkill.GetAttribute("Daño base “Energía oscura”", GetQSkillLevel())) + (m_PercentageSkillPowerQ2 / 100) * GetCharacterStats().GetAbilityPower();
                 l_QProjectileUpgrade.GetComponent<ZappadasQProjectileUpgrade>().SetProjectilUpGrade(l_Damage, m_Q2TimeToArribeTarget, m_Q2Range, m_Q2AditionalDamageMinions, m_DamageLayerMask, m_Q2MaxBounces, OtherEntity, GetCharacterStats(), this);
 
@@ -454,7 +475,7 @@ public class ZappadasCharacterController : CharacterMaster
                 m_SkillIndicatorUI.ClearNormalSkillIndicatorUI();
                 m_SkillIndicatorUI.ClearTargetSkillIndicatorUI();
             }
-            //Aqui va el codigo para mostrar la UI --> EJ: m_SkillIndicatorUI.CreateArrowSkillIndicator(m_WSkill.m_IndicatorUIObject, m_UIIndicatorWidthW, m_RangeW, transform.position, true);
+            m_SkillIndicatorUI.CreateCircleSkillIndicator(m_WSkill.m_IndicatorUIObject, m_WWormholeRange, transform, false);
             SetShowingGizmos(true);
         }
         else
@@ -468,9 +489,54 @@ public class ZappadasCharacterController : CharacterMaster
 
         m_WSkillUpgrade = false;
         m_WSkillStarted = true;
+        m_WChanneling = false;
+
+        Vector3 l_TargetPosition;
+
+
+        Vector3 mousePos = GetPositionWithMouse();
+
+        Vector3 direction = mousePos - transform.position;
+        float distance = direction.magnitude;
+
+        if (distance <= m_WWormholeRange / 100)
+        {
+            l_TargetPosition = mousePos; 
+        }
+        else
+        {
+            l_TargetPosition =  transform.position + direction.normalized * m_WWormholeRange/100;
+        }
+
+
+        Vector3 l_Direction = l_TargetPosition - transform.position;
+        l_Direction.y = 0;
+
+        if (l_Direction.magnitude > m_WWormholeRange)
+        {
+            l_Direction = l_Direction.normalized * m_WWormholeRange;
+        }
+
+        m_WWormholeEndPosition = transform.position + l_Direction;
+
+        m_SkillIndicatorUI.CreateArrowSkillIndicator(m_WSkillIndicatorUIObject, m_WWormholeStartHitboxRadius, m_WProjectileExitRange, m_WWormholeEndPosition, false);
         StopAttacking();
         if (!GetIsLookingForPosition())
             StopMovement();
+
+        SetDisabled(true);
+        yield return null;
+        m_LoadingWSkill = true;
+    }
+    IEnumerator StartWWormhole()
+    {
+        StopAttacking();
+        if (!GetIsLookingForPosition())
+            StopMovement();
+
+        m_LoadingWSkill = false;
+
+        m_SkillIndicatorUI.ClearNormalSkillIndicatorUI();
 
         GetCharacterUI().SetCastingUIAbilityText("Canalizando");
         GetCharacterUI().HideCastingTime();
@@ -479,6 +545,10 @@ public class ZappadasCharacterController : CharacterMaster
         m_WTimer = 0f;
         m_WChanneling = true;
 
+
+        Vector3 l_Direction = GetPositionWithMouse() - m_WWormholeEndPosition;
+        l_Direction.y = 0;
+        l_Direction.Normalize();
 
         SetAnimatorTrigger("IsUsingW");
 
@@ -490,8 +560,22 @@ public class ZappadasCharacterController : CharacterMaster
         m_WChanneling = false;
 
 
+
+        Vector3 l_Offset = transform.forward * m_WWormholeStartPosOffset;
+        Vector3 l_SpawnPosition = transform.position + l_Offset;
+        GameObject l_Wormhole = Instantiate(m_WWormholeStartPrefab, l_SpawnPosition, Quaternion.identity);
+
+        if (m_PDarkPower >= m_DarkPowerToUpgradeSkillW)
+        {
+            AddDarkPower(-m_DarkPowerToUpgradeSkillW);
+            m_WSkillUpgrade = true;
+        }
+
+        l_Wormhole.GetComponent<ZappadasWWormhole>().SetWWormhole(m_WWormholeEndPosition, l_Direction, m_WWormholeDuration, m_WSkillUpgrade, m_WProjectileExitSpeed, m_WProjectileExitRange, m_WProjectileHitboxIncrease, m_WSkill.GetAttribute("Daño base “Energía oscura”", GetWSkillLevel()),m_WDarkPowerRange, m_WWormholeStartHitboxRadius, this, m_WSkillUpgrade);
+
         EndWSkill();
     }
+
 
     void UpdateWSkill()
     {
@@ -503,6 +587,15 @@ public class ZappadasCharacterController : CharacterMaster
             m_WTimer += Time.deltaTime;
             GetCharacterUI().UpdateCastingUI(m_WTimer, m_WChannelingTime);
         }
+
+        if (m_LoadingWSkill)
+        {
+            if (Input.GetKeyDown(m_WSkillKey))
+            {
+                StartCoroutine(StartWWormhole());
+            }
+        }
+
 
     }
 
@@ -754,7 +847,7 @@ public class ZappadasCharacterController : CharacterMaster
         AddDarkPower(m_DarkPowerDamageLightlessWithSkill);
     }
 
-    void AddDarkPower(int DarkPowerToAdd)
+    public void AddDarkPower(int DarkPowerToAdd)
     {
         if (m_PDarkPower + DarkPowerToAdd >= m_MAXDarkPower)
             m_PDarkPower = m_MAXDarkPower;

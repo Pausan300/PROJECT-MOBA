@@ -87,6 +87,16 @@ MonoBehaviour:
     - 60
     - 65
     - 70
+  - m_AttributeId: Cantidad de rebotes
+    m_IsPct: 0
+    m_ShowScalingInPopup: 1
+    m_ValueFormat: 
+    m_LevelScaling:
+    - 3
+    - 3
+    - 4
+    - 5
+    - 6
   m_DescriptionDamageList:
   - m_DescriptionId: X
     m_Color: 1

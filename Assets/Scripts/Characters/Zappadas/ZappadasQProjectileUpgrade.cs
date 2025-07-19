@@ -11,6 +11,7 @@ public class ZappadasQProjectileUpgrade : MonoBehaviour
     float m_Range;
     float m_AditionalDamageMinions;
     Collider m_Target;
+    Collider m_LastTarget;
     LayerMask m_DamageLayerMask;
     int m_MaxBounces;
     int m_Bounces;
@@ -37,6 +38,7 @@ public class ZappadasQProjectileUpgrade : MonoBehaviour
 
     private void FindEnemy()
     {
+
         if (m_Bounces == m_MaxBounces)
             Destroy(gameObject);
         List<Collider> l_CollidersHit = new List<Collider>();
@@ -75,14 +77,17 @@ public class ZappadasQProjectileUpgrade : MonoBehaviour
             }
         }
         if (m_Target == null)
+        {
             Destroy(gameObject);
+            return;
+        }
 
         m_EnemysToIgnore.Add(l_targetCollider);
-
         m_Bounces++;
         Vector3 l_TargetPos = m_Target.transform.position;
         l_TargetPos.y = m_ProjectilTransform.position.y;
         m_Speed = Vector3.Distance(l_TargetPos, m_ProjectilTransform.position) / m_TimeToArribeTarget;
+        m_LastTarget = m_Target;
     }
 
     private void Update()
@@ -103,16 +108,60 @@ public class ZappadasQProjectileUpgrade : MonoBehaviour
 
     private void DoDamage()
     {
+        List<Collider> l_CollidersHit = new List<Collider>();
+        Collider[] l_HitColliders = Physics.OverlapSphere(m_ProjectilTransform.position, m_Range / 100, m_DamageLayerMask);
+        Collider l_Target = null;
+        float l_MinDistance = float.MaxValue;
+        bool l_TargetIsMinion = false;
+        Collider l_targetCollider = null;
+
+        foreach (Collider Entity in l_HitColliders)
+        {
+            if (!l_CollidersHit.Contains(Entity) && Entity.TryGetComponent(out ITakeDamage _Enemy) && !m_EnemysToIgnore.Contains(Entity))
+            {
+                if (l_TargetIsMinion)
+                {
+                    if (_Enemy.GetCharacterStats().GetEnemyType() == CharacterStats.EnemyType.MINION)
+                    {
+                        if (Vector3.Distance(Entity.transform.position, m_ProjectilTransform.position) < l_MinDistance)
+                        {
+                            l_Target = Entity;
+                            l_targetCollider = Entity;
+                        }
+                    }
+                }
+                else
+                {
+                    if (Vector3.Distance(Entity.transform.position, m_ProjectilTransform.position) < l_MinDistance)
+                    {
+                        l_Target = Entity;
+                        l_targetCollider = Entity;
+                        if (_Enemy.GetCharacterStats().GetEnemyType() == CharacterStats.EnemyType.MINION)
+                            l_TargetIsMinion = true;
+                    }
+                }
+                l_CollidersHit.Add(Entity);
+            }
+        }
+
 
         if (m_Target.TryGetComponent(out ITakeDamage Enemy))
         {
             float l_Damage = m_Damage;
+
             if (Enemy.GetCharacterStats().GetEnemyType() == CharacterStats.EnemyType.MINION)
                 l_Damage += m_AditionalDamageMinions;
+            
+            Debug.Log("Sum" + (m_MaxBounces - m_Bounces));
+            Debug.Log("MAX" + m_MaxBounces);
+            Debug.Log("BOU" + m_Bounces);
+
+            if (l_Target == null)
+                l_Damage = m_Damage * (m_MaxBounces - m_Bounces);
 
             Debug.Log("TAKEN " + l_Damage + " DAMAGE");
             Enemy.TakeDamage(0, l_Damage, false, m_CharacterStats.GetPlayerName());
-            m_CharacterController.AddmDarkPowerDamageLightlessWithSkill();
+            m_CharacterController.AddDarkPower(2);
         }
     }
 }

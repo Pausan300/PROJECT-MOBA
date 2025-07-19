@@ -69,7 +69,7 @@ public class SkillIndicatorUI : MonoBehaviour
         RaycastHit l_CameraRaycastHit;
         if(Physics.Raycast(m_Character.GetCameraController().GetCamera().transform.position, l_MouseDirection, out l_CameraRaycastHit, 1000.0f, m_Character.GetCameraController().m_TerrainLayerMask))
 		{
-			Quaternion a=Quaternion.LookRotation(l_CameraRaycastHit.point-m_Character.transform.position);
+			Quaternion a=Quaternion.LookRotation(l_CameraRaycastHit.point-m_ArrowSkillIndicatorRect.position);
 			a.eulerAngles=new Vector3(90.0f, a.eulerAngles.y, a.eulerAngles.z);
 			m_ArrowSkillIndicatorRect.transform.rotation=Quaternion.Lerp(a, m_ArrowSkillIndicatorRect.transform.rotation, 0.0f);
 		}

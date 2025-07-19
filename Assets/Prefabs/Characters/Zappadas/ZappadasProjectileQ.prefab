@@ -4956,7 +4956,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 3313500649
+  GlobalObjectIdHash: 3257736640
   InScenePlacedSourceGlobalObjectIdHash: 0
   DeferredDespawnTick: 0
   Ownership: 1
@@ -4981,3 +4981,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3a60b9be64b2f4b45907cb95f0efe5e3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_CanBeDeletedStart: 0

@@ -15,83 +15,60 @@ MonoBehaviour:
   m_PowerType: 2
   m_PowerName: "Imposicion / Atracci\xF3n Forzada"
   m_Sprite: {fileID: 21300000, guid: 6bb23ba9e5ed4da41abf0c150e1fb090, type: 3}
-  m_Description: "Willdurr golpea el suelo con su guada\xF1a, aturde 0,75 s e inflige
-    X = (90 +55% del da\xF1o de ataque adicional) de da\xF1o f\xEDsico a los enemigos
-    golpeados.\r\n\r\nReactivaci\xF3n: Willdurr arrastra su guada\xF1a hacia s\xED
-    mismo, atrae e inflige X = (115 +75% del da\xF1o de ataque adicional) de da\xF1o
-    f\xEDsico a los enemigos golpeados."
+  m_Description: "Zappadas crea un agujero de gusano que absorbe proyectiles tanto
+    enemigos como aliados y los lanza en la direcci\xF3n elegida al momento de crearse.
+    Los proyectiles absorbidos aumentan de tama\xF1o y en caso de absorber un proyectil
+    enemigo lo transforma en suyo.\r\n\r\nEnerg\xEDa oscura: Cada vez que el agujero
+    de gusano absorbe un proyectil, dispara un proyectil adicional hacia el enemigo
+    m\xE1s cercano y le inflige X de da\xF1o m\xE1gico."
   m_HaveLoads: 0
   m_MAXLoads: 0
   m_HaveSpecialLoad: 0
   m_SpecialLoadEvery: 0
   m_SpecialLoadSprite: {fileID: 0}
   m_AttributeList:
-  - m_AttributeId: "Da\xF1o base"
+  - m_AttributeId: "Da\xF1o base \u201CEnerg\xEDa oscura\u201D"
     m_IsPct: 0
     m_ShowScalingInPopup: 1
     m_ValueFormat: 
     m_LevelScaling:
-    - 40
     - 60
+    - 65
+    - 70
+    - 75
     - 80
-    - 100
-    - 120
   - m_AttributeId: Enfriamiento
     m_IsPct: 0
-    m_ShowScalingInPopup: 1
+    m_ShowScalingInPopup: 0
     m_ValueFormat: s
     m_LevelScaling:
-    - 12
     - 11
-    - 10
-    - 9
-    - 8
+    - 11
+    - 11
+    - 11
+    - 11
   - m_AttributeId: Coste de Mana
     m_IsPct: 0
     m_ShowScalingInPopup: 1
     m_ValueFormat: 
     m_LevelScaling:
-    - 70
-    - 75
-    - 80
-    - 100
-    - 120
-  - m_AttributeId: "Da\xF1o Reactivaci\xF3n"
-    m_IsPct: 0
-    m_ShowScalingInPopup: 1
-    m_ValueFormat: 
-    m_LevelScaling:
-    - 55
-    - 80
-    - 115
-    - 150
-    - 185
+    - 50
+    - 40
+    - 30
+    - 20
+    - 10
   m_DescriptionDamageList:
   - m_DescriptionId: X
-    m_Color: 5
-    m_AttributeId: "Da\xF1o base"
+    m_Color: 1
+    m_AttributeId: "Da\xF1o base \u201CEnerg\xEDa oscura\u201D"
     m_MultiplyValue: 1
     m_SkillDescriptionTooltips:
-    - m_Value: 55
+    - m_Value: 50
       m_Format: '%'
-      m_ToolTip: "del da\xF1o de ataque adicional"
-      m_AtributeType: 1
-      m_Color: 4
-  - m_DescriptionId: Y
-    m_Color: 5
-    m_AttributeId: "Da\xF1o Reactivaci\xF3n"
-    m_MultiplyValue: 1
-    m_SkillDescriptionTooltips:
-    - m_Value: 75
-      m_Format: '%'
-      m_ToolTip: "del da\xF1o de ataque adicional"
-      m_AtributeType: 1
-      m_Color: 4
-  m_ExtraSpecifications:
-  - "Tiempo de espera m\xEDnimo para Reactivaci\xF3n: 0,75 segundos."
-  - "Tiempo de espera m\xE1ximo para Reactivaci\xF3n: 2,5 segundos."
-  - "Mientras est\xE1 haciendo la Q, solo puede usar \u201CReactivaci\xF3n\u201D
-    de la E."
-  m_IndicatorUIObject: {fileID: 6649836915933689498, guid: 8caef782d2af9ec429b3465c5f423ec6, type: 3}
+      m_ToolTip: del poder de habilidad
+      m_AtributeType: 3
+      m_Color: 6
+  m_ExtraSpecifications: []
+  m_IndicatorUIObject: {fileID: 5078714052237607800, guid: 83f81966102af0341a86559624a7f892, type: 3}
   m_SkillDisabledTime: 0
   m_CancelableWithMouseClick: 1
