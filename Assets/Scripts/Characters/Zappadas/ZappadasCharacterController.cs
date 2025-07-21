@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using static UnityEngine.UI.Image;
 public class ZappadasCharacterController : CharacterMaster
 {
@@ -95,6 +96,33 @@ public class ZappadasCharacterController : CharacterMaster
     public int m_DarkPowerToUpgradeSkillE = 100;
     bool m_ESkillUpgrade = false;
 
+    float m_RangeE = 1400;
+    float m_EHitboxRadius = 200;
+    float m_DistanceBetweenBalls = 250;
+    float m_TimeToDestroyEBall = 1.5f;
+
+    Vector3 m_EBallsInstancePosition;
+    Vector3 m_EDirection;
+    public GameObject m_BallsPrefab;
+    [UnityEngine.Range(0f, 100f)]
+    public float m_PercentageSkillPowerE = 50;
+    public StunBuff m_EStunBuff;
+    public float m_EStunBuffTime = 0.5f;
+
+    Vector3 m_PosPushBall_01;
+    Vector3 m_PosPushBall_02;
+    Vector3 m_PosPushBall_03;
+
+    List<Transform> m_EnemysToPushBall_01 = new List<Transform>();
+    List<Transform> m_EnemysToPushBall_02 = new List<Transform>();
+    List<Transform> m_EnemysToPushBall_03 = new List<Transform>();
+
+    List<GameObject> m_EnemysWithDarkE = new List<GameObject>();
+    public float m_EDarkBuffTime = 5f;
+
+    bool m_EPushEnemies = false;
+    public float m_PushSpeed = 5f;
+
     public float m_EChannelingTime = 1f; //Se puede borrar si no hace Canalizando la skill
     bool m_EChanneling = true; //Se puede borrar si no hace Canalizando la skill
     float m_ETimer = 0f; //Se puede borrar si no hace Canalizando la skill
@@ -116,6 +144,7 @@ public class ZappadasCharacterController : CharacterMaster
         base.OnNetworkSpawn();
         ResetDarkPower();
         StartCoroutine(AddDarkPowerCorrutine());
+        m_EPushEnemies = false;
     }
     protected override void Update()
     {
@@ -204,8 +233,29 @@ public class ZappadasCharacterController : CharacterMaster
             AddDarkPower(100);
 #endif
 
-    }
+        if (m_EPushEnemies)
+        {
+            PushListAwayFromBall(m_EnemysToPushBall_01, m_PosPushBall_01);
+            PushListAwayFromBall(m_EnemysToPushBall_02, m_PosPushBall_02);
+            PushListAwayFromBall(m_EnemysToPushBall_03, m_PosPushBall_03);
+        }
 
+    }
+    void PushListAwayFromBall(List<Transform> enemyList, Vector3 ballPosition)
+    {
+        foreach (Transform enemy in enemyList)
+        {
+            if (enemy == null) continue;
+
+            Vector3 enemyPosXZ = new Vector3(enemy.position.x, 0, enemy.position.z);
+            Vector3 ballPosXZ = new Vector3(ballPosition.x, 0, ballPosition.z);
+
+            Vector3 directionAway = (enemyPosXZ - ballPosXZ).normalized;
+
+            Vector3 newPos = enemy.position + directionAway * m_PushSpeed * Time.deltaTime;
+            enemy.position = new Vector3(newPos.x, enemy.position.y, newPos.z);
+        }
+    }
     #region Q Skill
     //Q SKILL
     protected override void QSkill()
@@ -392,7 +442,7 @@ public class ZappadasCharacterController : CharacterMaster
                     float l_Damage = (m_QSkill.GetAttribute("Daño base", GetQSkillLevel())) + (m_PercentageSkillPowerQ1 / 100) * GetCharacterStats().GetAbilityPower();
                     Debug.Log("TAKEN " + l_Damage + " DAMAGE");
                     Enemy.TakeDamage(0, l_Damage, false, m_CharacterStats.GetPlayerName());
-                    AddmDarkPowerDamageLightlessWithSkill();
+                    AddmDarkPowerDamageLightlessWithSkill(Entity.gameObject);
                     l_CollidersHit.Add(Entity);
                 }
             }
@@ -501,11 +551,11 @@ public class ZappadasCharacterController : CharacterMaster
 
         if (distance <= m_WWormholeRange / 100)
         {
-            l_TargetPosition = mousePos; 
+            l_TargetPosition = mousePos;
         }
         else
         {
-            l_TargetPosition =  transform.position + direction.normalized * m_WWormholeRange/100;
+            l_TargetPosition = transform.position + direction.normalized * m_WWormholeRange / 100;
         }
 
 
@@ -571,7 +621,7 @@ public class ZappadasCharacterController : CharacterMaster
             m_WSkillUpgrade = true;
         }
 
-        l_Wormhole.GetComponent<ZappadasWWormhole>().SetWWormhole(m_WWormholeEndPosition, l_Direction, m_WWormholeDuration, m_WSkillUpgrade, m_WProjectileExitSpeed, m_WProjectileExitRange, m_WProjectileHitboxIncrease, m_WSkill.GetAttribute("Daño base “Energía oscura”", GetWSkillLevel()),m_WDarkPowerRange, m_WWormholeStartHitboxRadius, this, m_WSkillUpgrade);
+        l_Wormhole.GetComponent<ZappadasWWormhole>().SetWWormhole(m_WWormholeEndPosition, l_Direction, m_WWormholeDuration, m_WSkillUpgrade, m_WProjectileExitSpeed, m_WProjectileExitRange, m_WProjectileHitboxIncrease, m_WSkill.GetAttribute("Daño base “Energía oscura”", GetWSkillLevel()), m_WDarkPowerRange, m_WWormholeStartHitboxRadius, this, m_WSkillUpgrade);
 
         EndWSkill();
     }
@@ -659,7 +709,7 @@ public class ZappadasCharacterController : CharacterMaster
                 m_SkillIndicatorUI.ClearNormalSkillIndicatorUI();
                 m_SkillIndicatorUI.ClearTargetSkillIndicatorUI();
             }
-            //Aqui va el codigo para mostrar la UI --> EJ: m_SkillIndicatorUI.CreateArrowSkillIndicator(m_ESkill.m_IndicatorUIObject, m_UIIndicatorWidthE, m_RangeE, transform.position, true);
+            m_SkillIndicatorUI.CreateCircleSkillIndicator(m_ESkill.m_IndicatorUIObject, m_RangeE, transform, true);
             SetShowingGizmos(true);
         }
         else
@@ -675,25 +725,153 @@ public class ZappadasCharacterController : CharacterMaster
         if (!GetIsLookingForPosition())
             StopMovement();
 
-        GetCharacterUI().SetCastingUIAbilityText("Canalizando");
-        GetCharacterUI().HideCastingTime();
-        GetCharacterUI().UpdateCastingUI(0, 1);
-        GetCharacterUI().ShowCastingUI();
-        m_ETimer = 0f;
-        m_EChanneling = true;
+
+        Vector3 l_TargetPosition;
 
 
-        SetAnimatorTrigger("IsUsingE");
+        Vector3 mousePos = GetPositionWithMouse();
 
-        SetDisabled(true);
-        yield return new WaitForSeconds(m_EChannelingTime);
-        SetDisabled(false);
+        Vector3 direction = mousePos - transform.position;
+        float distance = direction.magnitude;
+
+        if (distance <= m_RangeE / 100)
+        {
+            l_TargetPosition = mousePos;
+        }
+        else
+        {
+            l_TargetPosition = transform.position + direction.normalized * m_RangeE / 100;
+        }
+
+
+        Vector3 l_Direction = l_TargetPosition - transform.position;
+        l_Direction.y = 0;
+
+        if (l_Direction.magnitude > m_RangeE)
+        {
+            l_Direction = l_Direction.normalized * m_RangeE;
+        }
+
+        m_EBallsInstancePosition = transform.position + l_Direction;
+
+        yield return null;
+        yield return null;
+        yield return null;
+
+        m_EDirection = (GetPositionWithMouse() - m_EBallsInstancePosition).normalized;
+        if (m_EDirection == Vector3.zero)
+            m_EDirection = Quaternion.Euler(0, 90, 0) * (transform.position - m_EBallsInstancePosition).normalized;
+
         base.ESkill();
-        GetCharacterUI().HideCastingUI();
-        m_EChanneling = false;
+        if (m_PDarkPower >= m_DarkPowerToUpgradeSkillE)
+        {
+            AddDarkPower(-m_DarkPowerToUpgradeSkillE);
+            m_ESkillUpgrade = true;
+        }
+        GameObject ball = Instantiate(m_BallsPrefab, m_EBallsInstancePosition, Quaternion.identity);
+        ball.GetComponent<ZappadasEBall>().SetBallE(m_TimeToDestroyEBall, this, m_ESkillUpgrade, 1);
 
+        Vector3 forwardPos = m_EBallsInstancePosition + m_EDirection * (m_DistanceBetweenBalls / 100);
+        ball = Instantiate(m_BallsPrefab, forwardPos, Quaternion.identity);
+        ball.GetComponent<ZappadasEBall>().SetBallE(m_TimeToDestroyEBall, this, m_ESkillUpgrade, 2);
+
+        Vector3 backwardPos = m_EBallsInstancePosition - m_EDirection * (m_DistanceBetweenBalls / 100);
+        ball = Instantiate(m_BallsPrefab, backwardPos, Quaternion.identity);
+        ball.GetComponent<ZappadasEBall>().SetBallE(m_TimeToDestroyEBall, this, m_ESkillUpgrade, 3);
 
         EndESkill();
+    }
+    public void ExploteEBall(bool Updated, Vector3 pos, int ballNum)
+    {
+
+        List<Collider> l_CollidersHit = new List<Collider>();
+        Collider[] l_HitColliders = Physics.OverlapSphere(pos, m_EHitboxRadius / 100, m_DamageLayerMask);
+        if (m_EnemysToPushBall_01 == null || m_EnemysToPushBall_02 == null || m_EnemysToPushBall_03 == null || m_EnemysWithDarkE == null)
+        {
+            m_EnemysToPushBall_01 = new List<Transform>();
+            m_EnemysToPushBall_02 = new List<Transform>();
+            m_EnemysToPushBall_03 = new List<Transform>();
+            m_EnemysWithDarkE = new List<GameObject>();
+        }
+
+        foreach (Collider Entity in l_HitColliders)
+        {
+            if (!l_CollidersHit.Contains(Entity) && Entity.TryGetComponent(out ITakeDamage Enemy))
+            {
+                if (Entity.TryGetComponent(out BuffableEntity Buffs))
+                {
+                    Buffs.AddBuff(m_EStunBuff.InitializeBuff(m_EStunBuffTime, Entity.gameObject));
+                }
+                float l_Damage = (m_ESkill.GetAttribute("Daño base", GetESkillLevel())) + (m_PercentageSkillPowerE / 100) * GetCharacterStats().GetAbilityPower();
+                Debug.Log("TAKEN " + l_Damage + " DAMAGE");
+                Enemy.TakeDamage(0, l_Damage, false, m_CharacterStats.GetPlayerName());
+                AddmDarkPowerDamageLightlessWithSkill(Entity.gameObject);
+                l_CollidersHit.Add(Entity);
+                if (ballNum == 1)
+                {
+                    m_EnemysToPushBall_01.Add(Entity.transform);
+                }
+
+                if (ballNum == 2)
+                {
+                    m_EnemysToPushBall_02.Add(Entity.transform);
+                }
+
+                if (ballNum == 3)
+                {
+                    m_EnemysToPushBall_03.Add(Entity.transform);
+                }
+
+                if (Updated)
+                {
+                    m_EnemysWithDarkE.Add(Entity.gameObject);
+                }
+            }
+        }
+        if (ballNum == 1)
+        {
+            m_PosPushBall_01 = pos;
+        }
+
+        if (ballNum == 2)
+        {
+            m_PosPushBall_02 = pos;
+        }
+
+        if (ballNum == 3)
+        {
+            m_PosPushBall_03 = pos;
+        }
+        m_EPushEnemies = true;
+        StartCoroutine(PushEnemiesE());
+        if (Updated)
+        {
+            StartCoroutine(DeleteDarkECoroutine());
+        }
+    }
+    IEnumerator PushEnemiesE()
+    {
+        yield return new WaitForSeconds(m_EStunBuffTime / 3);
+        m_EnemysToPushBall_01 = null;
+        m_EnemysToPushBall_02 = null;
+        m_EnemysToPushBall_03 = null;
+        m_EPushEnemies = false;
+    }
+    IEnumerator DeleteDarkECoroutine()
+    {
+        yield return new WaitForSeconds(m_EDarkBuffTime);
+        DeleteDarkE(true);
+    }
+    void DeleteDarkE(bool ignoreAdds = false)
+    {
+        if (!ignoreAdds)
+        {
+            m_ESkill.SetCd(0);
+            m_CharacterStats.SetCurrentManaRpc(m_ESkill.GetAttribute("Maná recuperado por Mancha de la Oscuridad", GetESkillLevel()));
+        }
+
+        m_EnemysWithDarkE.Clear();
+        m_EnemysWithDarkE = new List<GameObject>();
     }
 
     void UpdateESkill()
@@ -842,9 +1020,23 @@ public class ZappadasCharacterController : CharacterMaster
     {
         return m_PDarkPower;
     }
-    public void AddmDarkPowerDamageLightlessWithSkill()
+    public void AddmDarkPowerDamageLightlessWithSkill(GameObject Enemy)
     {
         AddDarkPower(m_DarkPowerDamageLightlessWithSkill);
+
+
+        if (m_EnemysWithDarkE != null)
+        {
+            foreach (GameObject enemy in m_EnemysWithDarkE)
+            {
+                if (enemy.name == Enemy.name)
+                {
+                    DeleteDarkE();
+                    return;
+                }
+            }
+        }
+
     }
 
     public void AddDarkPower(int DarkPowerToAdd)

@@ -15,9 +15,12 @@ MonoBehaviour:
   m_PowerType: 3
   m_PowerName: Omnipresencia
   m_Sprite: {fileID: 21300000, guid: 131d4d4ab5ed1b54ab7cfe750d06199f, type: 3}
-  m_Description: "Willdurr lanza su cabeza y tras 2 s la recupera.\r\n\r\nReactivaci\xF3n:
-    Willdurr se teletransporta a la cabeza y la recupera. Willdurr causa miedo durante
-    1,25 s a los enemigos cercanos si no le han visto los \xFAltimos 3,5 s."
+  m_Description: "Zappadas invoca 3 bolas con energ\xEDa oscura que al cabo de 1,5
+    s explotan e infligen X de da\xF1o m\xE1gico, empuja y aturde durante 0,5 s a
+    los enemigos golpeados.\r\n\r\nEnerg\xEDa oscura: La explosi\xF3n aplica Mancha
+    de la Oscuridad. El primer Sinluz con Mancha de la Oscuridad golpeado por otra
+    habilidad, le proporciona a Zappadas Y de man\xE1 y reinicia el enfriamiento
+    de esta habilidad."
   m_HaveLoads: 0
   m_MAXLoads: 0
   m_HaveSpecialLoad: 0
@@ -25,7 +28,6 @@ MonoBehaviour:
   m_SpecialLoadSprite: {fileID: 0}
   m_AttributeList:
   - m_AttributeId: Enfriamiento
-    m_IsPct: 0
     m_ShowScalingInPopup: 1
     m_ValueFormat: s
     m_LevelScaling:
@@ -35,19 +37,49 @@ MonoBehaviour:
     - 11
     - 10
   - m_AttributeId: Coste de Mana
-    m_IsPct: 0
     m_ShowScalingInPopup: 0
     m_ValueFormat: 
     m_LevelScaling:
+    - 75
+    - 78
+    - 81
+    - 85
     - 90
+  - m_AttributeId: "Da\xF1o base"
+    m_ShowScalingInPopup: 0
+    m_ValueFormat: 
+    m_LevelScaling:
+    - 100
+    - 155
+    - 215
+    - 265
+    - 320
+  - m_AttributeId: "Man\xE1 recuperado por Mancha de la Oscuridad"
+    m_ShowScalingInPopup: 0
+    m_ValueFormat: 
+    m_LevelScaling:
+    - 75
+    - 78
+    - 81
+    - 85
     - 90
-    - 90
-    - 90
-    - 90
-  m_DescriptionDamageList: []
-  m_ExtraSpecifications:
-  - "Tiempo de espera m\xEDnimo para Reactivaci\xF3n: 0,4 segundos."
-  - "Tiempo de espera m\xE1ximo para Reactivaci\xF3n: 2,5 segundos."
-  m_IndicatorUIObject: {fileID: 6649836915933689498, guid: 8caef782d2af9ec429b3465c5f423ec6, type: 3}
+  m_DescriptionDamageList:
+  - m_DescriptionId: X
+    m_Color: 1
+    m_AttributeId: "Da\xF1o base"
+    m_MultiplyValue: 1
+    m_SkillDescriptionTooltips:
+    - m_Value: 50
+      m_Format: '%'
+      m_ToolTip: del poder de habilidad
+      m_AtributeType: 3
+      m_Color: 6
+  - m_DescriptionId: Y
+    m_Color: 0
+    m_AttributeId: "Coste de man\xE1"
+    m_MultiplyValue: 1
+    m_SkillDescriptionTooltips: []
+  m_ExtraSpecifications: []
+  m_IndicatorUIObject: {fileID: 5078714052237607800, guid: 83f81966102af0341a86559624a7f892, type: 3}
   m_SkillDisabledTime: 0
   m_CancelableWithMouseClick: 1
