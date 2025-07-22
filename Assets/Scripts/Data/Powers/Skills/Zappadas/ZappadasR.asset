@@ -15,10 +15,12 @@ MonoBehaviour:
   m_PowerType: 4
   m_PowerName: "Vac\xEDo Acechante"
   m_Sprite: {fileID: 21300000, guid: a1809d2b07573af4bb32e078d4f2713b, type: 3}
-  m_Description: "Desde Willdurr se expande una zona de muerte y putrefacci\xF3n
-    que crea cabezas las cuales puede teletransportarse con Omnipresencia y adem\xE1s
-    ralentiza un 20% que aumenta hasta 75% a los enemigos dentro de la zona.\r\n\r\nCuantas
-    m\xE1s almas ha cosechado Willdurr, m\xE1s grande es la zona."
+  m_Description: "Zappadas lanza una gran bola que al impactar contra un Sinluz enemigo
+    o llegar al rango m\xE1ximo, se activa. Al activarse, se expande y contrae un
+    total de 4 veces.\r\n\r\n\rLa expansi\xF3n inflige X de da\xF1o m\xE1gico en
+    el \xE1rea de expansi\xF3n y Y  +Z por cada expansi\xF3n como da\xF1o m\xE1gico
+    en el borde.\r\n\r\n\r\nLa contracci\xF3n atrae levemente en el \xE1rea de expansi\xF3n
+    y mucho en un borde.\r\n"
   m_HaveLoads: 0
   m_MAXLoads: 0
   m_HaveSpecialLoad: 0
@@ -26,30 +28,60 @@ MonoBehaviour:
   m_SpecialLoadSprite: {fileID: 0}
   m_AttributeList:
   - m_AttributeId: Enfriamiento
-    m_IsPct: 0
     m_ShowScalingInPopup: 1
     m_ValueFormat: s
     m_LevelScaling:
+    - 90
+    - 85
     - 80
-    - 65
-    - 50
   - m_AttributeId: Coste de Mana
-    m_IsPct: 0
     m_ShowScalingInPopup: 0
     m_ValueFormat: 
     m_LevelScaling:
     - 100
     - 100
     - 100
-  m_DescriptionDamageList: []
-  m_ExtraSpecifications:
-  - 'Cantidad de cabezas: 1 por cada 100 unidades de Radio.'
-  - 'Aumento de radio: 15 unidades cada 5 almas.'
-  - "Duraci\xF3n de la habilidad: 15 s."
-  - Slow crece de 20% a 75% en 3 s.
-  - "Dentro de la zona, la E tiene est\xE1 siempre en modo \u201CReactivaci\xF3n\u201D. "
-  - "Dentro de la zona, la E se activa al usarla con el rat\xF3n encima de una cabeza. "
-  - 'Dentro de la zona, la E tiene 0,5 s de enfriamiento. '
-  m_IndicatorUIObject: {fileID: 5078714052237607800, guid: 83f81966102af0341a86559624a7f892, type: 3}
+  - m_AttributeId: "Da\xF1o base"
+    m_ShowScalingInPopup: 0
+    m_ValueFormat: 
+    m_LevelScaling:
+    - 50
+    - 55
+    - 60
+  - m_AttributeId: "Da\xF1o en el borde"
+    m_ShowScalingInPopup: 0
+    m_ValueFormat: 
+    m_LevelScaling:
+    - 100
+    - 105
+    - 110
+  m_DescriptionDamageList:
+  - m_DescriptionId: X
+    m_Color: 1
+    m_AttributeId: "Da\xF1o base"
+    m_MultiplyValue: 1
+    m_SkillDescriptionTooltips:
+    - m_Value: 65
+      m_Format: '%'
+      m_ToolTip: del poder de habilidad
+      m_AtributeType: 3
+      m_Color: 6
+  - m_DescriptionId: Y
+    m_Color: 1
+    m_AttributeId: "Da\xF1o en el borde"
+    m_MultiplyValue: 1
+    m_SkillDescriptionTooltips:
+    - m_Value: 90
+      m_Format: '%'
+      m_ToolTip: del poder de habilidad
+      m_AtributeType: 3
+      m_Color: 6
+  - m_DescriptionId: Z
+    m_Color: 1
+    m_AttributeId: "Da\xF1o en el borde"
+    m_MultiplyValue: 1
+    m_SkillDescriptionTooltips: []
+  m_ExtraSpecifications: []
+  m_IndicatorUIObject: {fileID: 6649836915933689498, guid: 8caef782d2af9ec429b3465c5f423ec6, type: 3}
   m_SkillDisabledTime: 0
   m_CancelableWithMouseClick: 1

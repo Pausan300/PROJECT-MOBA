@@ -123,17 +123,27 @@ public class ZappadasCharacterController : CharacterMaster
     bool m_EPushEnemies = false;
     public float m_PushSpeed = 5f;
 
-    public float m_EChannelingTime = 1f; //Se puede borrar si no hace Canalizando la skill
+    float m_EChannelingTime = 1f; //Se puede borrar si no hace Canalizando la skill
     bool m_EChanneling = true; //Se puede borrar si no hace Canalizando la skill
     float m_ETimer = 0f; //Se puede borrar si no hace Canalizando la skill
     bool m_SaverCanDoE = true;
     bool m_ESkillStarted = false;
 
     [Header("R SKILL")]
-    public int m_DarkPowerToUpgradeSkillR = 100;
+    public GameObject m_RPrefab;
+    int m_DarkPowerToUpgradeSkillR = 100;
     bool m_RSkillUpgrade = false;
+    public GameObject m_RProjectilPrefab;
+    public Transform m_RProjectilSpawnPos;
+    GameObject m_RProyectil;
+    Vector3 m_RTargetPos;
+    bool m_RMove = false;
 
-    public float m_RChannelingTime = 1f; //Se puede borrar si no hace Canalizando la skill
+    public float m_RRange = 2000;
+    public float m_RProyectilSpeed = 700;
+    float m_RWidth = 200;
+
+    public float m_RChannelingTime = 0.5f; //Se puede borrar si no hace Canalizando la skill
     bool m_RChanneling = true; //Se puede borrar si no hace Canalizando la skill
     float m_RTimer = 0f; //Se puede borrar si no hace Canalizando la skill
     bool m_SaverCanDoR = true;
@@ -145,6 +155,7 @@ public class ZappadasCharacterController : CharacterMaster
         ResetDarkPower();
         StartCoroutine(AddDarkPowerCorrutine());
         m_EPushEnemies = false;
+        m_RMove = false;
     }
     protected override void Update()
     {
@@ -945,12 +956,11 @@ public class ZappadasCharacterController : CharacterMaster
                 m_SkillIndicatorUI.ClearNormalSkillIndicatorUI();
                 m_SkillIndicatorUI.ClearTargetSkillIndicatorUI();
             }
-            //Aqui va el codigo para mostrar la UI --> EJ: m_SkillIndicatorUI.CreateArrowSkillIndicator(m_RSkill.m_IndicatorUIObject, m_UIIndicatorWidthR, m_RangeR, transform.position, true);
+            m_SkillIndicatorUI.CreateArrowSkillIndicator(m_RSkill.m_IndicatorUIObject, m_RWidth, m_RRange, transform.position, true);
             SetShowingGizmos(true);
         }
         else
             StartCoroutine(StartRSkill());
-
 
 
     }
@@ -971,6 +981,26 @@ public class ZappadasCharacterController : CharacterMaster
         m_RTimer = 0f;
         m_RChanneling = true;
 
+        Vector3 l_TargetPosition;
+
+
+        Vector3 mousePos = GetPositionWithMouse();
+
+        Vector3 direction = mousePos - transform.position;
+        float distance = direction.magnitude;
+
+        if (distance <= m_RRange / 100)
+        {
+            l_TargetPosition = mousePos;
+        }
+        else
+        {
+            l_TargetPosition = transform.position + direction.normalized * m_RRange / 100;
+        }
+
+        m_RProyectil = Instantiate(m_RProjectilPrefab, m_RProjectilSpawnPos.position, Quaternion.identity);
+        m_RTargetPos = l_TargetPosition;
+        m_RMove = true;
 
         SetAnimatorTrigger("IsUsingR");
 
@@ -980,8 +1010,15 @@ public class ZappadasCharacterController : CharacterMaster
         base.RSkill();
         GetCharacterUI().HideCastingUI();
         m_RChanneling = false;
+        
+        m_RMove = true;
+    }
 
-
+    void SpawnRSkill()
+    {
+        GameObject l_RPrefab = Instantiate(m_RPrefab, new Vector3(m_RProyectil.transform.position.x, transform.position.y, m_RProyectil.transform.position.z), Quaternion.identity);
+        l_RPrefab.GetComponent<ZappadasRSkill>().SetRSkill(this);
+        Destroy(m_RProyectil);
         EndRSkill();
     }
 
@@ -996,9 +1033,24 @@ public class ZappadasCharacterController : CharacterMaster
             GetCharacterUI().UpdateCastingUI(m_RTimer, m_RChannelingTime);
         }
 
+        if (m_RMove)
+        {
+            m_RProyectil.transform.position = Vector3.MoveTowards(
+                m_RProyectil.transform.position,
+                m_RTargetPos,
+                m_RProyectilSpeed/100 * Time.deltaTime
+            );
+
+            if (Vector3.Distance(m_RProyectil.transform.position, m_RTargetPos) < 0.01f)
+            {
+                m_RMove = false;
+                SpawnRSkill();
+            }
+        }
     }
     void EndRSkill()
     {
+        m_RMove = false;
         m_RSkillUpgrade = false;
         m_RSkillStarted = false;
         m_RSkill.SetUsingSkill(false);

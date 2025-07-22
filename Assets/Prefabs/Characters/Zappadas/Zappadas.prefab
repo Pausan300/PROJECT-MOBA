@@ -2653,10 +2653,14 @@ MonoBehaviour:
   m_PercentageSkillPowerE: 50
   m_EStunBuff: {fileID: 11400000, guid: ee0442b97847f04448339fd9020440e0, type: 2}
   m_EStunBuffTime: 0.5
+  m_EDarkBuffTime: 5
   m_PushSpeed: 5
-  m_EChannelingTime: 1
-  m_DarkPowerToUpgradeSkillR: 100
-  m_RChannelingTime: 1
+  m_RPrefab: {fileID: 6558389848530574382, guid: 4ebdc85d4464bb044b0f5563e2e2c25f, type: 3}
+  m_RProjectilPrefab: {fileID: 4243228749939468086, guid: 5e5e9867eb0e95e4499688a07e4a3c8f, type: 3}
+  m_RProjectilSpawnPos: {fileID: 5412141948284323861}
+  m_RRange: 2000
+  m_RProyectilSpeed: 700
+  m_RChannelingTime: 0.5
 --- !u!114 &6223637414398981670
 MonoBehaviour:
   m_ObjectHideFlags: 0
