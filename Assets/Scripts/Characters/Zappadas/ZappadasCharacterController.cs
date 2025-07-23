@@ -498,7 +498,7 @@ public class ZappadasCharacterController : CharacterMaster
     //W SKILL
     protected override void WSkill()
     {
-        if (m_QSkill.GetUsingSkill() || m_WSkill.GetUsingSkill() || m_ESkill.GetUsingSkill() || m_RSkill.GetUsingSkill())
+        if (m_WSkill.GetUsingSkill() || m_ESkill.GetUsingSkill() || m_RSkill.GetUsingSkill())
         {
             if (!GetUseSkillGizmos())
                 return;
@@ -682,7 +682,7 @@ public class ZappadasCharacterController : CharacterMaster
     //E SKILL
     protected override void ESkill()
     {
-        if (m_QSkill.GetUsingSkill() || m_WSkill.GetUsingSkill() || m_ESkill.GetUsingSkill() || m_RSkill.GetUsingSkill())
+        if (m_WSkill.GetUsingSkill() || m_ESkill.GetUsingSkill() || m_RSkill.GetUsingSkill())
         {
             if (!GetUseSkillGizmos())
                 return;
@@ -918,7 +918,7 @@ public class ZappadasCharacterController : CharacterMaster
     //R SKILL
     protected override void RSkill()
     {
-        if (m_QSkill.GetUsingSkill() || m_WSkill.GetUsingSkill() || m_ESkill.GetUsingSkill() || m_RSkill.GetUsingSkill())
+        if (m_WSkill.GetUsingSkill() || m_ESkill.GetUsingSkill() || m_RSkill.GetUsingSkill())
         {
             if (!GetUseSkillGizmos())
                 return;

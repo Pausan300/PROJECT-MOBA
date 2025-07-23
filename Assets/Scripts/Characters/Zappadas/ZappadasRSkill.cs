@@ -140,7 +140,7 @@ public class ZappadasRSkill : MonoBehaviour
                 {
                     l_Borde = true;
                 }
-
+                Debug.Log("Distance: " + l_Distance + ",   Edge? " + l_Borde);
                 if (l_Borde)
                 {
                     l_Damage = m_CharacterController.m_RSkill.GetAttribute("Daño en el borde", m_CharacterController.GetRSkillLevel())
@@ -194,28 +194,30 @@ public class ZappadasRSkill : MonoBehaviour
             Vector3 directionXZ = new Vector3(targetPos.x - currentPos.x, 0f, targetPos.z - currentPos.z);
             float distanceXZ = directionXZ.magnitude;
 
-            if (distanceXZ <= attractionRange)
+            enemyData.timeAbsorbed += Time.deltaTime;
+            float t = Mathf.Clamp01(enemyData.timeAbsorbed / m_RAttractionTime);
+
+            Vector3 previousPosXZ = new Vector3(currentPos.x, 0f, currentPos.z);
+
+            Vector3 newPosXZ = Vector3.Lerp(
+                previousPosXZ,
+                new Vector3(targetPos.x, 0f, targetPos.z),
+                t
+            );
+
+            float deltaDistance = Vector3.Distance(previousPosXZ, newPosXZ);
+            enemyData.m_TraveledDistance += deltaDistance;
+
+            enemyData.transform.position = new Vector3(newPosXZ.x, currentPos.y, newPosXZ.z);
+
+            if (enemyData.m_TraveledDistance >= attractionRange || enemyData.timeAbsorbed >= m_RAttractionTime)
             {
-                enemyData.timeAbsorbed += Time.deltaTime;
-                float t = Mathf.Clamp01(enemyData.timeAbsorbed / m_RAttractionTime);
-
-                // Interpolación solo en XZ
-                Vector3 newPosXZ = Vector3.Lerp(
-                    new Vector3(currentPos.x, 0f, currentPos.z),
-                    new Vector3(targetPos.x, 0f, targetPos.z),
-                    t
-                );
-
-                // Mantener la Y original
-                enemyData.transform.position = new Vector3(newPosXZ.x, currentPos.y, newPosXZ.z);
-
-                if (enemyData.timeAbsorbed >= m_RAttractionTime)
-                {
-                    list.RemoveAt(i);
-                }
+                list.RemoveAt(i);
             }
         }
     }
+
+
 
 
     void Update()
@@ -244,5 +246,6 @@ public class ZappadasEnemysToAbsorb
 {
     public Transform transform;
     public float timeAbsorbed;
+    public float m_TraveledDistance;
 
 }
