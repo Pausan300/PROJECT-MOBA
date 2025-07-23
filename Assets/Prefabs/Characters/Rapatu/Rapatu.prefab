@@ -1654,7 +1654,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 898872989
+  GlobalObjectIdHash: 419589164
   InScenePlacedSourceGlobalObjectIdHash: 1219962804
   DeferredDespawnTick: 0
   Ownership: 0
@@ -1721,6 +1721,9 @@ MonoBehaviour:
   m_DamageLayerMask:
     serializedVersion: 2
     m_Bits: 128
+  m_AlliesLayerMask:
+    serializedVersion: 2
+    m_Bits: 0
   m_InputBufferController: {fileID: 7683495954015566684}
   m_UseKeyboardMovement: 0
   m_RangedAutoAttack: {fileID: 0}
@@ -1775,8 +1778,10 @@ MonoBehaviour:
   m_RIndicatorPrefab: {fileID: 4231912645315949874, guid: 629ad86908967b24aa688dad332c88cf, type: 3}
   m_MAXRangeR: 1000
   m_AutoJumpSecondsR: 2
-  m_JumpRAirDuration: 0.6
-  m_GetUpTimeR: 1
+  m_RAirDuration: 5
+  m_GetUpTimeR: 0.5
+  m_RJumpSpeed: 350
+  m_RAirTurnSpeed: 50
   m_CanRideIndicatorPrefab: {fileID: 8254249156126704693, guid: f5e89720940e0b944997554b293ac04e, type: 3}
   m_CanRideIndicatorYOffset: 1.5
   m_CanRideRange: 200
@@ -2013,7 +2018,7 @@ MonoBehaviour:
   - IsCrossFadeExit: 0
     Layer: 0
     OriginatingState: 1748754976
-    DestinationState: -975443871
+    DestinationState: 806639367
     TransitionDuration: 0.25
     TriggerNameHash: -939565991
     TransitionIndex: 4
@@ -2041,7 +2046,7 @@ MonoBehaviour:
   - IsCrossFadeExit: 0
     Layer: 0
     OriginatingState: -1936938822
-    DestinationState: -975443871
+    DestinationState: 806639367
     TransitionDuration: 0.25
     TriggerNameHash: -939565991
     TransitionIndex: 4
@@ -2083,7 +2088,7 @@ MonoBehaviour:
   - IsCrossFadeExit: 0
     Layer: 0
     OriginatingState: 2081823275
-    DestinationState: -975443871
+    DestinationState: 806639367
     TransitionDuration: 0.25
     TriggerNameHash: -939565991
     TransitionIndex: 4
@@ -2096,53 +2101,25 @@ MonoBehaviour:
     TransitionIndex: 5
   - IsCrossFadeExit: 0
     Layer: 0
-    OriginatingState: -975443871
+    OriginatingState: 806639367
     DestinationState: -1102292126
     TransitionDuration: 0.25
     TriggerNameHash: -1573642878
     TransitionIndex: 0
   - IsCrossFadeExit: 0
     Layer: 0
-    OriginatingState: -975443871
+    OriginatingState: 806639367
     DestinationState: 1748754976
     TransitionDuration: 0.25
-    TriggerNameHash: -919026136
+    TriggerNameHash: -1127150302
     TransitionIndex: 1
   - IsCrossFadeExit: 0
     Layer: 0
-    OriginatingState: -975443871
+    OriginatingState: 806639367
     DestinationState: 2081823275
     TransitionDuration: 0.25
-    TriggerNameHash: -919026136
+    TriggerNameHash: -1127150302
     TransitionIndex: 2
-  - IsCrossFadeExit: 0
-    Layer: 0
-    OriginatingState: -1102292126
-    DestinationState: 2081823275
-    TransitionDuration: 0.25
-    TriggerNameHash: -919026136
-    TransitionIndex: 0
-  - IsCrossFadeExit: 0
-    Layer: 0
-    OriginatingState: -1102292126
-    DestinationState: 1748754976
-    TransitionDuration: 0.093147516
-    TriggerNameHash: -919026136
-    TransitionIndex: 1
-  - IsCrossFadeExit: 0
-    Layer: 0
-    OriginatingState: -1102292126
-    DestinationState: 1748754976
-    TransitionDuration: 0.09314799
-    TriggerNameHash: 1057472604
-    TransitionIndex: 2
-  - IsCrossFadeExit: 0
-    Layer: 0
-    OriginatingState: -1102292126
-    DestinationState: 2081823275
-    TransitionDuration: 0.25
-    TriggerNameHash: 1057472604
-    TransitionIndex: 3
   - IsCrossFadeExit: 0
     Layer: 0
     OriginatingState: 1991037970
@@ -2185,6 +2162,13 @@ MonoBehaviour:
     TransitionDuration: 0.25
     TriggerNameHash: -76449806
     TransitionIndex: 2
+  - IsCrossFadeExit: 0
+    Layer: 0
+    OriginatingState: 347992711
+    DestinationState: 806639367
+    TransitionDuration: 0.1
+    TriggerNameHash: -433176422
+    TransitionIndex: 0
   m_Animator: {fileID: 9022364282410572717}
 --- !u!54 &3463638054193634300
 Rigidbody:
@@ -2412,7 +2396,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 898872989
+  GlobalObjectIdHash: 1333982354
   InScenePlacedSourceGlobalObjectIdHash: 0
   DeferredDespawnTick: 0
   Ownership: 1
@@ -2592,6 +2576,30 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 346968064731679334, guid: 3da7a6805ae666b438f74a7378cae75c, type: 3}
       propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 393315134758501495, guid: 3da7a6805ae666b438f74a7378cae75c, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 393315134758501495, guid: 3da7a6805ae666b438f74a7378cae75c, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 393315134758501495, guid: 3da7a6805ae666b438f74a7378cae75c, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 393315134758501495, guid: 3da7a6805ae666b438f74a7378cae75c, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 393315134758501495, guid: 3da7a6805ae666b438f74a7378cae75c, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 393315134758501495, guid: 3da7a6805ae666b438f74a7378cae75c, type: 3}
+      propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1241778700938406682, guid: 3da7a6805ae666b438f74a7378cae75c, type: 3}

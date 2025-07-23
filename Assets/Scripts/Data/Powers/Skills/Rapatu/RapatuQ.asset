@@ -22,9 +22,13 @@ MonoBehaviour:
     o una estructura, inflige X de da\xF1o m\xE1gico y aturde durante 0,5 s a los
     enemigos golpeados y al enemigo lanzado.\r\n\r\nBioluminiscencia: Otorga visi\xF3n
     verdadera de los enemigos golpeados durante 10 s."
+  m_HaveLoads: 0
+  m_MAXLoads: 0
+  m_HaveSpecialLoad: 0
+  m_SpecialLoadEvery: 0
+  m_SpecialLoadSprite: {fileID: 0}
   m_AttributeList:
   - m_AttributeId: "Da\xF1o base"
-    m_IsPct: 0
     m_ShowScalingInPopup: 1
     m_ValueFormat: 
     m_LevelScaling:
@@ -34,7 +38,6 @@ MonoBehaviour:
     - 230
     - 255
   - m_AttributeId: Enfriamiento
-    m_IsPct: 0
     m_ShowScalingInPopup: 0
     m_ValueFormat: s
     m_LevelScaling:
@@ -43,6 +46,15 @@ MonoBehaviour:
     - 16
     - 16
     - 16
+  - m_AttributeId: Coste de Mana
+    m_ShowScalingInPopup: 0
+    m_ValueFormat: 
+    m_LevelScaling:
+    - 80
+    - 80
+    - 80
+    - 80
+    - 80
   m_DescriptionDamageList:
   - m_DescriptionId: X
     m_Color: 1

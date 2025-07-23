@@ -19,17 +19,27 @@ MonoBehaviour:
     durante un breve periodo de tiempo. \r\n\r\nRapatu salta una gran distancia hasta
     3 veces.\r\n\r\nBioluminiscencia: Al acabar los saltos, aumenta el rango de visi\xF3n
     del aliado montado durante 5 s.\r"
+  m_HaveLoads: 0
+  m_MAXLoads: 0
+  m_HaveSpecialLoad: 0
+  m_SpecialLoadEvery: 0
+  m_SpecialLoadSprite: {fileID: 0}
   m_AttributeList:
   - m_AttributeId: Enfriamiento
-    m_IsPct: 0
     m_ShowScalingInPopup: 1
     m_ValueFormat: s
     m_LevelScaling:
     - 70
     - 55
     - 45
+  - m_AttributeId: Coste de Mana
+    m_ShowScalingInPopup: 0
+    m_ValueFormat: 
+    m_LevelScaling:
+    - 100
+    - 100
+    - 100
   - m_AttributeId: Saltos
-    m_IsPct: 0
     m_ShowScalingInPopup: 1
     m_ValueFormat: 
     m_LevelScaling:

@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Reflection;
 using TMPro;
 using Unity.Netcode;
 using Unity.VisualScripting;
@@ -153,14 +154,17 @@ public class RapatuCharacterController : CharacterMaster
     Coroutine m_ESkillCoroutine;
 
     [Header("R SKILL")]
-
     public GameObject m_RIndicatorPrefab;
     public float m_MAXRangeR = 1000;
     public float m_AutoJumpSecondsR = 2;
     [Tooltip("Duración del salto (idealmente con animación)")]
-    public float m_JumpRAirDuration = 1f;
+    public float m_RAirDuration = 1f;
+    float m_RCurrentAirTimer;
     [Tooltip("Tiempo en levantarse del salto (idealmente con animación)")]
     public float m_GetUpTimeR = 1f;
+    public float m_RJumpSpeed;
+    public float m_RAirTurnSpeed;
+    float m_RJumpsLeft;
 
     GameObject m_RIndicator;
     float m_TimerR;
@@ -169,11 +173,9 @@ public class RapatuCharacterController : CharacterMaster
     bool m_JumpingR = false;
     bool m_SaverCanDoR = true;
     bool m_RSkillStarted = false;
-    Vector3 m_JumpRStartPosition;
-    Vector3 m_JumpREndPosition;
+    Vector3 m_RCurrentDir;
 
     Coroutine m_RSkillCoroutine;
-    float m_RJumpSpeed;
     bool m_RStopJumping = false;
 
     [Header("OTHER VALUES")]
@@ -328,7 +330,6 @@ public class RapatuCharacterController : CharacterMaster
         if (!m_SaverCanDoQ)
             return;
 
-
         m_QSkill.SetUsingSkill(true);
 
         if (GetUseSkillGizmos())
@@ -355,7 +356,6 @@ public class RapatuCharacterController : CharacterMaster
         m_TongueDetectEnemy = false;
         m_QSkillStarted = true;
 
-
         GetCharacterUI().SetCastingUIAbilityText("Sacando la lengua");
         GetCharacterUI().HideCastingTime();
         GetCharacterUI().UpdateCastingUI(0, 1);
@@ -374,6 +374,7 @@ public class RapatuCharacterController : CharacterMaster
         if (!GetIsLookingForPosition())
             StopMovement();
 
+        Vector3 l_Direction = (GetPositionWithMouse() - transform.position).normalized;
 
         yield return new WaitForSeconds(m_QChannelingTime);
 
@@ -384,12 +385,9 @@ public class RapatuCharacterController : CharacterMaster
         m_MoveTongueQ = true;
         m_LookAtMouseQ = false;
 
-        Vector3 l_Direction = (GetPositionWithMouse() - transform.position).normalized;
         m_TongueController = Instantiate(m_TonguePrefab, m_TonguePositionFace.position, Quaternion.Euler(0f, l_Direction.y, 0)).GetComponent<RapatuTongue>();
         m_TongueController.SetTongue(this);
-
         m_TongueController.GetDamageZone().SetActive(false);
-
         m_TongueController.GetTongueLineRenderer().gameObject.transform.localPosition = Vector3.zero;
         m_TongueController.GetTongueLineRenderer().positionCount = 2;
         m_TongueController.GetTongueLineRenderer().SetPosition(0, Vector3.zero);
@@ -525,9 +523,6 @@ public class RapatuCharacterController : CharacterMaster
             }
         }
 
-
-
-
         if (m_MoveTongueReverseQ)
         {
             m_MoveTongueReverseQ = false;
@@ -535,12 +530,10 @@ public class RapatuCharacterController : CharacterMaster
             EndQSkill();
         }
 
-
         if (m_TongueTarget != null)
         {
             m_TongueController.GetTongueEndPos().position = new Vector3(m_TongueTarget.position.x, m_TongueController.GetTongueEndPos().position.y, m_TongueTarget.position.z);
         }
-
 
         if (m_QAbsorbing && m_EnemysTrappedQ.Count != 0)
         {
@@ -571,7 +564,6 @@ public class RapatuCharacterController : CharacterMaster
                         col.enabled = true;
                     }
                 }
-
             }
         }
 
@@ -592,7 +584,6 @@ public class RapatuCharacterController : CharacterMaster
             m_TongueController.GetTongueLineRenderer().SetPosition(0, m_TongueController.GetTongueLineRenderer().transform.InverseTransformPoint(m_TonguePositionFace.position));
             m_TongueController.GetTongueLineRenderer().SetPosition(1, m_TongueController.GetTongueLineRenderer().transform.InverseTransformPoint(m_TongueController.GetTongueEndPos().position));
         }
-
     }
 
     IEnumerator QSkillReactivation()
@@ -1202,7 +1193,6 @@ public class RapatuCharacterController : CharacterMaster
     //R SKILL
     protected override void RSkill()
     {
-
         if (m_QSkill.GetUsingSkill() || m_WSkill.GetUsingSkill() || m_ESkill.GetUsingSkill() || m_RSkill.GetUsingSkill())
         {
             if (!GetUseSkillGizmos())
@@ -1245,9 +1235,6 @@ public class RapatuCharacterController : CharacterMaster
         }
         else
             StartRSkill();
-
-
-
     }
     void StartRSkill()
     {
@@ -1265,7 +1252,7 @@ public class RapatuCharacterController : CharacterMaster
         GetCharacterUI().ShowCastingUI();
         m_LoadingJumpR = true;
         m_RSkillStarted = true;
-        StartCoroutine(RSkillCanStop());
+        m_RJumpsLeft=m_RSkill.GetAttribute("Saltos");
 
         m_RIndicator = Instantiate(m_RIndicatorPrefab, transform.position, Quaternion.identity);
 
@@ -1275,7 +1262,6 @@ public class RapatuCharacterController : CharacterMaster
     }
     void RUpdate()
     {
-
         if (m_LoadingJumpR)
         {
             m_TimerR += Time.deltaTime;
@@ -1299,22 +1285,19 @@ public class RapatuCharacterController : CharacterMaster
                 Destroy(m_CanRideIndicator);
                 m_CanRide = false;
 
-                StartCoroutine(RepeatRSaver());
+                //StartCoroutine(RepeatRSaver());
                 GetCharacterUI().HideCastingUI();
                 base.RSkill();
                 m_RSkill.SetTimer(m_RSkill.GetCd() / 2.0f);
                 m_RSkill.SetUsingSkill(false);
                 SetDisabled(false);
-                SetAnimatorTrigger("RJumpStop");
+                SetAnimatorTrigger("RStop");
                 Destroy(m_RIndicator);
                 m_RSkillStarted = false;
                 if (!GetIsLookingForPosition())
                     StopMovement();
                 m_LoadingJumpR = false;
             }
-
-
-
         }
         else
         {
@@ -1335,23 +1318,32 @@ public class RapatuCharacterController : CharacterMaster
             m_RIndicator.transform.position = transform.position + direction * m_MAXRangeR / 100;
         }
 
+        Debug.Log(m_RJumpsLeft);
 
         if (m_JumpingR)
         {
-            transform.position = Vector3.MoveTowards(transform.position, m_JumpREndPosition, m_RJumpSpeed * Time.deltaTime);
+            Vector3 l_DesiredDir=(GetPositionWithMouse()-transform.position).normalized;
+            Quaternion l_DesiredRot=Quaternion.LookRotation(l_DesiredDir, transform.up);
 
-            if (transform.position == m_JumpREndPosition)
+            transform.rotation=Quaternion.RotateTowards(transform.rotation, l_DesiredRot, m_RAirTurnSpeed*Time.deltaTime);
+            transform.position+=transform.forward*(m_RJumpSpeed/100.0f)*Time.deltaTime;
+
+            m_RCurrentAirTimer+=Time.deltaTime;
+            if(m_RCurrentAirTimer>=m_RAirDuration) 
             {
-                m_JumpingR = false;
+                m_RJumpsLeft--;
+                m_RCurrentAirTimer=0.0f;
+                if(m_RJumpsLeft>0)
+                    StartCoroutine(WaitForNextJump());
+                else
+                    EndRSkill();
             }
         }
         else
         {
             LookAt(m_RIndicator.transform.position);
-
         }
     }
-
     void StartJumpingR()
     {
         Destroy(m_CanRideIndicator);
@@ -1361,95 +1353,37 @@ public class RapatuCharacterController : CharacterMaster
         m_LoadingJumpR = false;
         m_RStopJumping = false;
         SetAnimatorTrigger("RJump");
-        m_RSkillCoroutine = StartCoroutine(JumpingR());
-
     }
-
-    public void StartJumpRAnim()
+    //LLAMADA POR EVENTO EN ANIMACION "RapatuRJump"
+    void RSetJumping() 
     {
-        if (m_RIndicator == null)
-            return;
-
-        if (!m_RSkill.GetUsingSkill())
-            return;
-
-        m_JumpREndPosition = m_RIndicator.transform.position;
-        m_JumpRStartPosition = transform.position;
-        float l_Distance = Vector3.Distance(m_JumpRStartPosition, m_JumpREndPosition);
-        m_RJumpSpeed = l_Distance / m_JumpRAirDuration;
-        m_JumpingR = true;
-
-        GetCharacterStats().SetImmuneCC(true);
+        m_JumpingR=true;
+        m_RCurrentDir=(GetPositionWithMouse()-transform.position).normalized;
     }
-
-
-    IEnumerator JumpingR()
+    IEnumerator WaitForNextJump() 
     {
-        //int l_JumpsNum = 1;
-        int l_JumpsNum = (int)m_RSkill.GetAttribute("Saltos", GetRSkillLevel());
-        Debug.Log("Va a hacer " + m_RSkill.GetAttribute("Saltos", GetRSkillLevel()) + " saltos");
-        bool l_StopJumpAnim = false;
-
-        for (int i = 0; i < l_JumpsNum; i++)
+        m_JumpingR=false;
+        SetAnimatorTrigger("RFlyStop"); 
+        GetCharacterUI().SetCastingUIAbilityText("Cargando salto");
+        GetCharacterUI().HideCastingTime();
+        GetCharacterUI().UpdateCastingUI(0, m_GetUpTimeR);
+        GetCharacterUI().ShowCastingUI();
+        float l_Timer=0.0f;
+        while(l_Timer<m_GetUpTimeR) 
         {
-            while (!m_JumpingR)
-            {
-                if (m_RStopJumping)
-                {
-                    SetAnimatorTrigger("RJumpCancel");
-                    EndRSkill();
-                }
-                yield return null;
-            }
-
-            m_RIndicator.SetActive(false);
-
-            if (i == l_JumpsNum - 1)
-            {
-                if (!l_StopJumpAnim)
-                {
-                    SetAnimatorTrigger("RJumpStop");
-                    l_StopJumpAnim = true;
-                }
-            }
-
-            if (m_RStopJumping)
-            {
-                if (!l_StopJumpAnim)
-                {
-                    SetAnimatorTrigger("RJumpStop");
-                    l_StopJumpAnim = true;
-                }
-                m_RIndicator.SetActive(false);
-            }
-
-            while (m_JumpingR)
-                yield return null;
-
-            GetCharacterStats().SetImmuneCC(false);
-
-            if (i != l_JumpsNum - 1 && !m_RStopJumping)
-                m_RIndicator.SetActive(true);
-
-            if (m_RStopJumping)
-            {
-                if (!l_StopJumpAnim)
-                {
-                    SetAnimatorTrigger("RJumpStop");
-                    l_StopJumpAnim = true;
-                }
-                EndRSkill();
-            }
-
+            l_Timer+=Time.deltaTime;
+            GetCharacterUI().UpdateCastingUI(l_Timer, m_GetUpTimeR);
+            yield return null;
         }
-
-        yield return new WaitForSeconds(m_GetUpTimeR);
-
-        m_RSkillCoroutine = null;
-        EndRSkill();
+        GetCharacterUI().HideCastingUI();
+        SetAnimatorTrigger("RJump");
     }
     void EndRSkill()
     {
+        m_JumpingR=false;
+        SetAnimatorTrigger("RFlyStop");
+        SetAnimatorTrigger("RStop");
+
         DropSomeOneIsRiding();
         if (m_RSkillCoroutine != null)
             StopCoroutine(m_RSkillCoroutine);
@@ -1461,27 +1395,7 @@ public class RapatuCharacterController : CharacterMaster
         if (!GetIsLookingForPosition())
             StopMovement();
         Destroy(m_RIndicator);
-        StartCoroutine(RepeatRSaver());
-        StartCoroutine(ResetTiggersSaverR());
         GetCharacterStats().SetImmuneCC(false);
-    }
-    IEnumerator ResetTiggersSaverR()
-    {
-        yield return new WaitForSeconds(5);
-        ResetAnimatorTrigger("RJumpStop");
-        ResetAnimatorTrigger("RJumpCancel");
-    }
-    IEnumerator RSkillCanStop()
-    {
-        yield return null;// Esperar 1 frame por seguridad
-        m_CanStopR = true;
-    }
-    IEnumerator RepeatRSaver()
-    {
-        m_SaverCanDoR = false;
-        yield return null; // Esperar 1 frame por seguridad
-        m_SaverCanDoR = true;
-
     }
     #endregion
 

@@ -23,9 +23,13 @@ MonoBehaviour:
     a su alrededor.\r\n\r\nMantener: Rapatu permite que un aliado se monte y salta
     una gran distancia. (No se puede reactivar)\r\n\r\nBioluminiscencia: Al acabar
     el salto, aumenta el rango de visi\xF3n del aliado montado durante 5 s.\r"
+  m_HaveLoads: 0
+  m_MAXLoads: 0
+  m_HaveSpecialLoad: 0
+  m_SpecialLoadEvery: 0
+  m_SpecialLoadSprite: {fileID: 0}
   m_AttributeList:
   - m_AttributeId: "Da\xF1o base"
-    m_IsPct: 0
     m_ShowScalingInPopup: 1
     m_ValueFormat: 
     m_LevelScaling:
@@ -35,7 +39,6 @@ MonoBehaviour:
     - 105
     - 120
   - m_AttributeId: Enfriamiento
-    m_IsPct: 0
     m_ShowScalingInPopup: 1
     m_ValueFormat: s
     m_LevelScaling:
@@ -44,6 +47,15 @@ MonoBehaviour:
     - 15
     - 13.5
     - 12
+  - m_AttributeId: Coste de Mana
+    m_ShowScalingInPopup: 0
+    m_ValueFormat: 
+    m_LevelScaling:
+    - 90
+    - 90
+    - 90
+    - 90
+    - 90
   m_DescriptionDamageList:
   - m_DescriptionId: X
     m_Color: 1
