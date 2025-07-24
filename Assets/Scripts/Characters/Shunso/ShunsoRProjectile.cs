@@ -18,6 +18,7 @@ public class ShunsoRProjectile : NetworkBehaviour
     Vector3 m_TargetPosition;
     Vector3 m_Direction;
     bool m_Exploding;
+    bool m_StopTraveling;
 
     public event Action<int> m_EStacksOnHit;
     public event Action<GameObject> m_OnDamageEnemy;
@@ -29,13 +30,10 @@ public class ShunsoRProjectile : NetworkBehaviour
 
     void Update()
     {
-        if(!m_Exploding) 
-        {
-            if(Vector3.Distance(transform.position, m_TargetPosition)>0.25)
-                transform.position+=m_Direction*m_Speed*Time.deltaTime;
-            else
-                StartCoroutine(DoByte(false));
-        }
+        if(!m_StopTraveling && Vector3.Distance(transform.position, m_TargetPosition)>0.25)
+            transform.position+=m_Direction*m_Speed*Time.deltaTime;
+        else if(!m_Exploding)
+            StartCoroutine(DoByte(false));
     }
 
     public void SetStats(ShunsoCharacterController Player, float Damage, float Speed, float ByteRadius, Vector3 TargetPos, float NormalCharges, float CorruptedCharges) 
@@ -61,9 +59,10 @@ public class ShunsoRProjectile : NetworkBehaviour
 
     IEnumerator DoByte(bool EnemyHit) 
     {
+        m_Exploding=true;
         if(EnemyHit)
             yield return new WaitForSeconds(0.1f);
-        m_Exploding=true;
+        m_StopTraveling=true;
         m_ByteAreaSprite.gameObject.SetActive(true);
         Collider l_Collider=GetComponent<Collider>();
         Collider[] l_HitColliders=Physics.OverlapSphere(l_Collider.bounds.center, m_ByteRadius/100.0f, m_Player.m_DamageLayerMask);

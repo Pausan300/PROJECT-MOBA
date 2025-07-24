@@ -100,7 +100,7 @@ GameObject:
   - component: {fileID: 3033052227420075030}
   - component: {fileID: 3040139016158466472}
   - component: {fileID: 3402967727398630387}
-  - component: {fileID: 9175384244928270800}
+  - component: {fileID: 7335703179419195072}
   - component: {fileID: 1980703101616431134}
   m_Layer: 0
   m_Name: ShunsoRProjectile
@@ -239,8 +239,8 @@ MonoBehaviour:
   SwitchTransformSpaceWhenParented: 0
   Interpolate: 1
   SlerpPosition: 0
---- !u!65 &9175384244928270800
-BoxCollider:
+--- !u!135 &7335703179419195072
+SphereCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -258,7 +258,7 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
+  m_Radius: 0.5
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &1980703101616431134
 MonoBehaviour:
