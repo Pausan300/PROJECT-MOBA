@@ -107,6 +107,7 @@ public class Skill : Power
             if (Attribute.m_AttributeId == Id)
                 return Attribute.m_LevelScaling[0];
         }
+        Debug.LogError("COULDN'T FIND THE ATTRIBUTE, MAYBE IT DOESN'T EXIST OR THE NAME DOESN'T MATCH");
         return 0.0f;
     }
 }

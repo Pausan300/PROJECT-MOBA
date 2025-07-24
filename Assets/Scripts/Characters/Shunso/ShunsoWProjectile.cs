@@ -79,14 +79,18 @@ public class ShunsoWProjectile : NetworkBehaviour
 	        {
                 Enemy.TakeDamage(m_CorruptedHealth, 0.0f, true, m_Player.m_CharacterStats.GetPlayerName());
                 //Enemy.GetCharacterStats().SetCurrentHealthRpc(Enemy.GetCharacterStats().GetCurrentHealth()-m_CorruptedHealth);
-                if(!m_Player.m_GainStacksCooldown) 
+
+                if(Enemy.GetCharacterStats().GetCorruptedHealth()>0.0f && !m_Player.m_WEnemiesHit.Contains(other.gameObject))
+                    m_EStacksOnHit.Invoke(m_CorruptedCharges);
+                else 
                 {
-                    if(Enemy.GetCharacterStats().GetCorruptedHealth()>0.0f)
-                        m_EStacksOnHit.Invoke(m_CorruptedCharges);
-                    else
-                        m_EStacksOnHit.Invoke(m_NormalCharges);
-                    m_Player.StartCoroutine(m_Player.WAlreadyGainedEStacks());
+                    m_EStacksOnHit.Invoke(m_NormalCharges);
+                    if(!m_Player.m_WEnemiesHit.Contains(other.gameObject))
+                        m_Player.m_WEnemiesHit.Add(other.gameObject);
                 }
+
+                if(!m_Player.m_WResetingEnemiesHit)
+                    m_Player.StartCoroutine(m_Player.WResetEnemyHitList());
                     
                 m_OnDamageEnemy?.Invoke(other.gameObject);
                 Enemy.GetCharacterStats().SetCorruptedHealth(Enemy.GetCharacterStats().GetCorruptedHealth()+m_CorruptedHealth);

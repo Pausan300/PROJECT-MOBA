@@ -599,18 +599,19 @@ public class WilldurrCharacterController : CharacterMaster
 
             for (int i = m_CollidersHitWZone.Count - 1; i >= 0; i--)
             {
-                if(m_CollidersHitQZone[i]!=null)
-                    return;
-                Collider entity = m_CollidersHitWZone[i];
-                Transform entityTransform = entity.transform;
-                Vector3 entityTargetPos = new Vector3(targetPosition.x, entityTransform.position.y, targetPosition.z);
+                if(m_CollidersHitWZone[i]!=null) 
+                {
+                    Collider entity = m_CollidersHitWZone[i];
+                    Transform entityTransform = entity.transform;
+                    Vector3 entityTargetPos = new Vector3(targetPosition.x, entityTransform.position.y, targetPosition.z);
 
-                float distance = Vector3.Distance(entityTransform.position, entityTargetPos);
+                    float distance = Vector3.Distance(entityTransform.position, entityTargetPos);
 
-                if (distance > m_WArribalRangeReactivation / 100f)
-                    entityTransform.position = Vector3.MoveTowards(entityTransform.position, entityTargetPos, m_WReactivedSpeed * Time.deltaTime);
-                else
-                    m_CollidersHitWZone.RemoveAt(i);
+                    if (distance > m_WArribalRangeReactivation / 100f)
+                        entityTransform.position = Vector3.MoveTowards(entityTransform.position, entityTargetPos, m_WReactivedSpeed * Time.deltaTime);
+                    else
+                        m_CollidersHitWZone.RemoveAt(i);
+                }
             }
 
             if (Vector3.Distance(m_WilldurrWScythe.transform.position, new Vector3(targetPosition.x, m_WilldurrWScythe.transform.position.y, targetPosition.z)) <= 0.05f)
