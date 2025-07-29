@@ -397,6 +397,10 @@ public class CharacterStats : NetworkBehaviour
                 m_MoveSpeedBonusMulti *= 1 + m_MoveSpeedBonusMultiBuffs.Values.ToList()[i] / 100.0f;
         }
     }
+    public bool IsMovSpeedBonusMultiApplied(string Name) 
+    {
+        return m_MoveSpeedBonusMultiBuffs.ContainsKey(Name);
+    }
 
     public EnemyType GetEnemyType()
     {

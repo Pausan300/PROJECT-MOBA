@@ -77,7 +77,8 @@ public abstract class TimedBuff
         if (m_Buff.m_IsDurationRefreshed || m_TimeLeft <= 0.0f)
         {
             m_TimeLeft = m_Buff.m_Duration;
-            m_TicksLeft=Mathf.RoundToInt(m_Buff.m_Duration/m_Buff.m_EffectInterval);
+            if(m_Buff.m_EffectInterval!=0.0f)
+                m_TicksLeft=Mathf.RoundToInt(m_Buff.m_Duration/m_Buff.m_EffectInterval);
         }
     }
     public float GetCurrentDuration()
@@ -124,10 +125,13 @@ public abstract class TimedBuff
         if(m_CurrentStacks>=m_Buff.m_MaxStacks)
             m_OnFullStacks?.Invoke(false);
 
-        if(m_AffectedCharacter) 
+        if(m_AffectedCharacter)
         {
-            for(int i=0; i<m_TicksLeft; ++i)
-                m_OnTick?.Invoke(m_AffectedCharacter);
+            if(m_TicksLeft>0) 
+            {
+                for(int i = 0; i<m_TicksLeft; ++i)
+                    m_OnTick?.Invoke(m_AffectedCharacter);
+            }
 
             m_OnEnd?.Invoke(m_AffectedCharacter);
         }

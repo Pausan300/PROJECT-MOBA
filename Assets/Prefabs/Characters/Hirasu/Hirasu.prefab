@@ -30623,7 +30623,6 @@ MonoBehaviour:
   m_CharacterStats: {fileID: 7591410689033805986}
   m_RecallTime: 8
   m_RecallTpPoint: {fileID: 0}
-  m_SelectedCharacter: {fileID: 0}
   m_DesiredEnemy: {fileID: 0}
   m_TimeSinceLastAuto: 0
   m_SummSpell1: {fileID: 11400000, guid: ca8ff71d96317c541b37d751c8b81f3e, type: 2}
@@ -30642,8 +30641,13 @@ MonoBehaviour:
   m_DamageLayerMask:
     serializedVersion: 2
     m_Bits: 128
+  m_AlliesLayerMask:
+    serializedVersion: 2
+    m_Bits: 0
   m_InputBufferController: {fileID: 7683495954015566684}
   m_UseKeyboardMovement: 0
+  m_RangedAutoAttack: {fileID: 0}
+  m_RangedAutoSpawnPoint: {fileID: 0}
   m_MinExtraDamage: 30
   m_MaxExtraDamage: 180
   m_PassiveRange: 225
@@ -30656,6 +30660,8 @@ MonoBehaviour:
   m_QSplinter: {fileID: 7129751519554170862, guid: 1b5cdeb9bd2853d4ca4f5c91d8fe8c95, type: 3}
   m_QMaxHoldTime: 3.5
   m_QMinHoldTime: 0.5
+  m_QHoldTimeToSlow: 0.25
+  m_QHoldSlowPct: 10
   m_QDuration: 0.25
   m_QTapRange: 200
   m_QTapWidth: 70

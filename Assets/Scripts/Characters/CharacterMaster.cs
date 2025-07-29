@@ -46,6 +46,8 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
     bool m_LookingForNextPosition;
     bool m_Attacking;
     bool m_Disabled;
+    bool m_StopAutoAttacks;
+    GameObject m_LastAutoAttackedEnemy;
     public float m_TimeSinceLastAuto;
     float m_AttackAnimLength;
 
@@ -182,7 +184,6 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
         m_Summ1InputDelegate = SummonerSpell1;
         m_Summ2InputDelegate = SummonerSpell2;
 
-
         if (!IsSpawned || !HasAuthority)
         {
             m_CharacterCamera.GetCamera().gameObject.SetActive(false);
@@ -237,12 +238,25 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
         //    SetMouseSpeed(m_MouseSpeed);
         //}
 
+        if(Input.GetKeyDown(KeyCode.S)) 
+        {
+            StopAttacking();
+            StopMovement();
+            m_StopAutoAttacks=true;
+        }
+        
+        if(Input.GetKey(KeyCode.S))
+            m_StopAutoAttacks=true;
+        else if(Input.GetKeyUp(KeyCode.S))
+            m_StopAutoAttacks=false;
+
         MouseTargeting();
         if (!m_Disabled)
         {
             if (m_UseKeyboardMovement)
                 KeyboardMovement();
             CharacterMovement();
+            CheckAutoAttack();
 
             m_InputBufferController.CheckInputBuffer();
         }
@@ -265,8 +279,6 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
 
         if (m_Attacking)
         {
-            if (Input.GetKeyDown(KeyCode.S))
-                StopAttacking();
 #if UNITY_EDITOR
             m_TimeSinceLastAuto += Time.deltaTime;
 #endif
@@ -329,6 +341,8 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
         }
         return Vector3.zero;
     }
+
+
     void MouseTargeting()
     {
         if (Input.GetMouseButtonDown(1))
@@ -405,12 +419,6 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
             Vector3 l_CharacterDirection = m_DesiredPosition - transform.position;
             l_CharacterDirection.Normalize();
 
-            if (Input.GetKeyDown(KeyCode.S))
-            {
-                StopMovement();
-                return;
-            }
-
             if (Vector3.Dot(transform.forward, l_CharacterDirection) < 0.0f)
                 transform.forward = Vector3.RotateTowards(transform.forward, l_CharacterDirection, Time.deltaTime * 16.0f, 0.0f);
             else
@@ -427,15 +435,9 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
                 m_CharacterAnimator.SetBool("IsMoving", false);
                 StartAttacking();
             }
-        }
-        else if (m_OptionsUI.m_GameMenu.IsAutoAttackEnabled() && !m_Attacking)
-        {
-            GameObject l_ClosestEnemy = GetClosestEnemyInRange(m_CharacterStats.GetAttackRange() / 100.0f);
-            if (l_ClosestEnemy)
-            {
-                m_DesiredEnemy = l_ClosestEnemy.transform;
-                StartAttacking();
-            }
+
+            if(m_LastAutoAttackedEnemy)
+                m_LastAutoAttackedEnemy=null;
         }
     }
     void KeyboardMovement()
@@ -479,6 +481,22 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
         else if (!l_IsPressingKey && m_TimeSinceLastMovement > 0.05f)
             m_CharacterAnimator.SetBool("IsMoving", false);
     }
+    void CheckAutoAttack() 
+    {
+        if (m_OptionsUI.m_GameMenu.IsAutoAttackEnabled() && !m_StopAutoAttacks)
+        {
+            if(!m_GoingToDesiredPosition && !m_Attacking)
+            {
+                GameObject l_ClosestEnemy = GetClosestEnemyInRange(m_CharacterStats.GetAttackRange() / 100.0f);
+                if (m_LastAutoAttackedEnemy!=l_ClosestEnemy)
+                {
+                    m_LastAutoAttackedEnemy=l_ClosestEnemy;
+                    m_DesiredEnemy = l_ClosestEnemy.transform;
+                    StartAttacking();
+                }
+            }    
+        }
+    }
     public GameObject GetClosestEnemyInRange(float Range)
     {
         GameObject[] l_Targets = GameObject.FindGameObjectsWithTag("Enemy");
@@ -492,9 +510,7 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
         {
             l_Dist = (l_Targets[i].transform.position - transform.position).magnitude;
             if (l_Dist <= Range)
-            {
                 l_ClosestTarget = l_Targets[i];
-            }
         }
         return l_ClosestTarget;
     }
@@ -552,6 +568,7 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
     {
         if (m_DesiredEnemy)
         {
+            m_LastAutoAttackedEnemy=m_DesiredEnemy.gameObject;
             Vector3 l_Dir = m_DesiredEnemy.position - transform.position;
             l_Dir.y = 0.0f;
             l_Dir.Normalize();
@@ -1215,6 +1232,14 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
     public void SetIsAttacking(bool Attacking)
     {
         m_Attacking = Attacking;
+    }
+    public GameObject GetLastAutoAttackedEnemy() 
+    {
+        return m_LastAutoAttackedEnemy;
+    }
+    public void SetLastAutoAttackedEnemy(GameObject Enemy) 
+    {
+        m_LastAutoAttackedEnemy=Enemy;
     }
     public void SetDisabled(bool Disabled)
     {

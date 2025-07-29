@@ -24,6 +24,8 @@ public class HirasuCharacterController : CharacterMaster
 	public GameObject m_QSplinter;
 	public float m_QMaxHoldTime;
 	public float m_QMinHoldTime;
+	public float m_QHoldTimeToSlow;
+	public float m_QHoldSlowPct;
 	public float m_QDuration;
 	public float m_QTapRange;
 	public float m_QTapWidth;
@@ -165,7 +167,10 @@ public class HirasuCharacterController : CharacterMaster
 			m_QCurrentHoldTime+=Time.deltaTime;
 			GetCharacterUI().UpdateCastingUI(m_QCurrentHoldTime, m_QMaxHoldTime);
 			
-			if(m_QCurrentHoldTime>m_QMinHoldTime)
+			if(m_QCurrentHoldTime>=m_QHoldTimeToSlow && !m_CharacterStats.IsMovSpeedBonusMultiApplied(m_QSkill.m_PowerName))
+				m_CharacterStats.AddMovSpeedBonusMulti(m_QSkill.m_PowerName, -m_QHoldSlowPct);
+			
+			if(m_QCurrentHoldTime>=m_QMinHoldTime)
 				m_SkillIndicatorUI.ChangeArrowSkillIndicatorSize(m_QTapWidth, m_QHoldRange);
 		}
 		else if(Input.GetKeyUp(KeyCode.Q) || m_QCurrentHoldTime>m_QMaxHoldTime)
@@ -184,6 +189,8 @@ public class HirasuCharacterController : CharacterMaster
 			}
 			else if(GetRSkillLevel()>=1)
 				l_ExtraPhysDamage=m_PassiveExtraDamage;
+
+			m_CharacterStats.RemoveMovSpeedBonusMulti(m_QSkill.m_PowerName);
 
 			if(m_QCurrentHoldTime<=m_QMinHoldTime)
 			{
@@ -462,6 +469,7 @@ public class HirasuCharacterController : CharacterMaster
 	{
         if(m_DesiredEnemy)
         {
+            SetLastAutoAttackedEnemy(m_DesiredEnemy.gameObject);
             Vector3 l_Dir=m_DesiredEnemy.position-transform.position;
             l_Dir.y=0.0f;
             l_Dir.Normalize();
