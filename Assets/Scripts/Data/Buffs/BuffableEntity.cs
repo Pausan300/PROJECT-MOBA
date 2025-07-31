@@ -27,14 +27,14 @@ public class BuffableEntity : MonoBehaviour
     {
         if (m_Buffs.ContainsKey(Buff.m_Buff))
         {
-            m_Buffs[Buff.m_Buff].Activate();
+            m_Buffs[Buff.m_Buff].Activate(false);
             if(m_Buffs[Buff.m_Buff].GetUIOBject())
                 m_Buffs[Buff.m_Buff].GetUIOBject().UpdateBuffObject();
         }
         else
         {
             m_Buffs.Add(Buff.m_Buff, Buff);
-            Buff.Activate();
+            Buff.Activate(true);
             if (TryGetComponent(out CharacterMaster Player))
             {
                 Buff.SetUIObject(Player.GetCharacterUI().CreateBuffObject(Buff));

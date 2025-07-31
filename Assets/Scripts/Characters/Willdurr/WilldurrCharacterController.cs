@@ -1208,13 +1208,6 @@ public class WilldurrCharacterController : CharacterMaster
 
         GetCharacterStats().AddAttackDamage(m_PAttackDamageAdded);
     }
-
-    IEnumerator DisableForDuration(float Duration)
-    {
-        SetDisabled(true);
-        yield return new WaitForSeconds(Duration);
-        SetDisabled(false);
-    }
 }
 
 [System.Serializable]

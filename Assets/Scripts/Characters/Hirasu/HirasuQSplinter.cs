@@ -37,7 +37,6 @@ public class HirasuQSplinter : NetworkBehaviour
         l_Explosion.GetComponent<NetworkObject>().SpawnWithOwnership(m_Player.GetComponent<NetworkObject>().OwnerClientId);
 		float l_Timer=0.0f;
         float l_TotalDamage=Damage;
-        float l_SlowAmount=m_Player.m_WSpeedDebuffAmountExplosion;
 		List<Collider> l_CollidersHit=new List<Collider>();
 		while(l_Explosion.transform.localScale.x<Scale)
 		{
@@ -46,16 +45,19 @@ public class HirasuQSplinter : NetworkBehaviour
 			Collider[] l_HitColliders=Physics.OverlapSphere(l_Explosion.transform.position, l_Explosion.transform.localScale.x/2.0f, DamageLayerMask);
 			foreach(Collider Entity in l_HitColliders)
 			{
+                float l_SlowAmount=m_Player.m_WSpeedDebuffAmountExplosion;
+                bool l_Attached=false;
 				if(!l_CollidersHit.Contains(Entity) && Entity.TryGetComponent(out ITakeDamage Enemy))
 				{
                     if(Enemy==m_AttachedEnemy)
                     {
                         l_TotalDamage=AttachedDamage;
                         l_SlowAmount=m_Player.m_WSpeedDebuffAmountSplinter;
+                        l_Attached=true;
                     }
                     if(Entity.TryGetComponent(out BuffableEntity Buffs))
                     {
-                        AddDebuffRpc(Entity.GetComponent<NetworkObject>(), l_SlowAmount);
+                        AddDebuffRpc(Entity.GetComponent<NetworkObject>(), l_SlowAmount, l_Attached);
 						if(Buffs.IsMarkBuffActive(m_Player.m_WMarksDebuff))
 						    l_TotalDamage*=(1.0f+m_Player.m_WMarksExtraDamage/100.0f);
                     }
@@ -70,10 +72,13 @@ public class HirasuQSplinter : NetworkBehaviour
         Destroy(gameObject);
 	}
 	[Rpc(SendTo.Everyone)]
-	void AddDebuffRpc(NetworkObjectReference Enemy, float SlowAmount) 
+	void AddDebuffRpc(NetworkObjectReference Enemy, float SlowAmount, bool Attached) 
 	{
 		NetworkObject l_Enemy=Enemy;
-		l_Enemy.GetComponent<BuffableEntity>().AddBuff(m_Player.m_WSpeedDebuff.InitializeBuff(m_Player.m_WSpeedDebuffDuration, SlowAmount, l_Enemy.gameObject));
+        if(Attached)
+		    l_Enemy.GetComponent<BuffableEntity>().AddBuff(m_Player.m_WSpeedDebuffSplinter.InitializeBuff(m_Player.m_WSpeedDebuffDuration, SlowAmount, l_Enemy.gameObject));
+        else
+		    l_Enemy.GetComponent<BuffableEntity>().AddBuff(m_Player.m_WSpeedDebuffExplosion.InitializeBuff(m_Player.m_WSpeedDebuffDuration, SlowAmount, l_Enemy.gameObject));
 	}
 
     public bool GetAlreadyExploded()

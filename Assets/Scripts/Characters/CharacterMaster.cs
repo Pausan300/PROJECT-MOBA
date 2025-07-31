@@ -256,7 +256,8 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
             if (m_UseKeyboardMovement)
                 KeyboardMovement();
             CharacterMovement();
-            CheckAutoAttack();
+            if (m_OptionsUI.m_GameMenu.IsAutoAttackEnabled())
+                CheckAutoAttack();
 
             m_InputBufferController.CheckInputBuffer();
         }
@@ -279,9 +280,9 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
 
         if (m_Attacking)
         {
-#if UNITY_EDITOR
-            m_TimeSinceLastAuto += Time.deltaTime;
-#endif
+//#if UNITY_EDITOR
+//            m_TimeSinceLastAuto += Time.deltaTime;
+//#endif
         }
 
         if (m_CharacterStats.GetCurrentLevel() < 18)
@@ -424,6 +425,7 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
             else
                 transform.forward = l_CharacterDirection;
 
+            SetLastAutoAttackedEnemy(null);
             if (Vector3.Distance(transform.position, m_DesiredPosition) > l_MinDistance)
             {
                 transform.position += l_CharacterDirection * (m_CharacterStats.GetMovSpeed() / 100.0f) * Time.deltaTime;
@@ -435,9 +437,6 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
                 m_CharacterAnimator.SetBool("IsMoving", false);
                 StartAttacking();
             }
-
-            if(m_LastAutoAttackedEnemy)
-                m_LastAutoAttackedEnemy=null;
         }
     }
     void KeyboardMovement()
@@ -481,9 +480,9 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
         else if (!l_IsPressingKey && m_TimeSinceLastMovement > 0.05f)
             m_CharacterAnimator.SetBool("IsMoving", false);
     }
-    void CheckAutoAttack() 
+    public void CheckAutoAttack() 
     {
-        if (m_OptionsUI.m_GameMenu.IsAutoAttackEnabled() && !m_StopAutoAttacks)
+        if (!m_StopAutoAttacks)
         {
             if(!m_GoingToDesiredPosition && !m_Attacking)
             {
@@ -568,6 +567,7 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
     {
         if (m_DesiredEnemy)
         {
+            Debug.Log("ATTACK");
             m_LastAutoAttackedEnemy=m_DesiredEnemy.gameObject;
             Vector3 l_Dir = m_DesiredEnemy.position - transform.position;
             l_Dir.y = 0.0f;
@@ -664,6 +664,7 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
         }
         m_CharacterStats.SetCurrentManaRpc(m_CharacterStats.GetCurrentMana() - m_QSkill.GetMana(m_QSkillLevel));
         StopRecall();
+        SetLastAutoAttackedEnemy(null);
     }
 
     void WSkillInput(InputAction.CallbackContext obj)
@@ -744,6 +745,7 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
         }
         m_CharacterStats.SetCurrentManaRpc(m_CharacterStats.GetCurrentMana() - m_WSkill.GetMana(m_WSkillLevel));
         StopRecall();
+        SetLastAutoAttackedEnemy(null);
     }
 
     void ESkillInput(InputAction.CallbackContext obj)
@@ -824,6 +826,7 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
         }
         m_CharacterStats.SetCurrentManaRpc(m_CharacterStats.GetCurrentMana() - m_ESkill.GetMana(m_ESkillLevel));
         StopRecall();
+        SetLastAutoAttackedEnemy(null);
     }
 
     void RSkillInput(InputAction.CallbackContext obj)
@@ -904,6 +907,7 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
         }
         m_CharacterStats.SetCurrentManaRpc(m_CharacterStats.GetCurrentMana() - m_RSkill.GetMana(m_RSkillLevel));
         StopRecall();
+        SetLastAutoAttackedEnemy(null);
     }
 
     void SummonerSpell1Input(InputAction.CallbackContext obj)
@@ -1134,6 +1138,13 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
         if (m_RSkill.m_CancelableWithMouseClick)
             m_RSkill.SetUsingSkill(false);
     }
+	public IEnumerator DisableForDuration(float Duration)
+	{
+		SetDisabled(true);
+		yield return new WaitForSeconds(Duration);
+		SetDisabled(false);
+		CheckAutoAttack();
+	}
 
     //LLAMADA POR EVENTO EN LA ANIMACION DE AUTOATAQUE
     protected virtual void PerformAutoAttack()
@@ -1143,10 +1154,10 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
             StopAttacking();
             return;
         }
-#if UNITY_EDITOR
-        Debug.Log("ATTACKING - Since last auto: " + m_TimeSinceLastAuto);
-        m_TimeSinceLastAuto = 0.0f;
-#endif
+//#if UNITY_EDITOR
+//        Debug.Log("ATTACKING - Since last auto: " + m_TimeSinceLastAuto);
+//        m_TimeSinceLastAuto = 0.0f;
+//#endif
         m_DesiredEnemy.GetComponent<ITakeDamage>().TakeDamage(m_CharacterStats.GetAttackDamage(), m_CharacterStats.GetAbilityPower(), false, m_CharacterStats.GetPlayerName());
     }
 
@@ -1155,10 +1166,10 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
     {
         if (m_DesiredEnemy == null)
             return;
-#if UNITY_EDITOR
-        Debug.Log("ATTACKING - Since last auto: " + m_TimeSinceLastAuto);
-        m_TimeSinceLastAuto = 0.0f;
-#endif
+//#if UNITY_EDITOR
+//        Debug.Log("ATTACKING - Since last auto: " + m_TimeSinceLastAuto);
+//        m_TimeSinceLastAuto = 0.0f;
+//#endif
         GameObject l_Projectile = Instantiate(m_RangedAutoAttack, m_RangedAutoSpawnPoint.position, transform.rotation);
         NetworkObject l_ProjectileNetwork = l_Projectile.GetComponent<NetworkObject>();
         l_ProjectileNetwork.SpawnWithOwnership(GetComponent<NetworkObject>().OwnerClientId);

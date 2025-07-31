@@ -30672,7 +30672,8 @@ MonoBehaviour:
   m_WAdditionalDamageExplosion: 90
   m_WExplosionRadius: 100
   m_WTimeToExpand: 0.5
-  m_WSpeedDebuff: {fileID: 11400000, guid: 76e4fe222e64d3f4f90a389037540af9, type: 2}
+  m_WSpeedDebuffSplinter: {fileID: 11400000, guid: 76e4fe222e64d3f4f90a389037540af9, type: 2}
+  m_WSpeedDebuffExplosion: {fileID: 11400000, guid: 7d8c74eabd432e74c9d6ef9dc3de0628, type: 2}
   m_WSpeedDebuffAmountSplinter: -30
   m_WSpeedDebuffAmountExplosion: -20
   m_WSpeedDebuffDuration: 2

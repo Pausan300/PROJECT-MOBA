@@ -15,14 +15,13 @@ public class HirasuQProjectile : NetworkBehaviour
     float m_Damage;
     float m_ExtraPhysDamage;
     float m_ExtraMagicDamage;
-    float m_SplintersLeft;
+    int m_SplintersLeft;
     float m_TravelTimer;
     float m_SplintersDuration;
     float m_DistancePerSplinter;
     float m_DistancePerSplinterTraveled;
     bool m_Traveling;
     bool m_DropSplinters;
-    bool m_EnemyHit;
 
     void Update()
     {
@@ -41,9 +40,9 @@ public class HirasuQProjectile : NetworkBehaviour
             m_TravelTimer+=Time.deltaTime;
             if(m_TravelTimer>=m_Duration)
             {
-                if(m_SplintersLeft>0 && m_EnemyHit) 
+                if(m_SplintersLeft>0 && m_DropSplinters) 
                 {
-                    for(int i=(int)m_SplintersLeft; i>0; --i)
+                    for(int i=m_SplintersLeft; i>=0; --i)
                         SpawnSplinter(transform.position, transform.up, null, null);
                 }
                 Destroy(gameObject);
@@ -62,17 +61,15 @@ public class HirasuQProjectile : NetworkBehaviour
             if(other.TryGetComponent(out ITakeDamage Enemy))
 			{
 				Enemy.TakeDamage(m_Damage+m_ExtraPhysDamage, m_ExtraMagicDamage, false, m_Player.m_CharacterStats.GetPlayerName());
-                for(int i=0; i<2; i++)
+
+                if(m_SplintersLeft>0) 
                 {
-                    if(m_SplintersLeft<=0)
-                        break;
                     SpawnSplinter(other.transform.position, transform.forward, other.transform, other.gameObject);
-                }
-                if(m_SplintersLeft>0)
                     CalcDistancePerSplinter();
+                }
+
 			    if(m_Player.GetWSkillLevel()>0 && m_Player.GetRSkillLevel()>0)
                     AddBuffMarkRpc(other.GetComponent<NetworkObject>());
-                m_EnemyHit=true;
             }
         }
 	}
@@ -91,7 +88,6 @@ public class HirasuQProjectile : NetworkBehaviour
         m_Splinter=SplinterObject;
         m_SplintersDuration=SplintersDuration;
         transform.forward=Direction;
-        m_EnemyHit=false;
         m_DropSplinters=false;
         m_Traveling=true;
         m_Collider.size=new Vector3(Width/100.0f, m_Collider.size.y, m_Collider.size.z);

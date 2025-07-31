@@ -141,6 +141,7 @@ public class ShunsoCharacterController : CharacterMaster
 	IEnumerator QCastProjectile() 
 	{
 		base.QSkill();
+        StopAttacking();
 		StartCoroutine(DisableForDuration(m_QSkill.m_SkillDisabledTime));
 		SetAnimatorTrigger("IsUsingQ");
 		GetCharacterUI().SetCastingUIAbilityText(m_QSkill.m_PowerName);
@@ -190,6 +191,7 @@ public class ShunsoCharacterController : CharacterMaster
 	IEnumerator WCastProjectile() 
 	{
 		base.WSkill();
+		StopAttacking();
 		Vector3 l_TargetPos=GetPositionWithMouse();
 		Vector3 l_Direction=l_TargetPos-transform.position;
 		l_Direction.y=0.0f;
@@ -287,6 +289,7 @@ public class ShunsoCharacterController : CharacterMaster
 	}
 	IEnumerator RCastProjectile() 
 	{
+		StopAttacking();
 		StartCoroutine(DisableForDuration(m_RSkill.m_SkillDisabledTime));
 		SetAnimatorTrigger("IsUsingR");
 		GetCharacterUI().SetCastingUIAbilityText(m_RSkill.m_PowerName);
@@ -326,10 +329,10 @@ public class ShunsoCharacterController : CharacterMaster
     {
         if (m_DesiredEnemy == null)
             return;
-#if UNITY_EDITOR
-        Debug.Log("ATTACKING - Since last auto: " + m_TimeSinceLastAuto);
-        m_TimeSinceLastAuto = 0.0f;
-#endif
+//#if UNITY_EDITOR
+//		Debug.Log("ATTACKING - Since last auto: "+m_TimeSinceLastAuto);
+//		m_TimeSinceLastAuto = 0.0f;
+//#endif
         GameObject l_Projectile = Instantiate(m_RangedAutoAttack, m_RangedAutoSpawnPoint.position, transform.rotation);
         NetworkObject l_ProjectileNetwork = l_Projectile.GetComponent<NetworkObject>();
         l_ProjectileNetwork.SpawnWithOwnership(GetComponent<NetworkObject>().OwnerClientId);
@@ -343,12 +346,5 @@ public class ShunsoCharacterController : CharacterMaster
     public override void LevelUpRpc()
 	{
 		base.LevelUpRpc();
-	}
-
-	IEnumerator DisableForDuration(float Duration)
-	{
-		SetDisabled(true);
-		yield return new WaitForSeconds(Duration);
-		SetDisabled(false);
 	}
 }

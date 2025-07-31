@@ -1115,12 +1115,5 @@ public class ZappadasCharacterController : CharacterMaster
     {
         base.LevelUpRpc();
     }
-
-    IEnumerator DisableForDuration(float Duration)
-    {
-        SetDisabled(true);
-        yield return new WaitForSeconds(Duration);
-        SetDisabled(false);
-    }
 }
 

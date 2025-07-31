@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -40,7 +41,8 @@ public class HirasuCharacterController : CharacterMaster
 	public float m_WAdditionalDamageExplosion;
 	public float m_WExplosionRadius;
 	public float m_WTimeToExpand;
-	public SpeedBuff m_WSpeedDebuff;
+	public SpeedBuff m_WSpeedDebuffSplinter;
+	public SpeedBuff m_WSpeedDebuffExplosion;
 	public float m_WSpeedDebuffAmountSplinter;
 	public float m_WSpeedDebuffAmountExplosion;
 	public float m_WSpeedDebuffDuration;
@@ -197,21 +199,21 @@ public class HirasuCharacterController : CharacterMaster
 				SetAnimatorTrigger("IsUsingQTap");
 				Vector3 l_DesiredPos=transform.position+l_Direction*(m_QTapRange/100.0f/2.0f);
 				Collider[] l_HitColliders=Physics.OverlapBox(l_DesiredPos, new Vector3(m_QTapWidth/100.0f/2.0f, 2.0f, m_QTapRange/100.0f/2.0f), transform.rotation, m_DamageLayerMask);
+				int l_SplintersLeft=GetQSkillLevel();
+				l_HitColliders.OrderBy((d) => (d.transform.position-transform.position).sqrMagnitude);
 				foreach(Collider Entity in l_HitColliders)
 				{
 					if(Entity.TryGetComponent(out ITakeDamage Enemy))
 					{
 						Enemy.TakeDamage(m_QSkill.GetAttribute("Daño base", GetQSkillLevel())+(m_QAdditionalDamage/100.0f*m_CharacterStats.GetBonusAttackDamage())+l_ExtraPhysDamage, l_ExtraMagicDamage, 
 							false, m_CharacterStats.GetPlayerName());
-						for(int i=0; i<2; i++)
+						if(l_SplintersLeft>0) 
 						{
 							SpawnSplinter(Entity.transform.position, transform.forward, Entity.transform, Enemy);
-							if(GetQSkillLevel()<=1)
-								break;
+							l_SplintersLeft--;
 						}
 						if(GetWSkillLevel()>0 && GetRSkillLevel()>0)
 							AddBuffMarkRpc(Entity.GetComponent<NetworkObject>());
-						break;
 					}
 				}
 				l_ReducedCooldown=true;
@@ -291,6 +293,7 @@ public class HirasuCharacterController : CharacterMaster
 	{
 		if(m_ActiveSplinters.Count>0)
 		{
+			StopAttacking();
 			StartCoroutine(DisableForDuration(m_WSkill.m_SkillDisabledTime));
 			SetAnimatorTrigger("IsUsingW");
 			
@@ -493,12 +496,6 @@ public class HirasuCharacterController : CharacterMaster
             SetAnimatorBool("IsAAttacking2", false);
         }
 	}
-	IEnumerator DisableForDuration(float Duration)
-	{
-		SetDisabled(true);
-		yield return new WaitForSeconds(Duration);
-		SetDisabled(false);
-	}
 	protected override void PerformAutoAttack()
 	{
 		if(!IsSpawned||!HasAuthority)
@@ -506,10 +503,10 @@ public class HirasuCharacterController : CharacterMaster
             return;
         }
 
-#if UNITY_EDITOR
-        Debug.Log("ATTACKING - Since last auto: "+m_TimeSinceLastAuto);
-        m_TimeSinceLastAuto=0.0f;
-#endif
+//#if UNITY_EDITOR
+//        Debug.Log("ATTACKING - Since last auto: "+m_TimeSinceLastAuto);
+//        m_TimeSinceLastAuto=0.0f;
+//#endif
 		float l_ExtraPhysDamage=0.0f;
 		float l_ExtraMagicDamage=0.0f;
 		if(GetRSkillLevel()>=2)

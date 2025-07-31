@@ -1,12 +1,5 @@
-using NUnit.Framework;
-using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Reflection;
-using TMPro;
-using Unity.Netcode;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -1451,12 +1444,5 @@ public class RapatuCharacterController : CharacterMaster
     public override void LevelUpRpc()
     {
         base.LevelUpRpc();
-    }
-
-    IEnumerator DisableForDuration(float Duration)
-    {
-        SetDisabled(true);
-        yield return new WaitForSeconds(Duration);
-        SetDisabled(false);
     }
 }

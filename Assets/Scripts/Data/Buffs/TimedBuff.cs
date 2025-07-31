@@ -55,9 +55,9 @@ public abstract class TimedBuff
                 LooseStack();
         }
     }
-    public void Activate()
+    public void Activate(bool FirstActivation)
     {
-        if (m_Buff.m_IsEffectStacked/* || m_TimeLeft <= 0.0f*/)
+        if (m_Buff.m_IsEffectStacked)
         {
             m_CurrentStacks++;
             if (m_CurrentStacks<=m_Buff.m_MaxStacks)
@@ -71,7 +71,7 @@ public abstract class TimedBuff
             
             m_LosingStacks=false;
         }
-        else
+        else if(FirstActivation)
             ApplyEffect();
 
         if (m_Buff.m_IsDurationRefreshed || m_TimeLeft <= 0.0f)
