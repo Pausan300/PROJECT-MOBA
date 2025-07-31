@@ -35,6 +35,7 @@ public class HirasuCharacterController : CharacterMaster
 	public float m_QSplintersDuration;
 	List<HirasuQSplinter> m_ActiveSplinters=new List<HirasuQSplinter>();
 	float m_QCurrentHoldTime;
+	bool m_QIsProjectileAlive;
 
     [Header("W SKILL")]
 	public float m_WAdditionalDamageSplinter;
@@ -268,7 +269,7 @@ public class HirasuCharacterController : CharacterMaster
 	{
 		if(!m_QSkill.GetUsingSkill())
 		{
-			if(m_ActiveSplinters.Count>0)
+			if(m_ActiveSplinters.Count>0 && !m_QIsProjectileAlive)
 			{
 				StopSkills();
 				m_WSkill.SetUsingSkill(true);
@@ -539,11 +540,17 @@ public class HirasuCharacterController : CharacterMaster
 		}
 		m_DesiredEnemy.GetComponent<ITakeDamage>().TakeDamage(m_CharacterStats.GetAttackDamage()+l_ExtraPhysDamage, l_ExtraMagicDamage, false, m_CharacterStats.GetPlayerName());
 	}
+
     [Rpc(SendTo.Everyone)]
 	void AddBuffMarkRpc(NetworkObjectReference Enemy) 
 	{
 		NetworkObject l_Enemy=Enemy;
 		if(l_Enemy.TryGetComponent(out BuffableEntity Buffs))
 			Buffs.AddBuff(m_WMarksDebuff.InitializeBuff(m_WMarksDuration, 0.0f, l_Enemy.gameObject));
+	}
+
+	public void SetQIsProjectileAlive(bool IsAlive) 
+	{
+		m_QIsProjectileAlive=IsAlive;
 	}
 }
