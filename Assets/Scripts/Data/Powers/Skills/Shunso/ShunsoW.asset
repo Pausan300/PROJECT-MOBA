@@ -19,9 +19,13 @@ MonoBehaviour:
     puntos vida en <color=FISICDAMAGE>Vida Corrupta</color> por cada proyectil que
     impacte.\r\n\r\n<color=FISICDAMAGE>Vida Corrupta:</color> El enemigo pierde Y
     puntos de <color=FISICDAMAGE>Vida Corrupta</color> por segundo.\r"
+  m_HaveLoads: 0
+  m_MAXLoads: 0
+  m_HaveSpecialLoad: 0
+  m_SpecialLoadEvery: 0
+  m_SpecialLoadSprite: {fileID: 0}
   m_AttributeList:
   - m_AttributeId: Puntos de Vida Corrupta
-    m_IsPct: 0
     m_ShowScalingInPopup: 1
     m_ValueFormat: 
     m_LevelScaling:
@@ -31,7 +35,6 @@ MonoBehaviour:
     - 50
     - 60
   - m_AttributeId: "Da\xF1o de Vida Corrupta"
-    m_IsPct: 0
     m_ShowScalingInPopup: 1
     m_ValueFormat: 
     m_LevelScaling:
@@ -41,7 +44,6 @@ MonoBehaviour:
     - 30
     - 35
   - m_AttributeId: Enfriamiento
-    m_IsPct: 0
     m_ShowScalingInPopup: 1
     m_ValueFormat: s
     m_LevelScaling:
@@ -51,7 +53,6 @@ MonoBehaviour:
     - 6.5
     - 6
   - m_AttributeId: Coste de Mana
-    m_IsPct: 0
     m_ShowScalingInPopup: 0
     m_ValueFormat: 
     m_LevelScaling:
@@ -61,25 +62,21 @@ MonoBehaviour:
     - 55
     - 55
   - m_AttributeId: Rango
-    m_IsPct: 0
     m_ShowScalingInPopup: 0
     m_ValueFormat: 
     m_LevelScaling:
-    - 750
+    - 650
   - m_AttributeId: Ancho
-    m_IsPct: 0
     m_ShowScalingInPopup: 0
     m_ValueFormat: 
     m_LevelScaling:
     - 25
   - m_AttributeId: Velocidad
-    m_IsPct: 0
     m_ShowScalingInPopup: 0
     m_ValueFormat: 
     m_LevelScaling:
     - 3000
   - m_AttributeId: Separacion
-    m_IsPct: 0
     m_ShowScalingInPopup: 0
     m_ValueFormat: 
     m_LevelScaling:
@@ -97,5 +94,5 @@ MonoBehaviour:
     m_SkillDescriptionTooltips: []
   m_ExtraSpecifications: []
   m_IndicatorUIObject: {fileID: 0}
-  m_SkillDisabledTime: 0.15
+  m_SkillDisabledTime: 0.25
   m_CancelableWithMouseClick: 0

@@ -2264,8 +2264,8 @@ MonoBehaviour:
   m_AttackDamageToAddF5: 2
   m_OmnisuctionToAddF5: 1
   m_QHiboxGameObject: {fileID: 2678366778026711827}
-  m_JumpRangeQ: 150
-  m_JumpTimeQ: 0.75
+  m_JumpRangeQ: 250
+  m_JumpTimeQ: 0.25
   m_QPercentageBonusAttackDamageFirst: 85
   m_QPercentageBonusAttackDamageSecond: 95
   m_InitialRadiusQ1: 100
@@ -2275,15 +2275,15 @@ MonoBehaviour:
   m_WilldurrWScythePrefab: {fileID: 7694060363966750834, guid: 8ceab020c7ae5a84da4e055acb47ccda, type: 3}
   m_WExplosion: {fileID: 8270496605563521561, guid: 6080a7401f4b2b8428db79cc1a2fddc2, type: 3}
   m_WRange: 500
-  m_WHitboxRatio: 250
-  m_WHitboxRatioReactived: 300
+  m_WHitboxRatio: 100
+  m_WHitboxRatioReactived: 80
   m_WStunBuff: {fileID: 11400000, guid: c5631a1b7c36f3a4db69dfe7dc07688f, type: 2}
   m_WStunBuffTime: 0.75
   m_WArribalRangeReactivation: 150
-  m_WChannelingTime: 0.15
-  m_WaitReactivationTimeW: 0.75
+  m_WChannelingTime: 0.25
+  m_WaitReactivationTimeW: 0.4
   m_CanReactiveTimeW: 2.5
-  m_WReactivedTimeToReturn: 0.7
+  m_WReactivedTimeToReturn: 0.3
   m_WPercentageBonusAttackDamageFirst: 55
   m_WPercentageBonusAttackDamageSecond: 55
   m_FearZoneE: {fileID: 810850169779895839}
@@ -2293,9 +2293,9 @@ MonoBehaviour:
   m_FearBuffTimeE: 1.25
   m_RangeE: 700
   m_HeadArriveTargetTimeE: 0.4
-  m_FearRadioE: 250
-  m_EChannelingTime: 0.15
-  m_WaitReactivationTimeE: 0.75
+  m_FearRadioE: 350
+  m_EChannelingTime: 0.25
+  m_WaitReactivationTimeE: 0.4
   m_CanReactiveTimeE: 2.5
   m_SlowDownRBuff: {fileID: 11400000, guid: 7431da7d46518fb48b80fc35782a8ac4, type: 2}
   m_RZonePrefab: {fileID: 5489800043199564986, guid: 4ade2cd217097e74b8fe8fb99c5f6cd4, type: 3}
@@ -2309,7 +2309,7 @@ MonoBehaviour:
   m_RSkillDuration: 15
   m_RChannelingTime: 0.2
   m_RMINDistanceHeads: 105
-  m_HeadRRadiusHitbox: 50
+  m_HeadRRadiusHitbox: 70
   m_CoolingEInRSkill: 1.5
   m_HeadPos: {fileID: 3457580757869543846}
 --- !u!114 &6223637414398981670

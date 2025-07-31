@@ -20,11 +20,15 @@ MonoBehaviour:
     clavadas. Adem\xE1s inflige Y de da\xF1o f\xEDsico y ralentiza un 20% durante
     2 s a los afectados por la explosi\xF3n.\r\n\r\nPasiva - Nivel 6: Al golpear
     3 veces con ataques b\xE1sicos o Marcaje, marca a los enemigos para que reciban
-    5% da\xF1o m\xE1gico adicional de la Detonaci\xF3n y la Palmada Solar durante
+    15% da\xF1o m\xE1gico adicional de la Detonaci\xF3n y la Palmada Solar durante
     5 s."
+  m_HaveLoads: 0
+  m_MAXLoads: 0
+  m_HaveSpecialLoad: 0
+  m_SpecialLoadEvery: 0
+  m_SpecialLoadSprite: {fileID: 0}
   m_AttributeList:
   - m_AttributeId: "Da\xF1o base"
-    m_IsPct: 0
     m_ShowScalingInPopup: 1
     m_ValueFormat: 
     m_LevelScaling:
@@ -34,7 +38,6 @@ MonoBehaviour:
     - 150
     - 190
   - m_AttributeId: Enfriamiento
-    m_IsPct: 0
     m_ShowScalingInPopup: 1
     m_ValueFormat: 
     m_LevelScaling:
@@ -44,7 +47,6 @@ MonoBehaviour:
     - 8.5
     - 8
   - m_AttributeId: Coste de Mana
-    m_IsPct: 0
     m_ShowScalingInPopup: 0
     m_ValueFormat: 
     m_LevelScaling:

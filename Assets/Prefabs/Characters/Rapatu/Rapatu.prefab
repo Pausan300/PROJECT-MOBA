@@ -1730,10 +1730,10 @@ MonoBehaviour:
   m_RangedAutoSpawnPoint: {fileID: 0}
   m_TonguePositionFace: {fileID: 6935574749045728160}
   m_TonguePrefab: {fileID: 5861226188457819980, guid: 5d4ee24ddb815e3479886a0021054108, type: 3}
-  m_TongueSpeedQ: 450
+  m_TongueSpeedQ: 950
   m_TongueRangeQ: 900
   m_TongueHitboxWidthQ: 80
-  m_QChannelingTime: 0.15
+  m_QChannelingTime: 0.25
   m_QReactivationTime: 1.5
   m_QSlowDownDebuff: {fileID: 11400000, guid: 1bdd6d4b7065abd45b91a5fd8b1f2275, type: 2}
   m_PercentageQSlowDownDebuff: 30
@@ -1748,15 +1748,15 @@ MonoBehaviour:
   m_Q2CanColisioneMask:
     serializedVersion: 2
     m_Bits: 1665
-  m_Q2AnimationTime: 1.2
+  m_Q2AnimationTime: 0.15
   m_WIndicatorPrefab: {fileID: 4231912645315949874, guid: 79575fab9db99f64594b17c863952490, type: 3}
   m_WExplosion: {fileID: 8270496605563521561, guid: 11c5352ddb9b08f48995a3380924642e, type: 3}
   m_MAXRangeW: 1000
   m_AutoJumpSecondsW: 2
   m_CanDoOtherJumpTimeW: 0.4
-  m_WChannelingTime: 0.15
+  m_WChannelingTime: 0.25
   m_WSlowsDownBuff: {fileID: 11400000, guid: 03148274ff4e0c54a854fe5b9695ce90, type: 2}
-  m_JumpWAirDuration: 0.6
+  m_JumpWAirDuration: 0.45
   m_GetUpTimeW: 1
   m_PercentageSkillPowerWFirstJump: 50
   m_PercentageAdditionalLifeWFirstJump: 5
@@ -1770,15 +1770,15 @@ MonoBehaviour:
   m_DamageRangeWSecondJump: 250
   m_PercentageExtraCountdownW: 30
   m_HealingAreaEPrefab: {fileID: 6620525333772683988, guid: 02e54d4032ff1ad4faaf09f9f2ec28fe, type: 3}
-  m_HealingTimes: 4
-  m_HealingTimeSpace: 1
-  m_HealingAreaRadius: 500
+  m_HealingTimes: 6
+  m_HealingTimeSpace: 2
+  m_HealingAreaRadius: 350
   m_PercentageSkillPowerE: 50
   m_PercentageAdditionalLifeE: 7
   m_RIndicatorPrefab: {fileID: 4231912645315949874, guid: 629ad86908967b24aa688dad332c88cf, type: 3}
   m_MAXRangeR: 1000
   m_AutoJumpSecondsR: 2
-  m_RAirDuration: 5
+  m_RAirDuration: 3
   m_GetUpTimeR: 0.5
   m_RJumpSpeed: 350
   m_RAirTurnSpeed: 50

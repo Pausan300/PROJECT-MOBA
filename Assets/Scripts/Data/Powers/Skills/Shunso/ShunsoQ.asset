@@ -19,9 +19,13 @@ MonoBehaviour:
     Yin y Yang que al golpear a un enemigo o llegar al rango m\xE1ximo, desde el
     proyectil, Baihu realiza un ara\xF1azo que inflige X <color=FISICDAMAGE>de da\xF1o
     f\xEDsico </color>y otorga visi\xF3n de los Sinluz golpeados durante 3 segundos.\r"
+  m_HaveLoads: 0
+  m_MAXLoads: 0
+  m_HaveSpecialLoad: 0
+  m_SpecialLoadEvery: 0
+  m_SpecialLoadSprite: {fileID: 0}
   m_AttributeList:
   - m_AttributeId: "Da\xF1o base"
-    m_IsPct: 0
     m_ShowScalingInPopup: 1
     m_ValueFormat: 
     m_LevelScaling:
@@ -31,7 +35,6 @@ MonoBehaviour:
     - 90
     - 130
   - m_AttributeId: Enfriamiento
-    m_IsPct: 0
     m_ShowScalingInPopup: 1
     m_ValueFormat: 
     m_LevelScaling:
@@ -41,7 +44,6 @@ MonoBehaviour:
     - 4.75
     - 4.5
   - m_AttributeId: Coste de Mana
-    m_IsPct: 0
     m_ShowScalingInPopup: 1
     m_ValueFormat: 
     m_LevelScaling:
@@ -51,41 +53,35 @@ MonoBehaviour:
     - 38
     - 40
   - m_AttributeId: Rango proyectil
-    m_IsPct: 0
     m_ShowScalingInPopup: 0
     m_ValueFormat: 
     m_LevelScaling:
-    - 900
+    - 800
   - m_AttributeId: Ancho proyectil
-    m_IsPct: 0
     m_ShowScalingInPopup: 0
     m_ValueFormat: 
     m_LevelScaling:
-    - 80
+    - 100
   - m_AttributeId: Velocidad proyectil
-    m_IsPct: 0
     m_ShowScalingInPopup: 0
     m_ValueFormat: 
     m_LevelScaling:
-    - 1000
+    - 1300
   - m_AttributeId: "Rango ara\xF1azo"
-    m_IsPct: 0
     m_ShowScalingInPopup: 0
     m_ValueFormat: 
     m_LevelScaling:
-    - 300
+    - 400
   - m_AttributeId: "Ancho ara\xF1azo"
-    m_IsPct: 0
     m_ShowScalingInPopup: 0
     m_ValueFormat: 
     m_LevelScaling:
-    - 90
+    - 100
   - m_AttributeId: "Velocidad ara\xF1azo"
-    m_IsPct: 0
     m_ShowScalingInPopup: 0
     m_ValueFormat: 
     m_LevelScaling:
-    - 1600
+    - 1800
   m_DescriptionDamageList:
   - m_DescriptionId: X
     m_Color: 5
@@ -100,5 +96,5 @@ MonoBehaviour:
   m_ExtraSpecifications:
   - Aplica efectos de impacto
   m_IndicatorUIObject: {fileID: 6649836915933689498, guid: 8caef782d2af9ec429b3465c5f423ec6, type: 3}
-  m_SkillDisabledTime: 0.15
+  m_SkillDisabledTime: 0.25
   m_CancelableWithMouseClick: 1

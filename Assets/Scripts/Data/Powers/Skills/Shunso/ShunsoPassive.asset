@@ -37,7 +37,7 @@ MonoBehaviour:
     m_ShowScalingInPopup: 0
     m_ValueFormat: 
     m_LevelScaling:
-    - 0.5
+    - 0.75
   - m_AttributeId: Duracion
     m_ShowScalingInPopup: 0
     m_ValueFormat: 

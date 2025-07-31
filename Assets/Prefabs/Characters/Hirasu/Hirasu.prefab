@@ -30650,7 +30650,7 @@ MonoBehaviour:
   m_RangedAutoSpawnPoint: {fileID: 0}
   m_MinExtraDamage: 30
   m_MaxExtraDamage: 180
-  m_PassiveRange: 225
+  m_PassiveRange: 245
   m_Staff: {fileID: 8175576814537329803}
   m_StaffFlames: {fileID: 4195194976546961208}
   m_StaffFlames2: {fileID: 6401260905612993003}
@@ -30662,15 +30662,15 @@ MonoBehaviour:
   m_QMinHoldTime: 0.5
   m_QHoldTimeToSlow: 0.25
   m_QHoldSlowPct: 10
-  m_QDuration: 0.25
-  m_QTapRange: 200
-  m_QTapWidth: 70
-  m_QHoldRange: 1200
-  m_QHoldWidth: 40
+  m_QDuration: 0.5
+  m_QTapRange: 450
+  m_QTapWidth: 140
+  m_QHoldRange: 1000
+  m_QHoldWidth: 140
   m_QSplintersDuration: 4
   m_WAdditionalDamageSplinter: 120
   m_WAdditionalDamageExplosion: 90
-  m_WExplosionRadius: 100
+  m_WExplosionRadius: 150
   m_WTimeToExpand: 0.5
   m_WSpeedDebuffSplinter: {fileID: 11400000, guid: 76e4fe222e64d3f4f90a389037540af9, type: 2}
   m_WSpeedDebuffExplosion: {fileID: 11400000, guid: 7d8c74eabd432e74c9d6ef9dc3de0628, type: 2}
@@ -30679,7 +30679,7 @@ MonoBehaviour:
   m_WSpeedDebuffDuration: 2
   m_WMarksDebuff: {fileID: 11400000, guid: 12039c31894a6ec4296c995db0e970a8, type: 2}
   m_WMarksDuration: 5
-  m_WMarksExtraDamage: 5
+  m_WMarksExtraDamage: 15
   m_ERange: 350
   m_EDuration: 0.2
   m_EBuff: {fileID: 11400000, guid: b7f73c03b38214c499c2e8a044fa40f8, type: 2}
