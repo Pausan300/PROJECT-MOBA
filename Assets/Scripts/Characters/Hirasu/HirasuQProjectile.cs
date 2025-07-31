@@ -45,6 +45,7 @@ public class HirasuQProjectile : NetworkBehaviour
                     for(int i=m_SplintersLeft; i>=0; --i)
                         SpawnSplinter(transform.position, transform.up, null, null);
                 }
+                m_Player.SetQIsProjectileAlive(false);
                 Destroy(gameObject);
             }
         }
@@ -91,6 +92,7 @@ public class HirasuQProjectile : NetworkBehaviour
         m_DropSplinters=false;
         m_Traveling=true;
         m_Collider.size=new Vector3(Width/100.0f, m_Collider.size.y, m_Collider.size.z);
+        m_Player.SetQIsProjectileAlive(true);
     }
     void SpawnSplinter(Vector3 Position, Vector3 Forward, Transform Parent, GameObject AttachedEnemy)
     {   
