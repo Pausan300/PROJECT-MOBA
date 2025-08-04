@@ -13,12 +13,12 @@ MonoBehaviour:
   m_Name: ZappadasR
   m_EditorClassIdentifier: 
   m_PowerType: 4
-  m_PowerName: "Vac\xEDo Acechante"
+  m_PowerName: "TURBOFISI\xD3N DE ENERG\xCDA OSCURA"
   m_Sprite: {fileID: 21300000, guid: a1809d2b07573af4bb32e078d4f2713b, type: 3}
   m_Description: "Zappadas lanza una gran bola que al impactar contra un Sinluz enemigo
     o llegar al rango m\xE1ximo, se activa. Al activarse, se expande y contrae un
     total de 4 veces.\r\n\r\n\rLa expansi\xF3n inflige X de da\xF1o m\xE1gico en
-    el \xE1rea de expansi\xF3n y Y  +Z por cada expansi\xF3n como da\xF1o m\xE1gico
+    el \xE1rea de expansi\xF3n y Y  +ZZ por cada expansi\xF3n como da\xF1o m\xE1gico
     en el borde.\r\n\r\n\r\nLa contracci\xF3n atrae levemente en el \xE1rea de expansi\xF3n
     y mucho en un borde.\r\n"
   m_HaveLoads: 0
@@ -76,7 +76,7 @@ MonoBehaviour:
       m_ToolTip: del poder de habilidad
       m_AtributeType: 3
       m_Color: 6
-  - m_DescriptionId: Z
+  - m_DescriptionId: ZZ
     m_Color: 1
     m_AttributeId: "Da\xF1o en el borde"
     m_MultiplyValue: 1

@@ -19,6 +19,13 @@ public class ZappadasQProjectile : Projectile
         m_Move = false;
     }
 
+    public void SetSizeProjectil(float ProjectileHitbox)
+    {
+        transform.localScale = new Vector3(ProjectileHitbox / 100, ProjectileHitbox / 100, ProjectileHitbox / 100);
+
+        SetHitboxRadius((ProjectileHitbox / 100) / 2);
+    }
+
     public void SetProjectile(float damage, float ProjectileHitbox, float Range, float ProjectileSpeed, Vector3 Direction, ZappadasCharacterController _CharacterController)
     {
         SetDamage(damage);
