@@ -47,6 +47,7 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
     bool m_Attacking;
     bool m_Disabled;
     bool m_StopAutoAttacks;
+    bool m_GoingToAutoAttackPosition;
     GameObject m_LastAutoAttackedEnemy;
     public float m_TimeSinceLastAuto;
     float m_AttackAnimLength;
@@ -244,20 +245,21 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
             StopMovement();
             m_StopAutoAttacks=true;
         }
-        
-        if(Input.GetKey(KeyCode.S))
+        else if(Input.GetKey(KeyCode.S))
             m_StopAutoAttacks=true;
-        else if(Input.GetKeyUp(KeyCode.S))
-            m_StopAutoAttacks=false;
 
         MouseTargeting();
         if (!m_Disabled)
         {
+            if (m_OptionsUI.m_GameMenu.IsAutoAttackEnabled() || m_GoingToAutoAttackPosition)
+                CheckIfCanAutoAttack(GetLastAutoAttackedEnemy());
+
             if (m_UseKeyboardMovement)
                 KeyboardMovement();
             CharacterMovement();
-            if (m_OptionsUI.m_GameMenu.IsAutoAttackEnabled())
-                CheckAutoAttack();
+
+            if(Input.GetKeyDown(KeyCode.A))
+                GoToAutoAttackPosition();
 
             m_InputBufferController.CheckInputBuffer();
         }
@@ -296,53 +298,11 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
                 m_OptionsUI.HideOptionsUI();
         }
     }
-
     [Rpc(SendTo.Everyone)]
     public void UpdateIngameBarsRpc()
     {
         m_IngameCharacterUI.UpdateHealthManaBars(m_CharacterStats.GetCurrentHealth(), m_CharacterStats.GetMaxHealth(), m_CharacterStats.GetCurrentMana(), m_CharacterStats.GetMaxMana());
     }
-
-    public Vector3 GetMouseDir()
-    {
-        Vector3 l_MousePosition = Input.mousePosition;
-        l_MousePosition.z = 10.0f;
-        return m_CharacterCamera.GetCamera().ScreenToWorldPoint(l_MousePosition) - m_CharacterCamera.GetCamera().transform.position;
-    }
-    public Transform GetEnemy()
-    {
-        Vector3 l_MouseDirection = GetMouseDir();
-        RaycastHit l_CameraRaycastHit;
-        if (Physics.Raycast(m_CharacterCamera.GetCamera().transform.position, l_MouseDirection, out l_CameraRaycastHit, 1000.0f, m_CharacterCamera.m_CameraLayerMask))
-        {
-            if (l_CameraRaycastHit.transform.CompareTag("Enemy"))
-                return l_CameraRaycastHit.transform;
-        }
-        return null;
-    }
-    public CharacterStats GetSelectedCharacterStats()
-    {
-        Vector3 l_MouseDirection = GetMouseDir();
-        RaycastHit l_CameraRaycastHit;
-        if (Physics.Raycast(m_CharacterCamera.GetCamera().transform.position, l_MouseDirection, out l_CameraRaycastHit, 1000.0f, m_CharacterCamera.m_SelectHitboxLayerMask))
-        {
-            if (l_CameraRaycastHit.transform.TryGetComponent(out ITakeDamage Stats))
-                return Stats.GetCharacterStats();
-        }
-        return null;
-    }
-    public Vector3 GetPosition()
-    {
-        Vector3 l_MouseDirection = GetMouseDir();
-        RaycastHit l_CameraRaycastHit;
-        if (Physics.Raycast(m_CharacterCamera.GetCamera().transform.position, l_MouseDirection, out l_CameraRaycastHit, 1000.0f, m_CharacterCamera.m_TerrainLayerMask))
-        {
-            if (l_CameraRaycastHit.transform.CompareTag("Terrain"))
-                return l_CameraRaycastHit.point;
-        }
-        return Vector3.zero;
-    }
-
 
     void MouseTargeting()
     {
@@ -401,12 +361,6 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
             }
         }
     }
-    [Rpc(SendTo.Everyone)]
-    void SetDesiredEnemyRpc(NetworkObjectReference Enemy)
-    {
-        NetworkObject l_Enemy = Enemy;
-        m_DesiredEnemy = l_Enemy.transform;
-    }
     void CharacterMovement()
     {
         float l_MinDistance;
@@ -425,6 +379,7 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
             else
                 transform.forward = l_CharacterDirection;
 
+            m_StopAutoAttacks=false;
             SetLastAutoAttackedEnemy(null);
             if (Vector3.Distance(transform.position, m_DesiredPosition) > l_MinDistance)
             {
@@ -480,21 +435,50 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
         else if (!l_IsPressingKey && m_TimeSinceLastMovement > 0.05f)
             m_CharacterAnimator.SetBool("IsMoving", false);
     }
-    public void CheckAutoAttack() 
+
+    void CheckIfCanAutoAttack(bool HasLastAutoAttackedEnemy) 
     {
-        if (!m_StopAutoAttacks)
+        if (!m_GoingToDesiredPosition && !m_Attacking && !m_StopAutoAttacks)
         {
-            if(!m_GoingToDesiredPosition && !m_Attacking)
+            if(!HasLastAutoAttackedEnemy && m_OptionsUI.m_GameMenu.IsAutoAttackEnabled())
+                StartAutoAttacking();
+            else if(HasLastAutoAttackedEnemy)
             {
-                GameObject l_ClosestEnemy = GetClosestEnemyInRange(m_CharacterStats.GetAttackRange() / 100.0f);
-                if (m_LastAutoAttackedEnemy!=l_ClosestEnemy)
+                if(IsEnemyInRange(GetLastAutoAttackedEnemy(), m_CharacterStats.GetAttackRange() / 100.0f)) 
                 {
-                    m_LastAutoAttackedEnemy=l_ClosestEnemy;
-                    m_DesiredEnemy = l_ClosestEnemy.transform;
+                    m_DesiredEnemy=GetLastAutoAttackedEnemy().transform;
                     StartAttacking();
                 }
-            }    
+            }
         }
+        else if(m_GoingToAutoAttackPosition) 
+            StartAutoAttacking();
+    }
+    void StartAutoAttacking() 
+    {
+        GameObject l_ClosestEnemy = GetClosestEnemyInRange(m_CharacterStats.GetAttackRange() / 100.0f);
+        if(l_ClosestEnemy!=null) 
+        {
+            SetLastAutoAttackedEnemy(l_ClosestEnemy);
+            m_DesiredEnemy = l_ClosestEnemy.transform;
+            StartAttacking();
+        } 
+    }
+    void GoToAutoAttackPosition() 
+    {
+        m_DesiredPosition = GetPosition();
+        m_DesiredPosition.y = 0.0f;
+        m_DesiredEnemy = null;
+        m_GoingToDesiredPosition = true;
+        m_GoingToAutoAttackPosition=true;
+        StopAttacking();
+        StopRecall();
+    }
+
+    public bool IsEnemyInRange(GameObject Enemy, float Range) 
+    {
+        float l_Dist = (Enemy.transform.position - transform.position).magnitude;
+        return l_Dist<=Range+0.1f;
     }
     public GameObject GetClosestEnemyInRange(float Range)
     {
@@ -502,14 +486,17 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
         if (l_Targets.Length == 0)
             return null;
 
-        float l_Dist = 0.0f;
+        float l_ClosestDist = 0.0f;
         GameObject l_ClosestTarget = null;
 
         for (int i = 0; i < l_Targets.Length; ++i)
         {
-            l_Dist = (l_Targets[i].transform.position - transform.position).magnitude;
-            if (l_Dist <= Range)
-                l_ClosestTarget = l_Targets[i];
+            float l_Dist = (l_Targets[i].transform.position - transform.position).magnitude;
+            if (l_Dist<=Range+0.1f && (l_Dist<l_ClosestDist || i==0)) 
+            {
+                l_ClosestTarget=l_Targets[i];
+                l_ClosestDist=l_Dist;
+            }
         }
         return l_ClosestTarget;
     }
@@ -546,6 +533,52 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
         }
         return m_CharacterCamera.GetCamera().ScreenToWorldPoint(l_MousePosition);
     }
+    public Vector3 GetMouseDir()
+    {
+        Vector3 l_MousePosition = Input.mousePosition;
+        l_MousePosition.z = 10.0f;
+        return m_CharacterCamera.GetCamera().ScreenToWorldPoint(l_MousePosition) - m_CharacterCamera.GetCamera().transform.position;
+    }
+    public Transform GetEnemy()
+    {
+        Vector3 l_MouseDirection = GetMouseDir();
+        RaycastHit l_CameraRaycastHit;
+        if (Physics.Raycast(m_CharacterCamera.GetCamera().transform.position, l_MouseDirection, out l_CameraRaycastHit, 1000.0f, m_CharacterCamera.m_CameraLayerMask))
+        {
+            if (l_CameraRaycastHit.transform.CompareTag("Enemy"))
+                return l_CameraRaycastHit.transform;
+        }
+        return null;
+    }
+    public CharacterStats GetSelectedCharacterStats()
+    {
+        Vector3 l_MouseDirection = GetMouseDir();
+        RaycastHit l_CameraRaycastHit;
+        if (Physics.Raycast(m_CharacterCamera.GetCamera().transform.position, l_MouseDirection, out l_CameraRaycastHit, 1000.0f, m_CharacterCamera.m_SelectHitboxLayerMask))
+        {
+            if (l_CameraRaycastHit.transform.TryGetComponent(out ITakeDamage Stats))
+                return Stats.GetCharacterStats();
+        }
+        return null;
+    }
+    public Vector3 GetPosition()
+    {
+        Vector3 l_MouseDirection = GetMouseDir();
+        RaycastHit l_CameraRaycastHit;
+        if (Physics.Raycast(m_CharacterCamera.GetCamera().transform.position, l_MouseDirection, out l_CameraRaycastHit, 1000.0f, m_CharacterCamera.m_TerrainLayerMask))
+        {
+            if (l_CameraRaycastHit.transform.CompareTag("Terrain"))
+                return l_CameraRaycastHit.point;
+        }
+        return Vector3.zero;
+    }
+    [Rpc(SendTo.Everyone)]
+    void SetDesiredEnemyRpc(NetworkObjectReference Enemy)
+    {
+        NetworkObject l_Enemy = Enemy;
+        m_DesiredEnemy = l_Enemy.transform;
+    }
+
     public void LookAt(Vector3 TargetPosition)
     {
         Vector3 l_Direction = TargetPosition - transform.position;
@@ -565,10 +598,11 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
     }
     protected virtual void StartAttacking()
     {
+        m_GoingToAutoAttackPosition=false;
         if (m_DesiredEnemy)
         {
             Debug.Log("ATTACK");
-            m_LastAutoAttackedEnemy=m_DesiredEnemy.gameObject;
+            SetLastAutoAttackedEnemy(m_DesiredEnemy.gameObject);
             Vector3 l_Dir = m_DesiredEnemy.position - transform.position;
             l_Dir.y = 0.0f;
             l_Dir.Normalize();
@@ -664,7 +698,6 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
         }
         m_CharacterStats.SetCurrentManaRpc(m_CharacterStats.GetCurrentMana() - m_QSkill.GetMana(m_QSkillLevel));
         StopRecall();
-        SetLastAutoAttackedEnemy(null);
     }
 
     void WSkillInput(InputAction.CallbackContext obj)
@@ -745,7 +778,6 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
         }
         m_CharacterStats.SetCurrentManaRpc(m_CharacterStats.GetCurrentMana() - m_WSkill.GetMana(m_WSkillLevel));
         StopRecall();
-        SetLastAutoAttackedEnemy(null);
     }
 
     void ESkillInput(InputAction.CallbackContext obj)
@@ -826,7 +858,6 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
         }
         m_CharacterStats.SetCurrentManaRpc(m_CharacterStats.GetCurrentMana() - m_ESkill.GetMana(m_ESkillLevel));
         StopRecall();
-        SetLastAutoAttackedEnemy(null);
     }
 
     void RSkillInput(InputAction.CallbackContext obj)
@@ -907,7 +938,6 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
         }
         m_CharacterStats.SetCurrentManaRpc(m_CharacterStats.GetCurrentMana() - m_RSkill.GetMana(m_RSkillLevel));
         StopRecall();
-        SetLastAutoAttackedEnemy(null);
     }
 
     void SummonerSpell1Input(InputAction.CallbackContext obj)
@@ -1143,7 +1173,7 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
 		SetDisabled(true);
 		yield return new WaitForSeconds(Duration);
 		SetDisabled(false);
-		CheckAutoAttack();
+		CheckIfCanAutoAttack(GetLastAutoAttackedEnemy());
 	}
 
     //LLAMADA POR EVENTO EN LA ANIMACION DE AUTOATAQUE
@@ -1301,11 +1331,9 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
                 PowersCooldownLoads(m_QSkill);
 
             m_IngameCharacterUI.SetLoadsInfo(m_QSkill);
-
         }
         else
             m_QSkill.SetCooldown(m_QSkillLevel);
-
     }
     public int GetWSkillLevel()
     {
@@ -1346,7 +1374,6 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
         }
         else
             m_ESkill.SetCooldown(m_ESkillLevel);
-
     }
     public int GetRSkillLevel()
     {
@@ -1367,6 +1394,5 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
         }
         else
             m_RSkill.SetCooldown(m_RSkillLevel);
-
     }
 }
