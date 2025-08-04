@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: ZappadasW
   m_EditorClassIdentifier: 
   m_PowerType: 2
-  m_PowerName: "Imposicion / Atracci\xF3n Forzada"
+  m_PowerName: "REDIRECCI\xD3N ESPACIO-TEMPORAL"
   m_Sprite: {fileID: 21300000, guid: 6bb23ba9e5ed4da41abf0c150e1fb090, type: 3}
   m_Description: "Zappadas crea un agujero de gusano que absorbe proyectiles tanto
     enemigos como aliados y los lanza en la direcci\xF3n elegida al momento de crearse.
@@ -28,7 +28,6 @@ MonoBehaviour:
   m_SpecialLoadSprite: {fileID: 0}
   m_AttributeList:
   - m_AttributeId: "Da\xF1o base \u201CEnerg\xEDa oscura\u201D"
-    m_IsPct: 0
     m_ShowScalingInPopup: 1
     m_ValueFormat: 
     m_LevelScaling:
@@ -38,7 +37,6 @@ MonoBehaviour:
     - 75
     - 80
   - m_AttributeId: Enfriamiento
-    m_IsPct: 0
     m_ShowScalingInPopup: 0
     m_ValueFormat: s
     m_LevelScaling:
@@ -48,7 +46,6 @@ MonoBehaviour:
     - 11
     - 11
   - m_AttributeId: Coste de Mana
-    m_IsPct: 0
     m_ShowScalingInPopup: 1
     m_ValueFormat: 
     m_LevelScaling:

@@ -2623,8 +2623,8 @@ MonoBehaviour:
   m_DarkPowerToUpgradeSkillQ: 100
   m_QProjectilePrefab: {fileID: 4243228749939468086, guid: 2016427e7ec07ef4db9687c0564474c9, type: 3}
   m_QProjectileUpgradePrefab: {fileID: 6187584665770324023, guid: 08e936e6f37815f44976247c8635e123, type: 3}
-  m_OffsetYProjectileQ: 1
-  m_DistanceProjectileSpawn: 2
+  m_OffsetYProjectileQ: 100
+  m_DistanceProjectileSpawn: 150
   m_ProjectileHitboxQ: 100
   m_ExplosionHitboxQ: 80
   m_RangeQ: 1300
@@ -2639,14 +2639,14 @@ MonoBehaviour:
   m_DarkPowerToUpgradeSkillW: 100
   m_WWormholeRange: 900
   m_WWormholeDuration: 8
-  m_WWormholeStartPosOffset: 1
+  m_WWormholeStartPosOffset: 150
   m_WProjectileExitRange: 800
   m_WProjectileExitSpeed: 900
   m_WProjectileHitboxIncrease: 10
   m_WWormholeStartHitboxRadius: 150
   m_WDarkPowerRange: 450
   m_WWormholeStartPrefab: {fileID: 733911426676479872, guid: cb1e7f26b8ed7ed419416771d0b8d580, type: 3}
-  m_WSkillIndicatorUIObject: {fileID: 6649836915933689498, guid: 8caef782d2af9ec429b3465c5f423ec6, type: 3}
+  m_SkillsIndicatorUIObject: {fileID: 6649836915933689498, guid: 8caef782d2af9ec429b3465c5f423ec6, type: 3}
   m_WChannelingTime: 0.05
   m_DarkPowerToUpgradeSkillE: 100
   m_BallsPrefab: {fileID: 2826371296974110316, guid: 9a75c3c247259cc4f8190e82ede5bcb8, type: 3}

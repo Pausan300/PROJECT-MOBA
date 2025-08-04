@@ -68,7 +68,7 @@ public class ZappadasCharacterController : CharacterMaster
 
     public float m_WWormholeRange = 900f;
     public float m_WWormholeDuration = 8f;
-    public float m_WWormholeStartPosOffset = 1f;
+    public float m_WWormholeStartPosOffset = 100f;
     public float m_WProjectileExitRange = 800f;
     public float m_WProjectileExitSpeed = 900f;
     [UnityEngine.Range(0f, 100f)]
@@ -79,7 +79,7 @@ public class ZappadasCharacterController : CharacterMaster
 
 
     public GameObject m_WWormholeStartPrefab;
-    public GameObject m_WSkillIndicatorUIObject;
+    public GameObject m_SkillsIndicatorUIObject;
 
     Vector3 m_WWormholeEndPosition;
     bool m_LoadingWSkill = false;
@@ -95,6 +95,8 @@ public class ZappadasCharacterController : CharacterMaster
     [Header("E SKILL")]
     public int m_DarkPowerToUpgradeSkillE = 100;
     bool m_ESkillUpgrade = false;
+    bool m_LoadingESkill = false;
+
 
     float m_RangeE = 1400;
     float m_EHitboxRadius = 200;
@@ -357,18 +359,14 @@ public class ZappadasCharacterController : CharacterMaster
         m_QProjectiles = new List<GameObject>();
 
 
-        float l_AngleToAdd = 360 / m_ProjectilesCount;
-        float l_ActualAngle = 0;
         for (int i = 0; i < m_ProjectilesCount; i++)
         {
-            float l_AngleRadians = l_ActualAngle * Mathf.Deg2Rad;
-            Vector3 l_Direction = new Vector3(Mathf.Cos(l_AngleRadians), 0, Mathf.Sin(l_AngleRadians));
-            Vector3 l_Position = transform.position + l_Direction * m_DistanceProjectileSpawn;
-            l_Position.y += m_OffsetYProjectileQ;
+            Vector3 l_Position = transform.position + transform.forward * (m_DistanceProjectileSpawn/100);
+            l_Position.y += (m_OffsetYProjectileQ/100);
 
-            GameObject l_ActualProjectile = Instantiate(m_QProjectilePrefab, l_Position, Quaternion.identity);
+            GameObject l_ActualProjectile = Instantiate(m_QProjectilePrefab, l_Position, Quaternion.identity, transform);
+            l_ActualProjectile.GetComponent<ZappadasQProjectile>().SetSizeProjectil(m_ProjectileHitboxQ);
             m_QProjectiles.Add(l_ActualProjectile);
-            l_ActualAngle += l_AngleToAdd;
         }
 
         m_DestroyProjectilesWithTimeCoroutineQ = StartCoroutine(DestroyProjectilesWithTime());
@@ -426,6 +424,10 @@ public class ZappadasCharacterController : CharacterMaster
                 l_Direccion = l_Direccion.normalized;
                 float l_Damage = (m_QSkill.GetAttribute("Daño base", GetQSkillLevel())) + (m_PercentageSkillPowerQ1 / 100) * GetCharacterStats().GetAbilityPower();
                 l_ActualProjectile.GetComponent<ZappadasQProjectile>().SetProjectile(l_Damage, m_ProjectileHitboxQ, m_RangeQ, m_ProjectileSpeedQ, l_Direccion, this);
+                
+                StopAttacking();
+                if (!GetIsLookingForPosition())
+                    StopMovement();
 
                 if (m_QProjectiles.Count == 0)
                     EndQSkill();
@@ -580,7 +582,7 @@ public class ZappadasCharacterController : CharacterMaster
 
         m_WWormholeEndPosition = transform.position + l_Direction;
 
-        m_SkillIndicatorUI.CreateArrowSkillIndicator(m_WSkillIndicatorUIObject, m_WWormholeStartHitboxRadius, m_WProjectileExitRange, m_WWormholeEndPosition, false);
+        m_SkillIndicatorUI.CreateArrowSkillIndicator(m_SkillsIndicatorUIObject, m_WWormholeStartHitboxRadius, m_WProjectileExitRange, m_WWormholeEndPosition, false);
         StopAttacking();
         if (!GetIsLookingForPosition())
             StopMovement();
@@ -622,7 +624,7 @@ public class ZappadasCharacterController : CharacterMaster
 
 
 
-        Vector3 l_Offset = transform.forward * m_WWormholeStartPosOffset;
+        Vector3 l_Offset = transform.forward * (m_WWormholeStartPosOffset/100);
         Vector3 l_SpawnPosition = transform.position + l_Offset;
         GameObject l_Wormhole = Instantiate(m_WWormholeStartPrefab, l_SpawnPosition, Quaternion.identity);
 
@@ -651,7 +653,7 @@ public class ZappadasCharacterController : CharacterMaster
 
         if (m_LoadingWSkill)
         {
-            if (Input.GetKeyDown(m_WSkillKey))
+            if (Input.GetKeyUp(m_WSkillKey) || Input.GetMouseButtonUp(0))
             {
                 StartCoroutine(StartWWormhole());
             }
@@ -765,10 +767,23 @@ public class ZappadasCharacterController : CharacterMaster
 
         m_EBallsInstancePosition = transform.position + l_Direction;
 
-        yield return null;
-        yield return null;
-        yield return null;
+        m_SkillIndicatorUI.CreateArrowSkillIndicator(m_SkillsIndicatorUIObject, m_EHitboxRadius, m_DistanceBetweenBalls * 2, m_EBallsInstancePosition, false);
+        StopAttacking();
+        if (!GetIsLookingForPosition())
+            StopMovement();
 
+        SetDisabled(true);
+
+        m_LoadingESkill = true;
+        yield return null;
+    }
+    void SpawnEBalls()
+    {
+
+        m_SkillIndicatorUI.ClearNormalSkillIndicatorUI();
+        SetDisabled(false);
+
+        m_LoadingESkill = false;
         m_EDirection = (GetPositionWithMouse() - m_EBallsInstancePosition).normalized;
         if (m_EDirection == Vector3.zero)
             m_EDirection = Quaternion.Euler(0, 90, 0) * (transform.position - m_EBallsInstancePosition).normalized;
@@ -786,7 +801,7 @@ public class ZappadasCharacterController : CharacterMaster
         ball = Instantiate(m_BallsPrefab, forwardPos, Quaternion.identity);
         ball.GetComponent<ZappadasEBall>().SetBallE(m_TimeToDestroyEBall, this, m_ESkillUpgrade, 2);
 
-        Vector3 backwardPos = m_EBallsInstancePosition - m_EDirection * (m_DistanceBetweenBalls / 100);
+        Vector3 backwardPos = m_EBallsInstancePosition + m_EDirection * (m_DistanceBetweenBalls / 100) * 2;
         ball = Instantiate(m_BallsPrefab, backwardPos, Quaternion.identity);
         ball.GetComponent<ZappadasEBall>().SetBallE(m_TimeToDestroyEBall, this, m_ESkillUpgrade, 3);
 
@@ -894,6 +909,14 @@ public class ZappadasCharacterController : CharacterMaster
         {
             m_ETimer += Time.deltaTime;
             GetCharacterUI().UpdateCastingUI(m_ETimer, m_EChannelingTime);
+        }
+
+        if (m_LoadingESkill)
+        {
+            if (Input.GetKeyUp(m_ESkillKey) || Input.GetMouseButtonUp(0))
+            {
+                SpawnEBalls();
+            }
         }
 
     }
@@ -1010,7 +1033,7 @@ public class ZappadasCharacterController : CharacterMaster
         base.RSkill();
         GetCharacterUI().HideCastingUI();
         m_RChanneling = false;
-        
+
         m_RMove = true;
     }
 
@@ -1038,7 +1061,7 @@ public class ZappadasCharacterController : CharacterMaster
             m_RProyectil.transform.position = Vector3.MoveTowards(
                 m_RProyectil.transform.position,
                 m_RTargetPos,
-                m_RProyectilSpeed/100 * Time.deltaTime
+                m_RProyectilSpeed / 100 * Time.deltaTime
             );
 
             if (Vector3.Distance(m_RProyectil.transform.position, m_RTargetPos) < 0.01f)

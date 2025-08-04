@@ -59,6 +59,7 @@ public class ZappadasWWormhole : MonoBehaviour
                 l_ProjectileCopy.transform.position = m_WWormholeEnd.GetComponent<ZappadasWWormholeExit>().GetExitPos();
                 ZappadasWormholeProjectile l_ZappadasWormholeProjectile = l_ProjectileCopy.AddComponent<ZappadasWormholeProjectile>();
                 l_ZappadasWormholeProjectile.Set(m_ProjectileExitSpeed, m_ProjectileExitRange, m_ProjectileExitExtraHitbox, m_EndDirection, m_CharacterController, l_Damage);
+                projectile.SetCanBeDeleted(false);
 
                 if (m_WSkillUpgrade)
                 {

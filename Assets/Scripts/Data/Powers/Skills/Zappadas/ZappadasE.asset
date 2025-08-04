@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: ZappadasE
   m_EditorClassIdentifier: 
   m_PowerType: 3
-  m_PowerName: Omnipresencia
+  m_PowerName: OSCURIDAD OPRESIVA
   m_Sprite: {fileID: 21300000, guid: 131d4d4ab5ed1b54ab7cfe750d06199f, type: 3}
   m_Description: "Zappadas invoca 3 bolas con energ\xEDa oscura que al cabo de 1,5
     s explotan e infligen X de da\xF1o m\xE1gico, empuja y aturde durante 0,5 s a
@@ -76,7 +76,7 @@ MonoBehaviour:
       m_Color: 6
   - m_DescriptionId: Y
     m_Color: 0
-    m_AttributeId: "Coste de man\xE1"
+    m_AttributeId: Coste de Mana
     m_MultiplyValue: 1
     m_SkillDescriptionTooltips: []
   m_ExtraSpecifications: []
