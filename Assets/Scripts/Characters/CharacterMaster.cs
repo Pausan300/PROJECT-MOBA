@@ -320,8 +320,8 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
                 m_DesiredEnemy = GetEnemy();
                 if (m_DesiredEnemy)
                 {
-                    NetworkObject l_Enemy = m_DesiredEnemy.GetComponent<NetworkObject>();
-                    SetDesiredEnemyRpc(l_Enemy);
+                    //NetworkObject l_Enemy = m_DesiredEnemy.GetComponent<NetworkObject>();
+                    //SetDesiredEnemyRpc(l_Enemy);
                     m_DesiredPosition = m_DesiredEnemy.position;
                     m_DesiredPosition.y = 0.0f;
                     m_GoingToDesiredPosition = true;
@@ -487,12 +487,13 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
             return null;
 
         float l_ClosestDist = 0.0f;
+        float l_Dist = 0.0f;
         GameObject l_ClosestTarget = null;
 
         for (int i = 0; i < l_Targets.Length; ++i)
         {
-            float l_Dist = (l_Targets[i].transform.position - transform.position).magnitude;
-            if (l_Dist<=Range+0.1f && (l_Dist<l_ClosestDist || i==0)) 
+            l_Dist=(l_Targets[i].transform.position - transform.position).magnitude;
+            if (l_Dist<=Range+0.1f && (l_Dist<l_ClosestDist || l_ClosestTarget==null)) 
             {
                 l_ClosestTarget=l_Targets[i];
                 l_ClosestDist=l_Dist;
@@ -601,7 +602,6 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
         m_GoingToAutoAttackPosition=false;
         if (m_DesiredEnemy)
         {
-            Debug.Log("ATTACK");
             SetLastAutoAttackedEnemy(m_DesiredEnemy.gameObject);
             Vector3 l_Dir = m_DesiredEnemy.position - transform.position;
             l_Dir.y = 0.0f;
