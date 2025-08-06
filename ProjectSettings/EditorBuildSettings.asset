@@ -11,5 +11,8 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Programming_Arnau.unity
     guid: 5ba54d46cfe5f694498460b606babbdf
+  - enabled: 1
+    path: Assets/Scenes/Testing_Oscar.unity
+    guid: 4267456c80332504586f79351a0edc2d
   m_configObjects: {}
   m_UseUCBPForAssetBundles: 0
