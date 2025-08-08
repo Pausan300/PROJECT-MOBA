@@ -94,11 +94,6 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
     //SETTINGS
     public bool m_UseKeyboardMovement;
 
-    //public int m_MouseSpeed=10;
-    //[DllImport("user32.dll")]
-    //public static extern int SystemParametersInfo( int uAction, int uParam, IntPtr lpvParam, int fuWinIni);
-    //public const int SPI_SETMOUSESPEED = 113;
-
     [Header("AUTOATTACK")]
     public GameObject m_RangedAutoAttack;
     public Transform m_RangedAutoSpawnPoint;
@@ -131,13 +126,13 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
     {
         base.OnNetworkSpawn();
 
-        if (m_GameManager == null)
-            m_GameManager = GameManager.m_GameManagerInstance;
-        m_GameManager.AddToPlayerList(this);
-
         if (m_CharacterCamera == null)
             m_CharacterCamera = Instantiate(m_CameraPrefab, null).GetComponent<CameraController>();
         m_CharacterCamera.SetFollowTarget(transform);
+
+        if (m_GameManager == null)
+            m_GameManager = GameManager.m_GameManagerInstance;
+        m_GameManager.AddToPlayerList(this);
 
         if (m_CharacterUI == null)
             m_CharacterUI = Instantiate(m_CharacterUIPrefab, GameObject.Find("UI").transform).GetComponent<CharacterUI>();
@@ -150,6 +145,7 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
         m_IngameCharacterUI.SetCameraController(m_CharacterCamera);
 
         m_RecallTpPoint = GameObject.Find("AllySpawnPoint").transform;
+        transform.position=m_RecallTpPoint.position;
 
         if (!IsSpawned || !HasAuthority)
         {
@@ -210,34 +206,12 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
         }
     }
 
-    //public static void SetMouseSpeed(int intSpeed )
-    //{
-    //    IntPtr ptr = new IntPtr(intSpeed);
-
-    //    int b = SystemParametersInfo(SPI_SETMOUSESPEED, 0, ptr, 0);
-
-    //    if (b == 0)
-    //    {
-    //        Console.WriteLine("Not able to set speed");
-    //    }
-    //    else if ( b == 1 )
-    //    {
-    //        Console.WriteLine("Successfully done");
-    //    }
-
-    //}
-
     protected virtual void Update()
     {
         if (!IsSpawned || !HasAuthority)
         {
             return;
         }
-
-        //if(Input.GetKeyDown(KeyCode.N)) 
-        //{
-        //    SetMouseSpeed(m_MouseSpeed);
-        //}
 
         if(Input.GetKeyDown(KeyCode.S)) 
         {
@@ -548,6 +522,11 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
         {
             if (l_CameraRaycastHit.transform.CompareTag("Enemy"))
                 return l_CameraRaycastHit.transform;
+            else if(l_CameraRaycastHit.transform.CompareTag("Structure")) 
+            {
+                if(!l_CameraRaycastHit.transform.GetComponent<TowerController>().GetIsUntargetable())
+                    return l_CameraRaycastHit.transform;
+            }
         }
         return null;
     }
@@ -1188,7 +1167,10 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
 //        Debug.Log("ATTACKING - Since last auto: " + m_TimeSinceLastAuto);
 //        m_TimeSinceLastAuto = 0.0f;
 //#endif
-        m_DesiredEnemy.GetComponent<ITakeDamage>().TakeDamage(m_CharacterStats.GetAttackDamage(), m_CharacterStats.GetAbilityPower(), false, m_CharacterStats.GetPlayerName());
+        if(m_DesiredEnemy.TryGetComponent(out ITakeDamage Enemy))
+            Enemy.TakeDamage(m_CharacterStats.GetAttackDamage(), m_CharacterStats.GetAbilityPower(), false, m_CharacterStats.GetPlayerName());
+        else if(m_DesiredEnemy.TryGetComponent(out ITakeDamageTower Tower))
+            Tower.TakeDamage(m_CharacterStats.GetAttackDamage(), m_CharacterStats.GetAbilityPower(), false, m_CharacterStats.GetPlayerName());
     }
 
     //LLAMADA POR EVENTO EN LA ANIMACION DE AUTOATAQUE

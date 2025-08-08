@@ -23,12 +23,16 @@ public class GameManager : NetworkBehaviour
     [Header("SCENE ACTORS LISTS")]
     List<CharacterMaster> m_CharactersList = new List<CharacterMaster>();
     List<EnemyDummy> m_EnemiesList = new List<EnemyDummy>();
+    List<TowerController> m_Towers=new List<TowerController>();
 
 
     void Awake()
     {
         if (m_GameManagerInstance == null)
             m_GameManagerInstance = this;
+
+        foreach(TowerController Tower in FindObjectsByType<TowerController>(FindObjectsSortMode.None))
+            m_Towers.Add(Tower);
     }
     void Update()
     {
@@ -78,7 +82,7 @@ public class GameManager : NetworkBehaviour
     public void AddToPlayerList(CharacterMaster Player)
     {
         m_CharactersList.Add(Player);
-        m_GameStarted = true;
+        StartGame();
     }
     public List<CharacterMaster> GetPlayersList()
     {
@@ -94,6 +98,15 @@ public class GameManager : NetworkBehaviour
     {
         m_EnemiesList.RemoveAll(e => e == null || e.gameObject == null);
         return m_EnemiesList;
+    }
+
+    void StartGame() 
+    {
+        if(m_GameStarted)
+            return;
+        m_GameStarted = true;
+        foreach(TowerController Tower in m_Towers)
+            Tower.m_IngameUI.SetCameraController(m_CharactersList[0].GetCameraController());
     }
 
 

@@ -3,6 +3,7 @@ using System.Collections;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.InputSystem.Utilities;
+using static UnityEngine.EventSystems.EventTrigger;
 
 public class RangedAutoAttack : NetworkBehaviour
 {
@@ -30,8 +31,10 @@ public class RangedAutoAttack : NetworkBehaviour
         {
             if (Vector3.Distance(transform.position, m_Target.position) <= 0.005f)
             {
-                if (m_Target.TryGetComponent<ITakeDamage>(out ITakeDamage Enemy))
+                if (m_Target.TryGetComponent(out ITakeDamage Enemy))
                     DamageEnemy(Enemy);
+                else if(m_Target.TryGetComponent(out ITakeDamageTower Tower))
+                    DamageTower(Tower);
 
                 m_CharacterMaster.RangedAutoAttackHitDamage(m_Target);
 
@@ -49,6 +52,10 @@ public class RangedAutoAttack : NetworkBehaviour
     {
         Enemy.TakeDamage(m_PhysicDamage, m_MagicDamage, false, "AutoAttack");
         m_OnHitEffects?.Invoke(m_Target.gameObject);
+    }
+    void DamageTower(ITakeDamageTower Tower) 
+    {
+        Tower.TakeDamage(m_PhysicDamage, m_MagicDamage, false, "AutoAttack");
     }
     IEnumerator DestroyWithParticles()
     {
