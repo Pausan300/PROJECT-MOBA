@@ -361,8 +361,8 @@ public class ZappadasCharacterController : CharacterMaster
 
         for (int i = 0; i < m_ProjectilesCount; i++)
         {
-            Vector3 l_Position = transform.position + transform.forward * (m_DistanceProjectileSpawn/100);
-            l_Position.y += (m_OffsetYProjectileQ/100);
+            Vector3 l_Position = transform.position + transform.forward * (m_DistanceProjectileSpawn / 100);
+            l_Position.y += (m_OffsetYProjectileQ / 100);
 
             GameObject l_ActualProjectile = Instantiate(m_QProjectilePrefab, l_Position, Quaternion.identity, transform);
             l_ActualProjectile.GetComponent<ZappadasQProjectile>().SetSizeProjectil(m_ProjectileHitboxQ);
@@ -424,7 +424,7 @@ public class ZappadasCharacterController : CharacterMaster
                 l_Direccion = l_Direccion.normalized;
                 float l_Damage = (m_QSkill.GetAttribute("Daño base", GetQSkillLevel())) + (m_PercentageSkillPowerQ1 / 100) * GetCharacterStats().GetAbilityPower();
                 l_ActualProjectile.GetComponent<ZappadasQProjectile>().SetProjectile(l_Damage, m_ProjectileHitboxQ, m_RangeQ, m_ProjectileSpeedQ, l_Direccion, this);
-                
+
                 StopAttacking();
                 if (!GetIsLookingForPosition())
                     StopMovement();
@@ -624,7 +624,7 @@ public class ZappadasCharacterController : CharacterMaster
 
 
 
-        Vector3 l_Offset = transform.forward * (m_WWormholeStartPosOffset/100);
+        Vector3 l_Offset = transform.forward * (m_WWormholeStartPosOffset / 100);
         Vector3 l_SpawnPosition = transform.position + l_Offset;
         GameObject l_Wormhole = Instantiate(m_WWormholeStartPrefab, l_SpawnPosition, Quaternion.identity);
 
@@ -892,8 +892,8 @@ public class ZappadasCharacterController : CharacterMaster
     {
         if (!ignoreAdds)
         {
-            m_ESkill.SetCd(0);
-            m_CharacterStats.SetCurrentManaRpc(m_ESkill.GetAttribute("Maná recuperado por Mancha de la Oscuridad", GetESkillLevel()));
+            m_ESkill.SetTimer(0);
+            m_CharacterStats.SetCurrentManaRpc(m_CharacterStats.GetCurrentMana() + m_ESkill.GetAttribute("Maná recuperado por Mancha de la Oscuridad", GetESkillLevel()));
         }
 
         m_EnemysWithDarkE.Clear();
@@ -1021,7 +1021,9 @@ public class ZappadasCharacterController : CharacterMaster
             l_TargetPosition = transform.position + direction.normalized * m_RRange / 100;
         }
 
+        m_AbsorbedR = false;
         m_RProyectil = Instantiate(m_RProjectilPrefab, m_RProjectilSpawnPos.position, Quaternion.identity);
+        m_RProyectil.GetComponent<ZappadasRProjectil>().SetProjectil(this);
         m_RTargetPos = l_TargetPosition;
         m_RMove = true;
 
@@ -1034,7 +1036,7 @@ public class ZappadasCharacterController : CharacterMaster
         GetCharacterUI().HideCastingUI();
         m_RChanneling = false;
 
-        m_RMove = true;
+        m_RMove = true; 
     }
 
     void SpawnRSkill()
@@ -1044,7 +1046,27 @@ public class ZappadasCharacterController : CharacterMaster
         Destroy(m_RProyectil);
         EndRSkill();
     }
+    bool m_AbsorbedR = false;
+    public void RTriggerEnter(Collider OtherEntity)
+    {
+        if (OtherEntity.GetComponent<CharacterMaster>())
+            return;
 
+        if (OtherEntity.TryGetComponent(out ITakeDamage takeDamage))
+        {
+            m_RMove = false;
+            SpawnRSkill();
+        }
+
+        if (OtherEntity.GetComponent<ZappadasWWormhole>() && !m_AbsorbedR)
+        {
+            m_AbsorbedR = true;
+            Vector3 l_exitPos = OtherEntity.GetComponent<ZappadasWWormhole>().GetExitPos();
+            l_exitPos.y = m_RProyectil.transform.position.y;
+            m_RTargetPos = l_exitPos + OtherEntity.GetComponent<ZappadasWWormhole>().GetExitDir() * OtherEntity.GetComponent<ZappadasWWormhole>().GetExitRange() / 100;
+            m_RProyectil.transform.position = l_exitPos;
+        }
+    }
     void UpdateRSkill()
     {
         if (!m_RSkill.GetUsingSkill() && !m_RSkillStarted)
@@ -1070,6 +1092,7 @@ public class ZappadasCharacterController : CharacterMaster
                 SpawnRSkill();
             }
         }
+        
     }
     void EndRSkill()
     {
