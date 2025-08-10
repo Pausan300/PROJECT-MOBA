@@ -1762,12 +1762,12 @@ MonoBehaviour:
   m_PercentageAdditionalLifeWFirstJump: 5
   m_PercentageSlowsDownWFirstJump: 40
   m_TimeSlowsDownWFirstJump: 2
-  m_DamageRangeWFirstJump: 250
+  m_DamageRangeWFirstJump: 450
   m_PercentageSkillPowerWSecondJump: 30
   m_PercentageAdditionalLifeWSecondJump: 3
   m_PercentageSlowsDownWSecondJump: 30
   m_TimeSlowsDownWSecondJump: 2
-  m_DamageRangeWSecondJump: 250
+  m_DamageRangeWSecondJump: 350
   m_PercentageExtraCountdownW: 30
   m_HealingAreaEPrefab: {fileID: 6620525333772683988, guid: 02e54d4032ff1ad4faaf09f9f2ec28fe, type: 3}
   m_HealingTimes: 6

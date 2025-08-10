@@ -24,10 +24,6 @@ public class ShunsoRProjectile : NetworkBehaviour
     public event Action<GameObject> m_OnDamageEnemy;
 
     
-    void Start()
-    {
-    }
-
     void Update()
     {
         if(!m_StopTraveling && Vector3.Distance(transform.position, m_TargetPosition)>0.25)
