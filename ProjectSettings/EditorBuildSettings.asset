@@ -14,5 +14,8 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Testing_Oscar.unity
     guid: 4267456c80332504586f79351a0edc2d
+  - enabled: 1
+    path: Assets/Scenes/Testing_Paula.unity
+    guid: b9a546e406ed3954b89553f52909d0a6
   m_configObjects: {}
   m_UseUCBPForAssetBundles: 0
