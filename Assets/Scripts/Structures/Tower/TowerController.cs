@@ -13,12 +13,7 @@ public class TowerController : MonoBehaviour, ITakeDamageTower
     bool m_Untargetable;
 
     [Header("TYPE")]
-    public TowerType m_TowerType;
-    public enum TowerType
-    {
-        ALLY,
-        ENEMY
-    }
+    public CharacterStats.TeamType m_TowerType;
 
     [Header("CONNECTIONS")]
     public TowerController m_PreviousTower;
@@ -38,6 +33,7 @@ public class TowerController : MonoBehaviour, ITakeDamageTower
     public float m_TimeToHit;
     public float m_ProjectileExplosionRadius;
     public LayerMask m_DamageLayerMask;
+    public float m_AllyAttackedNearTowerRadius;
     float m_AttackCooldown;
     float m_AttackTimer;
 
@@ -99,7 +95,7 @@ public class TowerController : MonoBehaviour, ITakeDamageTower
         Vector3 l_TargetPos=new Vector3(m_CurrentTarget.transform.position.x, 0.0f, m_CurrentTarget.transform.position.z);
         l_ProjectileScript.SetStats(this, l_TargetPos, m_TimeToHit, m_TowerStats.GetAttackDamage(), m_ProjectileExplosionRadius);
     }
-    void GetClosestTarget() 
+    public void GetClosestTarget() 
     {
         float l_ClosestDist=0.0f;
         GameObject l_ClosestTarget=null;
@@ -115,11 +111,23 @@ public class TowerController : MonoBehaviour, ITakeDamageTower
         }
         m_CurrentTarget=l_ClosestTarget;
     }
+    bool CheckIsEnemy(CharacterStats.TeamType Type)
+    {
+        if((m_TowerType==CharacterStats.TeamType.ALLY && Type==CharacterStats.TeamType.ENEMY) || (m_TowerType==CharacterStats.TeamType.ENEMY && Type==CharacterStats.TeamType.ALLY))
+            return true;
+        else
+            return false;
+    }
+    public void SetTarget(GameObject Target) 
+    {
+        m_CurrentTarget=Target;
+    }
 
     private void OnTriggerEnter(Collider other)
     {
-        if(other.gameObject.TryGetComponent(out ITakeDamage Enemy)) 
+        if(other.gameObject.TryGetComponent(out ITakeDamage Enemy) && CheckIsEnemy(Enemy.GetCharacterStats().m_TeamType)) 
         {
+            Enemy.SetNearTower(this);
             m_TargetList.Add(other.gameObject);
 
             if(!m_CurrentTarget) 
@@ -131,8 +139,10 @@ public class TowerController : MonoBehaviour, ITakeDamageTower
     }
     private void OnTriggerExit(Collider other)
     {
-        if(other.gameObject.TryGetComponent(out ITakeDamage Enemy)) 
+        if(other.gameObject.TryGetComponent(out ITakeDamage Enemy) && CheckIsEnemy(Enemy.GetCharacterStats().m_TeamType)) 
         {
+            Enemy.SetNearTower(null);
+
             if(m_TargetList.Contains(other.gameObject))
                 m_TargetList.Remove(other.gameObject);
 
@@ -277,13 +287,5 @@ public class TowerController : MonoBehaviour, ITakeDamageTower
             m_IngameUI.m_IngameHealthBar.gameObject.SetActive(false);
         else
             m_IngameUI.m_IngameHealthBar.gameObject.SetActive(true);
-    }
-    public TowerType GetEnemyType()
-    {
-        return m_TowerType;
-    }
-    public void SetEnemyType(TowerType EnemyType)
-    {
-        m_TowerType = EnemyType;
     }
 }

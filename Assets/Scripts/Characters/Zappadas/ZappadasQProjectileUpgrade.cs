@@ -160,7 +160,7 @@ public class ZappadasQProjectileUpgrade : MonoBehaviour
                 l_Damage = m_Damage * (m_MaxBounces - m_Bounces);
 
             Debug.Log("TAKEN " + l_Damage + " DAMAGE");
-            Enemy.TakeDamage(0, l_Damage, false, m_CharacterStats.GetPlayerName());
+            Enemy.TakeDamage(0, l_Damage, false, m_CharacterStats.GetPlayerName(), m_CharacterController.gameObject);
             m_CharacterController.AddDarkPower(2);
         }
     }

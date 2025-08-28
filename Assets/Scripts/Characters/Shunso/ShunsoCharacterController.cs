@@ -213,7 +213,7 @@ public class ShunsoCharacterController : CharacterMaster
 			l_ProjectileNetwork.SpawnWithOwnership(GetComponent<NetworkObject>().OwnerClientId);
 			ShunsoWProjectile l_ProjectileScript=l_Projectile.GetComponent<ShunsoWProjectile>();
 			l_ProjectileScript.SetStats(this, m_WSkill.GetAttribute("Puntos de Vida Corrupta", GetWSkillLevel()), m_WSkill.GetAttribute("Daño de Vida Corrupta", GetWSkillLevel()),
-				m_WSkill.GetAttribute("Velocidad"), m_WSkill.GetAttribute("Ancho"), m_WSkill.GetAttribute("Rango"), l_Offset, l_Direction, m_ESkill.GetAttribute("Obtencion cargas"), 
+				m_WSkill.GetAttribute("Tiempo"), m_WSkill.GetAttribute("Ancho"), m_WSkill.GetAttribute("Rango"), l_Offset, l_Direction, m_ESkill.GetAttribute("Obtencion cargas"), 
 				m_ESkill.GetAttribute("Obtencion cargas contra sangre corrupta"));
 			l_ProjectileScript.m_EStacksOnHit+=GainEStacks;
 			l_ProjectileScript.m_OnDamageEnemy+=AddPassiveDebuffMark;
@@ -289,6 +289,7 @@ public class ShunsoCharacterController : CharacterMaster
 	}
 	IEnumerator RCastProjectile() 
 	{
+		base.RSkill();
 		StopAttacking();
 		StartCoroutine(DisableForDuration(m_RSkill.m_SkillDisabledTime));
 		SetAnimatorTrigger("IsUsingR");
@@ -322,7 +323,6 @@ public class ShunsoCharacterController : CharacterMaster
 			l_TargetPos, m_ESkill.GetAttribute("Obtencion cargas"), m_ESkill.GetAttribute("Obtencion cargas contra sangre corrupta"));
 		l_ProjectileScript.m_EStacksOnHit+=GainEStacks;
 		l_ProjectileScript.m_OnDamageEnemy+=AddPassiveDebuffMark;
-		base.RSkill();
 	}
 
     protected override void PerformRangedAutoAttack()

@@ -67,7 +67,7 @@ public class ShunsoRProjectile : NetworkBehaviour
 		{
             if(Entity.TryGetComponent(out ITakeDamage Enemy))
 	        {
-		        Enemy.TakeDamage(m_Damage+l_ExtraDamage, 0.0f, false, m_Player.m_CharacterStats.GetPlayerName());
+		        Enemy.TakeDamage(m_Damage+l_ExtraDamage, 0.0f, false, m_Player.m_CharacterStats.GetPlayerName(), m_Player.gameObject);
                 if(Enemy.GetCharacterStats().GetCorruptedHealth()>0.0f) 
                     m_EStacksOnHit?.Invoke(m_CorruptedCharges);
                 else

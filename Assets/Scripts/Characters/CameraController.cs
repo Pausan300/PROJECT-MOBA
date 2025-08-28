@@ -61,14 +61,24 @@ public class CameraController : MonoBehaviour
         else
         {
             if(Input.mousePosition.x<=m_WidthLimitOffset)
-                m_FreeCameraOffset.x-=m_CameraSpeed*Time.deltaTime;
+                m_FreeCameraOffset-=m_Camera.transform.right*m_CameraSpeed*Time.deltaTime;
             else if(Input.mousePosition.x>=Screen.width-m_WidthLimitOffset)
-                m_FreeCameraOffset.x+=m_CameraSpeed*Time.deltaTime;
+                m_FreeCameraOffset+=m_Camera.transform.right*m_CameraSpeed*Time.deltaTime;
 
-            if(Input.mousePosition.y<=m_HeightLimitOffset)
-                m_FreeCameraOffset.z-=m_CameraSpeed*Time.deltaTime;
-            else if(Input.mousePosition.y>=Screen.height-m_HeightLimitOffset)
-                m_FreeCameraOffset.z+=m_CameraSpeed*Time.deltaTime;
+            if(Input.mousePosition.y<=m_HeightLimitOffset) 
+            {
+                Vector3 l_Dir=m_Camera.transform.forward;
+                l_Dir.y=0.0f;
+                l_Dir.Normalize();
+                m_FreeCameraOffset-=l_Dir*m_CameraSpeed*Time.deltaTime;
+            }
+            else if(Input.mousePosition.y>=Screen.height-m_HeightLimitOffset) 
+            {
+                Vector3 l_Dir=m_Camera.transform.forward;
+                l_Dir.y=0.0f;
+                l_Dir.Normalize();
+                m_FreeCameraOffset+=l_Dir*m_CameraSpeed*Time.deltaTime;
+            }
 
             m_Camera.transform.position=m_FreeCameraOffset+m_ZoomOffset;
         }   

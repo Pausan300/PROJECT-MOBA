@@ -102,7 +102,7 @@ public class ShunsoQProjectile : NetworkBehaviour
                 StartCoroutine(StartSlash());
             if(other.TryGetComponent(out ITakeDamage Enemy))
 	        {
-		        Enemy.TakeDamage(m_Damage, 0.0f, false, m_Player.m_CharacterStats.GetPlayerName());
+		        Enemy.TakeDamage(m_Damage, 0.0f, false, m_Player.m_CharacterStats.GetPlayerName(), m_Player.gameObject);
                 if(Enemy.GetCharacterStats().GetCorruptedHealth()>0.0f) 
                     m_EStacksOnHit?.Invoke(m_CorruptedCharges);
                 else 

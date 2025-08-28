@@ -419,6 +419,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1998745109}
     - target: {fileID: 8547397904109592918, guid: 8f1e5844b2a86e842b4714027e909075, type: 3}
+      propertyPath: m_TowerType
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8547397904109592918, guid: 8f1e5844b2a86e842b4714027e909075, type: 3}
       propertyPath: m_PlatesParent
       value: 
       objectReference: {fileID: 0}
@@ -742,6 +746,10 @@ PrefabInstance:
       propertyPath: m_NextTower
       value: 
       objectReference: {fileID: 1130454075}
+    - target: {fileID: 8547397904109592918, guid: 8f1e5844b2a86e842b4714027e909075, type: 3}
+      propertyPath: m_TowerType
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8547397904109592918, guid: 8f1e5844b2a86e842b4714027e909075, type: 3}
       propertyPath: m_PlatesParent
       value: 
@@ -1782,6 +1790,10 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6675575882288059995, guid: 8f1e5844b2a86e842b4714027e909075, type: 3}
+      propertyPath: m_TagString
+      value: Structure
+      objectReference: {fileID: 0}
     - target: {fileID: 6768867126964464236, guid: 8f1e5844b2a86e842b4714027e909075, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -1804,6 +1816,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6768867126964464236, guid: 8f1e5844b2a86e842b4714027e909075, type: 3}
       propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8547397904109592918, guid: 8f1e5844b2a86e842b4714027e909075, type: 3}
+      propertyPath: m_TowerType
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8547397904109592918, guid: 8f1e5844b2a86e842b4714027e909075, type: 3}

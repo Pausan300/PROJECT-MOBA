@@ -35,12 +35,20 @@ public class TowerProjectile : MonoBehaviour
         Vector3 l_IndicatorPos=m_TargetPos;
         l_IndicatorPos.y+=0.1f;
         m_Area.transform.localPosition=transform.InverseTransformPoint(l_IndicatorPos);
-        m_Area.transform.rotation=new Quaternion(90.0f, 0.0f, 0.0f, 0.0f);
+        m_Area.transform.eulerAngles=new Vector3(90.0f, 0.0f, 0.0f);
         Collider[] l_HitColliders=Physics.OverlapSphere(m_TargetPos, m_ExplosionRadius/100.0f, m_Tower.m_DamageLayerMask);
         foreach(Collider Entity in l_HitColliders)
 		{
-            if(Entity.TryGetComponent(out ITakeDamage Target))
-		        Target.TakeDamage(m_Damage, 0.0f, false, "Tower");
+            if(Entity.TryGetComponent(out ITakeDamage Target) && CheckIsEnemy(Target.GetCharacterStats().m_TeamType)) 
+            {
+		        Target.TakeDamage(m_Damage, 0.0f, false, "Tower", gameObject);
+                if(Target.GetCharacterStats().GetCurrentHealth()<=0.0f && m_Tower.m_TargetList.Contains(Entity.gameObject)) 
+                {
+                    m_Tower.m_TargetList.Remove(Entity.gameObject);
+                    if(m_Tower.m_CurrentTarget==Entity.gameObject)
+                        m_Tower.GetClosestTarget();
+                }
+            }
         }
         yield return new WaitForSeconds(0.1f);
         Destroy(gameObject);
@@ -62,17 +70,11 @@ public class TowerProjectile : MonoBehaviour
         m_Area.gameObject.SetActive(false);
     }
 
-    //bool CheckIsEnemy(CharacterStats.EnemyType Type) 
-    //{
-    //    if(m_Tower.m_TowerType==TowerController.TowerType.ALLY) 
-    //    {
-    //        if(Type==CharacterStats.EnemyType.MINION)
-    //        return true;
-    //    }
-    //    else 
-    //    {
-    //        return true;
-    //    }
-    //}
-
+    bool CheckIsEnemy(CharacterStats.TeamType Type)
+    {
+        if((m_Tower.m_TowerType==CharacterStats.TeamType.ALLY && Type==CharacterStats.TeamType.ENEMY) || (m_Tower.m_TowerType==CharacterStats.TeamType.ENEMY && Type==CharacterStats.TeamType.ALLY))
+            return true;
+        else
+            return false;
+    }
 }

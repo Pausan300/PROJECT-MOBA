@@ -175,7 +175,7 @@ public class ZappadasRSkill : MonoBehaviour
 
 
                 Debug.Log("TAKEN " + l_Damage + " DAMAGE");
-                Enemy.TakeDamage(0, l_Damage, false, m_CharacterController.m_CharacterStats.GetPlayerName());
+                Enemy.TakeDamage(0, l_Damage, false, m_CharacterController.m_CharacterStats.GetPlayerName(), m_CharacterController.gameObject);
                 m_CharacterController.AddmDarkPowerDamageLightlessWithSkill(Entity.gameObject);
                 l_CollidersHit.Add(Entity);
 

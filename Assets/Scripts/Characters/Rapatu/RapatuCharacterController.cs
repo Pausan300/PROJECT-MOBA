@@ -444,7 +444,7 @@ public class RapatuCharacterController : CharacterMaster
 
                             float l_Damage = m_QSkill.GetAttribute("Daño base", GetQSkillLevel()) + (m_PercentageSkillPowerQ2 / 100f) * GetCharacterStats().GetAbilityPower();
                             Debug.Log($"{l_Enemy.name} recibe {l_Damage} de daño.");
-                            Enemy.TakeDamage(0, l_Damage, false, m_CharacterStats.GetPlayerName());
+                            Enemy.TakeDamage(0, l_Damage, false, m_CharacterStats.GetPlayerName(), gameObject);
                         }
 
                         if (l_Hit.collider.TryGetComponent(out ITakeDamage HitEnemy))
@@ -456,7 +456,7 @@ public class RapatuCharacterController : CharacterMaster
 
                             float l_Damage = m_QSkill.GetAttribute("Daño base", GetQSkillLevel()) + (m_PercentageSkillPowerQ2 / 100f) * GetCharacterStats().GetAbilityPower();
                             Debug.Log($"{l_Hit.collider.gameObject.name} recibe {l_Damage} de daño.");
-                            HitEnemy.TakeDamage(0, l_Damage, false, m_CharacterStats.GetPlayerName());
+                            HitEnemy.TakeDamage(0, l_Damage, false, m_CharacterStats.GetPlayerName(), gameObject);
                         }
 
                         l_HasHit = true;
@@ -667,7 +667,7 @@ public class RapatuCharacterController : CharacterMaster
                 }
                 float l_Damage = (m_QSkill.GetAttribute("Daño base", GetQSkillLevel())) + (m_PercentageSkillPowerQ1 / 100) * GetCharacterStats().GetAbilityPower();
                 Debug.Log("TAKEN " + l_Damage + " DAMAGE");
-                Enemy.TakeDamage(0, l_Damage, false, m_CharacterStats.GetPlayerName());
+                Enemy.TakeDamage(0, l_Damage, false, m_CharacterStats.GetPlayerName(), gameObject);
                 l_CollidersHit.Add(Entity);
                 m_EnemysTrappedQ.Add(Entity.gameObject);
             }
@@ -961,7 +961,7 @@ public class RapatuCharacterController : CharacterMaster
                     Buffs.AddBuff(m_WSlowsDownBuff.InitializeBuff(TimeSlowsDown, -PercentageSlowsDown, Entity.gameObject));
                 }
                 Debug.Log("TAKEN " + Damage + " DAMAGE");
-                Enemy.TakeDamage(0, Damage, false, m_CharacterStats.GetPlayerName());
+                Enemy.TakeDamage(0, Damage, false, m_CharacterStats.GetPlayerName(), gameObject);
                 l_CollidersHit.Add(Entity);
             }
         }

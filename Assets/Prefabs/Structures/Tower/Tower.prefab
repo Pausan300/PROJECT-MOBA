@@ -183,6 +183,7 @@ MonoBehaviour:
   m_DamageLayerMask:
     serializedVersion: 2
     m_Bits: 129
+  m_AllyAttackedNearTowerRadius: 1400
   m_TargetList: []
   m_CurrentTarget: {fileID: 0}
   m_IngameUI: {fileID: 156859580908383399}

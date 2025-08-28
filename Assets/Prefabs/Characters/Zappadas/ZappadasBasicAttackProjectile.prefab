@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 6374545359654186251}
   - component: {fileID: 6596897648689142183}
   m_Layer: 0
-  m_Name: ZappadasAAttackProjectile
+  m_Name: ZappadasBasicAttackProjectile
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -149,7 +149,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
-  m_TimeToReachTarget: 0.1
+  m_Speed: 1600
   m_ParticleSystem: {fileID: 6402279913768331146}
 --- !u!1 &3936880182541084953
 GameObject:

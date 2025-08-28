@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 1577408914865479921}
   - component: {fileID: -7629632946195671971}
   m_Layer: 0
-  m_Name: AAttackProjectile
+  m_Name: BasicAttackProjectile
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -126,5 +126,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
-  m_TimeToReachTarget: 0.1
+  m_Speed: 2000
   m_ParticleSystem: {fileID: 0}

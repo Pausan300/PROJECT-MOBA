@@ -18,6 +18,9 @@ public class CharacterUI : MonoBehaviour
 
     [Header("CHARACTER ICON")]
     public Image m_CharacterImage;
+    public Color m_DeadColor;
+    Color m_NormalColor;
+    public TextMeshProUGUI m_DeathTimerText;
 
     [Header("SKILLS")]
     public Image m_PSkillImage;
@@ -121,12 +124,15 @@ public class CharacterUI : MonoBehaviour
 
     private void Start()
     {
+        m_NormalColor=m_CharacterImage.color;
+
         HideSeconStatsPanel();
         HideCastingUI();
         HideCdTexts();
         HideTargetInfoUI();
         HidePopup();
         HideLoadsTexts();
+        HideDeathTimer();
     }
     private void Update()
     {
@@ -189,6 +195,10 @@ public class CharacterUI : MonoBehaviour
     {
         m_CastingBar.value = CurrentRecallTime / MaxRecallTime;
         m_CastingTimeText.text = CurrentRecallTime.ToString("f1");
+    }
+    public void UpdateDeathTimer(float Timer) 
+    {
+        m_DeathTimerText.text=Timer.ToString("f0");
     }
     public void UpdateTargetInfoUI(CharacterStats Stats)
     {
@@ -425,6 +435,16 @@ public class CharacterUI : MonoBehaviour
         m_WSkillLoadsText.enabled = false;
         m_ESkillLoadsText.enabled = false;
         m_RSkillLoadsText.enabled = false;
+    }
+    public void ShowDeathTimer() 
+    {
+        m_DeathTimerText.gameObject.SetActive(true);
+        m_CharacterImage.color=m_DeadColor;
+    }
+    public void HideDeathTimer() 
+    {
+        m_DeathTimerText.gameObject.SetActive(false);
+        m_CharacterImage.color=m_NormalColor;
     }
     public void ShowLevelUpSkillButtons()
     {

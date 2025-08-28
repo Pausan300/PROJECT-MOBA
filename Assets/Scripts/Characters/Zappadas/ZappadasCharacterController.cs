@@ -454,7 +454,7 @@ public class ZappadasCharacterController : CharacterMaster
                 {
                     float l_Damage = (m_QSkill.GetAttribute("Daño base", GetQSkillLevel())) + (m_PercentageSkillPowerQ1 / 100) * GetCharacterStats().GetAbilityPower();
                     Debug.Log("TAKEN " + l_Damage + " DAMAGE");
-                    Enemy.TakeDamage(0, l_Damage, false, m_CharacterStats.GetPlayerName());
+                    Enemy.TakeDamage(0, l_Damage, false, m_CharacterStats.GetPlayerName(), gameObject);
                     AddmDarkPowerDamageLightlessWithSkill(Entity.gameObject);
                     l_CollidersHit.Add(Entity);
                 }
@@ -830,7 +830,7 @@ public class ZappadasCharacterController : CharacterMaster
                 }
                 float l_Damage = (m_ESkill.GetAttribute("Daño base", GetESkillLevel())) + (m_PercentageSkillPowerE / 100) * GetCharacterStats().GetAbilityPower();
                 Debug.Log("TAKEN " + l_Damage + " DAMAGE");
-                Enemy.TakeDamage(0, l_Damage, false, m_CharacterStats.GetPlayerName());
+                Enemy.TakeDamage(0, l_Damage, false, m_CharacterStats.GetPlayerName(), gameObject);
                 AddmDarkPowerDamageLightlessWithSkill(Entity.gameObject);
                 l_CollidersHit.Add(Entity);
                 if (ballNum == 1)

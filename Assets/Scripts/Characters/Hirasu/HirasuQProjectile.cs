@@ -61,7 +61,7 @@ public class HirasuQProjectile : NetworkBehaviour
         {
             if(other.TryGetComponent(out ITakeDamage Enemy))
 			{
-				Enemy.TakeDamage(m_Damage+m_ExtraPhysDamage, m_ExtraMagicDamage, false, m_Player.m_CharacterStats.GetPlayerName());
+				Enemy.TakeDamage(m_Damage+m_ExtraPhysDamage, m_ExtraMagicDamage, false, m_Player.m_CharacterStats.GetPlayerName(), m_Player.gameObject);
 
                 if(m_SplintersLeft>0) 
                 {

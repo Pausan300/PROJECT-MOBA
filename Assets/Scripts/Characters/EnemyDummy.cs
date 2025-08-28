@@ -31,6 +31,9 @@ public class EnemyDummy : NetworkBehaviour, ITakeDamage
     bool m_MoveToPoint;
     Transform m_TargetPoint;
 
+    
+    TowerController m_EnemyTower;
+
     private void Awake()
     {
         m_CharacterStats.SetEnemyType(m_EnemyType);
@@ -137,7 +140,7 @@ public class EnemyDummy : NetworkBehaviour, ITakeDamage
         foreach (Collider Entity in l_HitColliders)
         {
             if (Entity.TryGetComponent(out ITakeDamage Enemy))
-                Enemy.TakeDamage(m_CharacterStats.GetAttackDamage(), m_CharacterStats.GetAbilityPower(), false, "PracticeDummy");
+                Enemy.TakeDamage(m_CharacterStats.GetAttackDamage(), m_CharacterStats.GetAbilityPower(), false, "PracticeDummy", gameObject);
         }
         m_CharacterStats.SetCurrentManaRpc(m_CharacterStats.GetCurrentMana() - 10.0f);
         m_ShowGizmos = true;
@@ -152,7 +155,7 @@ public class EnemyDummy : NetworkBehaviour, ITakeDamage
             Gizmos.DrawSphere(transform.position, m_AttackRadius / 100.0f);
         }
     }
-    public void TakeDamage(float PhysDamage, float MagicDamage, bool IgnoreResistances, string SourceId)
+    public void TakeDamage(float PhysDamage, float MagicDamage, bool IgnoreResistances, string SourceId, GameObject SourceObject)
     {
         float l_TotalPhysDamage=PhysDamage;
         float l_TotalMagicDamage=MagicDamage;
@@ -163,6 +166,11 @@ public class EnemyDummy : NetworkBehaviour, ITakeDamage
         }
         UpdateCurrentHealthRpc(l_TotalPhysDamage + l_TotalMagicDamage, true);
         m_IngameUI.AddDamageInstance(l_TotalPhysDamage, l_TotalMagicDamage, SourceId);
+
+        if(SourceObject.TryGetComponent(out ITakeDamage Enemy) && Enemy.GetCharacterStats().m_TeamType==TeamType.ALLY && Enemy.GetNearTower()) 
+        {
+            Enemy.GetNearTower().SetTarget(SourceObject);
+        }
     }
     public void OnDeath()
     {
@@ -231,7 +239,15 @@ public class EnemyDummy : NetworkBehaviour, ITakeDamage
         m_CharacterStats.SetArmor(m_CharacterStats.GetArmor() + 10.0f);
         m_CharacterStats.SetMagicRes(m_CharacterStats.GetMagicRes() + 10.0f);
     }
-
+    
+    public TowerController GetNearTower() 
+    {
+        return m_EnemyTower;
+    }
+    public void SetNearTower(TowerController Tower) 
+    {
+        m_EnemyTower=Tower;
+    }
 
     public CharacterStats GetCharacterStats()
     {

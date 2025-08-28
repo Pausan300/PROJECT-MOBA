@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 75660bcf83fc7884a9f9daa7109d1cc3, type: 3}
+  m_Name: EnemyMinionStats
+  m_EditorClassIdentifier: 
+  m_PlayerName: EnemyMinion
+  m_CharacterIcon: {fileID: 21300000, guid: 5b8ef44a783922d4ca52dd8c87714abd, type: 3}
+  m_BaseHealth: 350
+  m_BaseMana: 0
+  m_BaseAttackDamage: 18
+  m_BaseAttackSpeed: 0.8
+  m_BaseArmor: 0
+  m_BaseMagicResist: 0
+  m_BaseHealthRegen: 0
+  m_BaseManaRegen: 0
+  m_AttackRange: 150
+  m_BaseMovementSpeed: 325
+  m_HealthPerLevel: 50
+  m_ManaPerLevel: 0
+  m_AttackDamagePerLevel: 2
+  m_AttackSpeedPerLevel: 0
+  m_ArmorPerLevel: 0
+  m_MagicResistPerLevel: 0
+  m_HealthRegenPerLevel: 0
+  m_ManaRegenPerLevel: 0
+  m_ExpPerLevel: []

@@ -71,16 +71,16 @@ MonoBehaviour:
     m_ValueFormat: 
     m_LevelScaling:
     - 25
-  - m_AttributeId: Velocidad
+  - m_AttributeId: Tiempo
     m_ShowScalingInPopup: 0
     m_ValueFormat: 
     m_LevelScaling:
-    - 3000
+    - 0.35
   - m_AttributeId: Separacion
     m_ShowScalingInPopup: 0
     m_ValueFormat: 
     m_LevelScaling:
-    - 1
+    - 0.75
   m_DescriptionDamageList:
   - m_DescriptionId: X
     m_Color: 0

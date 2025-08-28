@@ -53,6 +53,14 @@ public class CharacterStats : NetworkBehaviour
     float m_CorruptedHealth;
     float m_CorruptedHealthDamage;
 
+    [Header("TEAM")]
+    public TeamType m_TeamType;
+    public enum TeamType 
+    {
+        ENEMY,
+        ALLY
+    }
+
     [Header("Enemys")]
     EnemyType m_EnemyType;
     public enum EnemyType

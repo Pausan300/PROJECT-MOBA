@@ -11,8 +11,7 @@ public class RangedAutoAttack : NetworkBehaviour
     Transform m_Target;
     float m_PhysicDamage;
     float m_MagicDamage;
-    float m_Speed;
-    public float m_TimeToReachTarget;
+    public float m_Speed;
     public ParticleSystem m_ParticleSystem;
     float m_TimeToDestroyWithParticle = 5;
     bool m_DamageDone = false;
@@ -26,7 +25,7 @@ public class RangedAutoAttack : NetworkBehaviour
             return;
         }
 
-        transform.position = Vector3.MoveTowards(transform.position, m_Target.position, m_Speed * Time.deltaTime);
+        transform.position = Vector3.MoveTowards(transform.position, m_Target.position, (m_Speed/100.0f) * Time.deltaTime);
         if (!m_DamageDone)
         {
             if (Vector3.Distance(transform.position, m_Target.position) <= 0.005f)
@@ -50,7 +49,7 @@ public class RangedAutoAttack : NetworkBehaviour
     }
     protected virtual void DamageEnemy(ITakeDamage Enemy) 
     {
-        Enemy.TakeDamage(m_PhysicDamage, m_MagicDamage, false, "AutoAttack");
+        Enemy.TakeDamage(m_PhysicDamage, m_MagicDamage, false, "AutoAttack", m_CharacterMaster.gameObject);
         m_OnHitEffects?.Invoke(m_Target.gameObject);
     }
     void DamageTower(ITakeDamageTower Tower) 
@@ -72,7 +71,5 @@ public class RangedAutoAttack : NetworkBehaviour
         m_Target = Target;
         m_PhysicDamage = PhysDamage;
         m_MagicDamage = MagicDamage;
-        float l_DistanceToTarget = (m_Target.position - transform.position).magnitude;
-        m_Speed = l_DistanceToTarget / m_TimeToReachTarget;
     }
 }

@@ -16,6 +16,12 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
     Animator m_CharacterAnimator;
     AudioSource m_AudioSource;
     GameManager m_GameManager;
+    Rigidbody m_RigidBody;
+
+    [Header("3D MODEL AND COLLIDERS")]
+    public GameObject m_CharacterModel;
+    public Collider m_SelectHitbox;
+    Collider m_CharacterHitbox;
 
     [Header("CAMERA")]
     public GameObject m_CameraPrefab;
@@ -34,8 +40,11 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
     [Header("CHARACTER STATS")]
     public CharacterStats m_CharacterStats;
 
-    [Header("RECALL")]
+    [Header("RECALL AND DEATH")]
     public float m_RecallTime;
+    public float m_RespawnTime;
+    float m_DeathTimer;
+    bool m_Dead;
     public Transform m_RecallTpPoint;
     float m_CurrentRecallTime;
     bool m_Recalling;
@@ -51,6 +60,9 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
     GameObject m_LastAutoAttackedEnemy;
     public float m_TimeSinceLastAuto;
     float m_AttackAnimLength;
+
+    public event Action<GameObject> m_ProvokeTurretEvent;
+    public TowerController m_EnemyTower;
 
     [Header("SUMMONERS")]
     public Summoner m_SummSpell1;
@@ -157,6 +169,8 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
 
         m_SkillIndicatorUI.SetPlayer(this);
 
+        m_RigidBody=GetComponent<Rigidbody>();
+        m_CharacterHitbox=GetComponent<CapsuleCollider>();
         m_CharacterAnimator = GetComponent<Animator>();
         m_AudioSource = GetComponent<AudioSource>();
         AnimationClip[] l_Clips = m_CharacterAnimator.runtimeAnimatorController.animationClips;
@@ -213,6 +227,23 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
             return;
         }
 
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            if (!m_OptionsUI.gameObject.activeSelf)
+                m_OptionsUI.ShowOptionsUI();
+            else
+                m_OptionsUI.HideOptionsUI();
+        }
+
+        if(m_Dead) 
+        {
+            m_DeathTimer-=Time.deltaTime;
+            m_CharacterUI.UpdateDeathTimer(m_DeathTimer);
+            if(m_DeathTimer<=0.0f)
+                Respawn();
+            return;
+        }
+
         if(Input.GetKeyDown(KeyCode.S)) 
         {
             StopAttacking();
@@ -263,14 +294,6 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
 
         if (m_CharacterStats.GetCurrentLevel() < 18)
             m_CharacterUI.UpdateExpBar(m_CharacterStats.GetCurrentExp(), m_CharacterStats.m_CharacterBaseStats.m_ExpPerLevel[m_CharacterStats.GetCurrentLevel()]);
-
-        if (Input.GetKeyDown(KeyCode.Escape))
-        {
-            if (!m_OptionsUI.gameObject.activeSelf)
-                m_OptionsUI.ShowOptionsUI();
-            else
-                m_OptionsUI.HideOptionsUI();
-        }
     }
     [Rpc(SendTo.Everyone)]
     public void UpdateIngameBarsRpc()
@@ -1091,7 +1114,8 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
         m_IngameCharacterUI.UpdateCharacterLevel(m_CharacterStats.GetCurrentLevel());
         m_IngameCharacterUI.SetPlayerName(m_CharacterStats.GetPlayerName());
     }
-    public void TakeDamage(float PhysDamage, float MagicDamage, bool IgnoreResistances, string SourceId)
+   
+    public void TakeDamage(float PhysDamage, float MagicDamage, bool IgnoreResistances, string SourceId, GameObject SourceObject)
     {
         if (GetCharacterStats().GetImmuneCC())
             return;
@@ -1106,7 +1130,44 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
         if (m_CurrentRecallTime > 0.2f)
             StopRecall();
         m_IngameCharacterUI.AddDamageInstance(l_TotalPhysDamage, l_TotalMagicDamage, SourceId);
+
+        if(SourceObject.TryGetComponent(out ITakeDamage Enemy) && Enemy.GetCharacterStats().GetEnemyType()==CharacterStats.EnemyType.LIGHTLESS && Enemy.GetNearTower()) 
+        {
+            if(Vector3.Distance(transform.position, Enemy.GetNearTower().transform.position)<=(Enemy.GetNearTower().m_AllyAttackedNearTowerRadius/100.0f))
+                Enemy.GetNearTower().SetTarget(SourceObject);
+        }
+
+        if(m_CharacterStats.GetCurrentHealth()<=0.0f)
+            Die();
     }
+    public void Die() 
+    {
+        m_Dead=true;
+        m_DeathTimer=m_RespawnTime;
+        m_CharacterUI.ShowDeathTimer();
+
+        m_CharacterHitbox.enabled=false;
+        m_SelectHitbox.gameObject.SetActive(false);
+        m_CharacterModel.SetActive(false);
+        m_IngameCharacterUI.gameObject.SetActive(false);
+        m_IngameCharacterUI.m_DamageInstanceList.Clear();
+    }
+    void Respawn() 
+    {
+        m_Dead=false;
+        m_CharacterUI.HideDeathTimer();
+
+        m_CharacterHitbox.enabled=true;
+        m_SelectHitbox.gameObject.SetActive(true);
+        m_CharacterModel.SetActive(true);
+        m_IngameCharacterUI.gameObject.SetActive(true);
+
+        m_CharacterStats.SetCurrentHealthRpc(m_CharacterStats.GetMaxHealth());
+        m_CharacterStats.SetCurrentManaRpc(m_CharacterStats.GetMaxMana());
+
+        transform.position=m_RecallTpPoint.position;
+    }
+
     public void AddHealth(float HealthToAdd)
     {
         if (m_CharacterStats.GetMaxHealth() == m_CharacterStats.GetCurrentHealth())
@@ -1168,7 +1229,7 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
 //        m_TimeSinceLastAuto = 0.0f;
 //#endif
         if(m_DesiredEnemy.TryGetComponent(out ITakeDamage Enemy))
-            Enemy.TakeDamage(m_CharacterStats.GetAttackDamage(), m_CharacterStats.GetAbilityPower(), false, m_CharacterStats.GetPlayerName());
+            Enemy.TakeDamage(m_CharacterStats.GetAttackDamage(), m_CharacterStats.GetAbilityPower(), false, m_CharacterStats.GetPlayerName(), gameObject);
         else if(m_DesiredEnemy.TryGetComponent(out ITakeDamageTower Tower))
             Tower.TakeDamage(m_CharacterStats.GetAttackDamage(), m_CharacterStats.GetAbilityPower(), false, m_CharacterStats.GetPlayerName());
     }
@@ -1193,7 +1254,6 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
     {
 
     }
-
 
     //GETTERS & SETTERS
     public GameManager GetGameManager()
@@ -1376,5 +1436,13 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
         }
         else
             m_RSkill.SetCooldown(m_RSkillLevel);
+    } 
+    public TowerController GetNearTower() 
+    {
+        return m_EnemyTower;
+    }
+    public void SetNearTower(TowerController Tower) 
+    {
+        m_EnemyTower=Tower;
     }
 }
