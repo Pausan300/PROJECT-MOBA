@@ -182,6 +182,9 @@
         },
         {
             "m_Id": "5fd344aa5f6e4c488fde34ff10779165"
+        },
+        {
+            "m_Id": "478d45571f4a485f97a0dde23bcefde8"
         }
     ],
     "m_GroupDatas": [
@@ -940,6 +943,9 @@
             },
             {
                 "m_Id": "6a24f953b26b48dd9186892e2ccdeaf1"
+            },
+            {
+                "m_Id": "478d45571f4a485f97a0dde23bcefde8"
             }
         ]
     },
@@ -951,7 +957,7 @@
         "preventRotation": false
     },
     "m_Path": "Shader Graphs",
-    "m_GraphPrecision": 1,
+    "m_GraphPrecision": 0,
     "m_PreviewMode": 2,
     "m_OutputNode": {
         "m_Id": ""
@@ -1141,8 +1147,8 @@
     "m_ActiveSubTarget": {
         "m_Id": "9c437da1ae01432e9995d51edc378f49"
     },
-    "m_AllowMaterialOverride": false,
-    "m_SurfaceType": 1,
+    "m_AllowMaterialOverride": true,
+    "m_SurfaceType": 0,
     "m_ZTestMode": 8,
     "m_ZWriteControl": 0,
     "m_AlphaMode": 1,
@@ -1819,6 +1825,21 @@
 {
     "m_SGVersion": 0,
     "m_Type": "UnityEditor.ShaderGraph.Vector1MaterialSlot",
+    "m_ObjectId": "298e8714f37744e5acfe8f81565e20f7",
+    "m_Id": 0,
+    "m_DisplayName": "Alpha Clip Threshold",
+    "m_SlotType": 0,
+    "m_Hidden": false,
+    "m_ShaderOutputName": "AlphaClipThreshold",
+    "m_StageCapability": 2,
+    "m_Value": 0.5,
+    "m_DefaultValue": 0.5,
+    "m_Labels": []
+}
+
+{
+    "m_SGVersion": 0,
+    "m_Type": "UnityEditor.ShaderGraph.Vector1MaterialSlot",
     "m_ObjectId": "2a9302b20fc84b0c9d702b82717b9041",
     "m_Id": 0,
     "m_DisplayName": "Alpha",
@@ -2483,6 +2504,40 @@
     "m_Value": 0.0,
     "m_DefaultValue": 0.0,
     "m_Labels": []
+}
+
+{
+    "m_SGVersion": 0,
+    "m_Type": "UnityEditor.ShaderGraph.BlockNode",
+    "m_ObjectId": "478d45571f4a485f97a0dde23bcefde8",
+    "m_Group": {
+        "m_Id": ""
+    },
+    "m_Name": "SurfaceDescription.AlphaClipThreshold",
+    "m_DrawState": {
+        "m_Expanded": true,
+        "m_Position": {
+            "serializedVersion": "2",
+            "x": 0.0,
+            "y": 0.0,
+            "width": 0.0,
+            "height": 0.0
+        }
+    },
+    "m_Slots": [
+        {
+            "m_Id": "298e8714f37744e5acfe8f81565e20f7"
+        }
+    ],
+    "synonyms": [],
+    "m_Precision": 0,
+    "m_PreviewExpanded": true,
+    "m_DismissedVersion": 0,
+    "m_PreviewMode": 0,
+    "m_CustomColors": {
+        "m_SerializableColors": []
+    },
+    "m_SerializedDescriptor": "SurfaceDescription.AlphaClipThreshold"
 }
 
 {
@@ -3260,10 +3315,10 @@
         "m_Expanded": true,
         "m_Position": {
             "serializedVersion": "2",
-            "x": 1002.0,
-            "y": 904.9999389648438,
-            "width": 208.0,
-            "height": 277.99993896484377
+            "x": 1006.0000610351563,
+            "y": 901.0,
+            "width": 208.00006103515626,
+            "height": 278.0
         }
     },
     "m_Slots": [
@@ -3298,9 +3353,9 @@
         "m_Expanded": true,
         "m_Position": {
             "serializedVersion": "2",
-            "x": -1586.9998779296875,
-            "y": 899.9999389648438,
-            "width": 124.0001220703125,
+            "x": -1573.0001220703125,
+            "y": 922.0000610351563,
+            "width": 124.0,
             "height": 172.99993896484376
         }
     },
@@ -3749,13 +3804,13 @@
             "m_Id": "e3eac4423cf34c5980fd157262ac5857"
         },
         {
+            "m_Id": "e609135146db437481ae2e3fc7e6e165"
+        },
+        {
             "m_Id": "adfd7b3c087f4a79905175a23f679aab"
         },
         {
             "m_Id": "8fe2b53311d74d5daa609cd973d8bd67"
-        },
-        {
-            "m_Id": "e609135146db437481ae2e3fc7e6e165"
         }
     ]
 }
@@ -4735,7 +4790,7 @@
     "m_Type": "UnityEditor.ShaderGraph.Vector4MaterialSlot",
     "m_ObjectId": "ae539c30c14945f8bb02eae20e92d5e7",
     "m_Id": 0,
-    "m_DisplayName": "Color",
+    "m_DisplayName": "Color Medio",
     "m_SlotType": 1,
     "m_Hidden": false,
     "m_ShaderOutputName": "Out",
@@ -5492,7 +5547,7 @@
     "m_RefNameGeneratedByDisplayName": "UV_Main",
     "m_DefaultReferenceName": "_UV_Main",
     "m_OverrideReferenceName": "",
-    "m_GeneratePropertyBlock": true,
+    "m_GeneratePropertyBlock": false,
     "m_UseCustomSlotLabel": false,
     "m_CustomSlotLabel": "",
     "m_DismissedVersion": 0,
@@ -5818,7 +5873,7 @@
     "m_RefNameGeneratedByDisplayName": "Speed_Scondary",
     "m_DefaultReferenceName": "_Speed_Scondary",
     "m_OverrideReferenceName": "",
-    "m_GeneratePropertyBlock": true,
+    "m_GeneratePropertyBlock": false,
     "m_UseCustomSlotLabel": false,
     "m_CustomSlotLabel": "",
     "m_DismissedVersion": 0,
@@ -5826,7 +5881,7 @@
     "overrideHLSLDeclaration": false,
     "hlslDeclarationOverride": 0,
     "m_Hidden": false,
-    "m_Value": 0.20000000298023225,
+    "m_Value": 1.0,
     "m_FloatType": 0,
     "m_RangeValues": {
         "x": 0.0,
@@ -5841,7 +5896,7 @@
     "m_Title": "Noise Offset",
     "m_Position": {
         "x": -1897.0,
-        "y": -1964.0003662109375
+        "y": -1964.0
     }
 }
 
@@ -6019,10 +6074,10 @@
     "m_Guid": {
         "m_GuidSerialized": "c25c7a5b-51fa-43b8-868c-b9fe4b98a33e"
     },
-    "m_Name": "Color",
+    "m_Name": "Color Medio",
     "m_DefaultRefNameVersion": 1,
-    "m_RefNameGeneratedByDisplayName": "Color",
-    "m_DefaultReferenceName": "_Color",
+    "m_RefNameGeneratedByDisplayName": "Color Medio",
+    "m_DefaultReferenceName": "_Color_Medio",
     "m_OverrideReferenceName": "",
     "m_GeneratePropertyBlock": true,
     "m_UseCustomSlotLabel": false,

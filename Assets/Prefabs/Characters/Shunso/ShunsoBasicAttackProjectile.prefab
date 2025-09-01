@@ -76,7 +76,7 @@ PrefabInstance:
       objectReference: {fileID: 2100000, guid: 3ea2e59d181ffce4e97d5d1d07a22c05, type: 2}
     - target: {fileID: 1577408914865479921, guid: ce63752ec0f8d7c4995c38697e107df6, type: 3}
       propertyPath: GlobalObjectIdHash
-      value: 1797605868
+      value: 4237880398
       objectReference: {fileID: 0}
     - target: {fileID: 4883882740206666755, guid: ce63752ec0f8d7c4995c38697e107df6, type: 3}
       propertyPath: m_LocalScale.x
@@ -172,5 +172,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
-  m_Speed: 2000
+  m_Speed: 200
   m_ParticleSystem: {fileID: 0}
