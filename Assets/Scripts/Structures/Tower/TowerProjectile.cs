@@ -41,7 +41,13 @@ public class TowerProjectile : MonoBehaviour
 		{
             if(Entity.TryGetComponent(out ITakeDamage Target) && CheckIsEnemy(Target.GetCharacterStats().m_TeamType)) 
             {
-		        Target.TakeDamage(m_Damage, 0.0f, false, "Tower", gameObject);
+                if(Target.GetCharacterStats().GetEnemyType()==CharacterStats.EnemyType.MINION) 
+                {
+                    MinionController l_Minion=Entity.GetComponent<MinionController>();
+		            Target.TakeDamage(Target.GetCharacterStats().GetMaxHealth()*l_Minion.m_TowerDamagePct, 0.0f, false, "Tower", gameObject);
+                }
+                else
+		            Target.TakeDamage(m_Damage, 0.0f, false, "Tower", gameObject);
                 if(Target.GetCharacterStats().GetCurrentHealth()<=0.0f && m_Tower.m_TargetList.Contains(Entity.gameObject)) 
                 {
                     m_Tower.m_TargetList.Remove(Entity.gameObject);

@@ -10,20 +10,11 @@ public class GameManager : NetworkBehaviour
     private NetworkVariable<float> m_GameTimer = new NetworkVariable<float>();
     bool m_GameStarted;
 
-    //PASAR ESTO A SU PROPIO SCRIPT DE SPAWNEO DE ENEMIGOS
-    [Header("ENEMY SPAWNING")]
-    public GameObject m_EnemyPrefab;
-    public List<Transform> m_EnemySpawnPoints;
-    public List<Transform> m_EnemyTargetPoints;
-    public int m_EnemyQuantity;
-    public float m_TimeBetweenWaves;
-    float m_LastSpawnedWaveTime;
-    //
-
     [Header("SCENE ACTORS LISTS")]
     List<CharacterMaster> m_CharactersList = new List<CharacterMaster>();
-    List<EnemyDummy> m_EnemiesList = new List<EnemyDummy>();
-    List<TowerController> m_Towers=new List<TowerController>();
+    List<EnemyDummy> m_DummiesList = new List<EnemyDummy>();
+    List<MinionController> m_MinionsList = new List<MinionController>();
+    List<TowerController> m_TowersList=new List<TowerController>();
 
 
     void Awake()
@@ -32,7 +23,7 @@ public class GameManager : NetworkBehaviour
             m_GameManagerInstance = this;
 
         foreach(TowerController Tower in FindObjectsByType<TowerController>(FindObjectsSortMode.None))
-            m_Towers.Add(Tower);
+            m_TowersList.Add(Tower);
     }
     void Update()
     {
@@ -44,39 +35,7 @@ public class GameManager : NetworkBehaviour
         if (m_GameStarted)
         {
             m_GameTimer.Value += Time.deltaTime;
-            if (m_GameTimer.Value - m_LastSpawnedWaveTime >= m_TimeBetweenWaves)
-            {
-                m_LastSpawnedWaveTime = m_GameTimer.Value;
-                StartCoroutine(SpawnEnemies());
-            }
         }
-    }
-
-    IEnumerator SpawnEnemies()
-    {
-        int l_Point = 0;
-        for (int i = 0; i < m_EnemyQuantity; ++i)
-        {
-            SetupEnemyRpc(l_Point);
-            l_Point++;
-            if (l_Point >= m_EnemySpawnPoints.Count)
-                l_Point = 0;
-            yield return new WaitForSeconds(0.5f);
-        }
-    }
-    [Rpc(SendTo.Everyone)]
-    void SetupEnemyRpc(int Index)
-    {
-        if (!IsSpawned || !HasAuthority)
-        {
-            return;
-        }
-
-        GameObject l_Enemy = Instantiate(m_EnemyPrefab, m_EnemySpawnPoints[Index].position + new Vector3(0.0f, 1.0f, 0.0f), m_EnemyPrefab.transform.rotation);
-        EnemyDummy l_EnemyScript = l_Enemy.GetComponent<EnemyDummy>();
-        l_EnemyScript.SetMovement(true);
-        l_EnemyScript.SetMovementTarget(m_EnemyTargetPoints[Index]);
-        l_Enemy.GetComponent<NetworkObject>().Spawn();
     }
 
     public void AddToPlayerList(CharacterMaster Player)
@@ -88,27 +47,25 @@ public class GameManager : NetworkBehaviour
     {
         return m_CharactersList;
     }
-
-    public void AddToEnemyList(EnemyDummy Enemy)
-    {
-        m_EnemiesList.Add(Enemy);
-        //Enemy.SetIngameUICamera(m_CharactersList[0].GetCameraController());
-    }
-    public List<EnemyDummy> GetEnemiesList()
-    {
-        m_EnemiesList.RemoveAll(e => e == null || e.gameObject == null);
-        return m_EnemiesList;
-    }
-
     void StartGame() 
     {
         if(m_GameStarted)
             return;
         m_GameStarted = true;
-        foreach(TowerController Tower in m_Towers)
+        foreach(TowerController Tower in m_TowersList)
             Tower.m_IngameUI.SetCameraController(m_CharactersList[0].GetCameraController());
     }
 
+    public void AddToEnemyList(EnemyDummy Enemy)
+    {
+        m_DummiesList.Add(Enemy);
+        //Enemy.SetIngameUICamera(m_CharactersList[0].GetCameraController());
+    }
+    public List<EnemyDummy> GetEnemiesList()
+    {
+        m_DummiesList.RemoveAll(e => e == null || e.gameObject == null);
+        return m_DummiesList;
+    }
 
     public float GetGameTimer()
     {

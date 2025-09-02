@@ -208,7 +208,7 @@ public class ShunsoCharacterController : CharacterMaster
 		float l_Offset=-m_WSkill.GetAttribute("Separacion")*2.0f;
 		for(int i=0; i<5; ++i) 
 		{
-			GameObject l_Projectile=Instantiate(m_WProjectile, transform.position, m_WProjectile.transform.rotation);
+			GameObject l_Projectile=Instantiate(m_WProjectile, transform.position+Vector3.up, m_WProjectile.transform.rotation);
 			NetworkObject l_ProjectileNetwork=l_Projectile.GetComponent<NetworkObject>();
 			l_ProjectileNetwork.SpawnWithOwnership(GetComponent<NetworkObject>().OwnerClientId);
 			ShunsoWProjectile l_ProjectileScript=l_Projectile.GetComponent<ShunsoWProjectile>();

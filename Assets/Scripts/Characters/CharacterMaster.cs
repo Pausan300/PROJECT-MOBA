@@ -156,7 +156,7 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
 
         m_IngameCharacterUI.SetCameraController(m_CharacterCamera);
 
-        m_RecallTpPoint = GameObject.Find("AllySpawnPoint").transform;
+        m_RecallTpPoint = GameObject.Find("CharacterSpawnPoint").transform;
         transform.position=m_RecallTpPoint.position;
 
         if (!IsSpawned || !HasAuthority)

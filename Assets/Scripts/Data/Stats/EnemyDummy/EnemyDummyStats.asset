@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: EnemyDummyStats
   m_EditorClassIdentifier: 
   m_PlayerName: EnemyDummy
+  m_CharacterIcon: {fileID: 0}
   m_BaseHealth: 500
   m_BaseMana: 200
   m_BaseAttackDamage: 100
@@ -22,7 +23,7 @@ MonoBehaviour:
   m_BaseHealthRegen: 0
   m_BaseManaRegen: 0
   m_AttackRange: 0
-  m_BaseMovementSpeed: 100
+  m_BaseMovementSpeed: 325
   m_HealthPerLevel: 0
   m_ManaPerLevel: 0
   m_AttackDamagePerLevel: 0

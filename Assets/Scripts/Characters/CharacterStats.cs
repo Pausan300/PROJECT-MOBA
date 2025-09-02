@@ -62,7 +62,7 @@ public class CharacterStats : NetworkBehaviour
     }
 
     [Header("Enemys")]
-    EnemyType m_EnemyType;
+    public EnemyType m_EnemyType;
     public enum EnemyType
     {
         LARGEMONSTER,

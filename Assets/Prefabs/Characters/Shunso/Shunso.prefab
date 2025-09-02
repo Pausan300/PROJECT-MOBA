@@ -2572,7 +2572,7 @@ Transform:
   m_GameObject: {fileID: 8207142013517453575}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -5.2, y: 0, z: -1.88}
+  m_LocalPosition: {x: -5.2, y: 0.1, z: -1.88}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -2650,6 +2650,7 @@ MonoBehaviour:
   m_RecallTpPoint: {fileID: 0}
   m_DesiredEnemy: {fileID: 0}
   m_TimeSinceLastAuto: 0
+  m_EnemyTower: {fileID: 0}
   m_SummSpell1: {fileID: 11400000, guid: ca8ff71d96317c541b37d751c8b81f3e, type: 2}
   m_SummSpell2: {fileID: 11400000, guid: 09545bf2b1fed7949a8004f6bf84b493, type: 2}
   m_SummSpell1Key: 100

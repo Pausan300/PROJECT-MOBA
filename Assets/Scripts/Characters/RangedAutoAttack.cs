@@ -25,7 +25,10 @@ public class RangedAutoAttack : NetworkBehaviour
             return;
         }
 
-        transform.position = Vector3.MoveTowards(transform.position, m_Target.position, (m_Speed/100.0f) * Time.deltaTime);
+        Vector3 l_NewPos=Vector3.MoveTowards(transform.position, m_Target.position, (m_Speed/100.0f) * Time.deltaTime);
+        transform.forward=(l_NewPos-transform.position).normalized;
+        transform.position=l_NewPos;
+
         if (!m_DamageDone)
         {
             if (Vector3.Distance(transform.position, m_Target.position) <= 0.005f)

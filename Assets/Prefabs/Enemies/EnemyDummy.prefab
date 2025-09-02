@@ -18,6 +18,7 @@ GameObject:
   - component: {fileID: 3716759342269532723}
   - component: {fileID: 852399847533407206}
   - component: {fileID: 9149628915752700151}
+  - component: {fileID: 4305831607437992685}
   m_Layer: 7
   m_Name: EnemyDummy
   m_TagString: Enemy
@@ -72,7 +73,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 4925582d7efcc9a4c9ac323ef6275d97, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -183,6 +184,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
   m_CharacterBaseStats: {fileID: 11400000, guid: 488abda0eb7e13f42aeed5e52ba3592f, type: 2}
+  m_TeamType: 0
+  m_EnemyType: 0
 --- !u!114 &3716759342269532723
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -257,6 +260,18 @@ MonoBehaviour:
   SwitchTransformSpaceWhenParented: 0
   Interpolate: 1
   SlerpPosition: 0
+--- !u!114 &4305831607437992685
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6438156489008617800}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 386f0b9250673dd428e5c1fb0cb7a20f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &6620970890913725828
 GameObject:
   m_ObjectHideFlags: 0
