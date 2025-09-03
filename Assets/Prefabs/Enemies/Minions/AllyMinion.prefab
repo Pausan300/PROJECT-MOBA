@@ -28,7 +28,23 @@ PrefabInstance:
       propertyPath: m_Color.r
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1631217251257972060, guid: 6a098165efc1e4d419fd6950987c983b, type: 3}
+      propertyPath: m_Color.b
+      value: 0.4566037
+      objectReference: {fileID: 0}
+    - target: {fileID: 1631217251257972060, guid: 6a098165efc1e4d419fd6950987c983b, type: 3}
+      propertyPath: m_Color.g
+      value: 0.18594725
+      objectReference: {fileID: 0}
+    - target: {fileID: 1631217251257972060, guid: 6a098165efc1e4d419fd6950987c983b, type: 3}
+      propertyPath: m_Color.r
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1865577030711538633, guid: 6a098165efc1e4d419fd6950987c983b, type: 3}
+      propertyPath: GlobalObjectIdHash
+      value: 855413770
+      objectReference: {fileID: 0}
+    - target: {fileID: 2633448883579408048, guid: 6a098165efc1e4d419fd6950987c983b, type: 3}
       propertyPath: GlobalObjectIdHash
       value: 855413770
       objectReference: {fileID: 0}
@@ -36,9 +52,25 @@ PrefabInstance:
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
       objectReference: {fileID: 2100000, guid: 8dc9516d77c62b34f8a7ff04deb90f84, type: 2}
+    - target: {fileID: 5164373208737869373, guid: 6a098165efc1e4d419fd6950987c983b, type: 3}
+      propertyPath: m_Color.b
+      value: 0.87843144
+      objectReference: {fileID: 0}
+    - target: {fileID: 5164373208737869373, guid: 6a098165efc1e4d419fd6950987c983b, type: 3}
+      propertyPath: m_Color.g
+      value: 0.3529412
+      objectReference: {fileID: 0}
+    - target: {fileID: 5164373208737869373, guid: 6a098165efc1e4d419fd6950987c983b, type: 3}
+      propertyPath: m_Color.r
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5363034587947598519, guid: 6a098165efc1e4d419fd6950987c983b, type: 3}
       propertyPath: m_Name
       value: AllyMinion
+      objectReference: {fileID: 0}
+    - target: {fileID: 5363034587947598519, guid: 6a098165efc1e4d419fd6950987c983b, type: 3}
+      propertyPath: m_TagString
+      value: Ally
       objectReference: {fileID: 0}
     - target: {fileID: 5535052077382735664, guid: 6a098165efc1e4d419fd6950987c983b, type: 3}
       propertyPath: m_LocalPosition.x
@@ -91,6 +123,34 @@ PrefabInstance:
     - target: {fileID: 6637210784809622280, guid: 6a098165efc1e4d419fd6950987c983b, type: 3}
       propertyPath: m_Color.r
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8802665765621309812, guid: 6a098165efc1e4d419fd6950987c983b, type: 3}
+      propertyPath: m_HealthBarColor.a
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8802665765621309812, guid: 6a098165efc1e4d419fd6950987c983b, type: 3}
+      propertyPath: m_HealthBarColor.b
+      value: 0.909804
+      objectReference: {fileID: 0}
+    - target: {fileID: 8802665765621309812, guid: 6a098165efc1e4d419fd6950987c983b, type: 3}
+      propertyPath: m_HealthBarColor.g
+      value: 0.38823533
+      objectReference: {fileID: 0}
+    - target: {fileID: 8802665765621309812, guid: 6a098165efc1e4d419fd6950987c983b, type: 3}
+      propertyPath: m_CorruptedHealthBarColor.a
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8802665765621309812, guid: 6a098165efc1e4d419fd6950987c983b, type: 3}
+      propertyPath: m_CorruptedHealthBarColor.b
+      value: 0.5698112
+      objectReference: {fileID: 0}
+    - target: {fileID: 8802665765621309812, guid: 6a098165efc1e4d419fd6950987c983b, type: 3}
+      propertyPath: m_CorruptedHealthBarColor.g
+      value: 0.24500136
+      objectReference: {fileID: 0}
+    - target: {fileID: 8802665765621309812, guid: 6a098165efc1e4d419fd6950987c983b, type: 3}
+      propertyPath: m_CorruptedHealthBarColor.r
+      value: 0.0032253
       objectReference: {fileID: 0}
     - target: {fileID: 8874562113150364781, guid: 6a098165efc1e4d419fd6950987c983b, type: 3}
       propertyPath: m_Value

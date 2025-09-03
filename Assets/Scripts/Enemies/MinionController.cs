@@ -4,22 +4,39 @@ using JetBrains.Annotations;
 using Unity.Netcode;
 using UnityEngine;
 
-public class MinionController : MonoBehaviour, ITakeDamage
+public class MinionController : NetworkBehaviour, ITakeDamage
 {
     CharacterStats m_MinionStats;
     TowerController m_EnemyTower;
-    public IngameCharacterUI m_IngameUI;
     EnemyMovement m_MinionMovement;
+
+    [Header("UI")]
+    public GameObject m_IngameUIPrefab;
+    IngameEnemyUI m_IngameUI;
+    public Color m_HealthBarColor;
+    public Color m_CorruptedHealthBarColor;
 
     [Header("TOWER MODIFIER")]
     [Range(0.0f, 1.0f)]
     public float m_TowerDamagePct;
 
-    void Start()
+
+    public override void OnNetworkSpawn()
     {
+        base.OnNetworkSpawn();
         m_MinionStats=GetComponent<CharacterStats>();
         m_MinionMovement=GetComponent<EnemyMovement>();
+        if (!IsSpawned || !HasAuthority)
+        {
+            return;
+        }
+        GameObject l_IngameUIObject = Instantiate(m_IngameUIPrefab, null);
+        l_IngameUIObject.GetComponent<NetworkObject>().Spawn();
+        l_IngameUIObject.GetComponent<NetworkObject>().TrySetParent(transform, false);
+        m_IngameUI=l_IngameUIObject.GetComponent<IngameEnemyUI>();
         SetIngameUICamera(GameManager.m_GameManagerInstance.GetPlayersList()[0].GetCameraController());
+        m_IngameUI.ChangeHealthColor(m_HealthBarColor);
+        m_IngameUI.ChangeCorruptedHealthColor(m_CorruptedHealthBarColor);
     }
 
     void Update()
@@ -45,6 +62,8 @@ public class MinionController : MonoBehaviour, ITakeDamage
     } 
     public void OnDeath()
     {
+        m_IngameUI.GetBuffMarksCanvas().GetComponent<NetworkObject>().Despawn();
+        m_IngameUI.GetComponent<NetworkObject>().Despawn();
         Destroy(gameObject);
     }
 
@@ -96,7 +115,7 @@ public class MinionController : MonoBehaviour, ITakeDamage
     {
         m_IngameUI.SetCameraController(CanvasCamera);
     }
-    public IngameCharacterUI GetIngameCharacterUI()
+    public IngameEnemyUI GetIngameUI()
     {
         return m_IngameUI;
     }

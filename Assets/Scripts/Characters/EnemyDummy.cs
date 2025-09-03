@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using Unity.Netcode;
+using UnityEditor;
 using UnityEngine;
 using static CharacterStats;
 
@@ -9,7 +10,8 @@ public class EnemyDummy : NetworkBehaviour, ITakeDamage
 {
     [Header("CHARACTER STATS")]
     public CharacterStats m_CharacterStats;
-    public EnemyType m_EnemyType;
+    public float m_TimeToStartRegen;
+    float m_TimerLeftToRegen;
 
     [Header("ATTACKS")]
     public float m_TimeToAttack;
@@ -19,25 +21,19 @@ public class EnemyDummy : NetworkBehaviour, ITakeDamage
     bool m_CanDie = false;
 
     [Header("UI")]
-    public GameObject m_WorldCanvasPrefab;
     public GameObject m_IngameUIPrefab;
-    public GameObject m_BuffMarksUIPrefab;
-    public GameObject m_BuffMarksUI;
-    public IngameCharacterUI m_IngameUI;
-    public float m_TimeToStartRegen;
-    float m_TimerLeftToRegen;
+    IngameDummyUI m_IngameUI;
+    //public GameObject m_WorldCanvasPrefab;
+    //public GameObject m_BuffMarksUIPrefab;
+    //public GameObject m_BuffMarksUI;
 
     [Header("MOVEMENT TEST")]
     bool m_MoveToPoint;
     Transform m_TargetPoint;
 
-    
     TowerController m_EnemyTower;
 
-    private void Awake()
-    {
-        m_CharacterStats.SetEnemyType(m_EnemyType);
-    }
+
     public override void OnNetworkSpawn()
     {
         base.OnNetworkSpawn();
@@ -48,13 +44,15 @@ public class EnemyDummy : NetworkBehaviour, ITakeDamage
             return;
         }
 
-        GameObject l_WorldCanvas = Instantiate(m_WorldCanvasPrefab, null);
-        l_WorldCanvas.GetComponent<NetworkObject>().Spawn();
+        //GameObject l_WorldCanvas = Instantiate(m_WorldCanvasPrefab, null);
+        //l_WorldCanvas.GetComponent<NetworkObject>().Spawn();
         GameObject l_IngameUIObject = Instantiate(m_IngameUIPrefab, null);
         l_IngameUIObject.GetComponent<NetworkObject>().Spawn();
-        GameObject l_BuffMarksUIObject=Instantiate(m_BuffMarksUIPrefab, null);
-        l_BuffMarksUIObject.GetComponent<NetworkObject>().Spawn();
-        SpawnCanvasRpc(l_WorldCanvas.GetComponent<NetworkObject>(), l_IngameUIObject.GetComponent<NetworkObject>(), l_BuffMarksUIObject.GetComponent<NetworkObject>());
+        l_IngameUIObject.GetComponent<NetworkObject>().TrySetParent(transform, false);
+        m_IngameUI=l_IngameUIObject.GetComponent<IngameDummyUI>();
+        //GameObject l_BuffMarksUIObject=Instantiate(m_BuffMarksUIPrefab, null);
+        //l_BuffMarksUIObject.GetComponent<NetworkObject>().Spawn();
+        //SpawnCanvasRpc(l_WorldCanvas.GetComponent<NetworkObject>(), l_IngameUIObject.GetComponent<NetworkObject>(), l_BuffMarksUIObject.GetComponent<NetworkObject>());
     }
     private void Start()
     {
@@ -67,24 +65,26 @@ public class EnemyDummy : NetworkBehaviour, ITakeDamage
             Player.GetOptionsUI().m_VideoMenu.ChangeColorblindMode();
             //Debug.Log(Player.GetOptionsUI().m_VideoMenu)
         }
-    }
-    [Rpc(SendTo.Everyone)]
-    void SpawnCanvasRpc(NetworkObjectReference WorldCanvas, NetworkObjectReference IngameUIObject, NetworkObjectReference BuffUIObject)
-    {
-        NetworkObject l_WorldCanvas = WorldCanvas;
-        if (HasAuthority)
-            l_WorldCanvas.TrySetParent(transform, false);
-        NetworkObject l_IngameUIObject = IngameUIObject;
-        if (HasAuthority)
-            l_IngameUIObject.TrySetParent(l_WorldCanvas.transform, false);
-        m_IngameUI = l_IngameUIObject.GetComponent<IngameCharacterUI>();
-        m_IngameUI.m_WorldCanvas = l_WorldCanvas.gameObject;
+
         SetIngameUICamera(GameManager.m_GameManagerInstance.GetPlayersList()[0].GetCameraController());
-        NetworkObject l_BuffUIObject=BuffUIObject;
-        if(HasAuthority)
-            l_BuffUIObject.TrySetParent(transform, false);
-        m_BuffMarksUI=l_BuffUIObject.gameObject;
     }
+    //[Rpc(SendTo.Everyone)]
+    //void SpawnCanvasRpc(NetworkObjectReference WorldCanvas, NetworkObjectReference IngameUIObject, NetworkObjectReference BuffUIObject)
+    //{
+    //    NetworkObject l_WorldCanvas = WorldCanvas;
+    //    if (HasAuthority)
+    //        l_WorldCanvas.TrySetParent(transform, false);
+    //    NetworkObject l_IngameUIObject = IngameUIObject;
+    //    if (HasAuthority)
+    //        l_IngameUIObject.TrySetParent(l_WorldCanvas.transform, false);
+    //    m_IngameUI = l_IngameUIObject.GetComponent<IngameDummyUI>();
+    //    m_IngameUI.m_WorldCanvas = l_WorldCanvas.gameObject;
+    //    SetIngameUICamera(GameManager.m_GameManagerInstance.GetPlayersList()[0].GetCameraController());
+    //    NetworkObject l_BuffUIObject=BuffUIObject;
+    //    if(HasAuthority)
+    //        l_BuffUIObject.TrySetParent(transform, false);
+    //    m_BuffMarksUI=l_BuffUIObject.gameObject;
+    //}
     void Update()
     {
         if (m_CharacterStats.GetCurrentHealth() < m_CharacterStats.GetMaxHealth() && !m_CanDie)
@@ -177,7 +177,7 @@ public class EnemyDummy : NetworkBehaviour, ITakeDamage
         if (m_CharacterStats.GetCanSoulTheft())
             m_CharacterStats.GetWilldurrCharacterController().AddSoul(m_CharacterStats.GetEnemyType());
 
-        m_IngameUI.m_WorldCanvas.GetComponent<NetworkObject>().Despawn();
+        m_IngameUI.GetBuffMarksCanvas().GetComponent<NetworkObject>().Despawn();
         m_IngameUI.GetComponent<NetworkObject>().Despawn();
         Destroy(gameObject);
     }
@@ -257,7 +257,7 @@ public class EnemyDummy : NetworkBehaviour, ITakeDamage
     {
         m_IngameUI.SetCameraController(CanvasCamera);
     }
-    public IngameCharacterUI GetIngameCharacterUI()
+    public IngameEnemyUI GetIngameUI()
     {
         return m_IngameUI;
     }

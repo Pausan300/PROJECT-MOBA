@@ -140,7 +140,7 @@ public class VideoUI : MonoBehaviour
         foreach(EnemyDummy Enemy in m_Character.GetGameManager().GetEnemiesList()) 
         {
             if (!Enemy.IsDestroyed())
-                Enemy.m_IngameUI.ChangeHealthColor(GetColor(true, true));
+                Enemy.GetIngameUI().ChangeHealthColor(GetColor(true, true));
         }
     }
     public Color GetColor(bool Own, bool Enemy) 

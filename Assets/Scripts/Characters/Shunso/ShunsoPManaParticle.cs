@@ -17,10 +17,11 @@ public class ShunsoPManaParticle : MonoBehaviour
 
     void Update()
     {
-        transform.position = Vector3.MoveTowards(transform.position, m_Target.position, m_Speed * Time.deltaTime);
+        Vector3 l_TargetPos=m_Target.position+Vector3.up;
+        transform.position = Vector3.MoveTowards(transform.position, l_TargetPos, m_Speed * Time.deltaTime);
         if (!m_TargetReached)
         {
-            if (Vector3.Distance(transform.position, m_Target.position) <= 0.005f)
+            if (Vector3.Distance(transform.position, l_TargetPos) <= 0.01f)
             {
                 m_TargetReached=true;
                 m_OnReachTarget?.Invoke();

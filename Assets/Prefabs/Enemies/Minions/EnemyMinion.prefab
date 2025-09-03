@@ -68,6 +68,38 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8802665765621309812, guid: 6a098165efc1e4d419fd6950987c983b, type: 3}
+      propertyPath: m_HealthBarColor.a
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8802665765621309812, guid: 6a098165efc1e4d419fd6950987c983b, type: 3}
+      propertyPath: m_HealthBarColor.b
+      value: 0.011320583
+      objectReference: {fileID: 0}
+    - target: {fileID: 8802665765621309812, guid: 6a098165efc1e4d419fd6950987c983b, type: 3}
+      propertyPath: m_HealthBarColor.g
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8802665765621309812, guid: 6a098165efc1e4d419fd6950987c983b, type: 3}
+      propertyPath: m_HealthBarColor.r
+      value: 0.9622642
+      objectReference: {fileID: 0}
+    - target: {fileID: 8802665765621309812, guid: 6a098165efc1e4d419fd6950987c983b, type: 3}
+      propertyPath: m_CorruptedHealthBarColor.a
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8802665765621309812, guid: 6a098165efc1e4d419fd6950987c983b, type: 3}
+      propertyPath: m_CorruptedHealthBarColor.b
+      value: 0.0152240805
+      objectReference: {fileID: 0}
+    - target: {fileID: 8802665765621309812, guid: 6a098165efc1e4d419fd6950987c983b, type: 3}
+      propertyPath: m_CorruptedHealthBarColor.g
+      value: 0.00978995
+      objectReference: {fileID: 0}
+    - target: {fileID: 8802665765621309812, guid: 6a098165efc1e4d419fd6950987c983b, type: 3}
+      propertyPath: m_CorruptedHealthBarColor.r
+      value: 0.4716981
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

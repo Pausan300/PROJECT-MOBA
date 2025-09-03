@@ -65,7 +65,7 @@ public class ShunsoRProjectile : NetworkBehaviour
         float l_ExtraDamage=Mathf.Round(Vector3.Distance(m_InitialPos, transform.position))*5.0f;
 		foreach(Collider Entity in l_HitColliders)
 		{
-            if(Entity.TryGetComponent(out ITakeDamage Enemy))
+            if(Entity.TryGetComponent(out ITakeDamage Enemy) && Entity.transform.CompareTag("Enemy"))
 	        {
 		        Enemy.TakeDamage(m_Damage+l_ExtraDamage, 0.0f, false, m_Player.m_CharacterStats.GetPlayerName(), m_Player.gameObject);
                 if(Enemy.GetCharacterStats().GetCorruptedHealth()>0.0f) 

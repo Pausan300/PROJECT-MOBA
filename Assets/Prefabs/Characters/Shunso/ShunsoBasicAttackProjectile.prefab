@@ -172,5 +172,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
-  m_Speed: 200
+  m_Speed: 2000
   m_ParticleSystem: {fileID: 0}

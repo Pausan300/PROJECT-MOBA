@@ -506,7 +506,7 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
         RaycastHit l_CameraRaycastHit;
         if (Physics.Raycast(m_CharacterCamera.GetCamera().transform.position, l_MouseDirection, out l_CameraRaycastHit, 1000.0f, m_CharacterCamera.m_CameraLayerMask))
         {
-            if (l_CameraRaycastHit.transform.CompareTag("Enemy"))
+            if (l_CameraRaycastHit.transform.CompareTag("Enemy") )
             {
                 m_DesiredEnemy = l_CameraRaycastHit.transform;
                 m_DesiredPosition = m_DesiredEnemy.position;
@@ -547,7 +547,8 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
                 return l_CameraRaycastHit.transform;
             else if(l_CameraRaycastHit.transform.CompareTag("Structure")) 
             {
-                if(!l_CameraRaycastHit.transform.GetComponent<TowerController>().GetIsUntargetable())
+                TowerController l_Tower=l_CameraRaycastHit.transform.GetComponent<TowerController>();
+                if(!l_Tower.GetIsUntargetable() && l_Tower.m_TowerType==CharacterStats.TeamType.ENEMY)
                     return l_CameraRaycastHit.transform;
             }
         }
@@ -1142,6 +1143,7 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
     }
     public void Die() 
     {
+        StopAttacking();
         m_Dead=true;
         m_DeathTimer=m_RespawnTime;
         m_CharacterUI.ShowDeathTimer();

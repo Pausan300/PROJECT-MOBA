@@ -602,7 +602,7 @@ GameObject:
   - component: {fileID: 8713073467968775106}
   - component: {fileID: 5780009118952098308}
   m_Layer: 0
-  m_Name: IngameEnemyDummyUI
+  m_Name: IngameDummyHUD
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

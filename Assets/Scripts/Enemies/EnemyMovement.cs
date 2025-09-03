@@ -4,6 +4,7 @@ using UnityEngine;
 public class EnemyMovement : MonoBehaviour
 {
     CharacterStats m_CharacterStats;
+    public float m_HeightAboveGround;
 
     bool m_MoveToPoint;
     List<Transform> m_TargetPoints;
@@ -12,6 +13,10 @@ public class EnemyMovement : MonoBehaviour
     void Start()
     {
         m_CharacterStats=GetComponent<CharacterStats>();
+
+        Vector3 l_Pos=transform.position;
+        l_Pos.y=m_HeightAboveGround;
+        transform.position=l_Pos;
     }
 
     void Update()
@@ -22,9 +27,10 @@ public class EnemyMovement : MonoBehaviour
             l_Pos.y=0.0f;
             if (Vector3.Distance(l_Pos, m_TargetPoints[m_TargetIndex].position) > 0.5f)
             {
-                Vector3 l_Dir = m_TargetPoints[m_TargetIndex].position - transform.position;
+                Vector3 l_TargetPos=m_TargetPoints[m_TargetIndex].position;
+                l_TargetPos.y=m_HeightAboveGround;
+                Vector3 l_Dir = l_TargetPos - transform.position;
                 l_Dir.Normalize();
-                l_Dir.y = 0.0f;
                 transform.position += l_Dir * (m_CharacterStats.GetMovSpeed() / 100.0f) * Time.deltaTime;
                 transform.forward = l_Dir;
             }

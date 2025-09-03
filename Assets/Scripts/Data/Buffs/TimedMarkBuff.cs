@@ -13,7 +13,7 @@ public class TimedMarkBuff : TimedBuff
     {
         _Buff.m_Duration=Duration;
         m_AffectedCharacter=Character;
-        m_Canvas=m_AffectedCharacter.GetComponent<EnemyDummy>().m_BuffMarksUI;
+        m_Canvas=m_AffectedCharacter.GetComponentInChildren<IngameEnemyUI>().GetBuffMarksCanvas();
     }
     protected override void ApplyEffect()
     {

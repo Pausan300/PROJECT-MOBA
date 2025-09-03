@@ -28,10 +28,8 @@ public class ShunsoWProjectile : NetworkBehaviour
 
     void Update()
     {
-        if(Vector3.Distance(transform.position, m_InitialPos)<=m_MaxRange) 
-        {
+        if(Vector3.Distance(transform.position, m_InitialPos)<=m_MaxRange)
             transform.position+=m_Direction*m_Speed*Time.deltaTime;
-        }
         else
             Destroy(gameObject);
     }

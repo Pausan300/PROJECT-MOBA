@@ -22149,16 +22149,16 @@ MonoBehaviour:
     - {fileID: 551590998}
     m_WaveEnemies:
     - m_EnemyPrefab: {fileID: 8105563465999620869, guid: 277a5190785966e4db02b80a01715e82, type: 3}
-      m_Amount: 3
+      m_Amount: 2
   - m_SpawnPoint: {fileID: 1555685904}
     m_PathPoints:
     - {fileID: 1831609007}
     - {fileID: 2074179501}
     m_WaveEnemies:
     - m_EnemyPrefab: {fileID: 8105563465999620869, guid: 277a5190785966e4db02b80a01715e82, type: 3}
-      m_Amount: 3
-  m_TimeForFirstWave: 10
-  m_TimeBetweenWaves: 5
+      m_Amount: 2
+  m_TimeForFirstWave: 5
+  m_TimeBetweenWaves: 10
   m_DelayBetweenSpawns: 0.75
 --- !u!114 &694181167
 MonoBehaviour:
@@ -24289,16 +24289,16 @@ MonoBehaviour:
     - {fileID: 1007980194}
     m_WaveEnemies:
     - m_EnemyPrefab: {fileID: 8105563465999620869, guid: 927439af68fb87d4ab9a7598bcebcee8, type: 3}
-      m_Amount: 6
+      m_Amount: 2
   - m_SpawnPoint: {fileID: 1130626266}
     m_PathPoints:
     - {fileID: 1867020849}
     - {fileID: 534430466}
     m_WaveEnemies:
     - m_EnemyPrefab: {fileID: 8105563465999620869, guid: 927439af68fb87d4ab9a7598bcebcee8, type: 3}
-      m_Amount: 6
-  m_TimeForFirstWave: 10
-  m_TimeBetweenWaves: 5
+      m_Amount: 2
+  m_TimeForFirstWave: 5
+  m_TimeBetweenWaves: 10
   m_DelayBetweenSpawns: 0.75
 --- !u!4 &754422950
 Transform:

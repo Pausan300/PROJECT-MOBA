@@ -35,6 +35,8 @@ public class EnemySpawner : NetworkBehaviour
 
         if(GameManager.m_GameManagerInstance.GetGameTimer()-m_LastSpawnedWaveTime>=l_WaitTime)
         {
+            if(!m_FirstWaveSpawned)
+                m_FirstWaveSpawned=true;
             m_LastSpawnedWaveTime=GameManager.m_GameManagerInstance.GetGameTimer();
             for(int lane=0; lane<m_Lanes.Count; ++lane) 
                 StartCoroutine(SpawnEnemies(lane));
@@ -61,7 +63,7 @@ public class EnemySpawner : NetworkBehaviour
             return;
         }
 
-        GameObject l_Enemy = Instantiate(m_Lanes[LaneIndex].m_WaveEnemies[EnemyIndex].m_EnemyPrefab, m_Lanes[LaneIndex].m_SpawnPoint.position+new Vector3(0.0f, 1.0f, 0.0f), 
+        GameObject l_Enemy = Instantiate(m_Lanes[LaneIndex].m_WaveEnemies[EnemyIndex].m_EnemyPrefab, m_Lanes[LaneIndex].m_SpawnPoint.position, 
             m_Lanes[LaneIndex].m_WaveEnemies[EnemyIndex].m_EnemyPrefab.transform.rotation);
         EnemyMovement l_EnemyScript=l_Enemy.GetComponent<EnemyMovement>();
         l_EnemyScript.SetMovement(true);

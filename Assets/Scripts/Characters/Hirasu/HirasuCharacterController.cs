@@ -204,7 +204,7 @@ public class HirasuCharacterController : CharacterMaster
 				l_HitColliders.OrderBy((d) => (d.transform.position-transform.position).sqrMagnitude);
 				foreach(Collider Entity in l_HitColliders)
 				{
-					if(Entity.TryGetComponent(out ITakeDamage Enemy))
+					if(Entity.TryGetComponent(out ITakeDamage Enemy) && Entity.CompareTag("Enemy"))
 					{
 						Enemy.TakeDamage(m_QSkill.GetAttribute("Daño base", GetQSkillLevel())+(m_QAdditionalDamage/100.0f*m_CharacterStats.GetBonusAttackDamage())+l_ExtraPhysDamage, l_ExtraMagicDamage, 
 							false, m_CharacterStats.GetPlayerName(), gameObject);
@@ -441,7 +441,7 @@ public class HirasuCharacterController : CharacterMaster
 			Collider[] l_HitColliders=Physics.OverlapSphere(l_Explosion.transform.position, l_Explosion.transform.localScale.x/2.0f, m_DamageLayerMask);
 			foreach(Collider Entity in l_HitColliders)
 			{
-				if(!l_CollidersHit.Contains(Entity) && Entity.TryGetComponent(out ITakeDamage Enemy))
+				if(!l_CollidersHit.Contains(Entity) && Entity.TryGetComponent(out ITakeDamage Enemy) && Entity.CompareTag("Enemy"))
 				{
 					if(Entity.TryGetComponent(out BuffableEntity Buffs))
 					{

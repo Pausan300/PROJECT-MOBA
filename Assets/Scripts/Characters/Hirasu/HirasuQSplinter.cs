@@ -47,7 +47,7 @@ public class HirasuQSplinter : NetworkBehaviour
 			{
                 float l_SlowAmount=m_Player.m_WSpeedDebuffAmountExplosion;
                 bool l_Attached=false;
-				if(!l_CollidersHit.Contains(Entity) && Entity.TryGetComponent(out ITakeDamage Enemy))
+				if(!l_CollidersHit.Contains(Entity) && Entity.TryGetComponent(out ITakeDamage Enemy) && Entity.CompareTag("Enemy"))
 				{
                     if(Enemy==m_AttachedEnemy)
                     {

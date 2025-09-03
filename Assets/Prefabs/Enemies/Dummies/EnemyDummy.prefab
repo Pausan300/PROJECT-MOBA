@@ -185,7 +185,7 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   m_CharacterBaseStats: {fileID: 11400000, guid: 488abda0eb7e13f42aeed5e52ba3592f, type: 2}
   m_TeamType: 0
-  m_EnemyType: 0
+  m_EnemyType: 2
 --- !u!114 &3716759342269532723
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -200,18 +200,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
   m_CharacterStats: {fileID: 3771395301891844531}
-  m_EnemyType: 2
+  m_TimeToStartRegen: 5
   m_TimeToAttack: 5
   m_AttackRadius: 300
   m_LayerMask:
     serializedVersion: 2
     m_Bits: 1
-  m_WorldCanvasPrefab: {fileID: 739544401025306892, guid: 5af5d642eecc84a4cbf908b4f87ce2ee, type: 3}
-  m_IngameUIPrefab: {fileID: 5536230946720591678, guid: 0742bad163f9b014bbbba7f62d8d19a7, type: 3}
-  m_BuffMarksUIPrefab: {fileID: 4298932692335254440, guid: d68bb23cd6e157f41b58f092089e9ba1, type: 3}
-  m_BuffMarksUI: {fileID: 0}
-  m_IngameUI: {fileID: 0}
-  m_TimeToStartRegen: 5
+  m_IngameUIPrefab: {fileID: 4039392392829693024, guid: ff994a3881e995241927545205fef8cc, type: 3}
 --- !u!114 &852399847533407206
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -272,6 +267,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 386f0b9250673dd428e5c1fb0cb7a20f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_HeightAboveGround: 1
 --- !u!1 &6620970890913725828
 GameObject:
   m_ObjectHideFlags: 0
