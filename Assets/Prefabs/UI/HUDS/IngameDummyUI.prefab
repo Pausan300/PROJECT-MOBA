@@ -73,6 +73,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
   m_BuffMarksCanvasPrefab: {fileID: 4298932692335254440, guid: d68bb23cd6e157f41b58f092089e9ba1, type: 3}
+  m_BuffMarksCanvasPosY: -1
   m_WorldCanvas: {fileID: 6850331758157257233}
   m_HUDRectTransform: {fileID: 531248759209619563}
   m_IngameHealthBar: {fileID: 2124776843262204223}

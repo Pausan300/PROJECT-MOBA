@@ -11,6 +11,7 @@ public class IngameEnemyUI : NetworkBehaviour
     RectTransform m_CanvasRectTransform;
 
     public GameObject m_BuffMarksCanvasPrefab;
+    public float m_BuffMarksCanvasPosY;
     GameObject m_BuffMarksCanvas;
     public GameObject m_WorldCanvas;
     public RectTransform m_HUDRectTransform;
@@ -44,6 +45,7 @@ public class IngameEnemyUI : NetworkBehaviour
         l_BuffMarksObject.GetComponent<NetworkObject>().Spawn();
         l_BuffMarksObject.GetComponent<NetworkObject>().TrySetParent(transform, false);
         m_BuffMarksCanvas=l_BuffMarksObject;
+        m_BuffMarksCanvas.GetComponent<RectTransform>().anchoredPosition=new Vector2(0.0f, m_BuffMarksCanvasPosY);
     }
     private void Update()
     {
