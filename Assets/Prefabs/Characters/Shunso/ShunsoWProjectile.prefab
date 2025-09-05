@@ -171,6 +171,22 @@ PrefabInstance:
       propertyPath: m_Name
       value: W_Blood
       objectReference: {fileID: 0}
+    - target: {fileID: 2930544738117481115, guid: 9af349a620de1854089c75477d7f3c0c, type: 3}
+      propertyPath: m_PropertySheet.m_Float.m_Array.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2930544738117481115, guid: 9af349a620de1854089c75477d7f3c0c, type: 3}
+      propertyPath: m_PropertySheet.m_Float.m_Array.Array.data[0].m_Name
+      value: Size
+      objectReference: {fileID: 0}
+    - target: {fileID: 2930544738117481115, guid: 9af349a620de1854089c75477d7f3c0c, type: 3}
+      propertyPath: m_PropertySheet.m_Float.m_Array.Array.data[0].m_Value
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2930544738117481115, guid: 9af349a620de1854089c75477d7f3c0c, type: 3}
+      propertyPath: m_PropertySheet.m_Float.m_Array.Array.data[0].m_Overridden
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5448874383934623179, guid: 9af349a620de1854089c75477d7f3c0c, type: 3}
       propertyPath: m_LocalScale.x
       value: 6
@@ -225,6 +241,14 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5448874383934623179, guid: 9af349a620de1854089c75477d7f3c0c, type: 3}
       propertyPath: m_ConstrainProportionsScale
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7367930365787167539, guid: 9af349a620de1854089c75477d7f3c0c, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7916514680129180262, guid: 9af349a620de1854089c75477d7f3c0c, type: 3}
+      propertyPath: m_CastShadows
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8134888478635138372, guid: 9af349a620de1854089c75477d7f3c0c, type: 3}
