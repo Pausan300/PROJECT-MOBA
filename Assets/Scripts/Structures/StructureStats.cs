@@ -1,12 +1,12 @@
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
 using Unity.Netcode;
 using UnityEngine;
 
-public class TowerStats : MonoBehaviour
+public class StructureStats : MonoBehaviour
 {
-    public CharacterBaseStatsBlock m_TowerBaseStats;
+    public CharacterBaseStatsBlock m_StructureBaseStats;
+
+    [Header("TEAM")]
+    public CharacterStats.TeamType m_TeamType;
 
     float m_MaxHealth;
     float m_CurrentHealth;
@@ -16,33 +16,57 @@ public class TowerStats : MonoBehaviour
     float m_AttackRange;
     float m_Armor;
     float m_MagicResistance;
+    float m_HealthRegen;
+
+    int m_CurrentLevel;
+
 
     void Awake()
     {
         SetInitStats();
     }
-    void Update()
+    private void Update()
     {
-
+        ResourceRestoring();
     }
+
     public void SetInitStats()
     {
-        m_MaxHealth = m_TowerBaseStats.m_BaseHealth;
-        m_AttackDamage = m_TowerBaseStats.m_BaseAttackDamage;
-        m_AttackSpeed = m_TowerBaseStats.m_BaseAttackSpeed;
-        m_AttackRange = m_TowerBaseStats.m_AttackRange;
-        m_Armor = m_TowerBaseStats.m_BaseArmor;
-        m_MagicResistance = m_TowerBaseStats.m_BaseMagicResist;
+        m_MaxHealth = m_StructureBaseStats.m_BaseHealth;
+        m_AttackDamage = m_StructureBaseStats.m_BaseAttackDamage;
+        m_AttackSpeed = m_StructureBaseStats.m_BaseAttackSpeed;
+        m_AttackRange = m_StructureBaseStats.m_AttackRange;
+        m_Armor = m_StructureBaseStats.m_BaseArmor;
+        m_MagicResistance = m_StructureBaseStats.m_BaseMagicResist;
+        m_HealthRegen = m_StructureBaseStats.m_BaseHealthRegen;
+        m_CurrentLevel=1;
 
         m_CurrentHealth = m_MaxHealth;
+    }
+
+    public void ResourceRestoring()
+    {
+        if(m_HealthRegen>0.0f && m_CurrentHealth<m_MaxHealth)
+        {
+            m_CurrentHealth += m_HealthRegen * Time.deltaTime;
+            if (m_CurrentHealth > m_MaxHealth)
+                m_CurrentHealth = m_MaxHealth;
+        }
     }
 
     //GETTERS & SETTERS
     public Sprite GetCharacterIcon()
     {
-        return m_TowerBaseStats.m_CharacterIcon;
+        return m_StructureBaseStats.m_CharacterIcon;
+    } 
+    public int GetCurrentLevel()
+    {
+        return m_CurrentLevel;
     }
-
+    public void SetCurrentLevel(int Level) 
+    {
+        m_CurrentLevel=Level;
+    }
     public float GetAttackDamage()
     {
         return m_AttackDamage;

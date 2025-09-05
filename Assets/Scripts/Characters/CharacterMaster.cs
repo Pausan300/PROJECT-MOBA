@@ -1,15 +1,9 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine.InputSystem;
 using Unity.Netcode;
-using Unity.Netcode.Components;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using UnityEngine.UIElements;
-using System.Runtime.InteropServices;
 using System;
-using static Unity.VisualScripting.Member;
 
 public class CharacterMaster : NetworkBehaviour, ITakeDamage
 {
@@ -22,6 +16,7 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
     public GameObject m_CharacterModel;
     public Collider m_SelectHitbox;
     Collider m_CharacterHitbox;
+    public float m_HeightAboveGround;
 
     [Header("CAMERA")]
     public GameObject m_CameraPrefab;
@@ -320,7 +315,7 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
                     //NetworkObject l_Enemy = m_DesiredEnemy.GetComponent<NetworkObject>();
                     //SetDesiredEnemyRpc(l_Enemy);
                     m_DesiredPosition = m_DesiredEnemy.position;
-                    m_DesiredPosition.y = 0.0f;
+                    m_DesiredPosition.y = m_HeightAboveGround;
                     m_GoingToDesiredPosition = true;
                     StopRecall();
                 }
@@ -333,14 +328,8 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
 
         if (Input.GetMouseButtonDown(0))
         {
-            if (!EventSystem.current.IsPointerOverGameObject())
-            {
-                CharacterStats l_SelectedCharacterStats = GetSelectedCharacterStats();
-                if (l_SelectedCharacterStats)
-                    m_CharacterUI.ShowTargetInfoUI(l_SelectedCharacterStats);
-                else
-                    m_CharacterUI.HideTargetInfoUI();
-            }
+            SelectTargetStats();
+         
             m_SkillIndicatorUI.ClearDeletableSkillIndicatorUI();
             m_SkillIndicatorUI.ClearTargetSkillIndicatorUI();
         }
@@ -350,7 +339,7 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
             if (GetPosition() != Vector3.zero && !m_DesiredEnemy)
             {
                 m_DesiredPosition = GetPosition();
-                m_DesiredPosition.y = 0.0f;
+                m_DesiredPosition.y = m_HeightAboveGround;
                 m_DesiredEnemy = null;
                 m_GoingToDesiredPosition = true;
                 StopAttacking();
@@ -464,7 +453,7 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
     void GoToAutoAttackPosition() 
     {
         m_DesiredPosition = GetPosition();
-        m_DesiredPosition.y = 0.0f;
+        m_DesiredPosition.y = m_HeightAboveGround;
         m_DesiredEnemy = null;
         m_GoingToDesiredPosition = true;
         m_GoingToAutoAttackPosition=true;
@@ -510,7 +499,7 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
             {
                 m_DesiredEnemy = l_CameraRaycastHit.transform;
                 m_DesiredPosition = m_DesiredEnemy.position;
-                m_DesiredPosition.y = 0.0f;
+                m_DesiredPosition.y = m_HeightAboveGround;
                 m_GoingToDesiredPosition = true;
                 StopRecall();
             }
@@ -547,23 +536,36 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
                 return l_CameraRaycastHit.transform;
             else if(l_CameraRaycastHit.transform.CompareTag("Structure")) 
             {
-                TowerController l_Tower=l_CameraRaycastHit.transform.GetComponent<TowerController>();
-                if(!l_Tower.GetIsUntargetable() && l_Tower.m_TowerType==CharacterStats.TeamType.ENEMY)
-                    return l_CameraRaycastHit.transform;
+                if(l_CameraRaycastHit.transform.TryGetComponent(out TowerController Tower)) 
+                {
+                    if(!Tower.GetIsUntargetable() && Tower.m_TowerStats.m_TeamType==CharacterStats.TeamType.ENEMY)
+                        return l_CameraRaycastHit.transform;
+                }
+                else if(l_CameraRaycastHit.transform.TryGetComponent(out NexusController Nexus)) 
+                {
+                    if(!Nexus.GetIsUntargetable() && Nexus.m_NexusStats.m_TeamType==CharacterStats.TeamType.ENEMY)
+                        return l_CameraRaycastHit.transform;
+                }
             }
         }
         return null;
     }
-    public CharacterStats GetSelectedCharacterStats()
+    public void SelectTargetStats()
     {
-        Vector3 l_MouseDirection = GetMouseDir();
-        RaycastHit l_CameraRaycastHit;
-        if (Physics.Raycast(m_CharacterCamera.GetCamera().transform.position, l_MouseDirection, out l_CameraRaycastHit, 1000.0f, m_CharacterCamera.m_SelectHitboxLayerMask))
+        if (!EventSystem.current.IsPointerOverGameObject())
         {
-            if (l_CameraRaycastHit.transform.TryGetComponent(out ITakeDamage Stats))
-                return Stats.GetCharacterStats();
+            Vector3 l_MouseDirection = GetMouseDir();
+            RaycastHit l_CameraRaycastHit;
+            if (Physics.Raycast(m_CharacterCamera.GetCamera().transform.position, l_MouseDirection, out l_CameraRaycastHit, 1000.0f, m_CharacterCamera.m_SelectHitboxLayerMask))
+            {
+                if (l_CameraRaycastHit.transform.TryGetComponent(out ITakeDamage Character))
+                    m_CharacterUI.ShowTargetInfoUI(Character.GetCharacterStats());
+                else if(l_CameraRaycastHit.transform.TryGetComponent(out ITakeDamageStructure Structure))
+                    m_CharacterUI.ShowTargetInfoUI(Structure.GetStructureStats());
+            }
+            else
+                m_CharacterUI.HideTargetInfoUI();
         }
-        return null;
     }
     public Vector3 GetPosition()
     {
@@ -1135,7 +1137,7 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
         if(SourceObject.TryGetComponent(out ITakeDamage Enemy) && Enemy.GetCharacterStats().GetEnemyType()==CharacterStats.EnemyType.LIGHTLESS && Enemy.GetNearTower()) 
         {
             if(Vector3.Distance(transform.position, Enemy.GetNearTower().transform.position)<=(Enemy.GetNearTower().m_AllyAttackedNearTowerRadius/100.0f))
-                Enemy.GetNearTower().SetTarget(SourceObject);
+                Enemy.GetNearTower().SetCurrentTarget(SourceObject);
         }
 
         if(m_CharacterStats.GetCurrentHealth()<=0.0f)
@@ -1232,7 +1234,7 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
 //#endif
         if(m_DesiredEnemy.TryGetComponent(out ITakeDamage Enemy))
             Enemy.TakeDamage(m_CharacterStats.GetAttackDamage(), m_CharacterStats.GetAbilityPower(), false, m_CharacterStats.GetPlayerName(), gameObject);
-        else if(m_DesiredEnemy.TryGetComponent(out ITakeDamageTower Tower))
+        else if(m_DesiredEnemy.TryGetComponent(out ITakeDamageStructure Tower))
             Tower.TakeDamage(m_CharacterStats.GetAttackDamage(), m_CharacterStats.GetAbilityPower(), false, m_CharacterStats.GetPlayerName());
     }
 

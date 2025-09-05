@@ -100,7 +100,9 @@ public class CharacterUI : MonoBehaviour
 
     [Header("TARGET INFO")]
     public GameObject m_TargetInfoUI;
-    CharacterStats m_TargetStats;
+    CharacterStats m_TargetCharacterStats;
+    StructureStats m_TargetStructureStats;
+    public Image m_TargetImage;
     public TextMeshProUGUI m_TargetAttackDamageText;
     public TextMeshProUGUI m_TargetArmorText;
     public TextMeshProUGUI m_TargetAttackSpeedText;
@@ -144,8 +146,13 @@ public class CharacterUI : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.T))
             m_EmoteUI.ShowEmoteWheel();
 
-        if (m_TargetInfoUI.activeSelf)
-            UpdateTargetInfoUI(m_TargetStats);
+        if(m_TargetInfoUI.activeSelf)
+        {
+            if(m_TargetCharacterStats)
+                UpdateTargetInfoUI(m_TargetCharacterStats);
+            else if(m_TargetStructureStats)
+                UpdateTargetInfoUI(m_TargetStructureStats);
+        }
 
         m_GameTimerText.text = m_Character.GetGameManager().GetGameTimerFormated();
     }
@@ -204,6 +211,7 @@ public class CharacterUI : MonoBehaviour
     {
         if (Stats != null)
         {
+            m_TargetImage.sprite=Stats.GetCharacterIcon();
             m_TargetAttackDamageText.text = Mathf.Round(Stats.GetAttackDamage()).ToString();
             m_TargetArmorText.text = Mathf.Round(Stats.GetArmor()).ToString();
             m_TargetAttackSpeedText.text = Stats.GetAttackSpeed().ToString("f2");
@@ -218,6 +226,27 @@ public class CharacterUI : MonoBehaviour
             m_TargetManaBar.value = l_ManaRounded / Stats.GetMaxMana();
             m_TargetHealthText.text = l_HealthRounded + "/" + Mathf.Round(Stats.GetMaxHealth());
             m_TargetManaText.text = l_ManaRounded + "/" + Mathf.Round(Stats.GetMaxMana());
+            m_TargetLevelText.text = Stats.GetCurrentLevel().ToString();
+        }
+    }
+    public void UpdateTargetInfoUI(StructureStats Stats)
+    {
+        if (Stats != null)
+        {
+            m_TargetImage.sprite=Stats.GetCharacterIcon();
+            m_TargetAttackDamageText.text = Mathf.Round(Stats.GetAttackDamage()).ToString();
+            m_TargetArmorText.text = Mathf.Round(Stats.GetArmor()).ToString();
+            m_TargetAttackSpeedText.text = Stats.GetAttackSpeed().ToString("f2");
+            m_TargetCriticalChanceText.text = 0.ToString();
+            m_TargetAbilityPowerText.text = Stats.GetAbilityPower().ToString();
+            m_TargetMagicResistanceText.text = Mathf.Round(Stats.GetMagicRes()).ToString();
+            m_TargetCooldownReductionText.text = 0.ToString();
+            m_TargetMovementSpeedText.text = 0.ToString();
+            float l_HealthRounded = Mathf.Round(Stats.GetCurrentHealth());
+            m_TargetHealthBar.value = l_HealthRounded / Stats.GetMaxHealth();
+            m_TargetManaBar.value = 0;
+            m_TargetHealthText.text = l_HealthRounded + "/" + Mathf.Round(Stats.GetMaxHealth());
+            m_TargetManaText.text = 0.ToString();
             m_TargetLevelText.text = Stats.GetCurrentLevel().ToString();
         }
     }
@@ -396,13 +425,19 @@ public class CharacterUI : MonoBehaviour
     }
     public void ShowTargetInfoUI(CharacterStats Stats)
     {
-        m_TargetStats = Stats;
+        m_TargetCharacterStats = Stats;
+        m_TargetInfoUI.gameObject.SetActive(true);
+    }
+    public void ShowTargetInfoUI(StructureStats Stats)
+    {
+        m_TargetStructureStats = Stats;
         m_TargetInfoUI.gameObject.SetActive(true);
     }
     public void HideTargetInfoUI()
     {
         m_TargetInfoUI.gameObject.SetActive(false);
-        m_TargetStats = null;
+        m_TargetCharacterStats = null;
+        m_TargetStructureStats=null;
     }
     public void ShowCastingUI()
     {

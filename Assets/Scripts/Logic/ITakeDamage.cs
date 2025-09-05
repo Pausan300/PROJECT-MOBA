@@ -8,9 +8,9 @@ public interface ITakeDamage
 	TowerController GetNearTower();
 	void SetNearTower(TowerController Tower);
 }
-public interface ITakeDamageTower 
+public interface ITakeDamageStructure 
 {
 	void TakeDamage(float PhysDamage, float MagicDamage, bool IgnoreResistances, string SourceId);
-	TowerStats GetTowerStats();
+	StructureStats GetStructureStats();
 	bool GetIsDestroyed();
 }

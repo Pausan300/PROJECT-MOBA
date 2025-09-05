@@ -1,24 +1,22 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class TowerController : MonoBehaviour, ITakeDamageTower
+public class TowerController : MonoBehaviour, ITakeDamageStructure
 {
     Animator m_TowerAnimator;
 
     [Header("STATS")]
-    public TowerStats m_TowerStats;
+    public StructureStats m_TowerStats;
     public float m_TimeToRebuild;
     float m_RebuildAnimLength;
     bool m_Destroyed;
     bool m_Untargetable;
 
-    [Header("TYPE")]
-    public CharacterStats.TeamType m_TowerType;
-
     [Header("CONNECTIONS")]
     public TowerController m_PreviousTower;
     public TowerController m_NextTower;
     public LineRenderer m_ConnectionLine;
+    public NexusController m_Nexus;
     
     [Header("CHECKPOINTS")]
     public float m_DamageThreshold;
@@ -30,6 +28,7 @@ public class TowerController : MonoBehaviour, ITakeDamageTower
     [Header("ATTACK")]
     public GameObject m_ProjectilePrefab;
     public Transform m_ShootingPoint;
+    public SphereCollider m_AttackRadiusCollider;
     public float m_TimeToHit;
     public float m_ProjectileExplosionRadius;
     public LayerMask m_DamageLayerMask;
@@ -38,16 +37,18 @@ public class TowerController : MonoBehaviour, ITakeDamageTower
     float m_AttackTimer;
 
     [Header("TARGETS")]
-    public List<GameObject> m_TargetList=new List<GameObject>();
-    public GameObject m_CurrentTarget;
+    List<GameObject> m_MinionTargetList=new List<GameObject>();
+    List<GameObject> m_CharacterTargetList=new List<GameObject>();
+    GameObject m_CurrentTarget;
 
     [Header("UI")]
-    public IngameTowerUI m_IngameUI;
+    public IngameStructureUI m_IngameUI;
 
 
     void Start() 
     {
         m_AttackCooldown=1.0f/m_TowerStats.GetAttackSpeed();
+        m_AttackRadiusCollider.radius=m_TowerStats.GetAttackRange()/100.0f;
         m_TowerAnimator=GetComponent<Animator>();
         AnimationClip[] l_Clips = m_TowerAnimator.runtimeAnimatorController.animationClips;
         foreach (AnimationClip clip in l_Clips)
@@ -62,10 +63,9 @@ public class TowerController : MonoBehaviour, ITakeDamageTower
         SetAnimatorFloat("RebuildSpeed", m_RebuildAnimLength/m_TimeToRebuild);
 
         HideConnection();
-        if(m_NextTower) 
-        {
+        if(m_NextTower)
             SetIsUntargetable(true);
-        }
+        GameManager.m_GameManagerInstance.m_AssignCameras+=m_IngameUI.SetCameraController;
     }
 
     void Update()
@@ -95,32 +95,61 @@ public class TowerController : MonoBehaviour, ITakeDamageTower
         Vector3 l_TargetPos=new Vector3(m_CurrentTarget.transform.position.x, 0.0f, m_CurrentTarget.transform.position.z);
         l_ProjectileScript.SetStats(this, l_TargetPos, m_TimeToHit, m_TowerStats.GetAttackDamage(), m_ProjectileExplosionRadius);
     }
-    public void GetClosestTarget() 
+    void TryPickNewTarget() 
+    {
+        if(m_MinionTargetList.Count>0)
+            GetClosestTarget(m_MinionTargetList);
+        else if(m_CharacterTargetList.Count>0)
+            GetClosestTarget(m_CharacterTargetList);
+        else
+            m_CurrentTarget=null;
+    }
+    public void GetClosestTarget(List<GameObject> TargetList) 
     {
         float l_ClosestDist=0.0f;
         GameObject l_ClosestTarget=null;
 
-        for (int i=0; i<m_TargetList.Count; ++i)
+        for (int i=0; i<TargetList.Count; ++i)
         {
-            float l_Dist=(m_TargetList[i].transform.position-transform.position).magnitude;
+            float l_Dist=(TargetList[i].transform.position-transform.position).magnitude;
             if (l_Dist<l_ClosestDist || i==0) 
             {
-                l_ClosestTarget=m_TargetList[i];
+                l_ClosestTarget=TargetList[i];
                 l_ClosestDist=l_Dist;
             }
         }
         m_CurrentTarget=l_ClosestTarget;
     }
-    bool CheckIsEnemy(CharacterStats.TeamType Type)
+    bool CheckIsEnemy(CharacterStats.TeamType TeamType)
     {
-        if((m_TowerType==CharacterStats.TeamType.ALLY && Type==CharacterStats.TeamType.ENEMY) || (m_TowerType==CharacterStats.TeamType.ENEMY && Type==CharacterStats.TeamType.ALLY))
+        if((m_TowerStats.m_TeamType==CharacterStats.TeamType.ALLY && TeamType==CharacterStats.TeamType.ENEMY) || 
+            (m_TowerStats.m_TeamType==CharacterStats.TeamType.ENEMY && TeamType==CharacterStats.TeamType.ALLY))
             return true;
         else
             return false;
     }
-    public void SetTarget(GameObject Target) 
+    void AddTargetToList(GameObject Target, CharacterStats.EnemyType EnemyType) 
     {
-        m_CurrentTarget=Target;
+        if(EnemyType==CharacterStats.EnemyType.MINION)
+            m_MinionTargetList.Add(Target);
+        else
+            m_CharacterTargetList.Add(Target);
+    }
+    public void RemoveTargetFromList(GameObject Target, CharacterStats.EnemyType EnemyType) 
+    {
+        if(EnemyType==CharacterStats.EnemyType.MINION) 
+        {
+            if(m_MinionTargetList.Contains(Target))
+                m_MinionTargetList.Remove(Target);
+        }
+        else 
+        {
+            if(m_CharacterTargetList.Contains(Target))
+                m_CharacterTargetList.Remove(Target);
+        }
+
+        if(m_CurrentTarget==Target)
+            TryPickNewTarget();
     }
 
     private void OnTriggerEnter(Collider other)
@@ -128,7 +157,8 @@ public class TowerController : MonoBehaviour, ITakeDamageTower
         if(other.gameObject.TryGetComponent(out ITakeDamage Enemy) && CheckIsEnemy(Enemy.GetCharacterStats().m_TeamType)) 
         {
             Enemy.SetNearTower(this);
-            m_TargetList.Add(other.gameObject);
+
+            AddTargetToList(other.gameObject, Enemy.GetCharacterStats().m_EnemyType);
 
             if(!m_CurrentTarget) 
             {
@@ -143,16 +173,10 @@ public class TowerController : MonoBehaviour, ITakeDamageTower
         {
             Enemy.SetNearTower(null);
 
-            if(m_TargetList.Contains(other.gameObject))
-                m_TargetList.Remove(other.gameObject);
+            RemoveTargetFromList(other.gameObject, Enemy.GetCharacterStats().m_EnemyType);
 
-            if(m_CurrentTarget=other.gameObject) 
-            {
-                if(m_TargetList.Count>0)
-                    GetClosestTarget();
-                else
-                    m_CurrentTarget=null;
-            }
+            if(m_CurrentTarget==other.gameObject)
+                TryPickNewTarget();
         }
     }
 
@@ -200,6 +224,8 @@ public class TowerController : MonoBehaviour, ITakeDamageTower
             m_NextTower.SetAnimatorBool("Rebuild", false);
             HideConnection();
         }
+        if(m_Nexus)
+            m_Nexus.SetIsUntargetable(false);
         m_Destroyed=true;
         SetIsUntargetable(true);
     }
@@ -252,10 +278,22 @@ public class TowerController : MonoBehaviour, ITakeDamageTower
     }
 
     //GETTERS & SETTERS
-    public TowerStats GetTowerStats()
+    public StructureStats GetStructureStats()
     {
         return m_TowerStats;
     } 
+    public List<GameObject> GetTargetList() 
+    {
+        return m_MinionTargetList;
+    }
+    public GameObject GetCurrentTarget() 
+    {
+        return m_CurrentTarget;
+    }
+    public void SetCurrentTarget(GameObject Target) 
+    {
+        m_CurrentTarget=Target;
+    }
     public void SetAnimatorBool(string Name, bool True)
     {
         m_TowerAnimator.SetBool(Name, True);

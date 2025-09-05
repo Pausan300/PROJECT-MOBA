@@ -31,7 +31,7 @@ public class OptionsUI : MonoBehaviour
     public void ExitGame() 
     {
 #if UNITY_EDITOR
-        UnityEditor.EditorApplication.isPlaying=false;
+        UnityEditor.EditorApplication.ExitPlaymode();
 #else
         Application.Quit();
 #endif

@@ -62,9 +62,9 @@ public class MinionController : NetworkBehaviour, ITakeDamage
     } 
     public void OnDeath()
     {
-        m_IngameUI.GetBuffMarksCanvas().GetComponent<NetworkObject>().Despawn();
-        m_IngameUI.GetComponent<NetworkObject>().Despawn();
-        Destroy(gameObject);
+        m_IngameUI.GetBuffMarksCanvas().GetComponent<NetworkObject>().Despawn(true);
+        m_IngameUI.GetComponent<NetworkObject>().Despawn(true);
+        GetComponent<NetworkObject>().Despawn(true);
     }
 
     [Rpc(SendTo.Everyone)]

@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 
-public class IngameTowerUI : MonoBehaviour
+public class IngameStructureUI : MonoBehaviour
 {
     CameraController m_CameraController;
     RectTransform m_CanvasRectTransform;

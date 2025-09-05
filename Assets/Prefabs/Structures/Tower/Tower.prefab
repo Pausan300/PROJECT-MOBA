@@ -117,7 +117,7 @@ GameObject:
   - component: {fileID: 5056505320848084169}
   m_Layer: 0
   m_Name: Tower
-  m_TagString: Enemy
+  m_TagString: Structure
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -156,7 +156,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 52f77b9d578358c40ae8b893deda89ad, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_TowerBaseStats: {fileID: 11400000, guid: b86a84e7e4fab8c48a6340c6a30561f6, type: 2}
+  m_StructureBaseStats: {fileID: 11400000, guid: b86a84e7e4fab8c48a6340c6a30561f6, type: 2}
+  m_TeamType: 0
 --- !u!114 &8547397904109592918
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -171,21 +172,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_TowerStats: {fileID: 6933529113000532666}
   m_TimeToRebuild: 10
-  m_TowerType: 0
   m_PreviousTower: {fileID: 0}
   m_NextTower: {fileID: 0}
   m_ConnectionLine: {fileID: 3177139727439263412}
+  m_Nexus: {fileID: 0}
   m_DamageThreshold: 250
   m_ProjectilePrefab: {fileID: 7716655512692175050, guid: 7b51767f12460394cbcbf8005b072cbb, type: 3}
   m_ShootingPoint: {fileID: 7293073293552493179}
-  m_TimeToHit: 0.75
+  m_AttackRadiusCollider: {fileID: 299350241441012900}
+  m_TimeToHit: 0.5
   m_ProjectileExplosionRadius: 80
   m_DamageLayerMask:
     serializedVersion: 2
     m_Bits: 129
   m_AllyAttackedNearTowerRadius: 1400
-  m_TargetList: []
-  m_CurrentTarget: {fileID: 0}
   m_IngameUI: {fileID: 156859580908383399}
 --- !u!54 &2479328556919011075
 Rigidbody:
@@ -556,7 +556,7 @@ SphereCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Radius: 7.25
+  m_Radius: 7.5
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &7051559263308758109
 GameObject:

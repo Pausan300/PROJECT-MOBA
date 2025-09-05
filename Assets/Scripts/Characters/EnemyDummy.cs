@@ -1,10 +1,6 @@
 using System.Collections;
-using System.Collections.Generic;
-using TMPro;
 using Unity.Netcode;
-using UnityEditor;
 using UnityEngine;
-using static CharacterStats;
 
 public class EnemyDummy : NetworkBehaviour, ITakeDamage
 {
@@ -167,9 +163,10 @@ public class EnemyDummy : NetworkBehaviour, ITakeDamage
         UpdateCurrentHealthRpc(l_TotalPhysDamage + l_TotalMagicDamage, true);
         m_IngameUI.AddDamageInstance(l_TotalPhysDamage, l_TotalMagicDamage, SourceId);
 
-        if(SourceObject.TryGetComponent(out ITakeDamage Enemy) && Enemy.GetCharacterStats().m_TeamType==TeamType.ALLY && Enemy.GetNearTower()) 
+        if(SourceObject.TryGetComponent(out ITakeDamage Enemy) && Enemy.GetCharacterStats().GetEnemyType()==CharacterStats.EnemyType.PLAYER && Enemy.GetNearTower()) 
         {
-            Enemy.GetNearTower().SetTarget(SourceObject);
+            if(Vector3.Distance(transform.position, Enemy.GetNearTower().transform.position)<=(Enemy.GetNearTower().m_AllyAttackedNearTowerRadius/100.0f))
+                Enemy.GetNearTower().SetCurrentTarget(SourceObject);
         }
     }
     public void OnDeath()
@@ -177,9 +174,9 @@ public class EnemyDummy : NetworkBehaviour, ITakeDamage
         if (m_CharacterStats.GetCanSoulTheft())
             m_CharacterStats.GetWilldurrCharacterController().AddSoul(m_CharacterStats.GetEnemyType());
 
-        m_IngameUI.GetBuffMarksCanvas().GetComponent<NetworkObject>().Despawn();
-        m_IngameUI.GetComponent<NetworkObject>().Despawn();
-        Destroy(gameObject);
+        m_IngameUI.GetBuffMarksCanvas().GetComponent<NetworkObject>().Despawn(true);
+        m_IngameUI.GetComponent<NetworkObject>().Despawn(true);
+        GetComponent<NetworkObject>().Despawn(true);
     }
     public void SetMovement(bool Move)
     {

@@ -2595,7 +2595,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 51414338
+  GlobalObjectIdHash: 79616569
   InScenePlacedSourceGlobalObjectIdHash: 1219962804
   DeferredDespawnTick: 0
   Ownership: 0
@@ -2623,6 +2623,7 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   m_CharacterBaseStats: {fileID: 11400000, guid: da8cf467e04135b409ac02854c4d2a77, type: 2}
   m_TeamType: 1
+  m_EnemyType: 4
 --- !u!114 &1802700845464921966
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2638,6 +2639,7 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   m_CharacterModel: {fileID: 1230986223495835818}
   m_SelectHitbox: {fileID: 2731731760352027505}
+  m_HeightAboveGround: 0.2
   m_CameraPrefab: {fileID: 7524774365677785486, guid: b2f89b3a363e4b948bb4742a73ee106a, type: 3}
   m_CharacterUIPrefab: {fileID: 2513416057255326426, guid: ed9d594b6627f044bba2b2fc348b0a17, type: 3}
   m_PracticeModeUIPrefab: {fileID: 1557839522407617894, guid: bcf545272a4d5d24882149d33e858b53, type: 3}
@@ -3290,7 +3292,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 51414338
+  GlobalObjectIdHash: 3014364260
   InScenePlacedSourceGlobalObjectIdHash: 0
   DeferredDespawnTick: 0
   Ownership: 1

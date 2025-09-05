@@ -68,7 +68,8 @@ public class CharacterStats : NetworkBehaviour
         LARGEMONSTER,
         MINION,
         LIGHTLESS,
-        LEGENDARY
+        LEGENDARY,
+        PLAYER
     }
 
     [Header("Buffs")]

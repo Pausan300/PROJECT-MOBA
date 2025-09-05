@@ -35,7 +35,7 @@ public class RangedAutoAttack : NetworkBehaviour
             {
                 if (m_Target.TryGetComponent(out ITakeDamage Enemy))
                     DamageEnemy(Enemy);
-                else if(m_Target.TryGetComponent(out ITakeDamageTower Tower))
+                else if(m_Target.TryGetComponent(out ITakeDamageStructure Tower))
                     DamageTower(Tower);
 
                 m_CharacterMaster.RangedAutoAttackHitDamage(m_Target);
@@ -55,7 +55,7 @@ public class RangedAutoAttack : NetworkBehaviour
         Enemy.TakeDamage(m_PhysicDamage, m_MagicDamage, false, "AutoAttack", m_CharacterMaster.gameObject);
         m_OnHitEffects?.Invoke(m_Target.gameObject);
     }
-    void DamageTower(ITakeDamageTower Tower) 
+    void DamageTower(ITakeDamageStructure Tower) 
     {
         Tower.TakeDamage(m_PhysicDamage, m_MagicDamage, false, "AutoAttack");
     }

@@ -21,9 +21,7 @@ public class TowerProjectile : MonoBehaviour
         {
             transform.position+=m_Dir*m_Speed*Time.deltaTime;
             if(Vector3.Distance(transform.position, m_TargetPos)<=0.1f)
-            {
                 StartCoroutine(Explode());
-            }
         }
     }
 
@@ -48,12 +46,9 @@ public class TowerProjectile : MonoBehaviour
                 }
                 else
 		            Target.TakeDamage(m_Damage, 0.0f, false, "Tower", gameObject);
-                if(Target.GetCharacterStats().GetCurrentHealth()<=0.0f && m_Tower.m_TargetList.Contains(Entity.gameObject)) 
-                {
-                    m_Tower.m_TargetList.Remove(Entity.gameObject);
-                    if(m_Tower.m_CurrentTarget==Entity.gameObject)
-                        m_Tower.GetClosestTarget();
-                }
+
+                if(Target.GetCharacterStats().GetCurrentHealth()<=0.0f)
+                    m_Tower.RemoveTargetFromList(Entity.gameObject, Target.GetCharacterStats().m_EnemyType);
             }
         }
         yield return new WaitForSeconds(0.1f);
@@ -78,7 +73,8 @@ public class TowerProjectile : MonoBehaviour
 
     bool CheckIsEnemy(CharacterStats.TeamType Type)
     {
-        if((m_Tower.m_TowerType==CharacterStats.TeamType.ALLY && Type==CharacterStats.TeamType.ENEMY) || (m_Tower.m_TowerType==CharacterStats.TeamType.ENEMY && Type==CharacterStats.TeamType.ALLY))
+        if((m_Tower.m_TowerStats.m_TeamType==CharacterStats.TeamType.ALLY && Type==CharacterStats.TeamType.ENEMY) || 
+            (m_Tower.m_TowerStats.m_TeamType==CharacterStats.TeamType.ENEMY && Type==CharacterStats.TeamType.ALLY))
             return true;
         else
             return false;

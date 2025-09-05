@@ -6444,6 +6444,7 @@ MonoBehaviour:
   m_CastingTimeText: {fileID: 6263849461369179920}
   m_GameTimerText: {fileID: 1065140649152868074}
   m_TargetInfoUI: {fileID: 774617582698022449}
+  m_TargetImage: {fileID: 8923226890289202350}
   m_TargetAttackDamageText: {fileID: 4540648619110793402}
   m_TargetArmorText: {fileID: 402870257551935609}
   m_TargetAttackSpeedText: {fileID: 8348986736689143734}

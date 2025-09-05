@@ -1,6 +1,8 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Netcode;
+using UnityEditor;
 using UnityEngine;
 
 public class GameManager : NetworkBehaviour
@@ -9,21 +11,19 @@ public class GameManager : NetworkBehaviour
 
     private NetworkVariable<float> m_GameTimer = new NetworkVariable<float>();
     bool m_GameStarted;
+    
+    public event Action<CameraController> m_AssignCameras;
 
     [Header("SCENE ACTORS LISTS")]
     List<CharacterMaster> m_CharactersList = new List<CharacterMaster>();
     List<EnemyDummy> m_DummiesList = new List<EnemyDummy>();
     List<MinionController> m_MinionsList = new List<MinionController>();
-    List<TowerController> m_TowersList=new List<TowerController>();
 
 
     void Awake()
     {
         if (m_GameManagerInstance == null)
             m_GameManagerInstance = this;
-
-        foreach(TowerController Tower in FindObjectsByType<TowerController>(FindObjectsSortMode.None))
-            m_TowersList.Add(Tower);
     }
     void Update()
     {
@@ -38,6 +38,28 @@ public class GameManager : NetworkBehaviour
         }
     }
 
+    void StartGame() 
+    {
+        if(m_GameStarted)
+            return;
+        m_GameStarted = true;
+        m_AssignCameras?.Invoke(m_CharactersList[0].GetCameraController());
+    }
+    public void EndGame(bool Victory) 
+    {
+        if(Victory) 
+        {
+        }
+        else 
+        {
+#if UNITY_EDITOR
+            EditorApplication.ExitPlaymode();
+#else
+            Application.Quit();
+#endif
+        }
+    }
+
     public void AddToPlayerList(CharacterMaster Player)
     {
         m_CharactersList.Add(Player);
@@ -46,14 +68,6 @@ public class GameManager : NetworkBehaviour
     public List<CharacterMaster> GetPlayersList()
     {
         return m_CharactersList;
-    }
-    void StartGame() 
-    {
-        if(m_GameStarted)
-            return;
-        m_GameStarted = true;
-        foreach(TowerController Tower in m_TowersList)
-            Tower.m_IngameUI.SetCameraController(m_CharactersList[0].GetCameraController());
     }
 
     public void AddToEnemyList(EnemyDummy Enemy)
