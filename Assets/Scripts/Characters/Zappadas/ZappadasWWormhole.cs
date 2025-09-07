@@ -44,7 +44,18 @@ public class ZappadasWWormhole : MonoBehaviour
         Destroy(gameObject);
 
     }
-
+    public Vector3 GetExitDir()
+    {
+        return m_EndDirection;
+    }
+    public Vector3 GetExitPos()
+    {
+        return m_WWormholeEnd.transform.position;
+    }
+    public float GetExitRange()
+    {
+        return m_ProjectileExitRange;
+    }
 
     private void OnTriggerStay(Collider other)
     {

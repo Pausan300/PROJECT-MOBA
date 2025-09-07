@@ -15,11 +15,11 @@ MonoBehaviour:
   m_PowerType: 1
   m_PowerName: "R\xC1FAGA DE SUPERNOVAS"
   m_Sprite: {fileID: 21300000, guid: 07898b6585ceba64597c18a3ea3de521, type: 3}
-  m_Description: "Zappadas invoca 3 bolas con energ\xEDa oscura que desaparecen al
-    cabo de 5 segundos.\r\n\r\nReactivaci\xF3n: Lanza una bola que al golpear a un
-    enemigo explota e inflige X de da\xF1o m\xE1gico en un \xE1rea alrededor del
-    enemigo golpeado.\r\n\r\nEnerg\xEDa oscura: Cuando una bola impacta, emite un
-    rayo de energ\xEDa oscura hacia el enemigo m\xE1s cercano que rebota 3 veces
+  m_Description: "Zappadas invoca AA bolas con energ\xEDa oscura que desaparecen
+    al cabo de BB segundos.\r\n\r\nReactivaci\xF3n: Lanza una bola que al golpear
+    a un enemigo explota e inflige X de da\xF1o m\xE1gico en un \xE1rea alrededor
+    del enemigo golpeado.\r\n\r\nEnerg\xEDa oscura: Cuando una bola impacta, emite
+    un rayo de energ\xEDa oscura hacia el enemigo m\xE1s cercano que rebota CC veces
     e inflige Y de da\xF1o m\xE1gico."
   m_HaveLoads: 0
   m_MAXLoads: 0
@@ -111,6 +111,21 @@ MonoBehaviour:
       m_ToolTip: del poder de habilidad
       m_AtributeType: 3
       m_Color: 6
+  - m_DescriptionId: AA
+    m_Color: 0
+    m_AttributeId: Cantidad de bolas
+    m_MultiplyValue: 1
+    m_SkillDescriptionTooltips: []
+  - m_DescriptionId: BB
+    m_Color: 0
+    m_AttributeId: Tiempo para que desaparezcan las bolas
+    m_MultiplyValue: 1
+    m_SkillDescriptionTooltips: []
+  - m_DescriptionId: CC
+    m_Color: 0
+    m_AttributeId: Cantidad de rebotes
+    m_MultiplyValue: 1
+    m_SkillDescriptionTooltips: []
   m_ExtraSpecifications:
   - "La reducci\xF3n de enfriamiento se aplica al Tiempo de recarga."
   - 'Radio 3r ataque (circular): 100 a 350 unidades.'
