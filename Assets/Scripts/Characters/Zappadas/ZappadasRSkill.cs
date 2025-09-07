@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
+using static UnityEditor.PlayerSettings;
 
 public class ZappadasRSkill : MonoBehaviour
 {
@@ -52,7 +54,6 @@ public class ZappadasRSkill : MonoBehaviour
     {
         for (int i = 0; i < m_Radii.Length; i++)
         {
-            bool l_DamageDone = false;
             float targetRadius = m_Radii[i];
             Vector3 startScale = new Vector3(0f, 1f, 0f);
             Vector3 endScale = new Vector3(targetRadius * 2, 1f, targetRadius * 2);
@@ -64,16 +65,10 @@ public class ZappadasRSkill : MonoBehaviour
                 float t = elapsed / m_RExpansionTime;
                 m_Circle.transform.localScale = Vector3.Lerp(startScale, endScale, t);
                 yield return null;
-
-                if (elapsed > m_RExpansionTime - 0.1f && !l_DamageDone)
-                {
-                    l_DamageDone = true;
-                    OnReachMaxRadius(i + 1);
-                }
             }
             m_Circle.transform.localScale = endScale;
 
-            
+            OnReachMaxRadius(i + 1);
 
             elapsed = 0f;
             while (elapsed < m_RContractionTime)
@@ -93,31 +88,25 @@ public class ZappadasRSkill : MonoBehaviour
     private void OnReachMaxRadius(int rangeIndex)
     {
         float l_ActualRadius = 0;
-        int l_ActualThis = 1;
         switch (rangeIndex)
         {
             case 1:
                 l_ActualRadius = m_RRadius_01 / 100;
-                l_ActualThis = 1;
                 break;
 
             case 2:
                 l_ActualRadius = m_RRadius_02 / 100;
-                l_ActualThis = 2;
                 break;
 
             case 3:
                 l_ActualRadius = m_RRadius_03 / 100;
-                l_ActualThis = 3;
                 break;
 
             case 4:
                 l_ActualRadius = m_RRadius_04 / 100;
-                l_ActualThis = 4;
                 break;
 
             default:
-                l_ActualThis = 1;
                 Debug.LogWarning("Rango no reconocido: " + rangeIndex);
                 break;
         }
@@ -156,7 +145,7 @@ public class ZappadasRSkill : MonoBehaviour
                 {
                     l_Damage = m_CharacterController.m_RSkill.GetAttribute("Daño en el borde", m_CharacterController.GetRSkillLevel())
                              + (m_PercentageSkillPowerR2 / 100f) * m_CharacterController.GetCharacterStats().GetAbilityPower()
-                             + m_CharacterController.m_RSkill.GetAttribute("Daño en el borde", m_CharacterController.GetRSkillLevel()) * l_ActualThis;
+                             + m_CharacterController.m_RSkill.GetAttribute("Daño en el borde", m_CharacterController.GetRSkillLevel());
                     ZappadasEnemysToAbsorb zappadasEnemysToAbsorb = new ZappadasEnemysToAbsorb();
                     zappadasEnemysToAbsorb.transform = Entity.transform;
                     zappadasEnemysToAbsorb.timeAbsorbed = 0;
