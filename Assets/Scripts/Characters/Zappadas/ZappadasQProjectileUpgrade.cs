@@ -19,8 +19,9 @@ public class ZappadasQProjectileUpgrade : MonoBehaviour
     List<Collider> m_EnemysToIgnore;
     ZappadasCharacterController m_CharacterController;
     CharacterStats m_CharacterStats;
+    bool m_isQ;
 
-    public void SetProjectilUpGrade(float Damage, float TimeToArribeTarget, float Range, float AditionalDamageMinions, LayerMask DamageLayerMask, int MaxBounces, Collider EnemyToIgnore, CharacterStats _CharacterStats, ZappadasCharacterController _ZappadasCharacterController)
+    public void SetProjectilUpGrade(float Damage, float TimeToArribeTarget, float Range, float AditionalDamageMinions, LayerMask DamageLayerMask, int MaxBounces, Collider EnemyToIgnore, CharacterStats _CharacterStats, ZappadasCharacterController _ZappadasCharacterController, bool isQ)
     {
         m_Damage = Damage;
         m_TimeToArribeTarget = TimeToArribeTarget;
@@ -34,11 +35,12 @@ public class ZappadasQProjectileUpgrade : MonoBehaviour
         m_CharacterStats = _CharacterStats;
         m_CharacterController = _ZappadasCharacterController;
         FindEnemy();
+        m_isQ = isQ;
     }
 
     private void FindEnemy()
     {
-
+        Debug.Log("m_Bounces: " + m_Bounces + "/" + m_MaxBounces);
         if (m_Bounces == m_MaxBounces)
             Destroy(gameObject);
         List<Collider> l_CollidersHit = new List<Collider>();
@@ -47,6 +49,9 @@ public class ZappadasQProjectileUpgrade : MonoBehaviour
         float l_MinDistance = float.MaxValue;
         bool l_TargetIsMinion = false;
         Collider l_targetCollider = null;
+        Debug.Log("m_Range: " + m_Range / 100);
+        Debug.Log("m_ProjectilTransform.position: " + m_ProjectilTransform.position);
+        Debug.Log("l_HitColliders: " + l_HitColliders.Length);
 
         foreach (Collider Entity in l_HitColliders)
         {
@@ -58,6 +63,7 @@ public class ZappadasQProjectileUpgrade : MonoBehaviour
                     {
                         if (Vector3.Distance(Entity.transform.position, m_ProjectilTransform.position) < l_MinDistance)
                         {
+                            l_TargetPosW = Entity.transform.position;
                             m_Target = Entity;
                             l_targetCollider = Entity;
                         }
@@ -67,6 +73,7 @@ public class ZappadasQProjectileUpgrade : MonoBehaviour
                 {
                     if (Vector3.Distance(Entity.transform.position, m_ProjectilTransform.position) < l_MinDistance)
                     {
+                        l_TargetPosW = Entity.transform.position;
                         m_Target = Entity;
                         l_targetCollider = Entity;
                         if (Enemy.GetCharacterStats().GetEnemyType() == CharacterStats.EnemyType.MINION)
@@ -76,6 +83,8 @@ public class ZappadasQProjectileUpgrade : MonoBehaviour
                 l_CollidersHit.Add(Entity);
             }
         }
+
+        Debug.Log(m_Target);
         if (m_Target == null)
         {
             Destroy(gameObject);
@@ -88,20 +97,46 @@ public class ZappadasQProjectileUpgrade : MonoBehaviour
         l_TargetPos.y = m_ProjectilTransform.position.y;
         m_Speed = Vector3.Distance(l_TargetPos, m_ProjectilTransform.position) / m_TimeToArribeTarget;
         m_LastTarget = m_Target;
-    }
 
+
+    }
+    Vector3 l_TargetPosW;
     private void Update()
     {
-        if (m_Target != null)
+        if (m_isQ)
         {
-            Vector3 l_TargetPos = m_Target.transform.position;
-            l_TargetPos.y = m_ProjectilTransform.position.y;
-            m_ProjectilTransform.position = Vector3.MoveTowards(m_ProjectilTransform.position, l_TargetPos, m_Speed * Time.deltaTime);
-
-            if (Vector3.Distance(l_TargetPos, m_ProjectilTransform.position) <= 0.05f)
+            if (m_Target != null)
             {
-                DoDamage();
-                FindEnemy();
+                Vector3 l_TargetPos = m_Target.transform.position;
+                l_TargetPos.y = m_ProjectilTransform.position.y;
+                m_ProjectilTransform.position = Vector3.MoveTowards(m_ProjectilTransform.position, l_TargetPos, m_Speed * Time.deltaTime);
+
+                if (Vector3.Distance(l_TargetPos, m_ProjectilTransform.position) <= 0.05f)
+                {
+                    DoDamage();
+                    FindEnemy();
+                }
+            }
+        }
+        else
+        {
+            if (m_Target != null)
+            {
+                Vector3 l_TargetPos = l_TargetPosW;
+                l_TargetPos.y = m_ProjectilTransform.position.y;
+                m_ProjectilTransform.position = Vector3.MoveTowards(m_ProjectilTransform.position, l_TargetPos, m_Speed * Time.deltaTime);
+
+                if (Vector3.Distance(l_TargetPos, m_ProjectilTransform.position) <= 0.05f)
+                {
+                    Vector3 l_TargetPosEnemy = m_Target.transform.position;
+                    l_TargetPosEnemy.y = m_ProjectilTransform.position.y;
+                    if (Vector3.Distance(l_TargetPosEnemy, m_ProjectilTransform.position) <= 0.05f)
+                    {
+                        DoDamage();
+                    }
+                    FindEnemy();
+
+                }
             }
         }
     }
@@ -151,7 +186,7 @@ public class ZappadasQProjectileUpgrade : MonoBehaviour
 
             if (Enemy.GetCharacterStats().GetEnemyType() == CharacterStats.EnemyType.MINION)
                 l_Damage += m_AditionalDamageMinions;
-            
+
             Debug.Log("Sum" + (m_MaxBounces - m_Bounces));
             Debug.Log("MAX" + m_MaxBounces);
             Debug.Log("BOU" + m_Bounces);

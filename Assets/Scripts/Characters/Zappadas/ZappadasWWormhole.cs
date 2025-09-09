@@ -5,6 +5,7 @@ public class ZappadasWWormhole : MonoBehaviour
 {
     public GameObject m_WWormholeEndPrefab;
     public GameObject m_ProjectileUpgradePrefab;
+    public GameObject m_WWormholeStart;
     public CapsuleCollider m_CapsuleCollider;
     GameObject m_WWormholeEnd;
     Vector3 m_EndDirection;
@@ -24,7 +25,8 @@ public class ZappadasWWormhole : MonoBehaviour
         Quaternion rotation = Quaternion.LookRotation(EndDirection.normalized);
         m_WWormholeEnd = Instantiate(m_WWormholeEndPrefab, EndPosition, rotation);
         StartCoroutine(DestroyWormhole(WormholeDuration));
-        m_CapsuleCollider.radius = _WWormholeStartHitboxRadius/100;
+        m_CapsuleCollider.radius = _WWormholeStartHitboxRadius / 100;
+        m_WWormholeStart.transform.localScale = new Vector3((_WWormholeStartHitboxRadius * 2) / 100, (_WWormholeStartHitboxRadius*2) / 100, 1);
         m_EndDirection = EndDirection;
         m_SkillUpgraded = SkillUpgraded;
         m_ProjectileExitSpeed = _ProjectileExitSpeed;
@@ -75,7 +77,7 @@ public class ZappadasWWormhole : MonoBehaviour
                 if (m_WSkillUpgrade)
                 {
                     GameObject l_ProjectileUpgrade = Instantiate(m_ProjectileUpgradePrefab, m_WWormholeEnd.GetComponent<ZappadasWWormholeExit>().GetExitPos(), Quaternion.identity);
-                    l_ProjectileUpgrade.GetComponent<ZappadasQProjectileUpgrade>().SetProjectilUpGrade(m_DarkPowerDamage, m_DarkPowerRange / m_ProjectileExitSpeed, m_DarkPowerRange, 0, m_CharacterController.m_DamageLayerMask, 1, other, m_CharacterController.GetCharacterStats(), m_CharacterController);
+                    l_ProjectileUpgrade.GetComponent<ZappadasQProjectileUpgrade>().SetProjectilUpGrade(m_DarkPowerDamage, m_DarkPowerRange / m_ProjectileExitSpeed, m_DarkPowerRange, 0, m_CharacterController.m_DamageLayerMask, 1, other, m_CharacterController.GetCharacterStats(), m_CharacterController, false);
 
                 }
 
