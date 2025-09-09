@@ -31,7 +31,7 @@ public class ZappadasRSkill : MonoBehaviour
 
     List<ZappadasEnemysToAbsorb> m_EnemysToAbsorb = new List<ZappadasEnemysToAbsorb>();
     List<ZappadasEnemysToAbsorb> m_EnemysToAbsorbEdge = new List<ZappadasEnemysToAbsorb>();
-
+    List<Collider> m_HitCollidersOld = new List<Collider>();
     public void SetRSkill(ZappadasCharacterController _ZappadasCharacterController)
     {
         m_CharacterController = _ZappadasCharacterController;
@@ -65,15 +65,11 @@ public class ZappadasRSkill : MonoBehaviour
                 m_Circle.transform.localScale = Vector3.Lerp(startScale, endScale, t);
                 yield return null;
 
-                if (elapsed > m_RExpansionTime - 0.1f && !l_DamageDone)
-                {
-                    l_DamageDone = true;
-                    OnReachMaxRadius(i + 1);
-                }
+                OnReachMaxRadius(i + 1, m_Circle.transform.localScale.x/2);
             }
             m_Circle.transform.localScale = endScale;
 
-            
+            m_HitCollidersOld.Clear();
 
             elapsed = 0f;
             while (elapsed < m_RContractionTime)
@@ -90,29 +86,25 @@ public class ZappadasRSkill : MonoBehaviour
     }
 
 
-    private void OnReachMaxRadius(int rangeIndex)
+    private void OnReachMaxRadius(int rangeIndex, float ActualRadius)
     {
-        float l_ActualRadius = 0;
+        float l_ActualRadius = ActualRadius;
         int l_ActualThis = 1;
         switch (rangeIndex)
         {
             case 1:
-                l_ActualRadius = m_RRadius_01 / 100;
                 l_ActualThis = 1;
                 break;
 
             case 2:
-                l_ActualRadius = m_RRadius_02 / 100;
                 l_ActualThis = 2;
                 break;
 
             case 3:
-                l_ActualRadius = m_RRadius_03 / 100;
                 l_ActualThis = 3;
                 break;
 
             case 4:
-                l_ActualRadius = m_RRadius_04 / 100;
                 l_ActualThis = 4;
                 break;
 
@@ -128,6 +120,10 @@ public class ZappadasRSkill : MonoBehaviour
 
         foreach (Collider Entity in l_HitColliders)
         {
+            if (m_HitCollidersOld.Contains(Entity))
+                continue;
+
+            m_HitCollidersOld.Add(Entity);
             if (!l_CollidersHit.Contains(Entity) && Entity.TryGetComponent(out ITakeDamage Enemy))
             {
                 float l_Damage;
@@ -187,6 +183,8 @@ public class ZappadasRSkill : MonoBehaviour
 
 
     }
+
+
 
     void UpdateAbsorptionList(List<ZappadasEnemysToAbsorb> list, float attractionRange)
     {
