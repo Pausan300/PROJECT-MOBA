@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class ZappadasRSkill : MonoBehaviour
@@ -65,11 +66,13 @@ public class ZappadasRSkill : MonoBehaviour
                 m_Circle.transform.localScale = Vector3.Lerp(startScale, endScale, t);
                 yield return null;
 
-                OnReachMaxRadius(i + 1, m_Circle.transform.localScale.x/2);
+                DoDamagesToEnemys(i + 1, m_Circle.transform.localScale.x/2);
             }
             m_Circle.transform.localScale = endScale;
 
+            OnReachMaxRadius();
             m_HitCollidersOld.Clear();
+            m_HitCollidersOld = new List<Collider>();
 
             elapsed = 0f;
             while (elapsed < m_RContractionTime)
@@ -86,7 +89,7 @@ public class ZappadasRSkill : MonoBehaviour
     }
 
 
-    private void OnReachMaxRadius(int rangeIndex, float ActualRadius)
+    private void DoDamagesToEnemys(int rangeIndex, float ActualRadius)
     {
         float l_ActualRadius = ActualRadius;
         int l_ActualThis = 1;
@@ -153,20 +156,11 @@ public class ZappadasRSkill : MonoBehaviour
                     l_Damage = m_CharacterController.m_RSkill.GetAttribute("Daño en el borde", m_CharacterController.GetRSkillLevel())
                              + (m_PercentageSkillPowerR2 / 100f) * m_CharacterController.GetCharacterStats().GetAbilityPower()
                              + m_CharacterController.m_RSkill.GetAttribute("Daño en el borde", m_CharacterController.GetRSkillLevel()) * l_ActualThis;
-                    ZappadasEnemysToAbsorb zappadasEnemysToAbsorb = new ZappadasEnemysToAbsorb();
-                    zappadasEnemysToAbsorb.transform = Entity.transform;
-                    zappadasEnemysToAbsorb.timeAbsorbed = 0;
-                    m_EnemysToAbsorbEdge.Add(zappadasEnemysToAbsorb);
                 }
                 else
                 {
                     l_Damage = m_CharacterController.m_RSkill.GetAttribute("Daño base", m_CharacterController.GetRSkillLevel())
                              + (m_PercentageSkillPowerR1 / 100f) * m_CharacterController.GetCharacterStats().GetAbilityPower();
-
-                    ZappadasEnemysToAbsorb zappadasEnemysToAbsorb = new ZappadasEnemysToAbsorb();
-                    zappadasEnemysToAbsorb.transform = Entity.transform;
-                    zappadasEnemysToAbsorb.timeAbsorbed = 0;
-                    m_EnemysToAbsorb.Add(zappadasEnemysToAbsorb);
                 }
 
 
@@ -177,13 +171,59 @@ public class ZappadasRSkill : MonoBehaviour
 
             }
         }
-
-
-
-
-
     }
+    private void OnReachMaxRadius()
+    {
+        Debug.Log("m_HitCollidersOld: " + m_HitCollidersOld.Count);
 
+        foreach (Collider Entity in m_HitCollidersOld)
+        {
+            if (Entity.IsDestroyed())
+                continue;
+
+            Debug.Log("Exasidhauiosd");
+
+            if (Entity.TryGetComponent(out ITakeDamage Enemy))
+            {
+                float l_Distance = Vector3.Distance(transform.position, Entity.transform.position);
+
+                float r1 = m_RRadius_01 / 100f;
+                float r2 = m_RRadius_02 / 100f;
+                float r3 = m_RRadius_03 / 100f;
+                float r4 = m_RRadius_04 / 100f;
+                float edgeWidth = m_REdgeWidth / 100f;
+
+                bool l_Borde = false;
+
+                if (l_Distance < r1)
+                {
+                    l_Borde = true;
+                }
+                else if ((l_Distance >= r2 - edgeWidth && l_Distance <= r2) ||
+                         (l_Distance >= r3 - edgeWidth && l_Distance <= r3) ||
+                         (l_Distance >= r4 - edgeWidth && l_Distance <= r4))
+                {
+                    l_Borde = true;
+                }
+                Debug.Log("Distance: " + l_Distance + ",   Edge? " + l_Borde);
+                if (l_Borde)
+                {
+                    
+                    ZappadasEnemysToAbsorb zappadasEnemysToAbsorb = new ZappadasEnemysToAbsorb();
+                    zappadasEnemysToAbsorb.transform = Entity.transform;
+                    zappadasEnemysToAbsorb.timeAbsorbed = 0;
+                    m_EnemysToAbsorbEdge.Add(zappadasEnemysToAbsorb);
+                }
+                else
+                {
+                    ZappadasEnemysToAbsorb zappadasEnemysToAbsorb = new ZappadasEnemysToAbsorb();
+                    zappadasEnemysToAbsorb.transform = Entity.transform;
+                    zappadasEnemysToAbsorb.timeAbsorbed = 0;
+                    m_EnemysToAbsorb.Add(zappadasEnemysToAbsorb);
+                }
+            }
+        }
+    }
 
 
     void UpdateAbsorptionList(List<ZappadasEnemysToAbsorb> list, float attractionRange)
