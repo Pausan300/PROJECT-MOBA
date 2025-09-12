@@ -465,11 +465,12 @@ public class ZappadasCharacterController : CharacterMaster
             if (m_QSkillUpgrade)
             {
                 Vector3 l_SpawnPos = OtherEntity.transform.position;
-                l_SpawnPos.y = m_OffsetYProjectileQ;
+                l_SpawnPos.y = m_OffsetYProjectileQ/100;
                 GameObject l_QProjectileUpgrade = Instantiate(m_QProjectileUpgradePrefab, l_SpawnPos, Quaternion.identity);
                 m_Q2MaxBounces = (int)m_QSkill.GetAttribute("Cantidad de rebotes", GetQSkillLevel());
+                
                 float l_Damage = (m_QSkill.GetAttribute("Daño base “Energía oscura”", GetQSkillLevel())) + (m_PercentageSkillPowerQ2 / 100) * GetCharacterStats().GetAbilityPower();
-                l_QProjectileUpgrade.GetComponent<ZappadasQProjectileUpgrade>().SetProjectilUpGrade(l_Damage, m_Q2TimeToArribeTarget, m_Q2Range, m_Q2AditionalDamageMinions, m_DamageLayerMask, m_Q2MaxBounces, OtherEntity, GetCharacterStats(), this);
+                l_QProjectileUpgrade.GetComponent<ZappadasQProjectileUpgrade>().SetProjectilUpGrade(l_Damage, m_Q2TimeToArribeTarget, m_Q2Range, m_Q2AditionalDamageMinions, m_DamageLayerMask, m_Q2MaxBounces, OtherEntity, GetCharacterStats(), this, true);
 
             }
 
@@ -582,14 +583,20 @@ public class ZappadasCharacterController : CharacterMaster
 
         m_WWormholeEndPosition = transform.position + l_Direction;
 
-        m_SkillIndicatorUI.CreateArrowSkillIndicator(m_SkillsIndicatorUIObject, m_WWormholeStartHitboxRadius, m_WProjectileExitRange, m_WWormholeEndPosition, false);
+
+
         StopAttacking();
         if (!GetIsLookingForPosition())
             StopMovement();
 
         SetDisabled(true);
-        yield return null;
         m_LoadingWSkill = true;
+
+        yield return null;
+        yield return null;
+        yield return null;
+        if (m_LoadingWSkill)
+            m_SkillIndicatorUI.CreateArrowSkillIndicator(m_SkillsIndicatorUIObject, m_WWormholeStartHitboxRadius, m_WProjectileExitRange, m_WWormholeEndPosition, false);
     }
     IEnumerator StartWWormhole()
     {
@@ -611,7 +618,18 @@ public class ZappadasCharacterController : CharacterMaster
 
         Vector3 l_Direction = GetPositionWithMouse() - m_WWormholeEndPosition;
         l_Direction.y = 0;
-        l_Direction.Normalize();
+
+        if (l_Direction == Vector3.zero)
+        {
+            l_Direction = m_WWormholeEndPosition - transform.position;
+            l_Direction.y = 0;
+            l_Direction.Normalize();
+        }
+        else
+        {
+            l_Direction.Normalize();
+        }
+
 
         SetAnimatorTrigger("IsUsingW");
 
@@ -760,6 +778,7 @@ public class ZappadasCharacterController : CharacterMaster
         Vector3 l_Direction = l_TargetPosition - transform.position;
         l_Direction.y = 0;
 
+
         if (l_Direction.magnitude > m_RangeE)
         {
             l_Direction = l_Direction.normalized * m_RangeE;
@@ -767,7 +786,6 @@ public class ZappadasCharacterController : CharacterMaster
 
         m_EBallsInstancePosition = transform.position + l_Direction;
 
-        m_SkillIndicatorUI.CreateArrowSkillIndicator(m_SkillsIndicatorUIObject, m_EHitboxRadius, m_DistanceBetweenBalls * 2, m_EBallsInstancePosition, false);
         StopAttacking();
         if (!GetIsLookingForPosition())
             StopMovement();
@@ -776,6 +794,11 @@ public class ZappadasCharacterController : CharacterMaster
 
         m_LoadingESkill = true;
         yield return null;
+        yield return null;
+        yield return null;
+        yield return null;
+        if(m_LoadingESkill)
+            m_SkillIndicatorUI.CreateArrowSkillIndicator(m_SkillsIndicatorUIObject, m_EHitboxRadius, m_DistanceBetweenBalls * 2, m_EBallsInstancePosition, false);
     }
     void SpawnEBalls()
     {
@@ -784,9 +807,18 @@ public class ZappadasCharacterController : CharacterMaster
         SetDisabled(false);
 
         m_LoadingESkill = false;
-        m_EDirection = (GetPositionWithMouse() - m_EBallsInstancePosition).normalized;
+        m_EDirection = GetPositionWithMouse() - m_EBallsInstancePosition;
+        m_EDirection.y = 0;
         if (m_EDirection == Vector3.zero)
-            m_EDirection = Quaternion.Euler(0, 90, 0) * (transform.position - m_EBallsInstancePosition).normalized;
+        {
+            m_EDirection = m_EBallsInstancePosition - transform.position;
+            m_EDirection.y = 0;
+            m_EDirection.Normalize();
+        }
+        else
+        {
+            m_EDirection.Normalize();
+        }
 
         base.ESkill();
         if (m_PDarkPower >= m_DarkPowerToUpgradeSkillE)

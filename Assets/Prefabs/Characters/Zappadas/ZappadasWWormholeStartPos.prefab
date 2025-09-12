@@ -49,6 +49,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_WWormholeEndPrefab: {fileID: 7349764949754028159, guid: 85e632af172ad504cb0b58ddace11907, type: 3}
   m_ProjectileUpgradePrefab: {fileID: 6187584665770324023, guid: 08e936e6f37815f44976247c8635e123, type: 3}
+  m_WWormholeStart: {fileID: 4500681430885425291}
   m_CapsuleCollider: {fileID: 8596279238493637819}
 --- !u!136 &8596279238493637819
 CapsuleCollider:
