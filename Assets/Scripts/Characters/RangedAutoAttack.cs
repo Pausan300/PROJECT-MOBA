@@ -2,19 +2,16 @@ using System;
 using System.Collections;
 using Unity.Netcode;
 using UnityEngine;
-using UnityEngine.InputSystem.Utilities;
-using static UnityEngine.EventSystems.EventTrigger;
 
 public class RangedAutoAttack : NetworkBehaviour
 {
     CharacterMaster m_CharacterMaster;
     Transform m_Target;
-    float m_PhysicDamage;
-    float m_MagicDamage;
     public float m_Speed;
     public ParticleSystem m_ParticleSystem;
     float m_TimeToDestroyWithParticle = 5;
     bool m_DamageDone = false;
+    DamageInstance m_DamageInstance;
 
     public event Action<GameObject> m_OnHitEffects;
 
@@ -52,12 +49,12 @@ public class RangedAutoAttack : NetworkBehaviour
     }
     protected virtual void DamageEnemy(ITakeDamage Enemy) 
     {
-        Enemy.TakeDamage(m_PhysicDamage, m_MagicDamage, false, "AutoAttack", m_CharacterMaster.gameObject);
+        Enemy.TakeDamage(m_DamageInstance);
         m_OnHitEffects?.Invoke(m_Target.gameObject);
     }
     void DamageTower(ITakeDamageStructure Tower) 
     {
-        Tower.TakeDamage(m_PhysicDamage, m_MagicDamage, false, "AutoAttack");
+        Tower.TakeDamage(m_CharacterMaster.GetCharacterStats());
     }
     IEnumerator DestroyWithParticles()
     {
@@ -72,7 +69,6 @@ public class RangedAutoAttack : NetworkBehaviour
         m_CharacterMaster = _CharacterMaster;
         m_DamageDone = false;
         m_Target = Target;
-        m_PhysicDamage = PhysDamage;
-        m_MagicDamage = MagicDamage;
+        m_DamageInstance=new DamageInstance(PhysDamage, MagicDamage, m_CharacterMaster.GetCharacterStats().GetPlayerName(), m_CharacterMaster.gameObject);
     }
 }

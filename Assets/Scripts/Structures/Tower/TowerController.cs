@@ -8,6 +8,8 @@ public class TowerController : MonoBehaviour, ITakeDamageStructure
     [Header("STATS")]
     public StructureStats m_TowerStats;
     public float m_TimeToRebuild;
+    [Range(0.0f, 1.0f)]
+    public float m_CrystalDamageBonusPct;
     float m_RebuildAnimLength;
     bool m_Destroyed;
     bool m_Untargetable;
@@ -180,19 +182,25 @@ public class TowerController : MonoBehaviour, ITakeDamageStructure
         }
     }
 
-    public void TakeDamage(float PhysDamage, float MagicDamage, bool IgnoreResistances, string SourceId)
+    public void TakeDamage(CharacterStats Stats)
     {
         if(m_Destroyed || m_Untargetable) 
             return;
 
-        float l_TotalPhysDamage = PhysDamage / (1.0f + m_TowerStats.GetArmor() / 100.0f);
-        float l_TotalMagicDamage = MagicDamage / (1.0f + m_TowerStats.GetMagicRes() / 100.0f);
-        if (PhysDamage > 0.0f)
-            Debug.Log("Taking " + PhysDamage + " physical damage, reduced to " + l_TotalPhysDamage + " damage");
-        if (MagicDamage > 0.0f)
-            Debug.Log("Taking " + MagicDamage + " magical damage, reduced to " + l_TotalMagicDamage + " damage");
-        m_TowerStats.SetCurrentHealthRpc(m_TowerStats.GetCurrentHealth() - (l_TotalPhysDamage + l_TotalMagicDamage));
-        m_IngameUI.AddDamageInstance(l_TotalPhysDamage, l_TotalMagicDamage, SourceId);
+        float l_Damage=(Stats.GetAttackDamage()+Stats.GetBonusAttackDamage()+(Stats.GetAbilityPower()*0.6f))*(1.0f+Stats.GetCrystals()*m_CrystalDamageBonusPct);
+        DamageInstance l_AfterResistancesInstance;
+        if(Stats.GetBonusAttackDamage()<(Stats.GetAbilityPower()*0.6f)) 
+        {
+            l_Damage /= (1.0f + m_TowerStats.GetMagicRes() / 100.0f);
+            l_AfterResistancesInstance=new DamageInstance(0.0f, l_Damage, Stats.GetPlayerName(), Stats.gameObject);
+        }
+        else 
+        { 
+            l_Damage /= (1.0f + m_TowerStats.GetArmor() / 100.0f);
+            l_AfterResistancesInstance=new DamageInstance(l_Damage, 0.0f, Stats.GetPlayerName(), Stats.gameObject);
+        }
+        m_TowerStats.SetCurrentHealthRpc(m_TowerStats.GetCurrentHealth() - l_Damage);
+        m_IngameUI.AddDamageInstance(l_AfterResistancesInstance);
 
         if(!m_Threshold1Reached && m_TowerStats.GetCurrentHealth()<=m_TowerStats.GetMaxHealth()-m_DamageThreshold) 
         {

@@ -1,9 +1,7 @@
-using System.Collections;
-using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
 
-public class HirasuQProjectile : NetworkBehaviour
+public class HirasuQProjectile : Projectile
 {
     public BoxCollider m_Collider;
     HirasuCharacterController m_Player;
@@ -61,7 +59,7 @@ public class HirasuQProjectile : NetworkBehaviour
         {
             if(other.TryGetComponent(out ITakeDamage Enemy))
 			{
-				Enemy.TakeDamage(m_Damage+m_ExtraPhysDamage, m_ExtraMagicDamage, false, m_Player.m_CharacterStats.GetPlayerName(), m_Player.gameObject);
+				Enemy.TakeDamage(GetDamageInstance());
 
                 if(m_SplintersLeft>0) 
                 {
@@ -93,6 +91,7 @@ public class HirasuQProjectile : NetworkBehaviour
         m_Traveling=true;
         m_Collider.size=new Vector3(Width/100.0f, m_Collider.size.y, m_Collider.size.z);
         m_Player.SetQIsProjectileAlive(true);
+        SetDamageInstance(new DamageInstance(m_Damage+m_ExtraPhysDamage, m_ExtraMagicDamage, m_Player.GetCharacterStats().GetPlayerName(), m_Player.gameObject));
     }
     void SpawnSplinter(Vector3 Position, Vector3 Forward, Transform Parent, GameObject AttachedEnemy)
     {   

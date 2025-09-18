@@ -202,12 +202,13 @@ public class HirasuCharacterController : CharacterMaster
 				Collider[] l_HitColliders=Physics.OverlapBox(l_DesiredPos, new Vector3(m_QTapWidth/100.0f/2.0f, 2.0f, m_QTapRange/100.0f/2.0f), transform.rotation, m_DamageLayerMask);
 				int l_SplintersLeft=GetQSkillLevel();
 				l_HitColliders.OrderBy((d) => (d.transform.position-transform.position).sqrMagnitude);
+				DamageInstance l_DamageInstance=new DamageInstance(m_QSkill.GetAttribute("Daño base", GetQSkillLevel())+(m_QAdditionalDamage/100.0f*m_CharacterStats.GetBonusAttackDamage())
+					+l_ExtraPhysDamage, l_ExtraMagicDamage, m_CharacterStats.GetPlayerName(), gameObject);
 				foreach(Collider Entity in l_HitColliders)
 				{
 					if(Entity.TryGetComponent(out ITakeDamage Enemy) && Entity.CompareTag("Enemy"))
 					{
-						Enemy.TakeDamage(m_QSkill.GetAttribute("Daño base", GetQSkillLevel())+(m_QAdditionalDamage/100.0f*m_CharacterStats.GetBonusAttackDamage())+l_ExtraPhysDamage, l_ExtraMagicDamage, 
-							false, m_CharacterStats.GetPlayerName(), gameObject);
+						Enemy.TakeDamage(l_DamageInstance);
 						if(l_SplintersLeft>0) 
 						{
 							SpawnSplinter(Entity.transform.position, transform.forward, Entity.transform, Enemy);
@@ -433,6 +434,8 @@ public class HirasuCharacterController : CharacterMaster
 		Vector3 l_DesiredPos=DesiredPos*Radius;
 		float l_Timer=0.0f;
 		List<Collider> l_CollidersHit=new List<Collider>();
+		DamageInstance l_NormalDamageInstance=new DamageInstance(Damage, 0.0f, m_CharacterStats.GetPlayerName(), gameObject);
+		DamageInstance l_BuffDamageInstance=new DamageInstance(Damage*(1.0f+m_WMarksExtraDamage/100.0f), 0.0f, m_CharacterStats.GetPlayerName(), gameObject);
 		while(l_Explosion.transform.localScale.x<Scale)
 		{
 			l_Explosion.transform.localScale=Vector3.Lerp(Vector3.zero, Vector3.one*Scale, l_Timer/m_RTimeToExpand);
@@ -443,13 +446,10 @@ public class HirasuCharacterController : CharacterMaster
 			{
 				if(!l_CollidersHit.Contains(Entity) && Entity.TryGetComponent(out ITakeDamage Enemy) && Entity.CompareTag("Enemy"))
 				{
-					if(Entity.TryGetComponent(out BuffableEntity Buffs))
-					{
-						if(Buffs.IsMarkBuffActive(m_WMarksDebuff))
-							Damage*=(1.0f+m_WMarksExtraDamage/100.0f);
-					}
-					Debug.Log("TAKEN "+Damage+" DAMAGE");
-					Enemy.TakeDamage(Damage, 0.0f, false, m_CharacterStats.GetPlayerName(), gameObject);
+					if(Entity.TryGetComponent(out BuffableEntity Buffs) && Buffs.IsMarkBuffActive(m_WMarksDebuff))
+						Enemy.TakeDamage(l_BuffDamageInstance);
+					else
+						Enemy.TakeDamage(l_NormalDamageInstance);
 					l_CollidersHit.Add(Entity);
 				}
 			}
@@ -538,7 +538,8 @@ public class HirasuCharacterController : CharacterMaster
 				m_SecondAttack=false;
 			}
 		}
-		m_DesiredEnemy.GetComponent<ITakeDamage>().TakeDamage(m_CharacterStats.GetAttackDamage()+l_ExtraPhysDamage, l_ExtraMagicDamage, false, m_CharacterStats.GetPlayerName(), gameObject);
+		DamageInstance l_DamageInstance=new DamageInstance(m_CharacterStats.GetAttackDamage()+l_ExtraPhysDamage, l_ExtraMagicDamage, m_CharacterStats.GetPlayerName(), gameObject);
+		m_DesiredEnemy.GetComponent<ITakeDamage>().TakeDamage(l_DamageInstance);
 	}
 
     [Rpc(SendTo.Everyone)]

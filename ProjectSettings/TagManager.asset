@@ -8,6 +8,7 @@ TagManager:
   - Enemy
   - Ally
   - Structure
+  - Crystal
   layers:
   - Default
   - TransparentFX

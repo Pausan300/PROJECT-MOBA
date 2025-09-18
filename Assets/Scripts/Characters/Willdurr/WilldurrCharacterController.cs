@@ -391,8 +391,9 @@ public class WilldurrCharacterController : CharacterMaster
             if (!m_CollidersHitQZone.Contains(Entity) && Entity.TryGetComponent(out ITakeDamage Enemy))
             {
                 float l_Damage = (m_QSkill.GetAttribute("Daño 3r ataque", GetQSkillLevel())) + (m_QPercentageBonusAttackDamageSecond / 100) * GetCharacterStats().GetBonusAttackDamage();
+                DamageInstance l_DamageInstance=new DamageInstance(l_Damage, 0.0f, m_CharacterStats.GetPlayerName(), gameObject);
                 Debug.Log("TAKEN " + l_Damage + " DAMAGE");
-                Enemy.TakeDamage(l_Damage, 0, false, m_CharacterStats.GetPlayerName(), gameObject);
+                Enemy.TakeDamage(l_DamageInstance);
                 if (Entity.TryGetComponent(out BuffableEntity Buffs))
                     Buffs.AddBuff(m_PSoulTheftBuff.InitializeBuff(this, m_PTimeToTheftSoul, Entity.gameObject));
                 m_CollidersHitQZone.Add(Entity);
@@ -409,8 +410,9 @@ public class WilldurrCharacterController : CharacterMaster
                 if (!m_CollidersHitQZone.Contains(Entity) && Entity.TryGetComponent(out ITakeDamage Enemy))
                 {
                     float l_Damage = (m_QSkill.GetAttribute("Daño base", GetQSkillLevel())) + (m_QPercentageBonusAttackDamageFirst / 100) * GetCharacterStats().GetBonusAttackDamage();
+                    DamageInstance l_DamageInstance=new DamageInstance(l_Damage, 0.0f, m_CharacterStats.GetPlayerName(), gameObject);
                     Debug.Log("TAKEN " + l_Damage + " DAMAGE");
-                    Enemy.TakeDamage(l_Damage, 0, false, m_CharacterStats.GetPlayerName(), gameObject);
+                    Enemy.TakeDamage(l_DamageInstance);
                     if (Entity.TryGetComponent(out BuffableEntity Buffs))
                         Buffs.AddBuff(m_PSoulTheftBuff.InitializeBuff(this, m_PTimeToTheftSoul, Entity.gameObject));
                     m_CollidersHitQZone.Add(Entity);
@@ -533,6 +535,7 @@ public class WilldurrCharacterController : CharacterMaster
         List<Collider> l_CollidersHit = new List<Collider>();
         Collider[] l_HitColliders = Physics.OverlapSphere(m_TargetPositionW, m_WHitboxRatio / 100, m_DamageLayerMask);
         float l_Damage = (m_WSkill.GetAttribute("Daño base", GetWSkillLevel())) + (m_WPercentageBonusAttackDamageFirst / 100) * GetCharacterStats().GetBonusAttackDamage();
+        DamageInstance l_DamageInstance=new DamageInstance(l_Damage, 0.0f, m_CharacterStats.GetPlayerName(), gameObject);
         foreach (Collider Entity in l_HitColliders)
         {
             if (!l_CollidersHit.Contains(Entity) && Entity.TryGetComponent(out ITakeDamage Enemy))
@@ -544,7 +547,7 @@ public class WilldurrCharacterController : CharacterMaster
                     Buffs.AddBuff(m_PSoulTheftBuff.InitializeBuff(this, m_PTimeToTheftSoul, Entity.gameObject));
                 }
                 Debug.Log("TAKEN " + l_Damage + " DAMAGE");
-                Enemy.TakeDamage(l_Damage, 0, false, m_CharacterStats.GetPlayerName(), gameObject);
+                Enemy.TakeDamage(l_DamageInstance);
                 l_CollidersHit.Add(Entity);
             }
         }
@@ -638,8 +641,9 @@ public class WilldurrCharacterController : CharacterMaster
             }
 
             float l_Damage = (m_WSkill.GetAttribute("Daño Reactivación", GetWSkillLevel())) + (m_WPercentageBonusAttackDamageSecond / 100) * GetCharacterStats().GetBonusAttackDamage();
+            DamageInstance l_DamageInstance=new DamageInstance(l_Damage, 0.0f, m_CharacterStats.GetPlayerName(), gameObject);
             Debug.Log("TAKEN " + l_Damage + " DAMAGE");
-            Enemy.TakeDamage(l_Damage, 0, false, m_CharacterStats.GetPlayerName(), gameObject);
+            Enemy.TakeDamage(l_DamageInstance);
             m_CollidersHitWZone.Add(Entity);
         }
     }

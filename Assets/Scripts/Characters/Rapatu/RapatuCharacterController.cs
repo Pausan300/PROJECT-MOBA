@@ -289,7 +289,6 @@ public class RapatuCharacterController : CharacterMaster
 
         QSkillThrowing();
 
-
         UpdateSomeOneIsRiding();
     }
 
@@ -423,6 +422,8 @@ public class RapatuCharacterController : CharacterMaster
                 };
 
                 bool l_HasHit = false;
+                float l_Damage = m_QSkill.GetAttribute("Daño base", GetQSkillLevel()) + (m_PercentageSkillPowerQ2 / 100f) * GetCharacterStats().GetAbilityPower();
+                DamageInstance l_DamageInstance=new DamageInstance(0.0f, l_Damage, m_CharacterStats.GetPlayerName(), gameObject);
 
                 foreach (var origin in rayOrigins)
                 {
@@ -442,9 +443,8 @@ public class RapatuCharacterController : CharacterMaster
                                 Buffs.AddBuff(m_QStunBuff.InitializeBuff(m_Q2StunBuffTime, l_Enemy));
                             }
 
-                            float l_Damage = m_QSkill.GetAttribute("Daño base", GetQSkillLevel()) + (m_PercentageSkillPowerQ2 / 100f) * GetCharacterStats().GetAbilityPower();
                             Debug.Log($"{l_Enemy.name} recibe {l_Damage} de daño.");
-                            Enemy.TakeDamage(0, l_Damage, false, m_CharacterStats.GetPlayerName(), gameObject);
+                            Enemy.TakeDamage(l_DamageInstance);
                         }
 
                         if (l_Hit.collider.TryGetComponent(out ITakeDamage HitEnemy))
@@ -454,9 +454,8 @@ public class RapatuCharacterController : CharacterMaster
                                 Buffs.AddBuff(m_QStunBuff.InitializeBuff(m_Q2StunBuffTime, l_Hit.collider.gameObject));
                             }
 
-                            float l_Damage = m_QSkill.GetAttribute("Daño base", GetQSkillLevel()) + (m_PercentageSkillPowerQ2 / 100f) * GetCharacterStats().GetAbilityPower();
                             Debug.Log($"{l_Hit.collider.gameObject.name} recibe {l_Damage} de daño.");
-                            HitEnemy.TakeDamage(0, l_Damage, false, m_CharacterStats.GetPlayerName(), gameObject);
+                            HitEnemy.TakeDamage(l_DamageInstance);
                         }
 
                         l_HasHit = true;
@@ -489,9 +488,6 @@ public class RapatuCharacterController : CharacterMaster
             }
         }
     }
-
-
-
 
     private void QUpdate()
     {
@@ -656,6 +652,9 @@ public class RapatuCharacterController : CharacterMaster
         if (m_EnemysTrappedQ != null)
             m_EnemysTrappedQ.Clear();
         m_EnemysTrappedQ = new List<GameObject>();
+        
+        float l_Damage = (m_QSkill.GetAttribute("Daño base", GetQSkillLevel())) + (m_PercentageSkillPowerQ1 / 100) * GetCharacterStats().GetAbilityPower();
+        DamageInstance l_DamageInstance=new DamageInstance(0.0f, l_Damage, m_CharacterStats.GetPlayerName(), gameObject);
 
         foreach (Collider Entity in l_HitColliders)
         {
@@ -665,9 +664,8 @@ public class RapatuCharacterController : CharacterMaster
                 {
                     Buffs.AddBuff(m_QImmobilizeBuff.InitializeBuff(m_Q1ImmobilizeBuffTime, Entity.gameObject));
                 }
-                float l_Damage = (m_QSkill.GetAttribute("Daño base", GetQSkillLevel())) + (m_PercentageSkillPowerQ1 / 100) * GetCharacterStats().GetAbilityPower();
                 Debug.Log("TAKEN " + l_Damage + " DAMAGE");
-                Enemy.TakeDamage(0, l_Damage, false, m_CharacterStats.GetPlayerName(), gameObject);
+                Enemy.TakeDamage(l_DamageInstance);
                 l_CollidersHit.Add(Entity);
                 m_EnemysTrappedQ.Add(Entity.gameObject);
             }
@@ -681,7 +679,6 @@ public class RapatuCharacterController : CharacterMaster
                 col.enabled = false;
             }
         }
-
 
         StartCoroutine(CanReactiveQ());
         yield return new WaitForSeconds(0.2f);//Change
@@ -782,8 +779,6 @@ public class RapatuCharacterController : CharacterMaster
         }
         else
             StartCoroutine(StartWSkill());
-
-
     }
     IEnumerator StartWSkill()
     {
@@ -830,8 +825,6 @@ public class RapatuCharacterController : CharacterMaster
         m_CanRideIndicator = Instantiate(m_CanRideIndicatorPrefab, transform.position, Quaternion.identity, transform);
         m_CanRideIndicator.transform.localPosition = new Vector3(m_CanRideIndicator.transform.localPosition.x, m_CanRideIndicator.transform.localPosition.y + m_CanRideIndicatorYOffset, m_CanRideIndicator.transform.localPosition.z);
         m_CanRide = true;
-
-
     }
     void WUpdate()
     {
@@ -868,9 +861,7 @@ public class RapatuCharacterController : CharacterMaster
                     StartJumpingW();
                 }
             }
-
         }
-
 
         if (m_JumpingW)
         {
@@ -884,7 +875,6 @@ public class RapatuCharacterController : CharacterMaster
         else
         {
             LookAt(m_WIndicator.transform.position);
-
         }
 
         if (m_CanDoOtherJumpW)
@@ -906,9 +896,6 @@ public class RapatuCharacterController : CharacterMaster
                 m_WIndicator.transform.position = transform.position + l_Direction * m_MAXRangeW / 100;
             }
         }
-
-
-
     }
     void StartJumpingW()
     {
@@ -946,22 +933,21 @@ public class RapatuCharacterController : CharacterMaster
     }
     IEnumerator DoLandsDamageW(float Damage, float PercentageSlowsDown, float TimeSlowsDown, float DamageRange)
     {
-
         GameObject l_Explosion = Instantiate(m_WExplosion, transform.position, Quaternion.identity);
         l_Explosion.transform.localScale = new Vector3(DamageRange / 100, DamageRange / 100, DamageRange / 100);
         List<Collider> l_CollidersHit = new List<Collider>();
         Collider[] l_HitColliders = Physics.OverlapSphere(l_Explosion.transform.position, l_Explosion.transform.localScale.x / 2.0f, m_DamageLayerMask);
+        DamageInstance l_DamageInstance=new DamageInstance(0.0f, Damage, m_CharacterStats.GetPlayerName(), gameObject);
         foreach (Collider Entity in l_HitColliders)
         {
             if (!l_CollidersHit.Contains(Entity) && Entity.TryGetComponent(out ITakeDamage Enemy))
             {
                 if (Entity.TryGetComponent(out BuffableEntity Buffs))
                 {
-
                     Buffs.AddBuff(m_WSlowsDownBuff.InitializeBuff(TimeSlowsDown, -PercentageSlowsDown, Entity.gameObject));
                 }
                 Debug.Log("TAKEN " + Damage + " DAMAGE");
-                Enemy.TakeDamage(0, Damage, false, m_CharacterStats.GetPlayerName(), gameObject);
+                Enemy.TakeDamage(l_DamageInstance);
                 l_CollidersHit.Add(Entity);
             }
         }
@@ -973,8 +959,6 @@ public class RapatuCharacterController : CharacterMaster
 
     IEnumerator JumpingW()
     {
-
-
         while (!m_JumpingW)
         {
             yield return null;
@@ -985,7 +969,6 @@ public class RapatuCharacterController : CharacterMaster
         while (m_JumpingW)
             yield return null;
         DoLandsDamageWFirstJump();
-
 
         if (m_CanReactiveW)
         {
@@ -998,7 +981,6 @@ public class RapatuCharacterController : CharacterMaster
 
             yield return new WaitForSeconds(m_CanDoOtherJumpTimeW);
         }
-
 
         if (m_OtherJumpW)
         {
@@ -1059,7 +1041,6 @@ public class RapatuCharacterController : CharacterMaster
     //E SKILL
     protected override void ESkill()
     {
-
         if (m_QSkill.GetUsingSkill() || m_WSkill.GetUsingSkill() || m_ESkill.GetUsingSkill() || m_RSkill.GetUsingSkill())
         {
             if (!GetUseSkillGizmos())
@@ -1086,8 +1067,6 @@ public class RapatuCharacterController : CharacterMaster
         if (!m_SaverCanDoE)
             return;
 
-
-
         m_ESkill.SetUsingSkill(true);
         if (GetUseSkillGizmos())
         {
@@ -1104,7 +1083,6 @@ public class RapatuCharacterController : CharacterMaster
         }
         else
             m_ESkillCoroutine = StartCoroutine(ESkillCoroutine());
-
     }
 
 
@@ -1125,15 +1103,12 @@ public class RapatuCharacterController : CharacterMaster
         GetCharacterUI().HideCastingTime();
         GetCharacterUI().UpdateCastingUI(0, 1);
 
-
-
         m_HealingAreaE = Instantiate(m_HealingAreaEPrefab, transform.position, Quaternion.identity, transform).GetComponent<RapatuEHealingArea>();
         m_HealingAreaE.SetHealingAria(transform, m_HealingAreaRadius / 100);
 
         m_ECurrentHealingTime = 0;
         m_EMaxHealingTime = m_HealingTimes - 1 * m_HealingTimeSpace;
         GetCharacterUI().ShowCastingUI();
-
 
         float l_HealLifeValue = (m_ESkill.GetAttribute("Curación", GetESkillLevel())) + (m_PercentageSkillPowerE / 100) * GetCharacterStats().GetAbilityPower() + (m_PercentageAdditionalLifeE / 100) * GetCharacterStats().GetBonusHealth();
 
@@ -1144,7 +1119,6 @@ public class RapatuCharacterController : CharacterMaster
             yield return new WaitForSeconds(m_HealingTimeSpace);
             if (!m_HealingAreaE.IsDestroyed())
                 m_HealingAreaE.Heal(l_HealLifeValue);
-
         }
 
         if (!m_HealingAreaE.IsDestroyed())
@@ -1167,7 +1141,6 @@ public class RapatuCharacterController : CharacterMaster
         base.ESkill();
         m_CanStopE = false;
         m_ESkill.SetUsingSkill(false);
-
     }
     IEnumerator ESkillCanStop()
     {
@@ -1179,7 +1152,6 @@ public class RapatuCharacterController : CharacterMaster
         m_SaverCanDoE = false;
         yield return null; // Esperar 1 frame por seguridad
         m_SaverCanDoE = true;
-
     }
     #endregion
     #region R Skill
@@ -1414,7 +1386,6 @@ public class RapatuCharacterController : CharacterMaster
             Debug.Log("Saltando porque se ha montado alguien");
             m_CanReactiveW = false;
             StartJumpingW();
-
         }
     }
 

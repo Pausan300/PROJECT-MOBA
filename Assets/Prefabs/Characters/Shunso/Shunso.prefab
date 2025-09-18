@@ -2647,6 +2647,8 @@ MonoBehaviour:
   m_IngameCharacterUI: {fileID: 6456300670760886887}
   m_SkillIndicatorUI: {fileID: 8706478969338340768}
   m_CharacterStats: {fileID: 7591410689033805986}
+  m_CrystalPrefab: {fileID: 7579833499246843584, guid: a32a1dd6082723e4a8749d3bd905dee3, type: 3}
+  m_CrystalSpawnMaxRadius: 200
   m_RecallTime: 8
   m_RespawnTime: 5
   m_RecallTpPoint: {fileID: 0}

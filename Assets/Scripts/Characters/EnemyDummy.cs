@@ -135,8 +135,11 @@ public class EnemyDummy : NetworkBehaviour, ITakeDamage
         Collider[] l_HitColliders = Physics.OverlapSphere(transform.position, m_AttackRadius / 100.0f, m_LayerMask);
         foreach (Collider Entity in l_HitColliders)
         {
-            if (Entity.TryGetComponent(out ITakeDamage Enemy))
-                Enemy.TakeDamage(m_CharacterStats.GetAttackDamage(), m_CharacterStats.GetAbilityPower(), false, "PracticeDummy", gameObject);
+            if (Entity.TryGetComponent(out ITakeDamage Enemy)) 
+            {
+                DamageInstance l_Instance=new DamageInstance(m_CharacterStats.GetAttackDamage(), m_CharacterStats.GetAbilityPower(), "PracticeDummy", gameObject);
+                Enemy.TakeDamage(l_Instance);
+            }
         }
         m_CharacterStats.SetCurrentManaRpc(m_CharacterStats.GetCurrentMana() - 10.0f);
         m_ShowGizmos = true;
@@ -151,22 +154,23 @@ public class EnemyDummy : NetworkBehaviour, ITakeDamage
             Gizmos.DrawSphere(transform.position, m_AttackRadius / 100.0f);
         }
     }
-    public void TakeDamage(float PhysDamage, float MagicDamage, bool IgnoreResistances, string SourceId, GameObject SourceObject)
+    public void TakeDamage(DamageInstance Instance)
     {
-        float l_TotalPhysDamage=PhysDamage;
-        float l_TotalMagicDamage=MagicDamage;
-        if(!IgnoreResistances) 
+        float l_TotalPhysDamage=Instance.m_PhysDamage;
+        float l_TotalMagicDamage=Instance.m_MagicDamage;
+        if(!Instance.m_IgnoreResistances) 
         {
             l_TotalPhysDamage /= (1.0f + m_CharacterStats.GetArmor() / 100.0f);
             l_TotalMagicDamage /= (1.0f + m_CharacterStats.GetMagicRes() / 100.0f);
         }
         UpdateCurrentHealthRpc(l_TotalPhysDamage + l_TotalMagicDamage, true);
-        m_IngameUI.AddDamageInstance(l_TotalPhysDamage, l_TotalMagicDamage, SourceId);
+        DamageInstance l_AfterResistancesInstance=new DamageInstance(l_TotalPhysDamage, l_TotalMagicDamage, Instance.m_Id, Instance.m_SourceObject);
+        m_IngameUI.AddDamageInstance(l_AfterResistancesInstance);
 
-        if(SourceObject.TryGetComponent(out ITakeDamage Enemy) && Enemy.GetCharacterStats().GetEnemyType()==CharacterStats.EnemyType.PLAYER && Enemy.GetNearTower()) 
+        if(Instance.m_SourceObject.TryGetComponent(out ITakeDamage Enemy) && Enemy.GetCharacterStats().GetEnemyType()==CharacterStats.EnemyType.PLAYER && Enemy.GetNearTower()) 
         {
             if(Vector3.Distance(transform.position, Enemy.GetNearTower().transform.position)<=(Enemy.GetNearTower().m_AllyAttackedNearTowerRadius/100.0f))
-                Enemy.GetNearTower().SetCurrentTarget(SourceObject);
+                Enemy.GetNearTower().SetCurrentTarget(Instance.m_SourceObject);
         }
     }
     public void OnDeath()

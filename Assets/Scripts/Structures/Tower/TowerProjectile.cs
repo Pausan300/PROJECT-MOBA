@@ -35,6 +35,8 @@ public class TowerProjectile : MonoBehaviour
         m_Area.transform.localPosition=transform.InverseTransformPoint(l_IndicatorPos);
         m_Area.transform.eulerAngles=new Vector3(90.0f, 0.0f, 0.0f);
         Collider[] l_HitColliders=Physics.OverlapSphere(m_TargetPos, m_ExplosionRadius/100.0f, m_Tower.m_DamageLayerMask);
+        DamageInstance l_NormalDamageInstance=new DamageInstance(m_Damage, 0.0f, "Tower", gameObject);
+        DamageInstance l_MinionDamageInstance=new DamageInstance(0.0f, 0.0f, "Tower", gameObject);
         foreach(Collider Entity in l_HitColliders)
 		{
             if(Entity.TryGetComponent(out ITakeDamage Target) && CheckIsEnemy(Target.GetCharacterStats().m_TeamType)) 
@@ -42,10 +44,11 @@ public class TowerProjectile : MonoBehaviour
                 if(Target.GetCharacterStats().GetEnemyType()==CharacterStats.EnemyType.MINION) 
                 {
                     MinionController l_Minion=Entity.GetComponent<MinionController>();
-		            Target.TakeDamage(Target.GetCharacterStats().GetMaxHealth()*l_Minion.m_TowerDamagePct, 0.0f, false, "Tower", gameObject);
+                    l_MinionDamageInstance.AddDamage(Target.GetCharacterStats().GetMaxHealth()*l_Minion.m_TowerDamagePct, 0.0f);
+		            Target.TakeDamage(l_MinionDamageInstance);
                 }
                 else
-		            Target.TakeDamage(m_Damage, 0.0f, false, "Tower", gameObject);
+		            Target.TakeDamage(l_NormalDamageInstance);
 
                 if(Target.GetCharacterStats().GetCurrentHealth()<=0.0f)
                     m_Tower.RemoveTargetFromList(Entity.gameObject, Target.GetCharacterStats().m_EnemyType);

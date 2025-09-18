@@ -29,21 +29,26 @@ public class NexusController : MonoBehaviour, ITakeDamageStructure
         }
     }
 
-    public void TakeDamage(float PhysDamage, float MagicDamage, bool IgnoreResistances, string SourceId)
+    public void TakeDamage(CharacterStats Stats)
     {
         if(m_Destroyed || m_Untargetable) 
             return;
 
-        float l_TotalPhysDamage = PhysDamage / (1.0f + m_NexusStats.GetArmor() / 100.0f);
-        float l_TotalMagicDamage = MagicDamage / (1.0f + m_NexusStats.GetMagicRes() / 100.0f);
-        if (PhysDamage > 0.0f)
-            Debug.Log("Taking " + PhysDamage + " physical damage, reduced to " + l_TotalPhysDamage + " damage");
-        if (MagicDamage > 0.0f)
-            Debug.Log("Taking " + MagicDamage + " magical damage, reduced to " + l_TotalMagicDamage + " damage");
-        m_NexusStats.SetCurrentHealthRpc(m_NexusStats.GetCurrentHealth() - (l_TotalPhysDamage + l_TotalMagicDamage));
-        m_IngameUI.AddDamageInstance(l_TotalPhysDamage, l_TotalMagicDamage, SourceId);
+        float l_Damage=Stats.GetAttackDamage()+Stats.GetBonusAttackDamage()+(Stats.GetAbilityPower()*0.6f);
+        DamageInstance l_AfterResistancesInstance;
+        if(Stats.GetBonusAttackDamage()<(Stats.GetAbilityPower()*0.6f)) 
+        {
+            l_Damage /= (1.0f + m_NexusStats.GetMagicRes() / 100.0f);
+            l_AfterResistancesInstance=new DamageInstance(0.0f, l_Damage, Stats.GetPlayerName(), Stats.gameObject);
+        }
+        else 
+        { 
+            l_Damage /= (1.0f + m_NexusStats.GetArmor() / 100.0f);
+            l_AfterResistancesInstance=new DamageInstance(l_Damage, 0.0f, Stats.GetPlayerName(), Stats.gameObject);
+        }
+        m_NexusStats.SetCurrentHealthRpc(m_NexusStats.GetCurrentHealth() - l_Damage);
+        m_IngameUI.AddDamageInstance(l_AfterResistancesInstance);
 
-       
         if(m_NexusStats.GetCurrentHealth()<=0.0f) 
         {
             DestroyNexus();

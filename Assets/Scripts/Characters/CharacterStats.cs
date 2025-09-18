@@ -46,12 +46,14 @@ public class CharacterStats : NetworkBehaviour
     float m_MoveSpeedBonusMulti;
     Dictionary<string, float> m_MoveSpeedBonusMultiBuffs = new Dictionary<string, float>();
 
+    float m_CorruptedHealth;
+    float m_CorruptedHealthDamage;
+
     int m_CurrentLevel;
     int m_SkillPoints;
     float m_CurrentExp;
-
-    float m_CorruptedHealth;
-    float m_CorruptedHealthDamage;
+    int m_Gold;
+    int m_Crystals;
 
     [Header("TEAM")]
     public TeamType m_TeamType;
@@ -121,6 +123,9 @@ public class CharacterStats : NetworkBehaviour
         m_CurrentLevel = 1;
         m_CurrentExp = 0.0f;
         m_SkillPoints = 1;
+
+        m_Gold=0;
+        m_Crystals=0;
     }
     public void LevelUp()
     {
@@ -200,6 +205,22 @@ public class CharacterStats : NetworkBehaviour
     public void SetCurrentExp(float Exp)
     {
         m_CurrentExp = Exp;
+    }
+    public int GetGold() 
+    {
+        return m_Gold;
+    }
+    public void SetGold(int Gold) 
+    {
+        m_Gold=Gold;
+    }
+    public int GetCrystals() 
+    {
+        return m_Crystals;
+    }
+    public void SetCrystals(int Crystals) 
+    {
+        m_Crystals=Crystals;
     }
     public int GetSkillPoints()
     {

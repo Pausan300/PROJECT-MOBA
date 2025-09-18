@@ -9,9 +9,9 @@ public class ZappadasWormholeProjectile : MonoBehaviour
     Vector3 m_EndDirection;
     Vector3 m_StartPosition;
     ZappadasCharacterController m_CharacterController;
-    float m_Damage;
+    DamageInstance m_DamageInstance;
 
-    public void Set(float _ProjectileExitSpeed, float _ProjectileExitRange, float _ProjectileExitExtraHitbox, Vector3 EndDirection, ZappadasCharacterController _CharacterController, float _Damage)
+    public void Set(float _ProjectileExitSpeed, float _ProjectileExitRange, float _ProjectileExitExtraHitbox, Vector3 EndDirection, ZappadasCharacterController _CharacterController, DamageInstance Instance)
     {
         m_ProjectileExitSpeed = _ProjectileExitSpeed;
         m_ProjectileExitRange = _ProjectileExitRange;
@@ -20,7 +20,9 @@ public class ZappadasWormholeProjectile : MonoBehaviour
         m_StartPosition = transform.position;
         m_CharacterController = _CharacterController;
         transform.localScale *= (m_ProjectileExitExtraHitbox + 1);
-        m_Damage = _Damage;
+        m_DamageInstance=Instance;
+        m_DamageInstance.m_Id=m_CharacterController.GetCharacterStats().GetPlayerName();
+        m_DamageInstance.m_SourceObject=m_CharacterController.gameObject;
     }
 
     void Update()
@@ -43,9 +45,7 @@ public class ZappadasWormholeProjectile : MonoBehaviour
         {
             if (OtherEntity.TryGetComponent(out ITakeDamage Enemy))
             {
-                float l_Damage = m_Damage;
-                Debug.Log("TAKEN " + l_Damage + " DAMAGE");
-                Enemy.TakeDamage(0, l_Damage, false, m_CharacterController.m_CharacterStats.GetPlayerName(), m_CharacterController.gameObject);
+                Enemy.TakeDamage(m_DamageInstance);
                 m_CharacterController.AddmDarkPowerDamageLightlessWithSkill(OtherEntity.gameObject);
             }
             Destroy(gameObject);
