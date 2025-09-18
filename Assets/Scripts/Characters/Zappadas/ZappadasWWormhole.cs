@@ -66,22 +66,19 @@ public class ZappadasWWormhole : MonoBehaviour
         {
             if (projectile.GetCanBeDeleted())
             {
-                float l_Damage = projectile.GetDamage();
                 GameObject l_ProjectileCopy = projectile.gameObject;
                 projectile.enabled = false;
                 l_ProjectileCopy.transform.position = m_WWormholeEnd.GetComponent<ZappadasWWormholeExit>().GetExitPos();
                 ZappadasWormholeProjectile l_ZappadasWormholeProjectile = l_ProjectileCopy.AddComponent<ZappadasWormholeProjectile>();
-                l_ZappadasWormholeProjectile.Set(m_ProjectileExitSpeed, m_ProjectileExitRange, m_ProjectileExitExtraHitbox, m_EndDirection, m_CharacterController, l_Damage);
+                l_ZappadasWormholeProjectile.Set(m_ProjectileExitSpeed, m_ProjectileExitRange, m_ProjectileExitExtraHitbox, m_EndDirection, m_CharacterController, projectile.GetDamageInstance());
                 projectile.SetCanBeDeleted(false);
 
                 if (m_WSkillUpgrade)
                 {
                     GameObject l_ProjectileUpgrade = Instantiate(m_ProjectileUpgradePrefab, m_WWormholeEnd.GetComponent<ZappadasWWormholeExit>().GetExitPos(), Quaternion.identity);
-                    l_ProjectileUpgrade.GetComponent<ZappadasQProjectileUpgrade>().SetProjectilUpGrade(m_DarkPowerDamage, m_DarkPowerRange / m_ProjectileExitSpeed, m_DarkPowerRange, 0, m_CharacterController.m_DamageLayerMask, 1, other, m_CharacterController.GetCharacterStats(), m_CharacterController, false);
-
+                    l_ProjectileUpgrade.GetComponent<ZappadasQProjectileUpgrade>().SetProjectilUpGrade(m_DarkPowerDamage, m_DarkPowerRange / m_ProjectileExitSpeed, m_DarkPowerRange, 0, 
+                        m_CharacterController.m_DamageLayerMask, 1, other, m_CharacterController.GetCharacterStats(), m_CharacterController, false);
                 }
-
-
             }
         }
     }

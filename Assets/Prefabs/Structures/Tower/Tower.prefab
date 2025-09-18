@@ -172,6 +172,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_TowerStats: {fileID: 6933529113000532666}
   m_TimeToRebuild: 10
+  m_CrystalDamageBonusPct: 0.02
   m_PreviousTower: {fileID: 0}
   m_NextTower: {fileID: 0}
   m_ConnectionLine: {fileID: 3177139727439263412}

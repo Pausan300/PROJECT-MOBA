@@ -1,9 +1,7 @@
 using System;
-using System.Collections;
-using Unity.Netcode;
 using UnityEngine;
 
-public class ShunsoWProjectile : NetworkBehaviour
+public class ShunsoWProjectile : Projectile
 {
     ShunsoCharacterController m_Player;
 
@@ -21,10 +19,7 @@ public class ShunsoWProjectile : NetworkBehaviour
     
     public event Action<int> m_EStacksOnHit;
     public event Action<GameObject> m_OnDamageEnemy;
-    
-    void Start()
-    {
-    }
+
 
     void Update()
     {
@@ -54,6 +49,8 @@ public class ShunsoWProjectile : NetworkBehaviour
         
         m_MaxRange=Vector3.Distance(transform.position, m_TargetPos);
         m_Speed=m_MaxRange/Time;
+
+        SetDamageInstance(new DamageInstance(m_CorruptedHealth, 0.0f, m_Player.GetCharacterStats().GetPlayerName(), m_Player.gameObject));
     }
 
     private void OnTriggerEnter(Collider other)
@@ -67,7 +64,7 @@ public class ShunsoWProjectile : NetworkBehaviour
         {
             if(other.TryGetComponent(out ITakeDamage Enemy))
 	        {
-                Enemy.TakeDamage(m_CorruptedHealth, 0.0f, true, m_Player.m_CharacterStats.GetPlayerName(), m_Player.gameObject);
+                Enemy.TakeDamage(GetDamageInstance());
                 //Enemy.GetCharacterStats().SetCurrentHealthRpc(Enemy.GetCharacterStats().GetCurrentHealth()-m_CorruptedHealth);
 
                 if(Enemy.GetCharacterStats().GetCorruptedHealth()>0.0f && !m_Player.m_WEnemiesHit.Contains(other.gameObject))

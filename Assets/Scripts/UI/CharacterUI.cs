@@ -84,6 +84,10 @@ public class CharacterUI : MonoBehaviour
     public TextMeshProUGUI m_OmnidrainText;
     public TextMeshProUGUI m_TenacityText;
 
+    [Header("CURRENCY")]
+    public TextMeshProUGUI m_GoldText;
+    public TextMeshProUGUI m_CrystalsText;
+
     [Header("BUFFS/DEBUFFS")]
     public GameObject m_BuffUIPrefab;
     public RectTransform m_BuffsDebuffsParent;
@@ -189,6 +193,11 @@ public class CharacterUI : MonoBehaviour
         m_MagicPenText.text = MagicPenFix.ToString() + "|" + MagicPenPct.ToString() + "%";
         m_OmnidrainText.text = Omnidrain.ToString() + "%";
         m_TenacityText.text = Tenacity.ToString() + "%";
+    }
+    public void UpdateCurrency(int Gold, int Crystals) 
+    {
+        m_GoldText.text=Gold.ToString();
+        m_CrystalsText.text=Crystals.ToString();
     }
     public void UpdateExpBar(float CurrentExp, float NeededExp)
     {

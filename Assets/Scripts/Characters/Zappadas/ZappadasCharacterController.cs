@@ -446,15 +446,15 @@ public class ZappadasCharacterController : CharacterMaster
         {
             List<Collider> l_CollidersHit = new List<Collider>();
             Collider[] l_HitColliders = Physics.OverlapSphere(OtherEntity.transform.position, m_ExplosionHitboxQ / 100, m_DamageLayerMask);
-
+            float l_Damage = (m_QSkill.GetAttribute("Daño base", GetQSkillLevel())) + (m_PercentageSkillPowerQ1 / 100) * GetCharacterStats().GetAbilityPower();
+            DamageInstance l_DamageInstance=new DamageInstance(0.0f, l_Damage, m_CharacterStats.GetPlayerName(), gameObject);
 
             foreach (Collider Entity in l_HitColliders)
             {
                 if (!l_CollidersHit.Contains(Entity) && Entity.TryGetComponent(out ITakeDamage Enemy))
                 {
-                    float l_Damage = (m_QSkill.GetAttribute("Daño base", GetQSkillLevel())) + (m_PercentageSkillPowerQ1 / 100) * GetCharacterStats().GetAbilityPower();
                     Debug.Log("TAKEN " + l_Damage + " DAMAGE");
-                    Enemy.TakeDamage(0, l_Damage, false, m_CharacterStats.GetPlayerName(), gameObject);
+                    Enemy.TakeDamage(l_DamageInstance);
                     AddmDarkPowerDamageLightlessWithSkill(Entity.gameObject);
                     l_CollidersHit.Add(Entity);
                 }
@@ -469,12 +469,10 @@ public class ZappadasCharacterController : CharacterMaster
                 GameObject l_QProjectileUpgrade = Instantiate(m_QProjectileUpgradePrefab, l_SpawnPos, Quaternion.identity);
                 m_Q2MaxBounces = (int)m_QSkill.GetAttribute("Cantidad de rebotes", GetQSkillLevel());
                 
-                float l_Damage = (m_QSkill.GetAttribute("Daño base “Energía oscura”", GetQSkillLevel())) + (m_PercentageSkillPowerQ2 / 100) * GetCharacterStats().GetAbilityPower();
-                l_QProjectileUpgrade.GetComponent<ZappadasQProjectileUpgrade>().SetProjectilUpGrade(l_Damage, m_Q2TimeToArribeTarget, m_Q2Range, m_Q2AditionalDamageMinions, m_DamageLayerMask, m_Q2MaxBounces, OtherEntity, GetCharacterStats(), this, true);
-
+                float l_UpgradedDamage = (m_QSkill.GetAttribute("Daño base “Energía oscura”", GetQSkillLevel())) + (m_PercentageSkillPowerQ2 / 100) * GetCharacterStats().GetAbilityPower();
+                l_QProjectileUpgrade.GetComponent<ZappadasQProjectileUpgrade>().SetProjectilUpGrade(l_UpgradedDamage, m_Q2TimeToArribeTarget, m_Q2Range, m_Q2AditionalDamageMinions, 
+                    m_DamageLayerMask, m_Q2MaxBounces, OtherEntity, GetCharacterStats(), this, true);
             }
-
-
         }
     }
 
@@ -852,6 +850,8 @@ public class ZappadasCharacterController : CharacterMaster
             m_EnemysWithDarkE = new List<GameObject>();
         }
 
+        float l_Damage = (m_ESkill.GetAttribute("Daño base", GetESkillLevel())) + (m_PercentageSkillPowerE / 100) * GetCharacterStats().GetAbilityPower();
+        DamageInstance l_DamageInstance=new DamageInstance(0.0f, l_Damage, m_CharacterStats.GetPlayerName(), gameObject);
         foreach (Collider Entity in l_HitColliders)
         {
             if (!l_CollidersHit.Contains(Entity) && Entity.TryGetComponent(out ITakeDamage Enemy))
@@ -860,9 +860,8 @@ public class ZappadasCharacterController : CharacterMaster
                 {
                     Buffs.AddBuff(m_EStunBuff.InitializeBuff(m_EStunBuffTime, Entity.gameObject));
                 }
-                float l_Damage = (m_ESkill.GetAttribute("Daño base", GetESkillLevel())) + (m_PercentageSkillPowerE / 100) * GetCharacterStats().GetAbilityPower();
                 Debug.Log("TAKEN " + l_Damage + " DAMAGE");
-                Enemy.TakeDamage(0, l_Damage, false, m_CharacterStats.GetPlayerName(), gameObject);
+                Enemy.TakeDamage(l_DamageInstance);
                 AddmDarkPowerDamageLightlessWithSkill(Entity.gameObject);
                 l_CollidersHit.Add(Entity);
                 if (ballNum == 1)

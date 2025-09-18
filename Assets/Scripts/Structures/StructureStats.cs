@@ -10,7 +10,7 @@ public class StructureStats : MonoBehaviour
 
     float m_MaxHealth;
     float m_CurrentHealth;
-    float m_AttackDamage;
+    float m_AttackDamage; 
     float m_AbilityPower;
     float m_AttackSpeed;
     float m_AttackRange;

@@ -54,7 +54,6 @@ public class EnemySpawner : NetworkBehaviour
             }
         }   
     }
-
     [Rpc(SendTo.Everyone)]
     void SetupEnemyRpc(int EnemyIndex, int LaneIndex)
     {

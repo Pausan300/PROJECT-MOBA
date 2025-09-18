@@ -35,6 +35,10 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
     [Header("CHARACTER STATS")]
     public CharacterStats m_CharacterStats;
 
+    [Header("CRYSTALS")]
+    public GameObject m_CrystalPrefab;
+    public float m_CrystalSpawnMaxRadius;
+
     [Header("RECALL AND DEATH")]
     public float m_RecallTime;
     public float m_RespawnTime;
@@ -229,6 +233,8 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
             else
                 m_OptionsUI.HideOptionsUI();
         }
+
+        m_CharacterUI.UpdateCurrency(m_CharacterStats.GetGold(), m_CharacterStats.GetCrystals());
 
         if(m_Dead) 
         {
@@ -577,12 +583,6 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
                 return l_CameraRaycastHit.point;
         }
         return Vector3.zero;
-    }
-    [Rpc(SendTo.Everyone)]
-    void SetDesiredEnemyRpc(NetworkObjectReference Enemy)
-    {
-        NetworkObject l_Enemy = Enemy;
-        m_DesiredEnemy = l_Enemy.transform;
     }
 
     public void LookAt(Vector3 TargetPosition)
@@ -1118,26 +1118,27 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
         m_IngameCharacterUI.SetPlayerName(m_CharacterStats.GetPlayerName());
     }
    
-    public void TakeDamage(float PhysDamage, float MagicDamage, bool IgnoreResistances, string SourceId, GameObject SourceObject)
+    public void TakeDamage(DamageInstance Instance)
     {
         if (GetCharacterStats().GetImmuneCC())
             return;
 
-        float l_TotalPhysDamage = PhysDamage / (1.0f + m_CharacterStats.GetArmor() / 100.0f);
-        float l_TotalMagicDamage = MagicDamage / (1.0f + m_CharacterStats.GetMagicRes() / 100.0f);
-        if (PhysDamage > 0.0f)
-            Debug.Log("Taking " + PhysDamage + " physical damage, reduced to " + l_TotalPhysDamage + " damage");
-        if (MagicDamage > 0.0f)
-            Debug.Log("Taking " + MagicDamage + " magical damage, reduced to " + l_TotalMagicDamage + " damage");
+        float l_TotalPhysDamage = Instance.m_PhysDamage / (1.0f + m_CharacterStats.GetArmor() / 100.0f);
+        float l_TotalMagicDamage = Instance.m_MagicDamage / (1.0f + m_CharacterStats.GetMagicRes() / 100.0f);
+        if (Instance.m_PhysDamage > 0.0f)
+            Debug.Log("Taking " + Instance.m_PhysDamage + " physical damage, reduced to " + l_TotalPhysDamage + " damage");
+        if (Instance.m_MagicDamage > 0.0f)
+            Debug.Log("Taking " + Instance.m_MagicDamage + " magical damage, reduced to " + l_TotalMagicDamage + " damage");
         m_CharacterStats.SetCurrentHealthRpc(m_CharacterStats.GetCurrentHealth() - (l_TotalPhysDamage + l_TotalMagicDamage));
         if (m_CurrentRecallTime > 0.2f)
             StopRecall();
-        m_IngameCharacterUI.AddDamageInstance(l_TotalPhysDamage, l_TotalMagicDamage, SourceId);
+        DamageInstance l_AfterResistancesInstance=new DamageInstance(l_TotalPhysDamage, l_TotalMagicDamage, Instance.m_Id, Instance.m_SourceObject);
+        m_IngameCharacterUI.AddDamageInstance(l_AfterResistancesInstance);
 
-        if(SourceObject.TryGetComponent(out ITakeDamage Enemy) && Enemy.GetCharacterStats().GetEnemyType()==CharacterStats.EnemyType.LIGHTLESS && Enemy.GetNearTower()) 
+        if(Instance.m_SourceObject.TryGetComponent(out ITakeDamage Enemy) && Enemy.GetCharacterStats().GetEnemyType()==CharacterStats.EnemyType.LIGHTLESS && Enemy.GetNearTower()) 
         {
             if(Vector3.Distance(transform.position, Enemy.GetNearTower().transform.position)<=(Enemy.GetNearTower().m_AllyAttackedNearTowerRadius/100.0f))
-                Enemy.GetNearTower().SetCurrentTarget(SourceObject);
+                Enemy.GetNearTower().SetCurrentTarget(Instance.m_SourceObject);
         }
 
         if(m_CharacterStats.GetCurrentHealth()<=0.0f)
@@ -1155,6 +1156,24 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
         m_CharacterModel.SetActive(false);
         m_IngameCharacterUI.gameObject.SetActive(false);
         m_IngameCharacterUI.m_DamageInstanceList.Clear();
+
+        DropCrystals();
+    }
+    void DropCrystals() 
+    {
+        if(m_CharacterStats.GetCrystals()>0) 
+        {
+            for(int i=0; i<m_CharacterStats.GetCrystals(); ++i) 
+            {
+                float l_RandomRange=UnityEngine.Random.Range(0.0f, m_CrystalSpawnMaxRadius)/100.0f;
+                float l_RandomAngle=UnityEngine.Random.Range(0f, 360f);
+                l_RandomAngle*=Mathf.Deg2Rad;
+                Vector3 l_Pos=transform.position+new Vector3(Mathf.Cos(l_RandomAngle), 0f, Mathf.Sin(l_RandomAngle))*l_RandomRange;
+                GameObject l_Crystal=Instantiate(m_CrystalPrefab, l_Pos, m_CrystalPrefab.transform.rotation, null);
+            }
+            m_CharacterStats.SetCrystals(0);
+
+        }
     }
     void Respawn() 
     {
@@ -1232,10 +1251,13 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
 //        Debug.Log("ATTACKING - Since last auto: " + m_TimeSinceLastAuto);
 //        m_TimeSinceLastAuto = 0.0f;
 //#endif
-        if(m_DesiredEnemy.TryGetComponent(out ITakeDamage Enemy))
-            Enemy.TakeDamage(m_CharacterStats.GetAttackDamage(), m_CharacterStats.GetAbilityPower(), false, m_CharacterStats.GetPlayerName(), gameObject);
+        if(m_DesiredEnemy.TryGetComponent(out ITakeDamage Enemy)) 
+        {
+            DamageInstance l_DamageInstance=new DamageInstance(m_CharacterStats.GetAttackDamage(), 0.0f, m_CharacterStats.GetPlayerName(), gameObject);
+            Enemy.TakeDamage(l_DamageInstance);
+        }
         else if(m_DesiredEnemy.TryGetComponent(out ITakeDamageStructure Tower))
-            Tower.TakeDamage(m_CharacterStats.GetAttackDamage(), m_CharacterStats.GetAbilityPower(), false, m_CharacterStats.GetPlayerName());
+            Tower.TakeDamage(m_CharacterStats);
     }
 
     //LLAMADA POR EVENTO EN LA ANIMACION DE AUTOATAQUE
@@ -1258,6 +1280,16 @@ public class CharacterMaster : NetworkBehaviour, ITakeDamage
     {
 
     }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if(other.CompareTag("Crystal")) 
+        {
+            Destroy(other.gameObject);
+            m_CharacterStats.SetCrystals(m_CharacterStats.GetCrystals()+1);
+        }
+    }
+
 
     //GETTERS & SETTERS
     public GameManager GetGameManager()

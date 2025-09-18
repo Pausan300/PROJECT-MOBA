@@ -1,10 +1,8 @@
 using System;
 using System.Collections;
-using Unity.Netcode;
-using Unity.VisualScripting;
 using UnityEngine;
 
-public class ShunsoRProjectile : NetworkBehaviour
+public class ShunsoRProjectile : Projectile
 {
     public SpriteRenderer m_ByteAreaSprite;
     ShunsoCharacterController m_Player;
@@ -51,6 +49,8 @@ public class ShunsoRProjectile : NetworkBehaviour
         float l_NewWidth=ByteRadius*2.0f/l_SpriteWidth;
         m_ByteAreaSprite.transform.localScale=new Vector2(l_NewWidth, l_NewWidth);
         m_ByteAreaSprite.gameObject.SetActive(false);
+
+        SetDamageInstance(new DamageInstance(m_Damage, 0.0f, m_Player.GetCharacterStats().GetPlayerName(), m_Player.gameObject));
     }
 
     IEnumerator DoByte(bool EnemyHit) 
@@ -63,11 +63,12 @@ public class ShunsoRProjectile : NetworkBehaviour
         Collider l_Collider=GetComponent<Collider>();
         Collider[] l_HitColliders=Physics.OverlapSphere(l_Collider.bounds.center, m_ByteRadius/100.0f, m_Player.m_DamageLayerMask);
         float l_ExtraDamage=Mathf.Round(Vector3.Distance(m_InitialPos, transform.position))*5.0f;
+        GetDamageInstance().AddToBiggestDamage(l_ExtraDamage);
 		foreach(Collider Entity in l_HitColliders)
 		{
             if(Entity.TryGetComponent(out ITakeDamage Enemy) && Entity.transform.CompareTag("Enemy"))
 	        {
-		        Enemy.TakeDamage(m_Damage+l_ExtraDamage, 0.0f, false, m_Player.m_CharacterStats.GetPlayerName(), m_Player.gameObject);
+		        Enemy.TakeDamage(GetDamageInstance());
                 if(Enemy.GetCharacterStats().GetCorruptedHealth()>0.0f) 
                     m_EStacksOnHit?.Invoke(m_CorruptedCharges);
                 else

@@ -1,12 +1,8 @@
 using System;
 using System.Collections;
-using TreeEditor;
-using Unity.Netcode;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.Analytics;
 
-public class ShunsoQProjectile : NetworkBehaviour
+public class ShunsoQProjectile : Projectile
 {
     ShunsoCharacterController m_Player;
 
@@ -70,6 +66,8 @@ public class ShunsoQProjectile : NetworkBehaviour
         transform.localScale=new Vector3(m_ProjectileWidth, transform.localScale.y, m_ProjectileWidth);
         m_NormalCharges=(int)NormalCharges;
         m_CorruptedCharges=(int)CorruptedCharges;
+
+        SetDamageInstance(new DamageInstance(m_Damage, 0.0f, m_Player.GetCharacterStats().GetPlayerName(), m_Player.gameObject));
     }
 
     IEnumerator StartSlash() 
@@ -102,7 +100,7 @@ public class ShunsoQProjectile : NetworkBehaviour
                 StartCoroutine(StartSlash());
             if(other.TryGetComponent(out ITakeDamage Enemy))
 	        {
-		        Enemy.TakeDamage(m_Damage, 0.0f, false, m_Player.m_CharacterStats.GetPlayerName(), m_Player.gameObject);
+		        Enemy.TakeDamage(GetDamageInstance());
                 if(Enemy.GetCharacterStats().GetCorruptedHealth()>0.0f) 
                     m_EStacksOnHit?.Invoke(m_CorruptedCharges);
                 else 

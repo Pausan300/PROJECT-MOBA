@@ -246,7 +246,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 1467627243
+  GlobalObjectIdHash: 3470274533
   InScenePlacedSourceGlobalObjectIdHash: 419589164
   DeferredDespawnTick: 0
   Ownership: 1
@@ -2541,7 +2541,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 1467627243
+  GlobalObjectIdHash: 3047748510
   InScenePlacedSourceGlobalObjectIdHash: 419589164
   DeferredDespawnTick: 0
   Ownership: 0
@@ -2593,6 +2593,8 @@ MonoBehaviour:
   m_IngameCharacterUI: {fileID: 6020009736387976644}
   m_SkillIndicatorUI: {fileID: 7160561625182134421}
   m_CharacterStats: {fileID: 1110249414907438337}
+  m_CrystalPrefab: {fileID: 7579833499246843584, guid: a32a1dd6082723e4a8749d3bd905dee3, type: 3}
+  m_CrystalSpawnMaxRadius: 200
   m_RecallTime: 8
   m_RespawnTime: 0
   m_RecallTpPoint: {fileID: 0}

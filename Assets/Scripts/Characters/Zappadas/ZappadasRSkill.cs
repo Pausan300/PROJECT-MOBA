@@ -119,7 +119,7 @@ public class ZappadasRSkill : MonoBehaviour
 
         List<Collider> l_CollidersHit = new List<Collider>();
         Collider[] l_HitColliders = Physics.OverlapSphere(transform.position, l_ActualRadius, m_CharacterController.m_DamageLayerMask);
-
+        DamageInstance l_DamageInstance=new DamageInstance(0.0f, 0.0f, m_CharacterController.m_CharacterStats.GetPlayerName(), m_CharacterController.gameObject);
 
         foreach (Collider Entity in l_HitColliders)
         {
@@ -162,10 +162,9 @@ public class ZappadasRSkill : MonoBehaviour
                     l_Damage = m_CharacterController.m_RSkill.GetAttribute("Daño base", m_CharacterController.GetRSkillLevel())
                              + (m_PercentageSkillPowerR1 / 100f) * m_CharacterController.GetCharacterStats().GetAbilityPower();
                 }
-
-
+                l_DamageInstance.AddDamage(0.0f, l_Damage);
                 Debug.Log("TAKEN " + l_Damage + " DAMAGE");
-                Enemy.TakeDamage(0, l_Damage, false, m_CharacterController.m_CharacterStats.GetPlayerName(), m_CharacterController.gameObject);
+                Enemy.TakeDamage(l_DamageInstance);
                 m_CharacterController.AddmDarkPowerDamageLightlessWithSkill(Entity.gameObject);
                 l_CollidersHit.Add(Entity);
 

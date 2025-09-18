@@ -4,39 +4,6 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-
-public class DamageInstance
-{
-    public float m_PhysDamage;
-    public float m_MagicDamage;
-    public string m_Id;
-    public float m_Timer;
-
-    public DamageInstance(float PhysDamage, float MagicDamage, string SourceId)
-    {
-        m_PhysDamage = PhysDamage;
-        m_MagicDamage = MagicDamage;
-        m_Id = SourceId;
-        m_Timer = 0.0f;
-    }
-    public void AddDamage(float PhysDamage, float MagicDamage)
-    {
-        m_PhysDamage += PhysDamage;
-        m_MagicDamage += MagicDamage;
-    }
-}
-public class HealthInstance
-{
-    public float m_Health;
-    public float m_Timer;
-
-    public HealthInstance(float HelthToAdd)
-    {
-        m_Health = HelthToAdd;
-        m_Timer = 0.0f;
-    }
-}
-
 public class IngameCharacterUI : MonoBehaviour
 {
     CameraController m_CameraController;
@@ -73,7 +40,6 @@ public class IngameCharacterUI : MonoBehaviour
     public Color m_NotLoadColor;
     public Color m_LoadColor;
     public Color m_SpecialLoadColor;
-
 
 
     void Start()
@@ -124,13 +90,12 @@ public class IngameCharacterUI : MonoBehaviour
         }
     }
 
-    public void AddDamageInstance(float PhysDamage, float MagicDamage, string SourceId)
+    public void AddDamageInstance(DamageInstance Instance)
     {
-        DamageInstance l_DamageInstance = new DamageInstance(PhysDamage, MagicDamage, SourceId);
-        if (GetDamageInstance(SourceId) != null)
-            GetDamageInstance(SourceId).AddDamage(PhysDamage, MagicDamage);
+        if (GetDamageInstance(Instance.m_Id) != null)
+            GetDamageInstance(Instance.m_Id).AddDamage(Instance.m_PhysDamage, Instance.m_MagicDamage);
         else
-            m_DamageInstanceList.Add(l_DamageInstance);
+            m_DamageInstanceList.Add(Instance);
     }
     public void AddHealthInstance(float HelthToAdd)
     {

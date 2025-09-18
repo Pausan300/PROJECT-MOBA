@@ -18,6 +18,7 @@ public class GameManager : NetworkBehaviour
     List<CharacterMaster> m_CharactersList = new List<CharacterMaster>();
     List<EnemyDummy> m_DummiesList = new List<EnemyDummy>();
     List<MinionController> m_MinionsList = new List<MinionController>();
+    List<EnergyWall> m_EnergyWallsList=new List<EnergyWall>();
 
 
     void Awake()
@@ -88,5 +89,9 @@ public class GameManager : NetworkBehaviour
     public string GetGameTimerFormated()
     {
         return string.Format("{0:00}:{1:00}", Mathf.Floor(m_GameTimer.Value / 60.0f), Mathf.Floor(m_GameTimer.Value % 60.0f));
+    }
+    public bool GetGameStarted() 
+    {
+        return m_GameStarted;
     }
 }

@@ -16,7 +16,7 @@ public class IngameStructureUI : MonoBehaviour
     public Vector2 m_MinSize;
     public Vector2 m_MaxSize;
     float m_InitialPositionY;
-
+     
     [Header("DAMAGE NUMBERS")]
     public GameObject m_DamageNumbers;
     public Vector3 m_DamageNumbersPosOffset;
@@ -61,13 +61,12 @@ public class IngameStructureUI : MonoBehaviour
         }
     }
 
-    public void AddDamageInstance(float PhysDamage, float MagicDamage, string SourceId)
+    public void AddDamageInstance(DamageInstance Instance)
     {
-        DamageInstance l_DamageInstance = new DamageInstance(PhysDamage, MagicDamage, SourceId);
-        if (GetDamageInstance(SourceId) != null)
-            GetDamageInstance(SourceId).AddDamage(PhysDamage, MagicDamage);
+        if (GetDamageInstance(Instance.m_Id) != null)
+            GetDamageInstance(Instance.m_Id).AddDamage(Instance.m_PhysDamage, Instance.m_MagicDamage);
         else
-            m_DamageInstanceList.Add(l_DamageInstance);
+            m_DamageInstanceList.Add(Instance);
     }
     DamageInstance GetDamageInstance(string SourceId)
     {

@@ -48,17 +48,18 @@ public class MinionController : NetworkBehaviour, ITakeDamage
         UpdateCorruptedHealth();
     }
 
-    public void TakeDamage(float PhysDamage, float MagicDamage, bool IgnoreResistances, string SourceId, GameObject SourceObject)
+    public void TakeDamage(DamageInstance Instance)
     {
-        float l_TotalPhysDamage=PhysDamage;
-        float l_TotalMagicDamage=MagicDamage;
-        if(!IgnoreResistances) 
+        float l_TotalPhysDamage=Instance.m_PhysDamage;
+        float l_TotalMagicDamage=Instance.m_MagicDamage;
+        if(!Instance.m_IgnoreResistances) 
         {
             l_TotalPhysDamage /= (1.0f + m_MinionStats.GetArmor() / 100.0f);
             l_TotalMagicDamage /= (1.0f + m_MinionStats.GetMagicRes() / 100.0f);
         }
         UpdateCurrentHealthRpc(l_TotalPhysDamage + l_TotalMagicDamage, true);
-        m_IngameUI.AddDamageInstance(l_TotalPhysDamage, l_TotalMagicDamage, SourceId);
+        DamageInstance l_AfterResistancesInstance=new DamageInstance(l_TotalPhysDamage, l_TotalMagicDamage, Instance.m_Id, Instance.m_SourceObject);
+        m_IngameUI.AddDamageInstance(l_AfterResistancesInstance);
     } 
     public void OnDeath()
     {
